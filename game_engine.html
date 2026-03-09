@@ -117,7 +117,7 @@ input[type=text]:focus{border-color:var(--p1);}
 
 /* tile */
 .stile{position:absolute;border-radius:8px;overflow:visible;}
-.stilei{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;padding:3px;background:rgba(8,14,26,.92);border-radius:8px;}
+.stilei{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;padding:3px;background:transparent;border-radius:8px;}
 .stile.hp1{box-shadow:inset 0 0 0 2px var(--p1),0 0 14px rgba(0,200,255,.2);}
 .stile.hp2{box-shadow:inset 0 0 0 2px var(--p2),0 0 14px rgba(255,77,109,.2);}
 .stile.np1{box-shadow:inset 0 0 0 1px rgba(0,200,255,.3);}
@@ -128,8 +128,8 @@ input[type=text]:focus{border-color:var(--p1);}
 
 /* area */
 .tarea{border:1px solid rgba(255,255,255,.07);border-radius:3px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1px;padding:2px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
-.tarea.aplanet{background:var(--planet);}
-.tarea.aspace{background:var(--space);}
+.tarea.aplanet{background:rgba(10,30,16,.55);}
+.tarea.aspace{background:rgba(6,14,26,.55);}
 .tarea.aplanet::after{content:'🪐';position:absolute;bottom:1px;right:2px;font-size:.5rem;opacity:.4;pointer-events:none;}
 .tarea.aspace::after{content:'✦';position:absolute;bottom:1px;right:2px;font-size:.5rem;opacity:.3;color:#88aaff;pointer-events:none;}
 .tarea:hover{border-color:var(--dim);}
@@ -140,7 +140,8 @@ input[type=text]:focus{border-color:var(--p1);}
 .tarea.h1{border-color:rgba(0,200,255,.4);}.tarea.h2{border-color:rgba(255,77,109,.4);}
 .tarea.contested{border-color:#ff9500;animation:bat .45s ease-in-out infinite;}
 @keyframes bat{0%,100%{background:rgba(255,149,0,.05);}50%{background:rgba(255,149,0,.15);}}
-.atlbl{position:absolute;top:1px;left:2px;font-size:.35rem;font-family:'Orbitron',monospace;color:var(--dim);pointer-events:none;opacity:.7;z-index:3;}
+.atlbl{position:absolute;top:1px;left:2px;font-size:.55rem;pointer-events:none;opacity:.8;z-index:3;letter-spacing:.05em;}
+.acap{position:absolute;bottom:1px;right:2px;font-size:.5rem;font-family:'Orbitron',monospace;color:var(--dim);pointer-events:none;z-index:3;}
 .atroop{width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.44rem;font-weight:700;border:1px solid;flex-shrink:0;}
 .atroop.ground{border-radius:50%;}
 .atroop.space{border-radius:2px;}
@@ -257,11 +258,13 @@ input[type=text]:focus{border-color:var(--p1);}
     <div class="pinstr" id="pinstr">—</div>
     <button class="abtn bw" id="btn-ut"   onclick="undoTile()"       style="display:none">↩ Вернуть систему</button>
     <button class="abtn bw" id="btn-uu"   onclick="undoLastUnit()"   style="display:none">↩ Вернуть войско</button>
+    <button class="abtn bp" id="btn-fl"   onclick="flipTile()"       style="display:none">⇄ Перевернуть</button>
     <button class="abtn bp" id="btn-rccw" onclick="rotateTile(false)" style="display:none">↺ Повернуть</button>
     <button class="abtn bp" id="btn-rcw"  onclick="rotateTile(true)"  style="display:none">↻ Повернуть</button>
     <button class="abtn bp" id="btn-et"   onclick="endTurn()"        style="display:none">Готово →</button>
     <button class="abtn bg" id="btn-ex"   onclick="execNext()"       style="display:none">⚡ Выполнить</button>
     <button class="abtn br" id="btn-er"   onclick="endRound()"       style="display:none">Завершить раунд →</button>
+    <button class="abtn bg" id="btn-em"   onclick="exportMap()"      style="display:none">💾 Сохранить карту</button>
   </div>
 </div>
 
@@ -322,10 +325,66 @@ const FACTIONS = [
   { id:'crusaders', name:'Крестоносцы', icon:'⚔', flavor:'Рыцарский орден звёздного фронтира. Предпочитают честный бой и никогда не отступают.', troops:{ground:6,space:2} },
 ];
 
-const HOME_AREAS   = ['planet','planet','planet','space'];
-const NORMAL_AREAS = ['planet','planet','space', 'space'];
 const TILES_PP = 3;
 const CELL     = 120;
+
+// ── КАТАЛОГ ТАЙЛОВ ─────────────────────────────────────────────────────────
+// Каждый тайл имеет две стороны (sides[0] = A, sides[1] = B).
+// areas[i]: type ('planet'|'space'), skulls (только для planet; определяет вместимость).
+// Космос всегда вмещает 3 юнита.
+// Изображения: tiles/<id>_a.png и tiles/<id>_b.png (если файл не найден — CSS-fallback).
+const TILE_CATALOG = [
+  // ── Домашние системы (HOME) ──────────────────────────────────────────────
+  { id:'home_01', isHome:true, sides:[
+    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'planet',skulls:1},{type:'space',skulls:0}] },
+    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0}] },
+  ]},
+  { id:'home_02', isHome:true, sides:[
+    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:1}] },
+    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:1},{type:'planet',skulls:2},{type:'space',skulls:0}] },
+  ]},
+  { id:'home_03', isHome:true, sides:[
+    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:2},{type:'space',skulls:0},{type:'planet',skulls:1}] },
+    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0}] },
+  ]},
+  { id:'home_04', isHome:true, sides:[
+    { areas:[{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:2},{type:'planet',skulls:1}] },
+    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:2}] },
+  ]},
+  // ── Обычные системы (NORMAL) ─────────────────────────────────────────────
+  { id:'normal_01', isHome:false, sides:[
+    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0}] },
+    { areas:[{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:2},{type:'space',skulls:0}] },
+  ]},
+  { id:'normal_02', isHome:false, sides:[
+    { areas:[{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:1},{type:'space',skulls:0}] },
+    { areas:[{type:'space',skulls:0},{type:'planet',skulls:2},{type:'space',skulls:0},{type:'planet',skulls:1}] },
+  ]},
+  { id:'normal_03', isHome:false, sides:[
+    { areas:[{type:'planet',skulls:3},{type:'space',skulls:0},{type:'space',skulls:0},{type:'space',skulls:0}] },
+    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0}] },
+  ]},
+  { id:'normal_04', isHome:false, sides:[
+    { areas:[{type:'planet',skulls:2},{type:'space',skulls:0},{type:'space',skulls:0},{type:'planet',skulls:1}] },
+    { areas:[{type:'planet',skulls:3},{type:'space',skulls:0},{type:'planet',skulls:1},{type:'space',skulls:0}] },
+  ]},
+  { id:'normal_05', isHome:false, sides:[
+    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0}] },
+    { areas:[{type:'planet',skulls:2},{type:'space',skulls:0},{type:'planet',skulls:1},{type:'space',skulls:0}] },
+  ]},
+  { id:'normal_06', isHome:false, sides:[
+    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:2},{type:'space',skulls:0},{type:'space',skulls:0}] },
+    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:3},{type:'space',skulls:0},{type:'space',skulls:0}] },
+  ]},
+  { id:'normal_07', isHome:false, sides:[
+    { areas:[{type:'space',skulls:0},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:2}] },
+    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0}] },
+  ]},
+  { id:'normal_08', isHome:false, sides:[
+    { areas:[{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0},{type:'planet',skulls:2}] },
+    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:2},{type:'space',skulls:0},{type:'space',skulls:0}] },
+  ]},
+];
 
 // Tile rotation: RMAP[rot/90][originalIdx] = displayPosition
 // Layout:  0|1
@@ -438,12 +497,25 @@ function startGame() {
   G.players[0].name = document.getElementById('p1-name').value.trim() || 'Alpha';
   G.players[1].name = document.getElementById('p2-name').value.trim() || 'Omega';
 
+  // Раздаём тайлы из каталога: каждому игроку 1 домашний + (TILES_PP-1) обычных
+  const homeTiles   = [...TILE_CATALOG.filter(t =>  t.isHome)].sort(() => Math.random()-.5);
+  const normalTiles = [...TILE_CATALOG.filter(t => !t.isHome)].sort(() => Math.random()-.5);
+
   G.players.forEach((p, pi) => {
     const fac = FACTIONS.find(f => f.id === p.faction);
     p.pool = [];
     for (let i=0; i<fac.troops.ground; i++) p.pool.push({ id:nextId++, player:pi, unitType:'ground' });
     for (let i=0; i<fac.troops.space;  i++) p.pool.push({ id:nextId++, player:pi, unitType:'space'  });
-    p.hand = Array.from({length:TILES_PP}, (_,t) => ({ handIdx:t, tileId:nextId++, isHome:t===0, placed:false }));
+
+    const myHome   = homeTiles.splice(0, 1)[0] || TILE_CATALOG.find(t => t.isHome);
+    const myNormal = normalTiles.splice(0, TILES_PP - 1);
+    p.hand = [myHome, ...myNormal].map((td, t) => ({
+      handIdx:   t,
+      tileDefId: td.id,
+      tileId:    nextId++,
+      isHome:    td.isHome,
+      placed:    false,
+    }));
     p.orders = [null,null];
   });
 
@@ -464,7 +536,7 @@ function setPhase(phase) {
   G.selOrderSlot = null;
 
   // Hide all action buttons
-  ['btn-ut','btn-uu','btn-rccw','btn-rcw','btn-et','btn-ex','btn-er'].forEach(id => {
+  ['btn-ut','btn-uu','btn-fl','btn-rccw','btn-rcw','btn-et','btn-ex','btn-er','btn-em'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
 
@@ -482,7 +554,7 @@ function setPhase(phase) {
   else if (phase === 'troop-on-tile') {
     // tileSnap + unitsPlaced already set by dropTile — DO NOT CLEAR THEM
     ins.innerHTML = `<strong>ВОЙСКА НА СИСТЕМУ</strong><br>${cp.name}: размещайте войска на только что поставленной системе.<br><small style="color:var(--dim)">▲ наземные → 🪐 · ◈ космические → ✦</small>`;
-    show('btn-ut'); show('btn-uu'); show('btn-rccw'); show('btn-rcw'); show('btn-et');
+    show('btn-ut'); show('btn-uu'); show('btn-fl'); show('btn-rccw'); show('btn-rcw'); show('btn-et');
     document.getElementById('btn-et').textContent = 'Готово →';
     renderSide(); renderBoard(G.lastKey);
   }
@@ -510,7 +582,7 @@ function setPhase(phase) {
     G.players.forEach((p,pi) => p.orders.forEach((o,oi) => {
       if (o) addLog(`${p.name} приказ ${oi+1} → [${o.key}] зона ${o.aIdx+1}`, pi);
     }));
-    show('btn-ex');
+    show('btn-ex'); show('btn-em');
     ins.innerHTML = `<strong>ИСПОЛНЕНИЕ ПРИКАЗОВ</strong><br>Нажмите кнопку для выполнения каждого приказа.`;
     renderBoard();
   }
@@ -558,16 +630,19 @@ function dropTile(col, row) {
   if (!ht || ht.placed) return;
 
   const key = `${col},${row}`;
-  const aTypes = ht.isHome ? HOME_AREAS : NORMAL_AREAS;
+  const tileDef  = TILE_CATALOG.find(t => t.id === ht.tileDefId) || TILE_CATALOG[0];
+  const sideData = tileDef.sides[0];
 
-  // Build tile object
+  // Build tile object — areas include skulls for capacity tracking
   G.map[key] = {
     key, col, row,
-    owner:   G.curP,
-    isHome:  ht.isHome,
-    tileId:  ht.tileId,
-    rotation:0,
-    areas:   aTypes.map(t => ({ type:t, troops:[] })),
+    owner:     G.curP,
+    isHome:    ht.isHome,
+    tileId:    ht.tileId,
+    tileDefId: ht.tileDefId,
+    rotation:  0,
+    side:      0,
+    areas:     sideData.areas.map(a => ({ type:a.type, skulls:a.skulls||0, troops:[] })),
   };
 
   ht.placed     = true;
@@ -636,6 +711,64 @@ function rotateTile(cw) {
   renderBoard(G.lastKey);
 }
 
+function flipTile() {
+  if (G.phase !== 'troop-on-tile' || !G.lastKey) return;
+  const tile = G.map[G.lastKey];
+  if (!tile) return;
+  if (G.unitsPlaced.length > 0) {
+    showMsg('Нельзя перевернуть', 'Сначала верните все размещённые войска (↩ Вернуть войско).');
+    return;
+  }
+  const tileDef = TILE_CATALOG.find(t => t.id === tile.tileDefId);
+  if (!tileDef || tileDef.sides.length < 2) {
+    showMsg('Нельзя перевернуть', 'У этого тайла нет оборотной стороны.');
+    return;
+  }
+  tile.side = 1 - (tile.side || 0);
+  const sideData = tileDef.sides[tile.side];
+  tile.areas    = sideData.areas.map(a => ({ type:a.type, skulls:a.skulls||0, troops:[] }));
+  tile.rotation = 0;
+  addLog(`${G.players[G.curP].name} перевернул тайл [${tile.key}] → сторона ${tile.side===0?'A':'B'}`, G.curP);
+  renderBoard(G.lastKey);
+}
+
+// ── СОХРАНЕНИЕ КАРТЫ ─────────────────────────────────────────────────────────
+function exportMap() {
+  const mapData = {
+    saved_at:     new Date().toISOString(),
+    round:        G.round,
+    total_rounds: G.totalRounds,
+    players:      G.players.map((p,pi) => ({
+      id: pi, name: p.name, faction: p.faction,
+    })),
+    tiles: Object.values(G.map).map(tile => ({
+      key:       tile.key,
+      col:       tile.col,
+      row:       tile.row,
+      tileDefId: tile.tileDefId,
+      isHome:    tile.isHome,
+      owner:     tile.owner,
+      rotation:  tile.rotation,
+      side:      tile.side || 0,
+      areas:     tile.areas.map((a, ai) => ({
+        index:    ai,
+        type:     a.type,
+        skulls:   a.skulls || 0,
+        capacity: a.type === 'planet' ? (a.skulls||1) : 3,
+        troops:   a.troops.map(u => ({ player:u.player, unitType:u.unitType })),
+      })),
+    })),
+  };
+  const blob = new Blob([JSON.stringify(mapData, null, 2)], { type:'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `stellar_conflict_map_${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  addLog('Карта сохранена в файл.', -1);
+}
+
 // ══════════════════════════════════════════════
 //  UNIT PLACEMENT
 // ══════════════════════════════════════════════
@@ -685,6 +818,11 @@ function placeUnit(key, displayIdx) {
   if (unit.unitType === 'space' && area.type !== 'space') {
     showMsg('Тип не совпадает','Космические войска — только в космос (✦).'); return;
   }
+  const cap = area.type === 'planet' ? (area.skulls||1) : 3;
+  if (area.troops.length >= cap) {
+    showMsg('Зона заполнена', `Максимум ${cap} войска в этой зоне (${area.type==='planet'?area.skulls+'💀':'космос'}).`);
+    return;
+  }
 
   area.troops.push({ player:G.curP, id:unit.id, unitType:unit.unitType });
   cp.pool.splice(G.selUnitIdx, 1);
@@ -730,25 +868,32 @@ function endTurn() {
   const cp = G.players[G.curP];
 
   if (G.phase === 'troop-on-tile') {
+    // Сколько тайлов текущий игрок уже разместил (включая текущий)
+    const myTilesPlaced = Object.values(G.map).filter(t => t.owner === G.curP).length;
+    const isMyLastTile  = myTilesPlaced >= TILES_PP;
+
+    // На последнем тайле игрок обязан разместить все войска, которые туда помещаются
+    if (isMyLastTile && cp.pool.length > 0) {
+      const tile = G.map[G.lastKey];
+      const canPlace = tile && cp.pool.some(u =>
+        getRotatedAreas(tile).some(a => {
+          const cap = a.type === 'planet' ? (a.skulls||1) : 3;
+          return isCompatible(u, a.type) && a.troops.length < cap;
+        })
+      );
+      if (canPlace) {
+        showMsg('Разместите войска', 'Это ваш последний тайл — разместите все войска, которые сюда помещаются.');
+        return;
+      }
+    }
+
     G.tileSnap = null; G.unitsPlaced = [];
     if (G.tilesPlaced < TILES_PP * 2) {
       G.curP = 1 - G.curP;
       showHP(G.players[G.curP].name, 'Разместите систему', () => setPhase('tile-placement'));
     } else {
-      const anyLeft = G.players.some(p => p.pool.length > 0);
-      if (anyLeft) {
-        G.curP = 0;
-        showHP(G.players[0].name, 'Расставьте оставшиеся войска', () => setPhase('troop-placement'));
-      } else { startOrderPhase(); }
+      startOrderPhase();
     }
-    return;
-  }
-
-  if (G.phase === 'troop-placement') {
-    G.curP = 1 - G.curP;
-    if (G.players[G.curP].pool.length > 0) {
-      showHP(G.players[G.curP].name, 'Расставьте оставшиеся войска', () => setPhase('troop-placement'));
-    } else { startOrderPhase(); }
     return;
   }
 
@@ -966,13 +1111,18 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
     } else {
       el.classList.add(tile.isHome?(tile.owner===0?'hp1':'hp2'):(tile.owner===0?'np1':'np2'));
     }
-    el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`;
+    const side = tile.side || 0;
+    const imgSuffix = side === 0 ? 'a' : 'b';
+    el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`+
+      `background-image:url('tiles/${tile.tileDefId}_${imgSuffix}.png');`+
+      `background-size:cover;background-position:center;`;
 
     if (tile.isHome) {
       const hb=document.createElement('div'); hb.className='hbadge'; hb.textContent='🏠'; el.appendChild(hb);
     }
     const cb=document.createElement('div'); cb.className='tcoord';
-    cb.textContent=tile.key+(tile.rotation?` ${tile.rotation}°`:''); el.appendChild(cb);
+    const sideLabel = side===1?' [B]':'';
+    cb.textContent=tile.key+(tile.rotation?` ${tile.rotation}°`:'')+sideLabel; el.appendChild(cb);
 
     const inner=document.createElement('div'); inner.className='stilei';
 
@@ -982,9 +1132,20 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
       const ae=document.createElement('div');
       ae.className=`tarea a${area.type}`; // aplanet or aspace
 
-      // Area type label
+      // Черепа и вместимость
+      const cap = area.type==='planet' ? (area.skulls||1) : 3;
+      const used = area.troops.length;
       const lbl=document.createElement('div'); lbl.className='atlbl';
-      lbl.textContent=area.type==='planet'?'PLN':'SPC'; ae.appendChild(lbl);
+      if (area.type==='planet') {
+        lbl.textContent = '💀'.repeat(area.skulls||1);
+      } else {
+        lbl.textContent = '✦';
+      }
+      ae.appendChild(lbl);
+      const capEl=document.createElement('div'); capEl.className='acap';
+      capEl.textContent=`${used}/${cap}`;
+      if (used>=cap) capEl.style.color='var(--accent2)';
+      ae.appendChild(capEl);
 
       // Troops
       area.troops.forEach(u => {
@@ -1042,9 +1203,10 @@ function renderSide() {
     const el=document.createElement('div');
     el.className=`htile${ht.isHome?' hthome':''}`;
     if (G.selHandIdx===idx) el.classList.add(cp.color==='c1'?'hs1':'hs2');
-    const aTypes=ht.isHome?HOME_AREAS:NORMAL_AREAS;
+    const tileDef=TILE_CATALOG.find(t=>t.id===ht.tileDefId);
+    const sideAreas=tileDef?tileDef.sides[0].areas:[];
     const prev=document.createElement('div'); prev.className='hpreview';
-    aTypes.forEach(t=>{ const a=document.createElement('div'); a.className=`hpa ${t==='planet'?'hpp':'hps'}`; prev.appendChild(a); });
+    sideAreas.forEach(a=>{ const d=document.createElement('div'); d.className=`hpa ${a.type==='planet'?'hpp':'hps'}`; prev.appendChild(d); });
     const lbl=document.createElement('div'); lbl.className='htlabel';
     const fac=FACTIONS.find(f=>f.id===cp.faction);
     lbl.textContent=ht.isHome?`${fac?.icon} Домашняя`:`Система ${idx+1}`;

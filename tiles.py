@@ -6,7 +6,7 @@ from enum import Enum
 from typing import List, Optional
 import uuid
 
-from units import Unit, UnitCategory
+from units import Unit, UnitCategory, Structure
 
 
 class AreaType(Enum):
@@ -34,26 +34,50 @@ AREA_LAYOUTS: dict[TileType, List[AreaType]] = {
 @dataclass
 class Area:
     """Одна зона (квадрат) внутри тайла."""
-    index:     int       = 0
-    area_type: AreaType  = AreaType.PLANET
-    units:     List[Unit] = field(default_factory=list)
+    index:      int             = 0
+    area_type:  AreaType        = AreaType.PLANET
+    # skulls — количество черепов на планете; определяет вместимость.
+    # Для SPACE не используется — вместимость всегда 3.
+    skulls:     int             = 1
+    units:      List[Unit]      = field(default_factory=list)
+    structures: List[Structure] = field(default_factory=list)
+
+    @property
+    def capacity(self) -> int:
+        """Максимум боевых юнитов в зоне."""
+        return max(1, self.skulls) if self.area_type == AreaType.PLANET else 3
+
+    @property
+    def is_full(self) -> bool:
+        return len(self.units) >= self.capacity
 
     def accepts(self, unit: Unit) -> bool:
-        """Проверяет, может ли этот юнит быть размещён в зоне."""
+        """Проверяет совместимость юнита с зоной по типу."""
         if unit.category == UnitCategory.GROUND:
             return self.area_type == AreaType.PLANET
         if unit.category == UnitCategory.SPACE:
             return self.area_type == AreaType.SPACE
         return False
 
+    def can_place_unit(self, unit: Unit) -> tuple[bool, str]:
+        """Проверяет и тип, и вместимость. Возвращает (ok, сообщение)."""
+        if not self.accepts(unit):
+            return False, "Тип юнита не подходит для этой зоны"
+        if self.is_full:
+            return False, f"Зона заполнена (макс. {self.capacity})"
+        return True, ""
+
     def units_of_player(self, player_id: int) -> List[Unit]:
         return [u for u in self.units if u.player_id == player_id]
 
     def to_dict(self) -> dict:
         return {
-            "index":     self.index,
-            "area_type": self.area_type.value,
-            "units":     [u.to_dict() for u in self.units],
+            "index":      self.index,
+            "area_type":  self.area_type.value,
+            "skulls":     self.skulls,
+            "capacity":   self.capacity,
+            "units":      [u.to_dict() for u in self.units],
+            "structures": [s.to_dict() for s in self.structures],
         }
 
 

@@ -27,6 +27,33 @@ class SpaceType(Enum):
     DESTROYER   = "destroyer"    # Эсминец     — сбалансированный
 
 
+class StructureType(Enum):
+    """Тип постройки — размещается на планете, не участвует в бою."""
+    FACTORY = "factory"   # Фабрика  — производство юнитов
+    CITY    = "city"      # Город    — победные очки / контроль
+    BASTION = "bastion"   # Бастион  — оборонительный бонус
+
+
+class ResourceType(Enum):
+    """Тип жетона ресурса — хранится в инвентаре игрока."""
+    SUPPORT  = "support"   # Жетон поддержки
+    DISCOUNT = "discount"  # Жетон скидки
+    FORGE    = "forge"     # Жетон кузницы
+
+
+STRUCTURE_STATS = {
+    StructureType.FACTORY: {"symbol": "⚙", "label": "Фабрика"},
+    StructureType.CITY:    {"symbol": "⬡", "label": "Город"},
+    StructureType.BASTION: {"symbol": "⛉", "label": "Бастион"},
+}
+
+RESOURCE_STATS = {
+    ResourceType.SUPPORT:  {"symbol": "⊕", "label": "Поддержка"},
+    ResourceType.DISCOUNT: {"symbol": "⊖", "label": "Скидка"},
+    ResourceType.FORGE:    {"symbol": "⊗", "label": "Кузница"},
+}
+
+
 # Боевые характеристики каждого типа юнита
 # attack_bonus добавляется к броску кубика в бою
 UNIT_STATS = {
@@ -74,3 +101,54 @@ class Unit:
 def make_unit(player_id: int, category: UnitCategory, unit_type) -> Unit:
     """Фабрика юнитов."""
     return Unit(player_id=player_id, category=category, unit_type=unit_type)
+
+
+@dataclass
+class Structure:
+    """Постройка на планете. Не участвует в бою, занимает место на поле."""
+    id:             str           = field(default_factory=lambda: str(uuid.uuid4())[:8])
+    player_id:      int           = 0
+    structure_type: StructureType = StructureType.FACTORY
+
+    @property
+    def symbol(self) -> str:
+        return STRUCTURE_STATS.get(self.structure_type, {}).get("symbol", "?")
+
+    @property
+    def label(self) -> str:
+        return STRUCTURE_STATS.get(self.structure_type, {}).get("label", "?")
+
+    def to_dict(self) -> dict:
+        return {
+            "id":             self.id,
+            "player_id":      self.player_id,
+            "structure_type": self.structure_type.value,
+            "symbol":         self.symbol,
+            "label":          self.label,
+        }
+
+
+@dataclass
+class ResourceToken:
+    """Жетон ресурса — хранится в инвентаре игрока, не размещается на поле."""
+    resource_type: ResourceType = ResourceType.SUPPORT
+
+    @property
+    def symbol(self) -> str:
+        return RESOURCE_STATS.get(self.resource_type, {}).get("symbol", "?")
+
+    @property
+    def label(self) -> str:
+        return RESOURCE_STATS.get(self.resource_type, {}).get("label", "?")
+
+    def to_dict(self) -> dict:
+        return {
+            "resource_type": self.resource_type.value,
+            "symbol":        self.symbol,
+            "label":         self.label,
+        }
+
+
+def make_structure(player_id: int, structure_type: StructureType) -> Structure:
+    """Фабрика построек."""
+    return Structure(player_id=player_id, structure_type=structure_type)

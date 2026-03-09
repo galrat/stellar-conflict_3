@@ -4,6 +4,7 @@ demo.py — демонстрация Python-движка Stellar Conflict
 """
 import sys
 sys.path.insert(0, ".")
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from game_state import GameState, GameConfig
 from factions import UnitConfig
@@ -49,7 +50,7 @@ def show_pool(game: GameState, player_id: int):
 separator("СЦЕНАРИЙ 1 — дефолтная конфигурация")
 
 game = GameState(GameConfig(
-    p1_name="Alpha", p1_faction="federation",
+    p1_name="Alpha", p1_faction="chaos",
     p2_name="Omega",  p2_faction="empire",
 ))
 show_log(game, 3)
@@ -107,8 +108,8 @@ show_pool(game, 0)
 separator("СЦЕНАРИЙ 2 — кастомная конфигурация юнитов")
 
 custom_config = GameConfig(
-    p1_name="Rex", p1_faction="collective",
-    p2_name="Zar", p2_faction="syndicate",
+    p1_name="Rex", p1_faction="orks",
+    p2_name="Zar", p2_faction="nomads",
     total_rounds=3,
     tiles_per_player=3,
     p1_unit_config=UnitConfig(infantry=4, marines=0, mechanized=0, elite=2,

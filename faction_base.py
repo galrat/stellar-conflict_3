@@ -12,7 +12,9 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Union
 
-from units import Unit, UnitCategory, GroundType, SpaceType, make_unit
+from units import (Unit, UnitCategory, GroundType, SpaceType, make_unit,
+                   Structure, StructureType, make_structure,
+                   ResourceToken, ResourceType)
 from tiles import SystemTile, TileType
 
 
@@ -82,15 +84,26 @@ class OrderUpgrade:
 @dataclass
 class UnitConfig:
     """
-    Конфигурация начального набора юнитов фракции.
-    Значения — количество юнитов каждого типа у игрока в начале партии.
+    Конфигурация начального набора юнитов, построек и ресурсов фракции.
+    Все значения — количество соответствующих объектов у игрока в начале партии.
     """
+    # ── Боевые юниты ─────────────────────────────────────────────────────────
     infantry:   int = 2
     marines:    int = 1
     mechanized: int = 1
     elite:      int = 0
     fighters:   int = 2
     destroyers: int = 1
+    # ── Постройки ─────────────────────────────────────────────────────────────
+    # Размещаются на планетах, по одной на зону; не участвуют в бою.
+    factories:  int = 0   # Фабрика  — производство юнитов
+    cities:     int = 0   # Город    — победные очки
+    bastions:   int = 0   # Бастион  — оборонительный бонус
+    # ── Ресурсные жетоны ──────────────────────────────────────────────────────
+    # Хранятся в инвентаре игрока, не размещаются на поле.
+    support_tokens:  int = 0   # Жетон поддержки
+    discount_tokens: int = 0   # Жетон скидки
+    forge_tokens:    int = 0   # Жетон кузницы
 
     @property
     def total_ground(self) -> int:
@@ -99,6 +112,14 @@ class UnitConfig:
     @property
     def total_space(self) -> int:
         return self.fighters + self.destroyers
+
+    @property
+    def total_structures(self) -> int:
+        return self.factories + self.cities + self.bastions
+
+    @property
+    def total_resources(self) -> int:
+        return self.support_tokens + self.discount_tokens + self.forge_tokens
 
     @property
     def total(self) -> int:
@@ -120,17 +141,51 @@ class UnitConfig:
                 units.append(make_unit(player_id, category, unit_type))
         return units
 
+    def build_structures(self, player_id: int) -> List[Structure]:
+        """Создаёт список объектов Structure согласно конфигурации."""
+        structures: List[Structure] = []
+        specs = [
+            (StructureType.FACTORY, self.factories),
+            (StructureType.CITY,    self.cities),
+            (StructureType.BASTION, self.bastions),
+        ]
+        for structure_type, count in specs:
+            for _ in range(count):
+                structures.append(make_structure(player_id, structure_type))
+        return structures
+
+    def build_resources(self) -> List[ResourceToken]:
+        """Создаёт список ResourceToken согласно конфигурации."""
+        resources: List[ResourceToken] = []
+        specs = [
+            (ResourceType.SUPPORT,  self.support_tokens),
+            (ResourceType.DISCOUNT, self.discount_tokens),
+            (ResourceType.FORGE,    self.forge_tokens),
+        ]
+        for resource_type, count in specs:
+            for _ in range(count):
+                resources.append(ResourceToken(resource_type=resource_type))
+        return resources
+
     def to_dict(self) -> dict:
         return {
-            "infantry":    self.infantry,
-            "marines":     self.marines,
-            "mechanized":  self.mechanized,
-            "elite":       self.elite,
-            "fighters":    self.fighters,
-            "destroyers":  self.destroyers,
-            "total_ground": self.total_ground,
-            "total_space":  self.total_space,
-            "total":        self.total,
+            "infantry":        self.infantry,
+            "marines":         self.marines,
+            "mechanized":      self.mechanized,
+            "elite":           self.elite,
+            "fighters":        self.fighters,
+            "destroyers":      self.destroyers,
+            "factories":       self.factories,
+            "cities":          self.cities,
+            "bastions":        self.bastions,
+            "support_tokens":  self.support_tokens,
+            "discount_tokens": self.discount_tokens,
+            "forge_tokens":    self.forge_tokens,
+            "total_ground":    self.total_ground,
+            "total_space":     self.total_space,
+            "total_structures": self.total_structures,
+            "total_resources": self.total_resources,
+            "total":           self.total,
         }
 
 
@@ -201,9 +256,11 @@ class Player:
     color:   str       # "p1" | "p2"
     faction: Faction   # объект фракции (не просто строка-ID)
 
-    pool:   List[Unit]       = field(default_factory=list)  # резерв (не на поле)
-    hand:   List[SystemTile] = field(default_factory=list)  # тайлы в руке
-    orders: List             = field(default_factory=list)  # список Order-объектов
+    pool:       List[Unit]          = field(default_factory=list)  # резерв юнитов (не на поле)
+    structures: List[Structure]     = field(default_factory=list)  # резерв построек
+    resources:  List[ResourceToken] = field(default_factory=list)  # жетоны ресурсов
+    hand:       List[SystemTile]    = field(default_factory=list)  # тайлы в руке
+    orders:     List                = field(default_factory=list)  # список Order-объектов
 
     @property
     def faction_id(self) -> str:
@@ -217,9 +274,12 @@ class Player:
             "color":      self.color,
             "faction_id": self.faction_id,
             "faction":    self.faction.to_dict(),
-            "pool_count": len(self.pool),
-            "pool":       [u.to_dict() for u in self.pool],
-            "hand_count": len(self.hand),
+            "pool_count":       len(self.pool),
+            "pool":             [u.to_dict() for u in self.pool],
+            "structures_count": len(self.structures),
+            "structures":       [s.to_dict() for s in self.structures],
+            "resources":        [r.to_dict() for r in self.resources],
+            "hand_count":       len(self.hand),
             "orders":     [
                 o.to_dict() if hasattr(o, "to_dict") else o
                 for o in self.orders

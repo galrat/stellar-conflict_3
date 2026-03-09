@@ -5,7 +5,7 @@ game_state.py — главный движок игры Stellar Conflict
     from game_state import GameState, GameConfig
 
     cfg = GameConfig(
-        p1_name="Alpha", p1_faction="federation",
+        p1_name="Alpha", p1_faction="orks",
         p2_name="Omega",  p2_faction="empire",
         total_rounds=2,
         # Переопределить начальные юниты (опционально):
@@ -76,7 +76,7 @@ class Order:
 @dataclass
 class GameConfig:
     p1_name:        str = "Alpha"
-    p1_faction:     str = "federation"
+    p1_faction:     str = "orks"
     p2_name:        str = "Omega"
     p2_faction:     str = "empire"
     total_rounds:   int = 2
