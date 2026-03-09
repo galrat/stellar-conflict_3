@@ -1,14 +1,14 @@
 """
-faction_defs/federation.py — фракция «Федерация»
+faction_defs/chaos.py — фракция «Хаос»
 
 Союз свободных миров. Сбалансированная фракция с акцентом на координацию
 и адаптивность. Сильна в обороне и логистике.
 """
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
-FEDERATION = Faction(
-    id   = "federation",
-    name = "Федерация",
+CHAOS = Faction(
+    id   = "chaos",
+    name = "Хаос",
     icon = "⬡",
     flavor = (
         "Союз свободных миров, объединённых общей мечтой о процветании. "
