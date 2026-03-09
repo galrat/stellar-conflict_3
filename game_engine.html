@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STELLAR CONFLICT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap');
+:root{
+  --bg:#050a14;--panel:#0a1628;--border:#1a3a5c;
+  --accent1:#00c8ff;--accent2:#ff4d6d;--gold:#ffd700;
+  --text:#c8e0f0;--dim:#4a6a8a;--p1:#00c8ff;--p2:#ff4d6d;
+  --planet:#0a1e10;--space:#060e1a;--cell:120px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(0,200,255,.04),transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(255,77,109,.04),transparent 60%);pointer-events:none;}
+h1,h2,h3{font-family:'Orbitron',monospace;}
+.screen{display:none;}.screen.active{display:flex;flex-direction:column;}
+
+/* ── SETUP ── */
+#setup-screen{min-height:100vh;align-items:center;justify-content:center;padding:20px;gap:6px;}
+.game-title{font-size:clamp(2rem,6vw,3.8rem);font-weight:900;letter-spacing:.2em;text-align:center;background:linear-gradient(135deg,var(--p1),#fff,var(--p2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.game-subtitle{text-align:center;letter-spacing:.5em;color:var(--dim);font-size:.85rem;margin-bottom:22px;text-transform:uppercase;}
+.setup-players{display:grid;grid-template-columns:1fr 1fr;gap:22px;width:100%;max-width:980px;}
+.player-setup{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;overflow:hidden;}
+.player-setup::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.player-setup.ps1::before{background:var(--p1);}.player-setup.ps2::before{background:var(--p2);}
+.player-label{font-family:'Orbitron',monospace;font-size:.7rem;letter-spacing:.3em;margin-bottom:14px;text-transform:uppercase;}
+.ps1 .player-label{color:var(--p1);}.ps2 .player-label{color:var(--p2);}
+.field-group{margin-bottom:14px;}
+.field-label{font-size:.7rem;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:6px;}
+input[type=text]{width:100%;background:#060e1a;border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;transition:border-color .2s;}
+input[type=text]:focus{border-color:var(--p1);}
+.faction-select{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.faction-btn{background:#060e1a;border:1px solid var(--border);border-radius:8px;padding:10px 6px;cursor:pointer;transition:all .2s;text-align:center;color:var(--text);position:relative;}
+.faction-btn:hover{border-color:var(--dim);}
+.faction-btn.sel1{border-color:var(--p1);background:rgba(0,200,255,.1);color:var(--p1);}
+.faction-btn.sel2{border-color:var(--p2);background:rgba(255,77,109,.1);color:var(--p2);}
+.faction-btn.taken{opacity:.3;cursor:not-allowed;pointer-events:none;}
+.faction-btn.taken::after{content:'ЗАНЯТО';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.15em;color:var(--dim);background:rgba(5,10,20,.75);border-radius:7px;}
+.fi{font-size:1.4rem;display:block;margin-bottom:3px;}
+.fn{font-size:.78rem;font-weight:600;letter-spacing:.08em;}
+.ff{font-size:.6rem;color:var(--dim);margin-top:2px;}
+.start-btn{margin-top:18px;width:100%;max-width:980px;padding:14px;background:linear-gradient(135deg,rgba(0,200,255,.12),rgba(255,77,109,.12));border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Orbitron',monospace;font-size:.85rem;letter-spacing:.2em;cursor:pointer;transition:all .3s;text-transform:uppercase;}
+.start-btn:hover{background:linear-gradient(135deg,rgba(0,200,255,.25),rgba(255,77,109,.25));border-color:var(--p1);transform:translateY(-1px);}
+
+/* ── GAME ── */
+#game-screen{min-height:100vh;padding:8px;gap:8px;}
+.game-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:8px 16px;background:var(--panel);border:1px solid var(--border);border-radius:10px;gap:10px;flex-shrink:0;}
+.pinfo{display:flex;align-items:center;gap:10px;}.pinfo.r{justify-content:flex-end;}
+.pavatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;border:2px solid;flex-shrink:0;}
+.av1{border-color:var(--p1);background:rgba(0,200,255,.1);color:var(--p1);}
+.av2{border-color:var(--p2);background:rgba(255,77,109,.1);color:var(--p2);}
+.pstats{line-height:1.2;}
+.pname{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;}
+.s1 .pname{color:var(--p1);}.s2 .pname{color:var(--p2);}
+.pfac{font-size:.62rem;color:var(--dim);}
+.ptroops{font-size:.78rem;color:var(--dim);}
+.ptnum{font-weight:700;}.s1 .ptnum{color:var(--p1);}.s2 .ptnum{color:var(--p2);}
+.phase-info{text-align:center;}
+.phase-lbl{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.3em;color:var(--dim);text-transform:uppercase;}
+.phase-name{font-family:'Orbitron',monospace;font-size:.78rem;color:var(--gold);white-space:nowrap;}
+.round-info{font-size:.68rem;color:var(--dim);margin-top:2px;}
+.turn-ind{padding:3px 9px;border-radius:20px;font-size:.62rem;font-family:'Orbitron',monospace;letter-spacing:.1em;}
+.ti1{background:rgba(0,200,255,.15);color:var(--p1);border:1px solid rgba(0,200,255,.3);}
+.ti2{background:rgba(255,77,109,.15);color:var(--p2);border:1px solid rgba(255,77,109,.3);}
+
+/* ── LAYOUT ── */
+.game-content{display:grid;grid-template-columns:195px 1fr 195px;gap:8px;flex:1;min-height:0;}
+.side-panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px;display:flex;flex-direction:column;gap:7px;overflow:hidden;}
+.ptitle{font-family:'Orbitron',monospace;font-size:.56rem;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--border);padding-bottom:5px;}
+
+/* hand tiles */
+.tile-hand{display:flex;flex-direction:column;gap:5px;}
+.htile{background:#060e1a;border:1px solid var(--border);border-radius:7px;padding:7px;cursor:pointer;transition:all .2s;position:relative;}
+.htile:hover{border-color:var(--dim);}
+.htile.hs1{border-color:var(--p1);background:rgba(0,200,255,.07);box-shadow:0 0 8px rgba(0,200,255,.2);}
+.htile.hs2{border-color:var(--p2);background:rgba(255,77,109,.07);box-shadow:0 0 8px rgba(255,77,109,.2);}
+.htile.hthome{border-style:dashed;}
+.hpreview{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;aspect-ratio:1;margin-bottom:3px;}
+.hpa{border-radius:2px;border:1px solid rgba(255,255,255,.07);}
+.hpa.hpp{background:rgba(0,120,40,.15);border-color:rgba(0,200,80,.2);}
+.hpa.hps{background:rgba(0,30,80,.2);border-color:rgba(0,80,200,.15);}
+.htlabel{font-size:.65rem;color:var(--dim);text-align:center;}
+
+/* troop pool */
+.pool-sec{display:flex;flex-direction:column;gap:3px;}
+.pool-type-lbl{font-size:.58rem;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;}
+.tpool{display:flex;flex-wrap:wrap;gap:3px;}
+.ttok{width:23px;height:23px;display:flex;align-items:center;justify-content:center;font-size:.56rem;font-weight:700;cursor:pointer;transition:all .15s;border:2px solid;user-select:none;}
+.ttok.ground{border-radius:50%;}
+.ttok.space{border-radius:3px;}
+.ttok.c1{background:rgba(0,200,255,.15);border-color:var(--p1);color:var(--p1);}
+.ttok.c2{background:rgba(255,77,109,.15);border-color:var(--p2);color:var(--p2);}
+.ttok.sel{transform:scale(1.2);box-shadow:0 0 7px currentColor;}
+.ttok:hover{transform:scale(1.1);}
+
+/* orders */
+.oslot{background:#060e1a;border:1px dashed var(--border);border-radius:6px;padding:6px 8px;cursor:pointer;transition:all .2s;font-size:.7rem;min-height:34px;display:flex;align-items:center;color:var(--dim);margin-bottom:4px;}
+.oslot:hover{border-color:var(--dim);}
+.oslot.oactive{border-color:var(--gold);border-style:solid;}
+.oslot.of1{border-style:solid;border-color:rgba(0,200,255,.5);background:rgba(0,200,255,.06);color:var(--p1);}
+.oslot.of2{border-style:solid;border-color:rgba(255,77,109,.5);background:rgba(255,77,109,.06);color:var(--p2);}
+
+/* log */
+.alog{font-size:.7rem;line-height:1.5;color:var(--dim);overflow-y:auto;flex:1;max-height:220px;}
+.le{padding:1px 0;border-bottom:1px solid rgba(255,255,255,.025);}
+.le1{color:rgba(0,200,255,.85);}.le2{color:rgba(255,77,109,.85);}.les{color:var(--gold);}
+
+/* ── MAP ── */
+.map-container{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px;overflow:auto;}
+.map-board{position:relative;}
+.drop-cell{position:absolute;border:2px solid var(--p1);background:rgba(0,200,255,.05);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:pc .9s ease-in-out infinite;}
+.drop-cell:hover{background:rgba(0,200,255,.13);}
+@keyframes pc{0%,100%{box-shadow:0 0 4px rgba(0,200,255,.2);}50%{box-shadow:0 0 14px rgba(0,200,255,.5);}}
+
+/* tile */
+.stile{position:absolute;border-radius:8px;overflow:visible;}
+.stilei{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;padding:3px;background:rgba(8,14,26,.92);border-radius:8px;}
+.stile.hp1{box-shadow:inset 0 0 0 2px var(--p1),0 0 14px rgba(0,200,255,.2);}
+.stile.hp2{box-shadow:inset 0 0 0 2px var(--p2),0 0 14px rgba(255,77,109,.2);}
+.stile.np1{box-shadow:inset 0 0 0 1px rgba(0,200,255,.3);}
+.stile.np2{box-shadow:inset 0 0 0 1px rgba(255,77,109,.3);}
+.stile.just{box-shadow:inset 0 0 0 2px var(--gold),0 0 12px rgba(255,215,0,.25);}
+.hbadge{position:absolute;top:2px;left:3px;font-size:.44rem;color:var(--gold);z-index:5;pointer-events:none;}
+.tcoord{position:absolute;top:2px;right:3px;font-size:.4rem;font-family:'Orbitron',monospace;color:var(--dim);z-index:5;pointer-events:none;}
+
+/* area */
+.tarea{border:1px solid rgba(255,255,255,.07);border-radius:3px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1px;padding:2px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.tarea.aplanet{background:var(--planet);}
+.tarea.aspace{background:var(--space);}
+.tarea.aplanet::after{content:'🪐';position:absolute;bottom:1px;right:2px;font-size:.5rem;opacity:.4;pointer-events:none;}
+.tarea.aspace::after{content:'✦';position:absolute;bottom:1px;right:2px;font-size:.5rem;opacity:.3;color:#88aaff;pointer-events:none;}
+.tarea:hover{border-color:var(--dim);}
+.tarea.aok{border-color:var(--p1);animation:adp .8s ease-in-out infinite;cursor:pointer;}
+.tarea.aok:hover{background:rgba(0,200,255,.1);}
+.tarea.ano{opacity:.3;cursor:not-allowed;}
+@keyframes adp{0%,100%{box-shadow:inset 0 0 3px rgba(0,200,255,.3);}50%{box-shadow:inset 0 0 8px rgba(0,200,255,.5);}}
+.tarea.h1{border-color:rgba(0,200,255,.4);}.tarea.h2{border-color:rgba(255,77,109,.4);}
+.tarea.contested{border-color:#ff9500;animation:bat .45s ease-in-out infinite;}
+@keyframes bat{0%,100%{background:rgba(255,149,0,.05);}50%{background:rgba(255,149,0,.15);}}
+.atlbl{position:absolute;top:1px;left:2px;font-size:.35rem;font-family:'Orbitron',monospace;color:var(--dim);pointer-events:none;opacity:.7;z-index:3;}
+.atroop{width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.44rem;font-weight:700;border:1px solid;flex-shrink:0;}
+.atroop.ground{border-radius:50%;}
+.atroop.space{border-radius:2px;}
+.atroop.c1{background:rgba(0,200,255,.2);border-color:var(--p1);color:var(--p1);}
+.atroop.c2{background:rgba(255,77,109,.2);border-color:var(--p2);color:var(--p2);}
+.opip{position:absolute;width:11px;height:11px;border-radius:50%;font-size:.38rem;font-family:'Orbitron',monospace;display:flex;align-items:center;justify-content:center;z-index:4;}
+.opip.op1{background:rgba(0,200,255,.3);color:var(--p1);border:1px solid var(--p1);top:1px;right:1px;}
+.opip.op2{background:rgba(255,77,109,.3);color:var(--p2);border:1px solid var(--p2);bottom:1px;left:1px;}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar{display:flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px 14px;flex-shrink:0;flex-wrap:wrap;}
+.pinstr{flex:1;font-size:.8rem;color:var(--text);line-height:1.4;min-width:200px;}
+.pinstr strong{color:var(--gold);font-family:'Orbitron',monospace;font-size:.65rem;}
+.abtn{padding:8px 13px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.1em;cursor:pointer;border:1px solid;transition:all .2s;text-transform:uppercase;white-space:nowrap;}
+.bp{background:rgba(0,200,255,.1);border-color:var(--p1);color:var(--p1);}.bp:hover{background:rgba(0,200,255,.22);}
+.bg{background:rgba(255,215,0,.1);border-color:var(--gold);color:var(--gold);}.bg:hover{background:rgba(255,215,0,.22);}
+.br{background:rgba(255,77,109,.1);border-color:var(--p2);color:var(--p2);}.br:hover{background:rgba(255,77,109,.22);}
+.bw{background:rgba(255,140,0,.1);border-color:#ff8c00;color:#ff8c00;}.bw:hover{background:rgba(255,140,0,.22);}
+
+/* ── MODALS ── */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:100;align-items:center;justify-content:center;}
+.moverlay.active{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px;max-width:460px;width:90%;text-align:center;}
+.modal h2{font-size:1rem;letter-spacing:.2em;margin-bottom:12px;color:var(--gold);}
+.modal p{font-size:.86rem;line-height:1.6;color:var(--text);margin-bottom:7px;}
+.droll{font-size:2.6rem;margin:13px 0;}
+.mbtns{display:flex;gap:10px;justify-content:center;margin-top:16px;}
+.hpoverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+.hpoverlay.active{display:flex;}
+.hpname{font-family:'Orbitron',monospace;font-size:1.9rem;font-weight:900;}
+.hpsub{color:var(--dim);letter-spacing:.3em;font-size:.8rem;}
+.hpbtn{padding:12px 36px;border-radius:10px;font-family:'Orbitron',monospace;font-size:.82rem;letter-spacing:.2em;cursor:pointer;border:1px solid;transition:all .3s;text-transform:uppercase;}
+
+/* ── END ── */
+#end-screen{min-height:100vh;align-items:center;justify-content:center;padding:20px;}
+.end-content{text-align:center;}
+.wtitle{font-size:clamp(1.2rem,4vw,2.2rem);letter-spacing:.2em;margin-bottom:6px;color:var(--dim);}
+.wname{font-size:clamp(2rem,7vw,4.5rem);font-weight:900;margin-bottom:24px;}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:440px;margin:0 auto 24px;}
+.scard{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.scard.winner{border-color:var(--gold);box-shadow:0 0 16px rgba(255,215,0,.18);}
+.sval{font-size:2.6rem;font-family:'Orbitron',monospace;font-weight:900;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup-screen" class="screen active">
+  <h1 class="game-title">STELLAR CONFLICT</h1>
+  <p class="game-subtitle">tactical wargame · hotseat edition</p>
+  <div class="setup-players">
+    <div class="player-setup ps1">
+      <div class="player-label">◈ Командир I</div>
+      <div class="field-group"><div class="field-label">Позывной</div><input type="text" id="p1-name" value="Alpha"></div>
+      <div class="field-group"><div class="field-label">Фракция</div><div class="faction-select" id="p1-factions"></div></div>
+    </div>
+    <div class="player-setup ps2">
+      <div class="player-label">◈ Командир II</div>
+      <div class="field-group"><div class="field-label">Позывной</div><input type="text" id="p2-name" value="Omega"></div>
+      <div class="field-group"><div class="field-label">Фракция</div><div class="faction-select" id="p2-factions"></div></div>
+    </div>
+  </div>
+  <button class="start-btn" onclick="startGame()">▶ НАЧАТЬ ИГРУ</button>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen">
+  <div class="game-header">
+    <div class="pinfo s1">
+      <div class="pavatar av1" id="h-p1-init">P1</div>
+      <div class="pstats s1">
+        <div class="pname" id="h-p1-name">Alpha</div>
+        <div class="pfac"  id="h-p1-fac">—</div>
+        <div class="ptroops">Войска: <span class="ptnum" id="h-p1-t">6</span></div>
+      </div>
+    </div>
+    <div class="phase-info">
+      <div class="phase-lbl">Фаза</div>
+      <div class="phase-name" id="h-phase">—</div>
+      <div class="round-info" id="h-round">Раунд 1/2</div>
+      <div class="turn-ind ti1" id="h-turn">—</div>
+    </div>
+    <div class="pinfo r s2">
+      <div class="pstats s2" style="text-align:right">
+        <div class="pname" id="h-p2-name">Omega</div>
+        <div class="pfac"  id="h-p2-fac">—</div>
+        <div class="ptroops">Войска: <span class="ptnum" id="h-p2-t">6</span></div>
+      </div>
+      <div class="pavatar av2" id="h-p2-init">P2</div>
+    </div>
+  </div>
+
+  <div class="game-content">
+    <div class="side-panel">
+      <div class="ptitle">Системы в руке</div>
+      <div class="tile-hand" id="tile-hand"></div>
+      <div class="ptitle">Резерв войск</div>
+      <div id="pool-cont"></div>
+      <div class="ptitle">Приказы</div>
+      <div id="orders-cont">
+        <div class="oslot" id="os0">— приказ 1</div>
+        <div class="oslot" id="os1">— приказ 2</div>
+      </div>
+    </div>
+    <div class="map-container"><div class="map-board" id="map-board"></div></div>
+    <div class="side-panel">
+      <div class="ptitle">Журнал событий</div>
+      <div class="alog" id="alog"></div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="pinstr" id="pinstr">—</div>
+    <button class="abtn bw" id="btn-ut"   onclick="undoTile()"       style="display:none">↩ Вернуть систему</button>
+    <button class="abtn bw" id="btn-uu"   onclick="undoLastUnit()"   style="display:none">↩ Вернуть войско</button>
+    <button class="abtn bp" id="btn-rccw" onclick="rotateTile(false)" style="display:none">↺ Повернуть</button>
+    <button class="abtn bp" id="btn-rcw"  onclick="rotateTile(true)"  style="display:none">↻ Повернуть</button>
+    <button class="abtn bp" id="btn-et"   onclick="endTurn()"        style="display:none">Готово →</button>
+    <button class="abtn bg" id="btn-ex"   onclick="execNext()"       style="display:none">⚡ Выполнить</button>
+    <button class="abtn br" id="btn-er"   onclick="endRound()"       style="display:none">Завершить раунд →</button>
+  </div>
+</div>
+
+<!-- END -->
+<div id="end-screen" class="screen">
+  <div class="end-content">
+    <div class="wtitle">ПОБЕДИТЕЛЬ</div>
+    <div class="wname" id="end-winner">—</div>
+    <div class="sgrid" id="end-scores"></div>
+    <button class="start-btn" onclick="restartGame()">↺ НОВАЯ ИГРА</button>
+  </div>
+</div>
+
+<!-- Hotpass overlay -->
+<div class="hpoverlay" id="hpov">
+  <div class="hpsub">ПЕРЕДАТЬ ХОД</div>
+  <div class="hpname" id="hp-name">—</div>
+  <div class="hpsub" id="hp-action">Ваш ход</div>
+  <button class="hpbtn" id="hp-btn" onclick="closeHP()">ГОТОВ ▶</button>
+</div>
+
+<!-- Battle modal -->
+<div class="moverlay" id="bat-modal">
+  <div class="modal">
+    <h2>⚔ СРАЖЕНИЕ</h2>
+    <p id="bat-desc"></p>
+    <div class="droll" id="bat-dice">🎲</div>
+    <div id="bat-result"></div>
+    <div class="mbtns"><button class="abtn bg" onclick="closeBattle()">Продолжить →</button></div>
+  </div>
+</div>
+
+<!-- Msg modal -->
+<div class="moverlay" id="msg-modal">
+  <div class="modal">
+    <h2 id="msg-title">Info</h2>
+    <p id="msg-body"></p>
+    <div class="mbtns"><button class="abtn bp" onclick="closeMsg()">OK</button></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════════════
+//  CONSTANTS  (declared at module scope — never inside functions)
+// ══════════════════════════════════════════════
+const FACTIONS = [
+  { id:'federation', name:'Федерация', icon:'⬡', flavor:'Союз миров',    troops:{ground:3,space:3} },
+  { id:'empire',     name:'Империя',   icon:'◆', flavor:'Железный кулак',troops:{ground:3,space:3} },
+  { id:'syndicate',  name:'Синдикат',  icon:'◉', flavor:'Теневой рынок', troops:{ground:3,space:3} },
+  { id:'collective', name:'Коллектив', icon:'⊛', flavor:'Единый разум',  troops:{ground:3,space:3} },
+];
+
+const HOME_AREAS   = ['planet','planet','planet','space'];
+const NORMAL_AREAS = ['planet','planet','space', 'space'];
+const TILES_PP = 3;
+const CELL     = 120;
+
+// Tile rotation: RMAP[rot/90][originalIdx] = displayPosition
+// Layout:  0|1
+//          2|3
+// 0°  → display order = original order
+// 90° CW  → top-left gets original bottom-left, etc.
+const RMAP = [
+  [0,1,2,3],  // 0°
+  [2,0,3,1],  // 90° CW
+  [3,2,1,0],  // 180°
+  [1,3,0,2],  // 270° CW
+];
+
+// ══════════════════════════════════════════════
+//  ROTATION HELPERS  (global functions, not inside setPhase)
+// ══════════════════════════════════════════════
+function getRotatedAreas(tile) {
+  const rot = (tile.rotation || 0);
+  const rmap = RMAP[rot / 90];
+  const out = new Array(4);
+  for (let i = 0; i < 4; i++) out[rmap[i]] = tile.areas[i];
+  return out;
+}
+
+function getAreaByDisplay(tile, displayIdx) {
+  return getRotatedAreas(tile)[displayIdx];
+}
+
+function getRealIdx(tile, displayIdx) {
+  const area = getAreaByDisplay(tile, displayIdx);
+  return tile.areas.indexOf(area);
+}
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let nextId = 0;
+let G;
+
+function makeState() {
+  return {
+    players: [
+      { name:'Alpha', faction:null, color:'c1', pool:[], hand:[], orders:[null,null] },
+      { name:'Omega', faction:null, color:'c2', pool:[], hand:[], orders:[null,null] },
+    ],
+    phase: 'setup',
+    curP: 0,
+    round: 1, totalRounds: 2,
+    map: {},           // "col,row" → tile obj
+    tilesPlaced: 0,
+    lastKey: null,
+    // ── undo state ──────────────────────────
+    tileSnap: null,    // { handIdx, key } — set by dropTile, cleared by undoTile or endTurn
+    unitsPlaced: [],   // [{ key, realAreaIdx, unitId }]
+    // ── selection ──────────────────────────
+    selHandIdx: null,
+    selUnitIdx: null,
+    selUnitType: null,
+    selOrderSlot: null,
+    // ── execution ──────────────────────────
+    execQueue: [],
+    execPos: 0,
+    _battleCb: null,
+  };
+}
+
+// ══════════════════════════════════════════════
+//  SETUP UI
+// ══════════════════════════════════════════════
+function buildFactionUI() {
+  [0,1].forEach(pi => {
+    const cont = document.getElementById(`p${pi+1}-factions`);
+    cont.innerHTML = '';
+    FACTIONS.forEach(f => {
+      const btn = document.createElement('div');
+      btn.className = 'faction-btn';
+      btn.dataset.fid = f.id;
+      btn.innerHTML = `<span class="fi">${f.icon}</span><div class="fn">${f.name}</div><div class="ff">${f.flavor}</div>`;
+      btn.onclick = () => pickFaction(pi, f.id);
+      cont.appendChild(btn);
+    });
+  });
+  G.players[0].faction = 'federation';
+  G.players[1].faction = 'empire';
+  refreshFactionUI();
+}
+
+function pickFaction(pi, fid) {
+  if (G.players[1-pi].faction === fid) return;
+  G.players[pi].faction = fid;
+  refreshFactionUI();
+}
+
+function refreshFactionUI() {
+  [0,1].forEach(pi => {
+    const other = G.players[1-pi].faction;
+    document.querySelectorAll(`#p${pi+1}-factions .faction-btn`).forEach(btn => {
+      btn.classList.remove('sel1','sel2','taken');
+      if (btn.dataset.fid === G.players[pi].faction) btn.classList.add(pi===0?'sel1':'sel2');
+      if (btn.dataset.fid === other) btn.classList.add('taken');
+    });
+  });
+}
+
+// ══════════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════════
+function startGame() {
+  if (!G.players[0].faction || !G.players[1].faction) { showMsg('Выберите фракции','Оба игрока должны выбрать фракцию.'); return; }
+  G.players[0].name = document.getElementById('p1-name').value.trim() || 'Alpha';
+  G.players[1].name = document.getElementById('p2-name').value.trim() || 'Omega';
+
+  G.players.forEach((p, pi) => {
+    const fac = FACTIONS.find(f => f.id === p.faction);
+    p.pool = [];
+    for (let i=0; i<fac.troops.ground; i++) p.pool.push({ id:nextId++, player:pi, unitType:'ground' });
+    for (let i=0; i<fac.troops.space;  i++) p.pool.push({ id:nextId++, player:pi, unitType:'space'  });
+    p.hand = Array.from({length:TILES_PP}, (_,t) => ({ handIdx:t, tileId:nextId++, isHome:t===0, placed:false }));
+    p.orders = [null,null];
+  });
+
+  showScreen('game-screen');
+  updateHeader();
+  renderBoard();
+  showHP(G.players[0].name, 'Разместите вашу первую систему', () => setPhase('tile-placement'));
+}
+
+// ══════════════════════════════════════════════
+//  PHASE  — only sets UI state, never touches tileSnap/unitsPlaced
+// ══════════════════════════════════════════════
+function setPhase(phase) {
+  G.phase = phase;
+  G.selHandIdx = null;
+  G.selUnitIdx = null;
+  G.selUnitType = null;
+  G.selOrderSlot = null;
+
+  // Hide all action buttons
+  ['btn-ut','btn-uu','btn-rccw','btn-rcw','btn-et','btn-ex','btn-er'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+
+  const cp  = G.players[G.curP];
+  const ins = document.getElementById('pinstr');
+
+  if (phase === 'tile-placement') {
+    // Clear undo state — starting fresh tile pick
+    G.tileSnap   = null;
+    G.unitsPlaced = [];
+    const rem = cp.hand.filter(h => !h.placed).length;
+    ins.innerHTML = `<strong>РАЗМЕЩЕНИЕ СИСТЕМ</strong><br>${cp.name}: выберите систему из руки, затем кликните ячейку. Осталось: ${rem}`;
+    renderSide(); renderBoard();
+  }
+  else if (phase === 'troop-on-tile') {
+    // tileSnap + unitsPlaced already set by dropTile — DO NOT CLEAR THEM
+    ins.innerHTML = `<strong>ВОЙСКА НА СИСТЕМУ</strong><br>${cp.name}: размещайте войска на только что поставленной системе.<br><small style="color:var(--dim)">▲ наземные → 🪐 · ◈ космические → ✦</small>`;
+    show('btn-ut'); show('btn-uu'); show('btn-rccw'); show('btn-rcw'); show('btn-et');
+    document.getElementById('btn-et').textContent = 'Готово →';
+    renderSide(); renderBoard(G.lastKey);
+  }
+  else if (phase === 'troop-placement') {
+    G.tileSnap    = null;
+    G.unitsPlaced = [];
+    ins.innerHTML = `<strong>РАССТАНОВКА ВОЙСК</strong><br>${cp.name}: расставьте оставшиеся войска.<br><small style="color:var(--dim)">▲ наземные → 🪐 · ◈ космические → ✦</small>`;
+    show('btn-uu'); show('btn-et');
+    document.getElementById('btn-et').textContent = 'Завершить расстановку →';
+    renderSide(); renderBoard(null, true);
+  }
+  else if (phase === 'order-placement') {
+    G.tileSnap    = null;
+    G.unitsPlaced = [];
+    ins.innerHTML = `<strong>РАССТАНОВКА ПРИКАЗОВ</strong><br>${cp.name}: выберите слот приказа, затем кликните зону назначения.`;
+    show('btn-et');
+    document.getElementById('btn-et').textContent = 'Подтвердить приказы →';
+    renderSide(); renderBoard();
+  }
+  else if (phase === 'execution') {
+    G.tileSnap    = null;
+    G.unitsPlaced = [];
+    buildExecQueue();
+    addLog('=== ПРИКАЗЫ РАСКРЫТЫ ===', -1);
+    G.players.forEach((p,pi) => p.orders.forEach((o,oi) => {
+      if (o) addLog(`${p.name} приказ ${oi+1} → [${o.key}] зона ${o.aIdx+1}`, pi);
+    }));
+    show('btn-ex');
+    ins.innerHTML = `<strong>ИСПОЛНЕНИЕ ПРИКАЗОВ</strong><br>Нажмите кнопку для выполнения каждого приказа.`;
+    renderBoard();
+  }
+  updateHeader();
+}
+
+function show(id) { document.getElementById(id).style.display = 'block'; }
+
+// ══════════════════════════════════════════════
+//  TILE PLACEMENT
+// ══════════════════════════════════════════════
+function selectHandTile(idx) {
+  if (G.phase !== 'tile-placement') return;
+  if (G.players[G.curP].hand[idx].placed) return;
+  G.selHandIdx = idx;
+  renderSide(); renderBoard();
+}
+
+function getValidDrops() {
+  const placed = Object.values(G.map);
+  if (!placed.length) return [{col:0,row:0}];
+  const cands = new Set();
+  placed.forEach(({col,row}) => {
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dc,dr]) => {
+      const k = `${col+dc},${row+dr}`;
+      if (!G.map[k]) cands.add(k);
+    });
+  });
+  const valid = [];
+  cands.forEach(k => {
+    const [nc,nr] = k.split(',').map(Number);
+    const cols = placed.map(t=>t.col).concat([nc]);
+    const rows = placed.map(t=>t.row).concat([nr]);
+    const w = Math.max(...cols)-Math.min(...cols)+1;
+    const h = Math.max(...rows)-Math.min(...rows)+1;
+    if ((w<=3&&h<=2)||(w<=2&&h<=3)) valid.push({col:nc,row:nr});
+  });
+  return valid;
+}
+
+function dropTile(col, row) {
+  if (G.selHandIdx === null) { showMsg('Выберите систему','Сначала выберите систему из руки.'); return; }
+  const cp = G.players[G.curP];
+  const ht = cp.hand[G.selHandIdx];
+  if (!ht || ht.placed) return;
+
+  const key = `${col},${row}`;
+  const aTypes = ht.isHome ? HOME_AREAS : NORMAL_AREAS;
+
+  // Build tile object
+  G.map[key] = {
+    key, col, row,
+    owner:   G.curP,
+    isHome:  ht.isHome,
+    tileId:  ht.tileId,
+    rotation:0,
+    areas:   aTypes.map(t => ({ type:t, troops:[] })),
+  };
+
+  ht.placed     = true;
+  G.tilesPlaced++;
+  G.lastKey     = key;
+
+  // Set undo snapshot BEFORE calling setPhase
+  G.tileSnap    = { handIdx: G.selHandIdx, key };
+  G.unitsPlaced = [];
+  G.selHandIdx  = null;
+
+  addLog(`${cp.name} разместил${ht.isHome?' домашнюю':''} систему [${key}]`, G.curP);
+
+  // setPhase('troop-on-tile') will NOT clear tileSnap / unitsPlaced
+  setPhase('troop-on-tile');
+}
+
+// ══════════════════════════════════════════════
+//  UNDO TILE  — fully self-contained, no setPhase call for cleanup
+// ══════════════════════════════════════════════
+function undoTile() {
+  if (G.phase !== 'troop-on-tile') return;
+  if (!G.tileSnap) { showMsg('Нечего отменять','Нет активного тайла для возврата.'); return; }
+
+  const cp   = G.players[G.curP];
+  const snap = G.tileSnap;  // local copy before we clear state
+
+  // 1. Return all units placed this turn to pool
+  for (const rec of G.unitsPlaced) {
+    const tile = G.map[rec.key];
+    if (!tile) continue;
+    const area = tile.areas[rec.realAreaIdx];
+    if (!area) continue;
+    const idx = area.troops.findIndex(t => t.id === rec.unitId);
+    if (idx >= 0) {
+      const unit = area.troops.splice(idx, 1)[0];
+      cp.pool.push(unit);
+    }
+  }
+
+  // 2. Remove tile from map, restore to hand
+  delete G.map[snap.key];
+  cp.hand[snap.handIdx].placed = false;
+  G.tilesPlaced--;
+
+  // 3. Clear undo state
+  G.tileSnap    = null;
+  G.unitsPlaced = [];
+  G.lastKey     = null;
+
+  addLog(`${cp.name} вернул систему [${snap.key}] в руку`, G.curP);
+
+  // 4. Go back to tile-placement (this WILL clear snap/unitsPlaced again — harmless)
+  setPhase('tile-placement');
+}
+
+// ══════════════════════════════════════════════
+//  TILE ROTATION
+// ══════════════════════════════════════════════
+function rotateTile(cw) {
+  if (G.phase !== 'troop-on-tile' || !G.lastKey) return;
+  const tile = G.map[G.lastKey];
+  if (!tile) return;
+  tile.rotation = cw ? (tile.rotation + 90) % 360 : (tile.rotation + 270) % 360;
+  addLog(`Поворот [${tile.key}] ${cw?'по ч.':'пр. ч.'} → ${tile.rotation}°`, G.curP);
+  renderBoard(G.lastKey);
+}
+
+// ══════════════════════════════════════════════
+//  UNIT PLACEMENT
+// ══════════════════════════════════════════════
+function selectUnit(idx) {
+  if (G.phase !== 'troop-on-tile' && G.phase !== 'troop-placement') return;
+  const cp = G.players[G.curP];
+  G.selUnitIdx  = idx;
+  G.selUnitType = cp.pool[idx]?.unitType || null;
+  renderSide();
+  if (G.phase === 'troop-placement') renderBoard(null, true);
+  else renderBoard(G.lastKey);
+}
+
+function areaClick(key, displayIdx) {
+  if (G.phase === 'troop-on-tile') {
+    if (key !== G.lastKey) { showMsg('Не та система','В этой фазе — только на только что поставленную систему.'); return; }
+    placeUnit(key, displayIdx); return;
+  }
+  if (G.phase === 'troop-placement') { placeUnit(key, displayIdx); return; }
+  if (G.phase === 'order-placement') {
+    if (G.selOrderSlot === null) { showMsg('Выберите слот','Сначала выберите слот приказа.'); return; }
+    const cp = G.players[G.curP];
+    cp.orders[G.selOrderSlot] = { key, aIdx: displayIdx };
+    addLog(`${cp.name}: приказ ${G.selOrderSlot+1} → [${key}] зона ${displayIdx+1}`, G.curP);
+    G.selOrderSlot = null;
+    renderSide(); renderBoard();
+    document.getElementById('pinstr').innerHTML = `<strong>РАССТАНОВКА ПРИКАЗОВ</strong><br>${cp.name}: выберите слот приказа, затем кликните зону назначения.`;
+  }
+}
+
+function placeUnit(key, displayIdx) {
+  const cp = G.players[G.curP];
+  if (G.selUnitIdx === null) { showMsg('Выберите войско','Сначала выберите войско из резерва.'); return; }
+
+  const unit = cp.pool[G.selUnitIdx];
+  if (!unit) return;
+
+  const tile = G.map[key];
+  if (!tile) return;
+
+  const area = getAreaByDisplay(tile, displayIdx);
+  const realIdx = tile.areas.indexOf(area);
+
+  if (unit.unitType === 'ground' && area.type !== 'planet') {
+    showMsg('Тип не совпадает','Наземные войска — только на планеты (🪐).'); return;
+  }
+  if (unit.unitType === 'space' && area.type !== 'space') {
+    showMsg('Тип не совпадает','Космические войска — только в космос (✦).'); return;
+  }
+
+  area.troops.push({ player:G.curP, id:unit.id, unitType:unit.unitType });
+  cp.pool.splice(G.selUnitIdx, 1);
+
+  // Record for undo
+  G.unitsPlaced.push({ key, realAreaIdx: realIdx, unitId: unit.id });
+
+  addLog(`${cp.name} → [${key}] зона ${displayIdx+1} (${unit.unitType==='ground'?'наземный':'космический'})`, G.curP);
+
+  G.selUnitIdx  = null;
+  G.selUnitType = null;
+  updateHeader(); renderSide();
+  if (G.phase === 'troop-placement') renderBoard(null, true);
+  else renderBoard(G.lastKey);
+}
+
+function undoLastUnit() {
+  if (G.phase !== 'troop-on-tile' && G.phase !== 'troop-placement') return;
+  if (!G.unitsPlaced.length) { showMsg('Нечего отменять','Войска в этот ход ещё не размещались.'); return; }
+
+  const cp  = G.players[G.curP];
+  const rec = G.unitsPlaced.pop();
+  const tile = G.map[rec.key];
+  if (tile) {
+    const area = tile.areas[rec.realAreaIdx];
+    const idx  = area.troops.findIndex(t => t.id === rec.unitId);
+    if (idx >= 0) {
+      const unit = area.troops.splice(idx, 1)[0];
+      cp.pool.push(unit);
+      addLog(`${cp.name} вернул войско из [${rec.key}] зона ${rec.realAreaIdx+1}`, G.curP);
+    }
+  }
+  G.selUnitIdx = null; G.selUnitType = null;
+  updateHeader(); renderSide();
+  if (G.phase === 'troop-placement') renderBoard(null, true);
+  else renderBoard(G.lastKey);
+}
+
+// ══════════════════════════════════════════════
+//  TURN TRANSITIONS
+// ══════════════════════════════════════════════
+function endTurn() {
+  const cp = G.players[G.curP];
+
+  if (G.phase === 'troop-on-tile') {
+    G.tileSnap = null; G.unitsPlaced = [];
+    if (G.tilesPlaced < TILES_PP * 2) {
+      G.curP = 1 - G.curP;
+      showHP(G.players[G.curP].name, 'Разместите систему', () => setPhase('tile-placement'));
+    } else {
+      const anyLeft = G.players.some(p => p.pool.length > 0);
+      if (anyLeft) {
+        G.curP = 0;
+        showHP(G.players[0].name, 'Расставьте оставшиеся войска', () => setPhase('troop-placement'));
+      } else { startOrderPhase(); }
+    }
+    return;
+  }
+
+  if (G.phase === 'troop-placement') {
+    G.curP = 1 - G.curP;
+    if (G.players[G.curP].pool.length > 0) {
+      showHP(G.players[G.curP].name, 'Расставьте оставшиеся войска', () => setPhase('troop-placement'));
+    } else { startOrderPhase(); }
+    return;
+  }
+
+  if (G.phase === 'order-placement') {
+    if (cp.orders.filter(o=>o!==null).length < 2) { showMsg('Нужно 2 приказа','Разместите оба приказа перед передачей хода.'); return; }
+    G.curP = 1 - G.curP;
+    const op = G.players[G.curP];
+    if (op.orders.filter(o=>o!==null).length < 2) {
+      showHP(op.name, 'Расставьте приказы (2 шт.)', () => setPhase('order-placement'));
+    } else {
+      G.curP = 0;
+      showHP('ВСЕ ИГРОКИ', 'Приказы раскрыты!', () => setPhase('execution'));
+    }
+    return;
+  }
+}
+
+// ══════════════════════════════════════════════
+//  ORDERS
+// ══════════════════════════════════════════════
+function startOrderPhase() {
+  G.players.forEach(p => p.orders = [null,null]);
+  G.curP = 0;
+  showHP(G.players[0].name, 'Расставьте приказы (2 шт.)', () => setPhase('order-placement'));
+}
+
+function selectOrderSlot(idx) {
+  if (G.phase !== 'order-placement') return;
+  G.selOrderSlot = idx;
+  renderSide(); renderBoard(null, false, true);
+  document.getElementById('pinstr').innerHTML = `<strong>ПРИКАЗ ${idx+1}</strong><br>Кликните на зону назначения.`;
+}
+
+// ══════════════════════════════════════════════
+//  EXECUTION
+// ══════════════════════════════════════════════
+function buildExecQueue() {
+  G.execQueue = []; G.execPos = 0;
+  for (let oi=0; oi<2; oi++)
+    for (let pi=0; pi<2; pi++)
+      if (G.players[pi].orders[oi]) G.execQueue.push({ player:pi, oi });
+}
+
+function execNext() {
+  if (G.execPos >= G.execQueue.length) { endRound(); return; }
+  const item = G.execQueue[G.execPos++];
+  const p    = G.players[item.player];
+  const ord  = p.orders[item.oi];
+  if (!ord) { execNextUI(); return; }
+
+  const target = G.map[ord.key];
+  if (!target) { execNextUI(); return; }
+
+  const destAreaDisplay = ord.aIdx;
+  const neighbors = getNeighborKeys(ord.key);
+  let moved = 0;
+
+  neighbors.forEach(nk => {
+    const nt = G.map[nk]; if (!nt) return;
+    nt.areas.forEach(srcArea => {
+      const mv = srcArea.troops.filter(t => t.player === item.player);
+      mv.forEach(unit => {
+        srcArea.troops.splice(srcArea.troops.indexOf(unit), 1);
+        // Try to place in preferred display area, else any compatible
+        const prefArea = getAreaByDisplay(target, destAreaDisplay);
+        const compat = isCompatible(unit, prefArea.type) ? prefArea
+          : target.areas.find(a => isCompatible(unit, a.type));
+        if (compat) { compat.troops.push(unit); moved++; }
+      });
+    });
+  });
+
+  addLog(`${p.name} приказ ${item.oi+1}: → [${ord.key}] зона ${ord.aIdx+1} (${moved} войск)`, item.player);
+  updateHeader(); renderBoard();
+
+  // Check for battles in all areas of target
+  let battleFound = false;
+  for (let ai=0; ai<target.areas.length; ai++) {
+    const area = target.areas[ai];
+    if (area.troops.some(t=>t.player===0) && area.troops.some(t=>t.player===1)) {
+      if (!battleFound) {
+        battleFound = true;
+        doBattle(ord.key, ai, () => { renderBoard(); updateHeader(); execNextUI(); });
+      }
+    }
+  }
+  if (!battleFound) execNextUI();
+}
+
+function isCompatible(unit, areaType) {
+  return (unit.unitType==='ground' && areaType==='planet') ||
+         (unit.unitType==='space'  && areaType==='space');
+}
+
+function execNextUI() {
+  const ins  = document.getElementById('pinstr');
+  if (G.execPos >= G.execQueue.length) {
+    ins.innerHTML = `<strong>ВСЕ ПРИКАЗЫ ВЫПОЛНЕНЫ</strong><br>Завершите раунд.`;
+    document.getElementById('btn-ex').style.display = 'none';
+    show('btn-er');
+  } else {
+    const item = G.execQueue[G.execPos];
+    const p = G.players[item.player];
+    const ord = p.orders[item.oi];
+    ins.innerHTML = `<strong>СЛЕДУЮЩИЙ ПРИКАЗ</strong><br>${p.name} #${item.oi+1} → [${ord?.key}] зона ${ord?ord.aIdx+1:'?'}`;
+  }
+}
+
+function getNeighborKeys(key) {
+  const [c,r] = key.split(',').map(Number);
+  return [[0,1],[0,-1],[1,0],[-1,0]].map(([dc,dr])=>`${c+dc},${r+dr}`).filter(k=>G.map[k]);
+}
+
+// ══════════════════════════════════════════════
+//  BATTLE
+// ══════════════════════════════════════════════
+function doBattle(key, ai, cb) {
+  const area = G.map[key].areas[ai];
+  const tp1 = area.troops.filter(t=>t.player===0);
+  const tp2 = area.troops.filter(t=>t.player===1);
+  const d1=Math.ceil(Math.random()*6), d2=Math.ceil(Math.random()*6);
+  const s1=d1+tp1.length, s2=d2+tp2.length;
+  const de=['','⚀','⚁','⚂','⚃','⚄','⚅'];
+  const wi=s1>=s2?0:1;
+  area.troops = wi===0?tp1:tp2;
+  addLog(`БИТВА [${key}] зона ${ai+1}: ${G.players[wi].name} победил!`,-1);
+  document.getElementById('bat-desc').innerHTML=
+    `<b style="color:var(--p1)">${G.players[0].name}</b>: ${tp1.length}+${de[d1]}(${d1})=<b>${s1}</b><br>`+
+    `<b style="color:var(--p2)">${G.players[1].name}</b>: ${tp2.length}+${de[d2]}(${d2})=<b>${s2}</b>`;
+  document.getElementById('bat-dice').innerHTML=`${de[d1]} ${de[d2]}`;
+  document.getElementById('bat-result').innerHTML=
+    `<p style="color:var(--gold);font-family:Orbitron;font-size:.9rem">⚡ ${G.players[wi].name} ПОБЕДИЛ!</p>`+
+    `<p style="color:var(--dim);font-size:.75rem">${G.players[1-wi].name} потерял войска в зоне</p>`;
+  document.getElementById('bat-modal').classList.add('active');
+  G._battleCb = cb;
+}
+function closeBattle() {
+  document.getElementById('bat-modal').classList.remove('active');
+  if (G._battleCb){G._battleCb();G._battleCb=null;}
+  updateHeader();
+}
+
+// ══════════════════════════════════════════════
+//  ROUND / END
+// ══════════════════════════════════════════════
+function endRound() {
+  if (G.round >= G.totalRounds) { endGame(); return; }
+  G.round++;
+  addLog(`=== РАУНД ${G.round} НАЧАЛСЯ ===`,-1);
+  startOrderPhase();
+}
+
+function endGame() {
+  const counts=[0,0];
+  Object.values(G.map).forEach(t=>t.areas.forEach(a=>a.troops.forEach(u=>counts[u.player]++)));
+  const wi=counts[0]>=counts[1]?0:1;
+  showScreen('end-screen');
+  const wn=document.getElementById('end-winner');
+  wn.textContent=G.players[wi].name; wn.style.color=wi===0?'var(--p1)':'var(--p2)';
+  document.getElementById('end-scores').innerHTML=G.players.map((p,i)=>{
+    const f=FACTIONS.find(x=>x.id===p.faction);
+    return `<div class="scard${i===wi?' winner':''}">
+      <div style="font-family:Orbitron;font-size:.68rem;letter-spacing:.2em;color:${i===0?'var(--p1)':'var(--p2)'};margin-bottom:5px">${p.name}</div>
+      <div style="color:var(--dim);font-size:.65rem;margin-bottom:7px">${f?.icon} ${f?.name}</div>
+      <div class="sval" style="color:${i===0?'var(--p1)':'var(--p2)'}">${counts[i]}</div>
+      <div style="color:var(--dim);font-size:.7rem;margin-top:4px">войск на поле</div>
+      ${i===wi?'<div style="color:var(--gold);font-size:.65rem;margin-top:7px;font-family:Orbitron;letter-spacing:.2em">★ ПОБЕДА</div>':''}
+    </div>`;
+  }).join('');
+}
+
+function restartGame() {
+  nextId=0; G=makeState(); buildFactionUI(); showScreen('setup-screen');
+}
+
+// ══════════════════════════════════════════════
+//  RENDER BOARD
+// ══════════════════════════════════════════════
+function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
+  const board = document.getElementById('map-board');
+  board.innerHTML = '';
+  const tiles = Object.values(G.map);
+
+  const cols = tiles.map(t=>t.col);
+  const rows = tiles.map(t=>t.row);
+  const minC=(cols.length?Math.min(...cols):0)-1;
+  const minR=(rows.length?Math.min(...rows):0)-1;
+  const maxC=(cols.length?Math.max(...cols):2)+1;
+  const maxR=(rows.length?Math.max(...rows):1)+1;
+  const W=(maxC-minC+1)*CELL, H=(maxR-minR+1)*CELL;
+  board.style.width=W+'px'; board.style.height=H+'px';
+
+  const px = (col,row) => ({left:(col-minC)*CELL, top:(row-minR)*CELL});
+
+  // Drop cells
+  if (G.phase==='tile-placement' && G.selHandIdx!==null) {
+    getValidDrops().forEach(({col,row}) => {
+      const p=px(col,row);
+      const el=document.createElement('div');
+      el.className='drop-cell';
+      el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`;
+      el.innerHTML='<span style="font-size:1.4rem;color:rgba(0,200,255,.5);font-family:Orbitron">+</span>';
+      el.onclick=()=>dropTile(col,row);
+      board.appendChild(el);
+    });
+  }
+
+  // Placed tiles
+  tiles.forEach(tile => {
+    const p=px(tile.col,tile.row);
+    const el=document.createElement('div');
+    el.className='stile';
+    if (tile.key===G.lastKey && G.phase==='troop-on-tile') {
+      el.classList.add('just');
+    } else {
+      el.classList.add(tile.isHome?(tile.owner===0?'hp1':'hp2'):(tile.owner===0?'np1':'np2'));
+    }
+    el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`;
+
+    if (tile.isHome) {
+      const hb=document.createElement('div'); hb.className='hbadge'; hb.textContent='🏠'; el.appendChild(hb);
+    }
+    const cb=document.createElement('div'); cb.className='tcoord';
+    cb.textContent=tile.key+(tile.rotation?` ${tile.rotation}°`:''); el.appendChild(cb);
+
+    const inner=document.createElement('div'); inner.className='stilei';
+
+    // Render areas in rotated display order
+    const rotAreas = getRotatedAreas(tile);
+    rotAreas.forEach((area, displayIdx) => {
+      const ae=document.createElement('div');
+      ae.className=`tarea a${area.type}`; // aplanet or aspace
+
+      // Area type label
+      const lbl=document.createElement('div'); lbl.className='atlbl';
+      lbl.textContent=area.type==='planet'?'PLN':'SPC'; ae.appendChild(lbl);
+
+      // Troops
+      area.troops.forEach(u => {
+        const tok=document.createElement('div');
+        tok.className=`atroop ${u.unitType} ${u.player===0?'c1':'c2'}`;
+        tok.textContent=u.unitType==='ground'?(u.player===0?'▲':'▼'):(u.player===0?'◈':'◆');
+        ae.appendChild(tok);
+      });
+
+      // Status classes
+      const h1=area.troops.some(t=>t.player===0), h2=area.troops.some(t=>t.player===1);
+      if (h1&&h2) ae.classList.add('contested');
+      else if (h1) ae.classList.add('h1');
+      else if (h2) ae.classList.add('h2');
+
+      // Drop highlighting
+      const isFocusTile = tile.key===highlightKey;
+      if (allDrop || orderDrop || isFocusTile) {
+        if (G.selUnitType) {
+          const ok=(G.selUnitType==='ground'&&area.type==='planet')||(G.selUnitType==='space'&&area.type==='space');
+          ae.classList.add(ok?'aok':'ano');
+        } else {
+          ae.classList.add('aok');
+        }
+      }
+
+      // Order pips
+      G.players.forEach((pl,pi) => pl.orders.forEach((ord,oi) => {
+        if (ord && ord.key===tile.key && ord.aIdx===displayIdx) {
+          const pip=document.createElement('div'); pip.className=`opip op${pi+1}`;
+          pip.textContent=oi+1; ae.appendChild(pip);
+        }
+      }));
+
+      ae.onclick=()=>areaClick(tile.key, displayIdx);
+      inner.appendChild(ae);
+    });
+
+    el.appendChild(inner);
+    board.appendChild(el);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  RENDER SIDE PANEL
+// ══════════════════════════════════════════════
+function renderSide() {
+  const cp = G.players[G.curP];
+
+  // Tile hand
+  const handEl = document.getElementById('tile-hand');
+  handEl.innerHTML = '';
+  cp.hand.forEach((ht,idx) => {
+    if (ht.placed) return;
+    const el=document.createElement('div');
+    el.className=`htile${ht.isHome?' hthome':''}`;
+    if (G.selHandIdx===idx) el.classList.add(cp.color==='c1'?'hs1':'hs2');
+    const aTypes=ht.isHome?HOME_AREAS:NORMAL_AREAS;
+    const prev=document.createElement('div'); prev.className='hpreview';
+    aTypes.forEach(t=>{ const a=document.createElement('div'); a.className=`hpa ${t==='planet'?'hpp':'hps'}`; prev.appendChild(a); });
+    const lbl=document.createElement('div'); lbl.className='htlabel';
+    const fac=FACTIONS.find(f=>f.id===cp.faction);
+    lbl.textContent=ht.isHome?`${fac?.icon} Домашняя`:`Система ${idx+1}`;
+    el.appendChild(prev); el.appendChild(lbl);
+    el.onclick=()=>selectHandTile(idx);
+    handEl.appendChild(el);
+  });
+
+  // Pool
+  const poolCont = document.getElementById('pool-cont');
+  poolCont.innerHTML='';
+  const showPool = G.phase==='troop-on-tile'||G.phase==='troop-placement';
+  if (showPool && cp.pool.length>0) {
+    const groundPool = cp.pool.filter(u=>u.unitType==='ground');
+    const spacePool  = cp.pool.filter(u=>u.unitType==='space');
+    if (groundPool.length) {
+      const sec=document.createElement('div'); sec.className='pool-sec';
+      const lbl=document.createElement('div'); lbl.className='pool-type-lbl'; lbl.textContent='▲ Наземные';
+      const pool=document.createElement('div'); pool.className='tpool';
+      groundPool.forEach(u=>{
+        const gi=cp.pool.indexOf(u);
+        const tok=document.createElement('div');
+        tok.className=`ttok ground ${cp.color}${G.selUnitIdx===gi?' sel':''}`;
+        tok.textContent='▲'; tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
+      });
+      sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
+    }
+    if (spacePool.length) {
+      const sec=document.createElement('div'); sec.className='pool-sec';
+      const lbl=document.createElement('div'); lbl.className='pool-type-lbl'; lbl.textContent='◈ Космические';
+      const pool=document.createElement('div'); pool.className='tpool';
+      spacePool.forEach(u=>{
+        const gi=cp.pool.indexOf(u);
+        const tok=document.createElement('div');
+        tok.className=`ttok space ${cp.color}${G.selUnitIdx===gi?' sel':''}`;
+        tok.textContent='◈'; tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
+      });
+      sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
+    }
+  } else if (showPool) {
+    poolCont.innerHTML='<span style="color:var(--dim);font-size:.7rem">Войска размещены</span>';
+  } else {
+    const pool=document.createElement('div'); pool.className='tpool';
+    G.players.forEach(p=>p.pool.forEach(u=>{
+      const tok=document.createElement('div');
+      tok.className=`ttok ${u.unitType==='space'?'space':'ground'} ${p.color}`;
+      tok.textContent=u.unitType==='space'?'◈':'▲'; pool.appendChild(tok);
+    }));
+    poolCont.appendChild(pool);
+  }
+
+  // Orders
+  for (let i=0;i<2;i++) {
+    const slot=document.getElementById(`os${i}`);
+    const ord=cp.orders[i];
+    if (G.phase==='order-placement') {
+      if (ord) {
+        slot.className=`oslot of${cp.color==='c1'?1:2}`;
+        slot.textContent=`📌 ${i+1}: [${ord.key}] зона ${ord.aIdx+1}`;
+        slot.onclick=()=>{ cp.orders[i]=null; renderSide(); renderBoard(); };
+      } else {
+        slot.className=`oslot${G.selOrderSlot===i?' oactive':''}`;
+        slot.textContent=`[ Приказ ${i+1} — нажмите ]`;
+        slot.onclick=()=>selectOrderSlot(i);
+      }
+    } else {
+      slot.className='oslot'; slot.textContent=`— приказ ${i+1}`; slot.onclick=null;
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+//  HEADER
+// ══════════════════════════════════════════════
+function updateHeader() {
+  const cp=G.players[G.curP];
+  [0,1].forEach(pi=>{
+    const p=G.players[pi], pfx=pi===0?'p1':'p2';
+    document.getElementById(`h-${pfx}-name`).textContent=p.name;
+    document.getElementById(`h-${pfx}-init`).textContent=p.name.substring(0,2).toUpperCase();
+    const fac=FACTIONS.find(f=>f.id===p.faction);
+    document.getElementById(`h-${pfx}-fac`).textContent=fac?`${fac.icon} ${fac.name}`:'—';
+    const onBoard=Object.values(G.map).reduce((s,t)=>s+t.areas.reduce((a,ar)=>a+ar.troops.filter(u=>u.player===pi).length,0),0);
+    document.getElementById(`h-${pfx}-t`).textContent=onBoard+(p.pool?p.pool.length:0);
+  });
+  const labels={'tile-placement':'Размещение систем','troop-on-tile':'Войска на систему',
+                'troop-placement':'Расстановка войск','order-placement':'Приказы','execution':'Исполнение приказов'};
+  document.getElementById('h-phase').textContent=labels[G.phase]||G.phase;
+  document.getElementById('h-round').textContent=`Раунд ${G.round}/${G.totalRounds}`;
+  const ind=document.getElementById('h-turn');
+  ind.textContent=`${cp.name} ход`;
+  ind.className=`turn-ind ${G.curP===0?'ti1':'ti2'}`;
+}
+
+// ══════════════════════════════════════════════
+//  HOTPASS / UTILS
+// ══════════════════════════════════════════════
+let _hpCb=null;
+function showHP(name,action,cb) {
+  _hpCb=cb;
+  document.getElementById('hp-name').textContent=name;
+  document.getElementById('hp-action').textContent=action;
+  const btn=document.getElementById('hp-btn');
+  const isP2=G.players[1]?.name===name;
+  btn.style.borderColor=isP2?'var(--p2)':'var(--p1)';
+  btn.style.color      =isP2?'var(--p2)':'var(--p1)';
+  btn.style.background =isP2?'rgba(255,77,109,.1)':'rgba(0,200,255,.1)';
+  document.getElementById('hpov').classList.add('active');
+}
+function closeHP() {
+  document.getElementById('hpov').classList.remove('active');
+  if(_hpCb){_hpCb();_hpCb=null;}
+}
+function showMsg(t,b){
+  document.getElementById('msg-title').textContent=t;
+  document.getElementById('msg-body').textContent=b;
+  document.getElementById('msg-modal').classList.add('active');
+}
+function closeMsg(){document.getElementById('msg-modal').classList.remove('active');}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function addLog(msg,player){
+  const el=document.getElementById('alog');
+  const e=document.createElement('div');
+  e.className=`le ${player===0?'le1':player===1?'le2':'les'}`;
+  e.textContent=msg; el.prepend(e);
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+G = makeState();
+buildFactionUI();
+</script>
+</body>
+</html>
