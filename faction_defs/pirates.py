@@ -4,9 +4,11 @@ faction_defs/pirates.py — фракция «Пираты»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 PIRATES = Faction(
-    id   = "pirates",
-    name = "Пираты",
-    icon = "☠",
+    id    = "pirates",
+    name  = "Пираты",
+    icon  = "☠",
+    color        = "#E74C3C",
+    home_tile_id = "home_pirates",
     flavor = (
         "Вольные капитаны звёздного океана. Живут грабежом, "
         "умирают в абордажных схватках. Никакой дисциплины — только удача и смелость."

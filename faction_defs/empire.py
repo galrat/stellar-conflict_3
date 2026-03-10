@@ -7,9 +7,11 @@ faction_defs/empire.py — фракция «Империя»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 EMPIRE = Faction(
-    id   = "empire",
-    name = "Империя",
-    icon = "◆",
+    id    = "empire",
+    name  = "Империя",
+    icon  = "◆",
+    color        = "#C0392B",
+    home_tile_id = "home_empire",
     flavor = (
         "Железный кулак, сжимающий галактику. Империя не знает компромиссов: "
         "её бронеколонны давят сопротивление весом стали, "

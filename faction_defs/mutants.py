@@ -4,9 +4,11 @@ faction_defs/mutants.py — фракция «Мутанты»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 MUTANTS = Faction(
-    id   = "mutants",
-    name = "Мутанты",
-    icon = "⚗",
+    id    = "mutants",
+    name  = "Мутанты",
+    icon  = "⚗",
+    color        = "#9B59B6",
+    home_tile_id = "home_mutants",
     flavor = (
         "Жертвы экспериментов, ставшие оружием. "
         "Непредсказуемые в бою, регенерируют быстрее, чем их успевают убивать."

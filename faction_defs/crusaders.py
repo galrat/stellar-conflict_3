@@ -4,9 +4,11 @@ faction_defs/crusaders.py — фракция «Крестоносцы»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 CRUSADERS = Faction(
-    id   = "crusaders",
-    name = "Крестоносцы",
-    icon = "⚔",
+    id    = "crusaders",
+    name  = "Крестоносцы",
+    icon  = "⚔",
+    color        = "#2980B9",
+    home_tile_id = "home_crusaders",
     flavor = (
         "Рыцарский орден звёздного фронтира. "
         "Предпочитают честный бой и никогда не отступают."

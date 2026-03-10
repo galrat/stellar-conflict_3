@@ -212,6 +212,8 @@ class Faction:
     id:                    str
     name:                  str
     icon:                  str
+    color:                 str                # hex-цвет фракции для UI, например "#4A90D9"
+    home_tile_id:          str                # ID домашнего тайла в TILE_CATALOG, например "home_chaos"
     flavor:                str
     special_ability_name:  str
     special_ability_desc:  str
@@ -236,6 +238,8 @@ class Faction:
             "id":                   self.id,
             "name":                 self.name,
             "icon":                 self.icon,
+            "color":                self.color,
+            "home_tile_id":         self.home_tile_id,
             "flavor":               self.flavor,
             "special_ability_name": self.special_ability_name,
             "special_ability_desc": self.special_ability_desc,

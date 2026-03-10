@@ -4,14 +4,18 @@ faction_defs/orks.py — фракция «Орки»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 ORKS = Faction(
-    id   = "orks",          # ключ в игре — менять осторожно
-    name = "Орки",          # отображаемое название
-    icon = "💀",             # иконка в UI
+    id    = "orks",          # ключ в игре — менять осторожно
+    name  = "Орки",          # отображаемое название
+    icon  = "💀",             # иконка в UI
+    color        = "#2E7D32",
+    home_tile_id = "home_orks",
     flavor = (
-        "TODO: описание фракции"
+        "Особое свойство фракции:",
+        "вы можете купить один отряд и поместить его в дружественный мир активнйо системы"
+
     ),
-    special_ability_name = "TODO: название способности",
-    special_ability_desc = "TODO: описание способности",
+    special_ability_name = "Особое свойство фракции:",
+    special_ability_desc = "вы можете купить один отряд и поместить его в дружественный мир активнйо системы",
     unit_config = UnitConfig(
         infantry=4, marines=1, mechanized=1, elite=0,
         fighters=2, destroyers=0,

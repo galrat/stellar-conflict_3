@@ -4,9 +4,11 @@ faction_defs/elders.py — фракция «Предтечи»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 ELDERS = Faction(
-    id   = "elders",
-    name = "Предтечи",
-    icon = "◎",
+    id    = "elders",
+    name  = "Предтечи",
+    icon  = "◎",
+    color        = "#1ABC9C",
+    home_tile_id = "home_elders",
     flavor = (
         "Древнейшая цивилизация галактики, ушедшая в тень. "
         "Малочисленны, но каждый их юнит — произведение утраченных технологий."

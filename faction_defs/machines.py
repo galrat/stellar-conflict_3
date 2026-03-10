@@ -4,9 +4,11 @@ faction_defs/machines.py — фракция «Машины»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 MACHINES = Faction(
-    id   = "machines",
-    name = "Машины",
-    icon = "⚙",
+    id    = "machines",
+    name  = "Машины",
+    icon  = "⚙",
+    color        = "#7F8C8D",
+    home_tile_id = "home_machines",
     flavor = (
         "Древний искусственный интеллект, пробудившийся спустя тысячелетия. "
         "Не знают страха и усталости — каждый юнит заменяем."

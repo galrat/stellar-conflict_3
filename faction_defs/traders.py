@@ -4,9 +4,11 @@ faction_defs/traders.py — фракция «Торговый союз»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 TRADERS = Faction(
-    id   = "traders",
-    name = "Торговый союз",
-    icon = "₿",
+    id    = "traders",
+    name  = "Торговый союз",
+    icon  = "₿",
+    color        = "#16A085",
+    home_tile_id = "home_traders",
     flavor = (
         "Межзвёздные купцы, контролирующие торговые пути. "
         "Армия небольшая, но лучшая, которую можно купить за деньги."

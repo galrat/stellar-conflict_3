@@ -4,9 +4,11 @@ faction_defs/theocracy.py — фракция «Теократия»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 THEOCRACY = Faction(
-    id   = "theocracy",
-    name = "Теократия",
-    icon = "✝",
+    id    = "theocracy",
+    name  = "Теократия",
+    icon  = "✝",
+    color        = "#F39C12",
+    home_tile_id = "home_theocracy",
     flavor = (
         "Фанатичные крестоносцы, несущие волю Бога-Императора. "
         "Сильны в обороне священных миров и массированных атаках."

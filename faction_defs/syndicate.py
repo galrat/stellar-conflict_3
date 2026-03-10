@@ -7,9 +7,11 @@ faction_defs/syndicate.py — фракция «Синдикат»
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
 SYNDICATE = Faction(
-    id   = "syndicate",
-    name = "Синдикат",
-    icon = "◉",
+    id    = "syndicate",
+    name  = "Синдикат",
+    icon  = "◉",
+    color        = "#8E44AD",
+    home_tile_id = "home_syndicate",
     flavor = (
         "Теневой рынок, правящий из темноты. Синдикат не держит фронтов — "
         "он проникает за линии, покупает предателей и наносит удар "

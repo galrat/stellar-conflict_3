@@ -10,7 +10,7 @@
   --bg:#050a14;--panel:#0a1628;--border:#1a3a5c;
   --accent1:#00c8ff;--accent2:#ff4d6d;--gold:#ffd700;
   --text:#c8e0f0;--dim:#4a6a8a;--p1:#00c8ff;--p2:#ff4d6d;
-  --planet:#0a1e10;--space:#060e1a;--cell:120px;
+  --planet:#0a1e10;--space:#060e1a;--cell:160px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
@@ -185,6 +185,11 @@ input[type=text]:focus{border-color:var(--p1);}
 .scard.winner{border-color:var(--gold);box-shadow:0 0 16px rgba(255,215,0,.18);}
 .sval{font-size:2.6rem;font-family:'Orbitron',monospace;font-weight:900;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+/* ── ЖЕТОНЫ РЕСУРСОВ ── */
+.tok-sup,.tok-dis,.tok-frg{font-size:.42rem;font-family:'Orbitron',monospace;font-weight:700;padding:0 2px;border-radius:2px;border:1px solid;line-height:1.3;pointer-events:none;}
+.tok-sup{background:rgba(255,215,0,.25);color:#ffd700;border-color:rgba(255,215,0,.6);}
+.tok-dis{background:rgba(0,200,255,.25);color:#00c8ff;border-color:rgba(0,200,255,.6);}
+.tok-frg{background:rgba(255,140,0,.25);color:#ff8c00;border-color:rgba(255,140,0,.6);}
 </style>
 </head>
 <body>
@@ -306,85 +311,32 @@ input[type=text]:focus{border-color:var(--p1);}
   </div>
 </div>
 
+<script src="tiles.js"></script>
 <script>
 'use strict';
 // ══════════════════════════════════════════════
 //  CONSTANTS  (declared at module scope — never inside functions)
 // ══════════════════════════════════════════════
 const FACTIONS = [
-  { id:'chaos', name:'Хаос', icon:'⬡', flavor:'Союз свободных миров, объединённых общей мечтой о процветании. Федерация делает ставку на дипломатию и адаптивность: её армия хорошо скоординирована, а командиры умеют отступать без потерь и возвращаться вдвойне сильнее.', troops:{ground:4,space:3} },
-  { id:'empire', name:'Империя', icon:'◆', flavor:'Железный кулак, сжимающий галактику. Империя не знает компромиссов: её бронеколонны давят сопротивление весом стали, а орбитальные эсминцы обеспечивают господство в космосе прежде, чем десант коснётся поверхности.', troops:{ground:4,space:3} },
-  { id:'orks', name:'Орки', icon:'💀', flavor:'TODO: описание фракции', troops:{ground:6,space:2} },
-  { id:'nomads', name:'Кочевники', icon:'✦', flavor:'Племена без дома, скитающиеся между звёздами. Их сила — в скорости и непредсказуемости.', troops:{ground:5,space:3} },
-  { id:'theocracy', name:'Теократия', icon:'✝', flavor:'Фанатичные крестоносцы, несущие волю Бога-Императора. Сильны в обороне священных миров и массированных атаках.', troops:{ground:6,space:2} },
-  { id:'machines', name:'Машины', icon:'⚙', flavor:'Древний искусственный интеллект, пробудившийся спустя тысячелетия. Не знают страха и усталости — каждый юнит заменяем.', troops:{ground:6,space:2} },
-  { id:'pirates', name:'Пираты', icon:'☠', flavor:'Вольные капитаны звёздного океана. Живут грабежом, умирают в абордажных схватках. Никакой дисциплины — только удача и смелость.', troops:{ground:4,space:4} },
-  { id:'elders', name:'Предтечи', icon:'◎', flavor:'Древнейшая цивилизация галактики, ушедшая в тень. Малочисленны, но каждый их юнит — произведение утраченных технологий.', troops:{ground:4,space:3} },
-  { id:'traders', name:'Торговый союз', icon:'₿', flavor:'Межзвёздные купцы, контролирующие торговые пути. Армия небольшая, но лучшая, которую можно купить за деньги.', troops:{ground:4,space:4} },
-  { id:'mutants', name:'Мутанты', icon:'⚗', flavor:'Жертвы экспериментов, ставшие оружием. Непредсказуемые в бою, регенерируют быстрее, чем их успевают убивать.', troops:{ground:6,space:2} },
-  { id:'crusaders', name:'Крестоносцы', icon:'⚔', flavor:'Рыцарский орден звёздного фронтира. Предпочитают честный бой и никогда не отступают.', troops:{ground:6,space:2} },
+  { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos', flavor:'Особое свойство доминации:вы можете переместить культиста на свободный или дружественный мир соседней системы', troops:{ground:4,space:3} },
+  { id:'empire', name:'Империя', icon:'◆', color:'#C0392B', homeTileId:'home_empire', flavor:'Железный кулак, сжимающий галактику. Империя не знает компромиссов: её бронеколонны давят сопротивление весом стали, а орбитальные эсминцы обеспечивают господство в космосе прежде, чем десант коснётся поверхности.', troops:{ground:4,space:3} },
+  { id:'orks', name:'Орки', icon:'💀', color:'#2E7D32', homeTileId:'home_orks', flavor:'Особое свойство фракции: вы можете купить один отряд и поместить его в дружественный мир активнйо системы', troops:{ground:6,space:2} },
+  { id:'syndicate', name:'Синдикат', icon:'◉', color:'#8E44AD', homeTileId:'home_syndicate', flavor:'Теневой рынок, правящий из темноты. Синдикат не держит фронтов — он проникает за линии, покупает предателей и наносит удар там, где его никто не ждёт. Его десантники — лучшие бойцы в ближнем бою, а истребители — тени в звёздном небе.', troops:{ground:4,space:3} },
+  { id:'nomads', name:'Кочевники', icon:'✦', color:'#E67E22', homeTileId:'home_nomads', flavor:'Племена без дома, скитающиеся между звёздами. Их сила — в скорости и непредсказуемости.', troops:{ground:5,space:3} },
+  { id:'theocracy', name:'Теократия', icon:'✝', color:'#F39C12', homeTileId:'home_theocracy', flavor:'Фанатичные крестоносцы, несущие волю Бога-Императора. Сильны в обороне священных миров и массированных атаках.', troops:{ground:6,space:2} },
+  { id:'machines', name:'Машины', icon:'⚙', color:'#7F8C8D', homeTileId:'home_machines', flavor:'Древний искусственный интеллект, пробудившийся спустя тысячелетия. Не знают страха и усталости — каждый юнит заменяем.', troops:{ground:6,space:2} },
+  { id:'pirates', name:'Пираты', icon:'☠', color:'#E74C3C', homeTileId:'home_pirates', flavor:'Вольные капитаны звёздного океана. Живут грабежом, умирают в абордажных схватках. Никакой дисциплины — только удача и смелость.', troops:{ground:4,space:4} },
+  { id:'elders', name:'Предтечи', icon:'◎', color:'#1ABC9C', homeTileId:'home_elders', flavor:'Древнейшая цивилизация галактики, ушедшая в тень. Малочисленны, но каждый их юнит — произведение утраченных технологий.', troops:{ground:4,space:3} },
+  { id:'traders', name:'Торговый союз', icon:'₿', color:'#16A085', homeTileId:'home_traders', flavor:'Межзвёздные купцы, контролирующие торговые пути. Армия небольшая, но лучшая, которую можно купить за деньги.', troops:{ground:4,space:4} },
+  { id:'mutants', name:'Мутанты', icon:'⚗', color:'#9B59B6', homeTileId:'home_mutants', flavor:'Жертвы экспериментов, ставшие оружием. Непредсказуемые в бою, регенерируют быстрее, чем их успевают убивать.', troops:{ground:6,space:2} },
+  { id:'crusaders', name:'Крестоносцы', icon:'⚔', color:'#2980B9', homeTileId:'home_crusaders', flavor:'Рыцарский орден звёздного фронтира. Предпочитают честный бой и никогда не отступают.', troops:{ground:6,space:2} },
 ];
 
 const TILES_PP = 3;
-const CELL     = 120;
+const CELL     = 160;
 
-// ── КАТАЛОГ ТАЙЛОВ ─────────────────────────────────────────────────────────
-// Каждый тайл имеет две стороны (sides[0] = A, sides[1] = B).
-// areas[i]: type ('planet'|'space'), skulls (только для planet; определяет вместимость).
-// Космос всегда вмещает 3 юнита.
-// Изображения: tiles/<id>_a.png и tiles/<id>_b.png (если файл не найден — CSS-fallback).
-const TILE_CATALOG = [
-  // ── Домашние системы (HOME) ──────────────────────────────────────────────
-  { id:'home_01', isHome:true, sides:[
-    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'planet',skulls:1},{type:'space',skulls:0}] },
-    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0}] },
-  ]},
-  { id:'home_02', isHome:true, sides:[
-    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:1}] },
-    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:1},{type:'planet',skulls:2},{type:'space',skulls:0}] },
-  ]},
-  { id:'home_03', isHome:true, sides:[
-    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:2},{type:'space',skulls:0},{type:'planet',skulls:1}] },
-    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0}] },
-  ]},
-  { id:'home_04', isHome:true, sides:[
-    { areas:[{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:2},{type:'planet',skulls:1}] },
-    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:2}] },
-  ]},
-  // ── Обычные системы (NORMAL) ─────────────────────────────────────────────
-  { id:'normal_01', isHome:false, sides:[
-    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0}] },
-    { areas:[{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:2},{type:'space',skulls:0}] },
-  ]},
-  { id:'normal_02', isHome:false, sides:[
-    { areas:[{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:1},{type:'space',skulls:0}] },
-    { areas:[{type:'space',skulls:0},{type:'planet',skulls:2},{type:'space',skulls:0},{type:'planet',skulls:1}] },
-  ]},
-  { id:'normal_03', isHome:false, sides:[
-    { areas:[{type:'planet',skulls:3},{type:'space',skulls:0},{type:'space',skulls:0},{type:'space',skulls:0}] },
-    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0}] },
-  ]},
-  { id:'normal_04', isHome:false, sides:[
-    { areas:[{type:'planet',skulls:2},{type:'space',skulls:0},{type:'space',skulls:0},{type:'planet',skulls:1}] },
-    { areas:[{type:'planet',skulls:3},{type:'space',skulls:0},{type:'planet',skulls:1},{type:'space',skulls:0}] },
-  ]},
-  { id:'normal_05', isHome:false, sides:[
-    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0}] },
-    { areas:[{type:'planet',skulls:2},{type:'space',skulls:0},{type:'planet',skulls:1},{type:'space',skulls:0}] },
-  ]},
-  { id:'normal_06', isHome:false, sides:[
-    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:2},{type:'space',skulls:0},{type:'space',skulls:0}] },
-    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:3},{type:'space',skulls:0},{type:'space',skulls:0}] },
-  ]},
-  { id:'normal_07', isHome:false, sides:[
-    { areas:[{type:'space',skulls:0},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'planet',skulls:2}] },
-    { areas:[{type:'planet',skulls:1},{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0}] },
-  ]},
-  { id:'normal_08', isHome:false, sides:[
-    { areas:[{type:'planet',skulls:1},{type:'space',skulls:0},{type:'space',skulls:0},{type:'planet',skulls:2}] },
-    { areas:[{type:'planet',skulls:2},{type:'planet',skulls:2},{type:'space',skulls:0},{type:'space',skulls:0}] },
-  ]},
-];
+// TILE_CATALOG и функция tileDefToAreas загружены из tiles.js
+
 
 // Tile rotation: RMAP[rot/90][originalIdx] = displayPosition
 // Layout:  0|1
@@ -452,6 +404,23 @@ function makeState() {
 }
 
 // ══════════════════════════════════════════════
+//  COLOR HELPERS
+// ══════════════════════════════════════════════
+// Возвращает '#ffffff' или '#000000' в зависимости от яркости фона
+function getTextColor(hex) {
+  const r = parseInt(hex.slice(1,3),16)/255;
+  const g = parseInt(hex.slice(3,5),16)/255;
+  const b = parseInt(hex.slice(5,7),16)/255;
+  const lum = 0.2126*r + 0.7152*g + 0.0722*b;
+  return lum > 0.35 ? '#000000' : '#ffffff';
+}
+// hex + alpha → rgba(...)
+function hexAlpha(hex, a) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// ══════════════════════════════════════════════
 //  SETUP UI
 // ══════════════════════════════════════════════
 function buildFactionUI() {
@@ -467,7 +436,7 @@ function buildFactionUI() {
       cont.appendChild(btn);
     });
   });
-  G.players[0].faction = 'federation';
+  G.players[0].faction = 'chaos';
   G.players[1].faction = 'empire';
   refreshFactionUI();
 }
@@ -483,8 +452,27 @@ function refreshFactionUI() {
     const other = G.players[1-pi].faction;
     document.querySelectorAll(`#p${pi+1}-factions .faction-btn`).forEach(btn => {
       btn.classList.remove('sel1','sel2','taken');
-      if (btn.dataset.fid === G.players[pi].faction) btn.classList.add(pi===0?'sel1':'sel2');
-      if (btn.dataset.fid === other) btn.classList.add('taken');
+      const fac = FACTIONS.find(f => f.id === btn.dataset.fid);
+      const col = fac?.color || '#888888';
+
+      if (btn.dataset.fid === G.players[pi].faction) {
+        // Выбрана: полный цвет фракции, текст инвертируется при необходимости
+        btn.style.background   = col;
+        btn.style.borderColor  = col;
+        btn.style.color        = getTextColor(col);
+        btn.classList.add(pi===0?'sel1':'sel2');
+      } else if (btn.dataset.fid === other) {
+        // Занята другим игроком: приглушённый цвет
+        btn.style.background   = hexAlpha(col, 0.08);
+        btn.style.borderColor  = hexAlpha(col, 0.25);
+        btn.style.color        = '';
+        btn.classList.add('taken');
+      } else {
+        // Обычное состояние: мягкий цветной фон + цветная рамка
+        btn.style.background   = hexAlpha(col, 0.13);
+        btn.style.borderColor  = hexAlpha(col, 0.55);
+        btn.style.color        = col;
+      }
     });
   });
 }
@@ -497,8 +485,13 @@ function startGame() {
   G.players[0].name = document.getElementById('p1-name').value.trim() || 'Alpha';
   G.players[1].name = document.getElementById('p2-name').value.trim() || 'Omega';
 
-  // Раздаём тайлы из каталога: каждому игроку 1 домашний + (TILES_PP-1) обычных
-  const homeTiles   = [...TILE_CATALOG.filter(t =>  t.isHome)].sort(() => Math.random()-.5);
+  // Применяем цвета выбранных фракций как CSS-переменные игроков
+  const f1 = FACTIONS.find(f => f.id === G.players[0].faction);
+  const f2 = FACTIONS.find(f => f.id === G.players[1].faction);
+  document.documentElement.style.setProperty('--p1', f1?.color || '#00c8ff');
+  document.documentElement.style.setProperty('--p2', f2?.color || '#ff4d6d');
+
+  // Раздаём тайлы из каталога: каждому игроку 1 домашний (свой для фракции) + (TILES_PP-1) обычных
   const normalTiles = [...TILE_CATALOG.filter(t => !t.isHome)].sort(() => Math.random()-.5);
 
   G.players.forEach((p, pi) => {
@@ -507,7 +500,8 @@ function startGame() {
     for (let i=0; i<fac.troops.ground; i++) p.pool.push({ id:nextId++, player:pi, unitType:'ground' });
     for (let i=0; i<fac.troops.space;  i++) p.pool.push({ id:nextId++, player:pi, unitType:'space'  });
 
-    const myHome   = homeTiles.splice(0, 1)[0] || TILE_CATALOG.find(t => t.isHome);
+    const myHome = TILE_CATALOG.find(t => t.id === fac.homeTileId)
+                || TILE_CATALOG.find(t => t.isHome);
     const myNormal = normalTiles.splice(0, TILES_PP - 1);
     p.hand = [myHome, ...myNormal].map((td, t) => ({
       handIdx:   t,
@@ -633,7 +627,7 @@ function dropTile(col, row) {
   const tileDef  = TILE_CATALOG.find(t => t.id === ht.tileDefId) || TILE_CATALOG[0];
   const sideData = tileDef.sides[0];
 
-  // Build tile object — areas include skulls for capacity tracking
+  // Build tile object — areas with capacity, income, tokens, troops
   G.map[key] = {
     key, col, row,
     owner:     G.curP,
@@ -642,7 +636,7 @@ function dropTile(col, row) {
     tileDefId: ht.tileDefId,
     rotation:  0,
     side:      0,
-    areas:     sideData.areas.map(a => ({ type:a.type, skulls:a.skulls||0, troops:[] })),
+    areas:     tileDefToAreas(sideData),
   };
 
   ht.placed     = true;
@@ -726,7 +720,7 @@ function flipTile() {
   }
   tile.side = 1 - (tile.side || 0);
   const sideData = tileDef.sides[tile.side];
-  tile.areas    = sideData.areas.map(a => ({ type:a.type, skulls:a.skulls||0, troops:[] }));
+  tile.areas    = tileDefToAreas(sideData);
   tile.rotation = 0;
   addLog(`${G.players[G.curP].name} перевернул тайл [${tile.key}] → сторона ${tile.side===0?'A':'B'}`, G.curP);
   renderBoard(G.lastKey);
@@ -753,8 +747,11 @@ function exportMap() {
       areas:     tile.areas.map((a, ai) => ({
         index:    ai,
         type:     a.type,
-        skulls:   a.skulls || 0,
-        capacity: a.type === 'planet' ? (a.skulls||1) : 3,
+        capacity: a.capacity,
+        income:   a.income,
+        support:  a.support,
+        discount: a.discount,
+        forge:    a.forge,
         troops:   a.troops.map(u => ({ player:u.player, unitType:u.unitType })),
       })),
     })),
@@ -818,9 +815,9 @@ function placeUnit(key, displayIdx) {
   if (unit.unitType === 'space' && area.type !== 'space') {
     showMsg('Тип не совпадает','Космические войска — только в космос (✦).'); return;
   }
-  const cap = area.type === 'planet' ? (area.skulls||1) : 3;
+  const cap = area.capacity;
   if (area.troops.length >= cap) {
-    showMsg('Зона заполнена', `Максимум ${cap} войска в этой зоне (${area.type==='planet'?area.skulls+'💀':'космос'}).`);
+    showMsg('Зона заполнена', `Максимум ${cap} войска в этой зоне.`);
     return;
   }
 
@@ -877,8 +874,7 @@ function endTurn() {
       const tile = G.map[G.lastKey];
       const canPlace = tile && cp.pool.some(u =>
         getRotatedAreas(tile).some(a => {
-          const cap = a.type === 'planet' ? (a.skulls||1) : 3;
-          return isCompatible(u, a.type) && a.troops.length < cap;
+          return isCompatible(u, a.type) && a.troops.length < a.capacity;
         })
       );
       if (canPlace) {
@@ -1066,6 +1062,8 @@ function endGame() {
 }
 
 function restartGame() {
+  document.documentElement.style.setProperty('--p1', '#00c8ff');
+  document.documentElement.style.setProperty('--p2', '#ff4d6d');
   nextId=0; G=makeState(); buildFactionUI(); showScreen('setup-screen');
 }
 
@@ -1132,12 +1130,18 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
       const ae=document.createElement('div');
       ae.className=`tarea a${area.type}`; // aplanet or aspace
 
-      // Черепа и вместимость
-      const cap = area.type==='planet' ? (area.skulls||1) : 3;
+      // Вместимость и метка области
+      const cap = area.capacity;
       const used = area.troops.length;
       const lbl=document.createElement('div'); lbl.className='atlbl';
       if (area.type==='planet') {
-        lbl.textContent = '💀'.repeat(area.skulls||1);
+        const capMark = '●'.repeat(cap);
+        const incMark = area.income > 0 ? ` ★${area.income}` : '';
+        let lblHTML = capMark + incMark;
+        if (area.support)  lblHTML += ' <span class="tok-sup">П</span>';
+        if (area.discount) lblHTML += ' <span class="tok-dis">С</span>';
+        if (area.forge)    lblHTML += ' <span class="tok-frg">М</span>';
+        lbl.innerHTML = lblHTML;
       } else {
         lbl.textContent = '✦';
       }
@@ -1204,9 +1208,9 @@ function renderSide() {
     el.className=`htile${ht.isHome?' hthome':''}`;
     if (G.selHandIdx===idx) el.classList.add(cp.color==='c1'?'hs1':'hs2');
     const tileDef=TILE_CATALOG.find(t=>t.id===ht.tileDefId);
-    const sideAreas=tileDef?tileDef.sides[0].areas:[];
+    const sideLayout=tileDef?tileDef.sides[0].layout.flat():[];
     const prev=document.createElement('div'); prev.className='hpreview';
-    sideAreas.forEach(a=>{ const d=document.createElement('div'); d.className=`hpa ${a.type==='planet'?'hpp':'hps'}`; prev.appendChild(d); });
+    sideLayout.forEach(v=>{ const d=document.createElement('div'); d.className=`hpa ${v===1?'hpp':'hps'}`; prev.appendChild(d); });
     const lbl=document.createElement('div'); lbl.className='htlabel';
     const fac=FACTIONS.find(f=>f.id===cp.faction);
     lbl.textContent=ht.isHome?`${fac?.icon} Домашняя`:`Система ${idx+1}`;

@@ -25,13 +25,16 @@ def build_js_factions(factions: dict) -> str:
         ground = uc.infantry + uc.marines + uc.mechanized + uc.elite
         space  = uc.fighters + uc.destroyers
 
+        # Если flavor случайно стал кортежем — склеиваем в строку
+        raw_flavor = " ".join(f.flavor) if isinstance(f.flavor, tuple) else f.flavor
         # Экранируем одиночные кавычки во флаворе (безопасно для JS-строки)
-        flavor = f.flavor.replace("'", "\\'").replace("\n", " ").strip()
+        flavor = raw_flavor.replace("'", "\\'").replace("\n", " ").strip()
         # Убираем лишние пробелы
         flavor = re.sub(r"\s+", " ", flavor)
 
         lines.append(
-            f"  {{ id:'{f.id}', name:'{f.name}', icon:'{f.icon}', "
+            f"  {{ id:'{f.id}', name:'{f.name}', icon:'{f.icon}', color:'{f.color}', "
+            f"homeTileId:'{f.home_tile_id}', "
             f"flavor:'{flavor}', "
             f"troops:{{ground:{ground},space:{space}}} }},"
         )
