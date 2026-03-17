@@ -30,15 +30,15 @@ class SpaceType(Enum):
 class StructureType(Enum):
     """Тип постройки — размещается на планете, не участвует в бою."""
     FACTORY = "factory"   # Фабрика  — производство юнитов
-    CITY    = "city"      # Город    — победные очки / контроль
+    CITY    = "city"      # Город    — технологический уровень / контроль
     BASTION = "bastion"   # Бастион  — оборонительный бонус
 
 
 class ResourceType(Enum):
     """Тип жетона ресурса — хранится в инвентаре игрока."""
-    SUPPORT  = "support"   # Жетон поддержки
-    DISCOUNT = "discount"  # Жетон скидки
-    FORGE    = "forge"     # Жетон кузницы
+    SUPPORT  = "support"   # Жетон поддержки в бою - юнит нулевого уровня
+    DISCOUNT = "discount"  # Жетон скидки в 2 материала
+    FORGE    = "forge"     # Жетон кузницы для постройки юнитов и компенсации городов
 
 
 STRUCTURE_STATS = {

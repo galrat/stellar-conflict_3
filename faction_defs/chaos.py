@@ -22,8 +22,23 @@ CHAOS = Faction(
         "Вы можете переместить культиста на свободный или дружественный мир соседней системы"
     ),
     unit_config = UnitConfig(
-        infantry=5, marines=1, mechanized=1, elite=0,
-        fighters=2, destroyers=2,
+        # ── Стартовый состав войск ──────────────────────────────────────────
+        infantry=2, marines=2, mechanized=0, elite=0,
+        fighters=1, destroyers=0,
+        # ── Стартовые постройки ─────────────────────────────────────────────
+        # Характеристики построек — см. STRUCTURE_CATALOG в player_hand.py.
+        factories=1, cities=1, bastions=1,
+        # ── Стартовые ресурсы ───────────────────────────────────────────────
+        credits=6, support_tokens=1, discount_tokens=1, forge_tokens=1,
+        # ── Характеристики юнитов (cost 2–5 + forge, strength 0–6, health 1–6, morale 0–6) ──
+        unit_stats={
+            "infantry":   dict(cost=2,                  combat_strength=1, health=2, morale=2),
+            "marines":    dict(cost=3,                  combat_strength=3, health=3, morale=2),
+            "mechanized": dict(cost=4,                  combat_strength=3, health=3, morale=2),
+            "elite":      dict(cost=5, cost_forge=1,    combat_strength=4, health=3, morale=3),
+            "fighter":    dict(cost=2,                  combat_strength=2, health=2, morale=2),
+            "destroyer":  dict(cost=5, cost_forge=1,    combat_strength=4, health=3, morale=3),
+        },
     ),
     battle_cards = [
         # ── Начальные ──────────────────────────────────────────────────────

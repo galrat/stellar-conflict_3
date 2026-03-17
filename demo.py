@@ -44,6 +44,16 @@ def show_pool(game: GameState, player_id: int):
           ", ".join(f"{v}×{k}" for k, v in by_type.items()))
 
 
+def show_faction_resources(game: GameState, player_id: int):
+    """Показать стартовые ресурсы и постройки фракции."""
+    p = game.players[player_id]
+    f = p.faction
+    # Монеты и жетоны
+    tokens = ", ".join(f"{r.symbol}{r.label}" for r in p.resources) or "—"
+    structs = ", ".join(f"{s.symbol}{s.label}" for s in p.structures) or "—"
+    print(f"  {p.name} [{f.name}]  💰{p.credits}₡  жетоны: {tokens}  постройки: {structs}")
+
+
 # ══════════════════════════════════════════════════════════════
 #  СЦЕНАРИЙ 1: дефолтная конфигурация, базовый геймплей
 # ══════════════════════════════════════════════════════════════
@@ -56,6 +66,9 @@ game = GameState(GameConfig(
 show_log(game, 3)
 show_pool(game, 0)
 show_pool(game, 1)
+print()
+show_faction_resources(game, 0)
+show_faction_resources(game, 1)
 
 # P1 кладёт домашнюю систему
 ok, msg = game.place_tile(player_id=0, hand_index=0, col=0, row=0)
@@ -121,6 +134,8 @@ custom_config = GameConfig(
 game2 = GameState(custom_config)
 show_pool(game2, 0)
 show_pool(game2, 1)
+show_faction_resources(game2, 0)
+show_faction_resources(game2, 1)
 
 # Быстро расставим все 6 тайлов (3×2 вертикальная форма)
 #   X

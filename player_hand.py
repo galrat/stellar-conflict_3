@@ -337,19 +337,23 @@ def build_start_kit(faction_id: str, unit_config) -> PlayerStartKit:
     ]:
         if count <= 0:
             continue
-        key  = _CATALOG_KEY[unit_type]
-        base = UNIT_TYPE_CATALOG.get(key, {})
+        key      = _CATALOG_KEY[unit_type]
+        base     = UNIT_TYPE_CATALOG.get(key, {})
+        override = unit_config.unit_stats.get(key, {})   # faction-specific overrides
         cat  = base.get("category", "ground")
         tier = base.get("tier", 0)
+        base_cost    = base.get("cost", Cost())
+        credits      = override.get("cost",       base_cost.credits)
+        forge        = override.get("cost_forge",  base_cost.forge_tokens)
         spec = UnitSpec(
             unit_id         = f"{faction_id}_{cat}_t{tier}",
             display_name    = base.get("display_name", unit_type.value),
             category        = cat,
             tier            = tier,
-            cost            = base.get("cost", Cost()),
-            combat_strength = base.get("combat_strength", 0),
-            health          = base.get("health", 1),
-            morale          = base.get("morale", 2),
+            cost            = Cost(credits=credits, forge_tokens=forge),
+            combat_strength = override.get("combat_strength", base.get("combat_strength", 0)),
+            health          = override.get("health",          base.get("health", 1)),
+            morale          = override.get("morale",          base.get("morale", 2)),
             start_count     = count,
             total_count     = count,
         )
@@ -380,6 +384,7 @@ def build_start_kit(faction_id: str, unit_config) -> PlayerStartKit:
         faction_id      = faction_id,
         unit_specs      = unit_specs,
         structure_specs = structure_specs,
+        credits         = unit_config.credits,
         support_tokens  = unit_config.support_tokens,
         discount_tokens = unit_config.discount_tokens,
         forge_tokens    = unit_config.forge_tokens,

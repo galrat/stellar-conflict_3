@@ -86,6 +86,17 @@ class UnitConfig:
     """
     Конфигурация начального набора юнитов, построек и ресурсов фракции.
     Все значения — количество соответствующих объектов у игрока в начале партии.
+
+    unit_stats — характеристики юнитов, специфичные для данной фракции.
+        Ключ: имя типа ("infantry", "marines", "mechanized", "elite",
+                        "fighter", "destroyer").
+        Значение: dict с полями:
+            cost            — стоимость в монетах (2–5)
+            cost_forge      — стоимость в жетонах молотка (опционально, по умолчанию 0)
+            combat_strength — боевая сила (0–6)
+            health          — здоровье (1–6)
+            morale          — мораль (0–6)
+        Если тип не указан — используются значения из UNIT_TYPE_CATALOG (player_hand.py).
     """
     # ── Боевые юниты ─────────────────────────────────────────────────────────
     infantry:   int = 2
@@ -96,14 +107,18 @@ class UnitConfig:
     destroyers: int = 1
     # ── Постройки ─────────────────────────────────────────────────────────────
     # Размещаются на планетах, по одной на зону; не участвуют в бою.
+    # Характеристики построек едины для всех фракций — см. STRUCTURE_CATALOG (player_hand.py).
     factories:  int = 0   # Фабрика  — производство юнитов
     cities:     int = 0   # Город    — победные очки
     bastions:   int = 0   # Бастион  — оборонительный бонус
-    # ── Ресурсные жетоны ──────────────────────────────────────────────────────
+    # ── Стартовые ресурсы ─────────────────────────────────────────────────────
     # Хранятся в инвентаре игрока, не размещаются на поле.
-    support_tokens:  int = 0   # Жетон поддержки
-    discount_tokens: int = 0   # Жетон скидки
-    forge_tokens:    int = 0   # Жетон кузницы
+    credits:         int = 6   # Монеты — основная валюта
+    support_tokens:  int = 0   # Жетон поддержки (⊕)
+    discount_tokens: int = 0   # Жетон скидки (⊖)
+    forge_tokens:    int = 0   # Жетон кузницы/молотка (⚒)
+    # ── Характеристики юнитов (per-faction) ───────────────────────────────────
+    unit_stats:      Dict[str, dict] = field(default_factory=dict)
 
     @property
     def total_ground(self) -> int:
@@ -178,9 +193,11 @@ class UnitConfig:
             "factories":       self.factories,
             "cities":          self.cities,
             "bastions":        self.bastions,
+            "credits":         self.credits,
             "support_tokens":  self.support_tokens,
             "discount_tokens": self.discount_tokens,
             "forge_tokens":    self.forge_tokens,
+            "unit_stats":      self.unit_stats,
             "total_ground":    self.total_ground,
             "total_space":     self.total_space,
             "total_structures": self.total_structures,
@@ -263,6 +280,7 @@ class Player:
     pool:       List[Unit]          = field(default_factory=list)  # резерв юнитов (не на поле)
     structures: List[Structure]     = field(default_factory=list)  # резерв построек
     resources:  List[ResourceToken] = field(default_factory=list)  # жетоны ресурсов
+    credits:    int                 = 0                            # монеты
     hand:       List[SystemTile]    = field(default_factory=list)  # тайлы в руке
     orders:     List                = field(default_factory=list)  # список Order-объектов
 
@@ -278,11 +296,12 @@ class Player:
             "color":      self.color,
             "faction_id": self.faction_id,
             "faction":    self.faction.to_dict(),
+            "credits":          self.credits,
+            "resources":        [r.to_dict() for r in self.resources],
             "pool_count":       len(self.pool),
             "pool":             [u.to_dict() for u in self.pool],
             "structures_count": len(self.structures),
             "structures":       [s.to_dict() for s in self.structures],
-            "resources":        [r.to_dict() for r in self.resources],
             "hand_count":       len(self.hand),
             "orders":     [
                 o.to_dict() if hasattr(o, "to_dict") else o

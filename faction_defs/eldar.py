@@ -12,10 +12,7 @@ ELDAR = Faction(
     color        = "#F2C94C",
     home_tile_id = "home_eldar",
     flavor = (
-        "Теневой рынок, правящий из темноты. Синдикат не держит фронтов — "
-        "он проникает за линии, покупает предателей и наносит удар "
-        "там, где его никто не ждёт. Его десантники — лучшие "
-        "бойцы в ближнем бою, а истребители — тени в звёздном небе."
+        "По доминации вы можете переместить одного юнита из мира активной системы в дружественный мир."
     ),
     special_ability_name = "Телепорт",
     special_ability_desc = (
@@ -23,8 +20,24 @@ ELDAR = Faction(
         "вы можете переместить одного юнита из мира активной системы в дружественный мир"
     ),
     unit_config = UnitConfig(
-        infantry=2, marines=2, mechanized=0, elite=0,
-        fighters=3, destroyers=0,
+        # ── Стартовый состав войск ──────────────────────────────────────────
+        infantry=2, marines=1, mechanized=0, elite=0,
+        fighters=2, destroyers=0,
+        # ── Стартовые постройки ─────────────────────────────────────────────
+        # Характеристики построек — см. STRUCTURE_CATALOG в player_hand.py.
+        factories=0, cities=1, bastions=0,
+        # ── Стартовые ресурсы ───────────────────────────────────────────────
+        credits=6, support_tokens=1, discount_tokens=2, forge_tokens=1,
+        # ── Характеристики юнитов (cost 2–5 + forge, strength 0–6, health 1–6, morale 0–6) ──
+        # Эльдары: хрупкие, но с высокой моралью и точностью. Истребители — ударная сила.
+        unit_stats={
+            "infantry":   dict(cost=2,                  combat_strength=1, health=1, morale=4),
+            "marines":    dict(cost=3,                  combat_strength=2, health=1, morale=5),
+            "mechanized": dict(cost=3,                  combat_strength=2, health=2, morale=4),
+            "elite":      dict(cost=4, cost_forge=1,    combat_strength=3, health=2, morale=6),
+            "fighter":    dict(cost=2,                  combat_strength=2, health=1, morale=4),
+            "destroyer":  dict(cost=3, cost_forge=1,    combat_strength=3, health=2, morale=5),
+        },
     ),
     battle_cards = [
         # ── Начальные ──────────────────────────────────────────────────────

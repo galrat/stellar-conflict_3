@@ -21,8 +21,24 @@ MARINE = Faction(
         "вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал "
     ),
     unit_config = UnitConfig(
-        infantry=1, marines=1, mechanized=2, elite=0,
-        fighters=1, destroyers=2,
+        # ── Стартовый состав войск ──────────────────────────────────────────
+        infantry=4, marines=1, mechanized=0, elite=0,
+        fighters=1, destroyers=0,
+        # ── Стартовые постройки ─────────────────────────────────────────────
+        # Характеристики построек — см. STRUCTURE_CATALOG в player_hand.py.
+        factories=1, cities=0, bastions=0,
+        # ── Стартовые ресурсы ───────────────────────────────────────────────
+        credits=6, support_tokens=0, discount_tokens=1, forge_tokens=2,
+        # ── Характеристики юнитов (cost 2–5 + forge, strength 0–6, health 1–6, morale 0–6) ──
+        # Элитные солдаты: высокое здоровье и мораль, умеренная боевая сила.
+        unit_stats={
+            "infantry":   dict(cost=2,                  combat_strength=1, health=3, morale=4),
+            "marines":    dict(cost=3,                  combat_strength=2, health=3, morale=5),
+            "mechanized": dict(cost=3,                  combat_strength=2, health=4, morale=4),
+            "elite":      dict(cost=5, cost_forge=1,    combat_strength=4, health=4, morale=6),
+            "fighter":    dict(cost=2,                  combat_strength=1, health=2, morale=4),
+            "destroyer":  dict(cost=4, cost_forge=1,    combat_strength=3, health=4, morale=5),
+        },
     ),
     battle_cards = [
         # ── Начальные ──────────────────────────────────────────────────────

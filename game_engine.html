@@ -58,6 +58,7 @@ input[type=text]:focus{border-color:var(--p1);}
 .pfac{font-size:.62rem;color:var(--dim);}
 .ptroops{font-size:.78rem;color:var(--dim);}
 .ptnum{font-weight:700;}.s1 .ptnum{color:var(--p1);}.s2 .ptnum{color:var(--p2);}
+.pres{font-size:.65rem;color:var(--dim);margin-top:1px;letter-spacing:.03em;}
 .phase-info{text-align:center;}
 .phase-lbl{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.3em;color:var(--dim);text-transform:uppercase;}
 .phase-name{font-family:'Orbitron',monospace;font-size:.78rem;color:var(--gold);white-space:nowrap;}
@@ -92,6 +93,10 @@ input[type=text]:focus{border-color:var(--p1);}
 .ttok.ground{border-radius:50%;}
 .ttok.space{border-radius:3px;}
 .ttok.c1{background:rgba(0,200,255,.15);border-color:var(--p1);color:var(--p1);}
+.ttok.stok{border-radius:4px;font-size:1.1rem;}
+.astruc{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;border-radius:3px;border:1px solid;margin:1px;}
+.astruc.c1{background:rgba(0,200,255,.2);border-color:var(--p1);color:var(--p1);}
+.astruc.c2{background:rgba(255,77,109,.2);border-color:var(--p2);color:var(--p2);}
 .ttok.c2{background:rgba(255,77,109,.15);border-color:var(--p2);color:var(--p2);}
 .ttok.sel{transform:scale(1.2);box-shadow:0 0 7px currentColor;}
 .ttok:hover{transform:scale(1.1);}
@@ -229,6 +234,7 @@ input[type=text]:focus{border-color:var(--p1);}
         <div class="pname" id="h-p1-name">Alpha</div>
         <div class="pfac"  id="h-p1-fac">—</div>
         <div class="ptroops">Войска: <span class="ptnum" id="h-p1-t">6</span></div>
+        <div class="pres" id="h-p1-res"></div>
       </div>
     </div>
     <div class="phase-info">
@@ -242,6 +248,7 @@ input[type=text]:focus{border-color:var(--p1);}
         <div class="pname" id="h-p2-name">Omega</div>
         <div class="pfac"  id="h-p2-fac">—</div>
         <div class="ptroops">Войска: <span class="ptnum" id="h-p2-t">6</span></div>
+        <div class="pres" id="h-p2-res"></div>
       </div>
       <div class="pavatar av2" id="h-p2-init">P2</div>
     </div>
@@ -325,10 +332,26 @@ input[type=text]:focus{border-color:var(--p1);}
 //  CONSTANTS  (declared at module scope — never inside functions)
 // ══════════════════════════════════════════════
 const FACTIONS = [
-  { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos', flavor:'Особое свойство доминации:вы можете переместить культиста на свободный или дружественный мир соседней системы', troops:{ground:7,space:4} },
-  { id:'marine', name:'Space marine', icon:'◆', color:'#1F4E9E', homeTileId:'home_marine', flavor:'Особое свойство доминации:вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал', troops:{ground:4,space:3} },
-  { id:'orks', name:'Орки', icon:'💀', color:'#2E7D32', homeTileId:'home_orks', flavor:'Особое свойство фракции: вы можете купить один отряд и поместить его в дружественный мир активнйо системы', troops:{ground:6,space:2} },
-  { id:'eldar', name:'Eldar', icon:'◉', color:'#F2C94C', homeTileId:'home_eldar', flavor:'Теневой рынок, правящий из темноты. Синдикат не держит фронтов — он проникает за линии, покупает предателей и наносит удар там, где его никто не ждёт. Его десантники — лучшие бойцы в ближнем бою, а истребители — тени в звёздном небе.', troops:{ground:4,space:3} },
+  { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos',
+    flavor:'Особое свойство доминации: вы можете переместить культиста на свободный или дружественный мир соседней системы',
+    unitTiers:{ground:[0,0,1,1],space:[0]},
+    structures:['factory','city','bastion'],
+    credits:6, tokens:{support:1,discount:1,forge:1} },
+  { id:'marine', name:'Space marine', icon:'◆', color:'#1F4E9E', homeTileId:'home_marine',
+    flavor:'Особое свойство доминации: вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал',
+    unitTiers:{ground:[0,0,0,0,1],space:[0]},
+    structures:['factory'],
+    credits:6, tokens:{support:0,discount:1,forge:2} },
+  { id:'orks', name:'Орки', icon:'💀', color:'#2E7D32', homeTileId:'home_orks',
+    flavor:'Особое свойство фракции: вы можете купить один отряд и поместить его в дружественный мир активной системы',
+    unitTiers:{ground:[0,0,0,0,1],space:[]},
+    structures:['factory'],
+    credits:6, tokens:{support:2,discount:1,forge:0} },
+  { id:'eldar', name:'Eldar', icon:'◉', color:'#F2C94C', homeTileId:'home_eldar',
+    flavor:'По доминации вы можете переместить одного юнита из мира активной системы в дружественный мир.',
+    unitTiers:{ground:[0,0,1],space:[0,0]},
+    structures:['city'],
+    credits:6, tokens:{support:1,discount:2,forge:1} },
   { id:'nomads', name:'Кочевники', icon:'✦', color:'#E67E22', homeTileId:'home_nomads', flavor:'Племена без дома, скитающиеся между звёздами. Их сила — в скорости и непредсказуемости.', troops:{ground:5,space:3} },
   { id:'theocracy', name:'Теократия', icon:'✝', color:'#F39C12', homeTileId:'home_theocracy', flavor:'Фанатичные крестоносцы, несущие волю Бога-Императора. Сильны в обороне священных миров и массированных атаках.', troops:{ground:6,space:2} },
   { id:'machines', name:'Машины', icon:'⚙', color:'#7F8C8D', homeTileId:'home_machines', flavor:'Древний искусственный интеллект, пробудившийся спустя тысячелетия. Не знают страха и усталости — каждый юнит заменяем.', troops:{ground:6,space:2} },
@@ -363,6 +386,17 @@ const UNIT_NAMES = {
   'eldar_ground_0': 'Аспект',
   'eldar_ground_1': 'Рейнджер',
   'eldar_space_0':  'Истребитель',
+};
+
+const STRUCTURE_INFO = {
+  factory: { icon:'⚙', label:'Фабрика' },
+  city:    { icon:'⬡', label:'Город'   },
+  bastion: { icon:'⛉', label:'Бастион' },
+};
+const TOKEN_INFO = {
+  support:  { icon:'⊕', label:'Поддержка' },
+  discount: { icon:'⊖', label:'Скидка'    },
+  forge:    { icon:'⚒', label:'Молоток'   },
 };
 
 const TILES_PP = 3;
@@ -422,12 +456,14 @@ function makeState() {
     tilesPlaced: 0,
     lastKey: null,
     // ── undo state ──────────────────────────
-    tileSnap: null,    // { handIdx, key } — set by dropTile, cleared by undoTile or endTurn
-    unitsPlaced: [],   // [{ key, realAreaIdx, unitId }]
+    tileSnap: null,        // { handIdx, key } — set by dropTile, cleared by undoTile or endTurn
+    unitsPlaced: [],       // [{ key, realAreaIdx, unitId }]
+    structsPlaced: [],     // [{ key, realAreaIdx, structId }]
     // ── selection ──────────────────────────
     selHandIdx: null,
     selUnitIdx: null,
     selUnitType: null,
+    selStructIdx: null,    // index in cp.structurePool
     selOrderSlot: null,
     // ── execution ──────────────────────────
     execQueue: [],
@@ -534,9 +570,12 @@ function startGame() {
       fac.unitTiers.ground.forEach(tier => p.pool.push({ id:nextId++, player:pi, unitType:'ground', tier }));
       fac.unitTiers.space.forEach(tier  => p.pool.push({ id:nextId++, player:pi, unitType:'space',  tier }));
     } else {
-      for (let i=0; i<fac.troops.ground; i++) p.pool.push({ id:nextId++, player:pi, unitType:'ground', tier:0 });
-      for (let i=0; i<fac.troops.space;  i++) p.pool.push({ id:nextId++, player:pi, unitType:'space',  tier:0 });
+      for (let i=0; i<(fac.troops?.ground||0); i++) p.pool.push({ id:nextId++, player:pi, unitType:'ground', tier:0 });
+      for (let i=0; i<(fac.troops?.space||0);  i++) p.pool.push({ id:nextId++, player:pi, unitType:'space',  tier:0 });
     }
+    p.structurePool = (fac.structures || []).map(type => ({ id:nextId++, player:pi, type }));
+    p.credits = fac.credits ?? 6;
+    p.tokens  = { ...(fac.tokens ?? {support:0,discount:0,forge:0}) };
 
     const myHome = TILE_CATALOG.find(t => t.id === fac.homeTileId)
                 || TILE_CATALOG.find(t => t.isHome);
@@ -591,8 +630,9 @@ function setPhase(phase) {
     renderSide(); renderBoard(G.lastKey);
   }
   else if (phase === 'troop-placement') {
-    G.tileSnap    = null;
-    G.unitsPlaced = [];
+    G.tileSnap      = null;
+    G.unitsPlaced   = [];
+    G.structsPlaced = [];
     ins.innerHTML = `<strong>РАССТАНОВКА ВОЙСК</strong><br>${cp.name}: расставьте оставшиеся войска.<br><small style="color:var(--dim)">▲ наземные → 🪐 · ◈ космические → ✦</small>`;
     show('btn-uu'); show('btn-et');
     document.getElementById('btn-et').textContent = 'Завершить расстановку →';
@@ -674,7 +714,7 @@ function dropTile(col, row) {
     tileDefId: ht.tileDefId,
     rotation:  0,
     side:      0,
-    areas:     tileDefToAreas(sideData),
+    areas:     tileDefToAreas(sideData).map(a => ({ ...a, structures:[] })),
   };
 
   ht.placed     = true;
@@ -682,8 +722,9 @@ function dropTile(col, row) {
   G.lastKey     = key;
 
   // Set undo snapshot BEFORE calling setPhase
-  G.tileSnap    = { handIdx: G.selHandIdx, key };
-  G.unitsPlaced = [];
+  G.tileSnap      = { handIdx: G.selHandIdx, key };
+  G.unitsPlaced   = [];
+  G.structsPlaced = [];
   G.selHandIdx  = null;
 
   addLog(`${cp.name} разместил${ht.isHome?' домашнюю':''} систему [${key}]`, G.curP);
@@ -709,10 +750,16 @@ function undoTile() {
     const area = tile.areas[rec.realAreaIdx];
     if (!area) continue;
     const idx = area.troops.findIndex(t => t.id === rec.unitId);
-    if (idx >= 0) {
-      const unit = area.troops.splice(idx, 1)[0];
-      cp.pool.push(unit);
-    }
+    if (idx >= 0) { cp.pool.push(area.troops.splice(idx, 1)[0]); }
+  }
+  // Return all structures placed this turn to pool
+  for (const rec of G.structsPlaced) {
+    const tile = G.map[rec.key];
+    if (!tile) continue;
+    const area = tile.areas[rec.realAreaIdx];
+    if (!area) continue;
+    const idx = area.structures.findIndex(s => s.id === rec.structId);
+    if (idx >= 0) { cp.structurePool.push(area.structures.splice(idx, 1)[0]); }
   }
 
   // 2. Remove tile from map, restore to hand
@@ -721,8 +768,9 @@ function undoTile() {
   G.tilesPlaced--;
 
   // 3. Clear undo state
-  G.tileSnap    = null;
-  G.unitsPlaced = [];
+  G.tileSnap      = null;
+  G.unitsPlaced   = [];
+  G.structsPlaced = [];
   G.lastKey     = null;
 
   addLog(`${cp.name} вернул систему [${snap.key}] в руку`, G.curP);
@@ -814,7 +862,40 @@ function selectUnit(idx) {
   const cp = G.players[G.curP];
   G.selUnitIdx  = idx;
   G.selUnitType = cp.pool[idx]?.unitType || null;
+  G.selStructIdx = null;
   renderSide();
+  if (G.phase === 'troop-placement') renderBoard(null, true);
+  else renderBoard(G.lastKey);
+}
+
+function selectStructure(idx) {
+  if (G.phase !== 'troop-on-tile' && G.phase !== 'troop-placement') return;
+  G.selStructIdx = idx;
+  G.selUnitIdx   = null;
+  G.selUnitType  = null;
+  renderSide();
+  if (G.phase === 'troop-placement') renderBoard(null, true);
+  else renderBoard(G.lastKey);
+}
+
+function placeStructure(key, displayIdx) {
+  const cp = G.players[G.curP];
+  if (G.selStructIdx === null) return;
+  const struct = cp.structurePool[G.selStructIdx];
+  if (!struct) return;
+  const tile = G.map[key];
+  if (!tile) return;
+  const area = getAreaByDisplay(tile, displayIdx);
+  const realIdx = tile.areas.indexOf(area);
+  if (area.type !== 'planet') { showMsg('Только планеты','Постройки размещаются только на планетах (🪐).'); return; }
+  if (area.structures.length > 0) { showMsg('Занято','На этой планете уже есть постройка.'); return; }
+  area.structures.push(struct);
+  cp.structurePool.splice(G.selStructIdx, 1);
+  G.structsPlaced.push({ key, realAreaIdx: realIdx, structId: struct.id, _seq: nextId++ });
+  const info = STRUCTURE_INFO[struct.type] || { icon:'?', label:struct.type };
+  addLog(`${cp.name} → [${key}] зона ${displayIdx+1} (${info.icon} ${info.label})`, G.curP);
+  G.selStructIdx = null;
+  updateHeader(); renderSide();
   if (G.phase === 'troop-placement') renderBoard(null, true);
   else renderBoard(G.lastKey);
 }
@@ -822,9 +903,13 @@ function selectUnit(idx) {
 function areaClick(key, displayIdx) {
   if (G.phase === 'troop-on-tile') {
     if (key !== G.lastKey) { showMsg('Не та система','В этой фазе — только на только что поставленную систему.'); return; }
+    if (G.selStructIdx !== null) { placeStructure(key, displayIdx); return; }
     placeUnit(key, displayIdx); return;
   }
-  if (G.phase === 'troop-placement') { placeUnit(key, displayIdx); return; }
+  if (G.phase === 'troop-placement') {
+    if (G.selStructIdx !== null) { placeStructure(key, displayIdx); return; }
+    placeUnit(key, displayIdx); return;
+  }
   if (G.phase === 'order-placement') {
     if (G.selOrderSlot === null) { showMsg('Выберите слот','Сначала выберите слот приказа.'); return; }
     const cp = G.players[G.curP];
@@ -865,7 +950,7 @@ function placeUnit(key, displayIdx) {
   cp.pool.splice(G.selUnitIdx, 1);
 
   // Record for undo
-  G.unitsPlaced.push({ key, realAreaIdx: realIdx, unitId: unit.id });
+  G.unitsPlaced.push({ key, realAreaIdx: realIdx, unitId: unit.id, _seq: nextId++ });
 
   addLog(`${cp.name} → [${key}] зона ${displayIdx+1} (${unit.unitType==='ground'?'наземный':'космический'})`, G.curP);
 
@@ -878,21 +963,35 @@ function placeUnit(key, displayIdx) {
 
 function undoLastUnit() {
   if (G.phase !== 'troop-on-tile' && G.phase !== 'troop-placement') return;
-  if (!G.unitsPlaced.length) { showMsg('Нечего отменять','Войска в этот ход ещё не размещались.'); return; }
-
-  const cp  = G.players[G.curP];
-  const rec = G.unitsPlaced.pop();
-  const tile = G.map[rec.key];
-  if (tile) {
-    const area = tile.areas[rec.realAreaIdx];
-    const idx  = area.troops.findIndex(t => t.id === rec.unitId);
-    if (idx >= 0) {
-      const unit = area.troops.splice(idx, 1)[0];
-      cp.pool.push(unit);
-      addLog(`${cp.name} вернул войско из [${rec.key}] зона ${rec.realAreaIdx+1}`, G.curP);
+  const cp = G.players[G.curP];
+  // Undo last placement — structure takes priority if placed after last unit
+  if (G.structsPlaced.length > 0 && (G.unitsPlaced.length === 0 ||
+      G.structsPlaced[G.structsPlaced.length-1]._seq > (G.unitsPlaced[G.unitsPlaced.length-1]?._seq ?? -1))) {
+    const rec = G.structsPlaced.pop();
+    const tile = G.map[rec.key];
+    if (tile) {
+      const area = tile.areas[rec.realAreaIdx];
+      const idx = area.structures.findIndex(s => s.id === rec.structId);
+      if (idx >= 0) {
+        const s = area.structures.splice(idx, 1)[0];
+        cp.structurePool.push(s);
+        const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
+        addLog(`${cp.name} вернул ${info.icon}${info.label} из [${rec.key}]`, G.curP);
+      }
     }
-  }
-  G.selUnitIdx = null; G.selUnitType = null;
+  } else if (G.unitsPlaced.length > 0) {
+    const rec = G.unitsPlaced.pop();
+    const tile = G.map[rec.key];
+    if (tile) {
+      const area = tile.areas[rec.realAreaIdx];
+      const idx  = area.troops.findIndex(t => t.id === rec.unitId);
+      if (idx >= 0) {
+        cp.pool.push(area.troops.splice(idx, 1)[0]);
+        addLog(`${cp.name} вернул войско из [${rec.key}]`, G.curP);
+      }
+    }
+  } else { showMsg('Нечего отменять','В этот ход ничего ещё не размещалось.'); return; }
+  G.selUnitIdx = null; G.selUnitType = null; G.selStructIdx = null;
   updateHeader(); renderSide();
   if (G.phase === 'troop-placement') renderBoard(null, true);
   else renderBoard(G.lastKey);
@@ -1220,6 +1319,15 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
       if (used>=cap) capEl.style.color='var(--accent2)';
       ae.appendChild(capEl);
 
+      // Structures
+      (area.structures||[]).forEach(s => {
+        const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
+        const tok=document.createElement('div');
+        tok.className=`astruc ${s.player===0?'c1':'c2'}`;
+        tok.textContent=info.icon; tok.title=info.label;
+        ae.appendChild(tok);
+      });
+
       // Troops
       area.troops.forEach(u => {
         const tok=document.createElement('div');
@@ -1324,9 +1432,27 @@ function renderSide() {
       });
       sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
     }
-  } else if (showPool) {
+  }
+  // Structure pool (shown alongside troops during placement phases)
+  if (showPool && cp.structurePool && cp.structurePool.length > 0) {
+    const sec=document.createElement('div'); sec.className='pool-sec';
+    const lbl=document.createElement('div'); lbl.className='pool-type-lbl'; lbl.textContent='⚙ Постройки';
+    const pool=document.createElement('div'); pool.className='tpool';
+    cp.structurePool.forEach((s, si) => {
+      const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
+      const tok=document.createElement('div');
+      tok.className=`ttok stok ${cp.color}${G.selStructIdx===si?' sel':''}`;
+      tok.textContent=info.icon; tok.title=info.label;
+      tok.onclick=()=>selectStructure(si); pool.appendChild(tok);
+    });
+    sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
+  }
+
+  if (!showPool && !cp.pool?.length) {
+    // nothing to show
+  } else if (showPool && !cp.pool?.length && (!cp.structurePool?.length)) {
     poolCont.innerHTML='<span style="color:var(--dim);font-size:.7rem">Войска размещены</span>';
-  } else {
+  } else if (!showPool) {
     const pool=document.createElement('div'); pool.className='tpool';
     G.players.forEach(p=>p.pool.forEach(u=>{
       const tok=document.createElement('div');
@@ -1369,6 +1495,13 @@ function updateHeader() {
     document.getElementById(`h-${pfx}-fac`).textContent=fac?`${fac.icon} ${fac.name}`:'—';
     const onBoard=Object.values(G.map).reduce((s,t)=>s+t.areas.reduce((a,ar)=>a+ar.troops.filter(u=>u.player===pi).length,0),0);
     document.getElementById(`h-${pfx}-t`).textContent=onBoard+(p.pool?p.pool.length:0);
+    const resEl = document.getElementById(`h-${pfx}-res`);
+    if (resEl && p.credits !== undefined) {
+      const tok = p.tokens || {};
+      const parts = [`💰${p.credits}₡`];
+      Object.entries(TOKEN_INFO).forEach(([k,info]) => { if (tok[k]>0) parts.push(`${info.icon}×${tok[k]}`); });
+      resEl.textContent = parts.join(' ');
+    }
   });
   const labels={'tile-placement':'Размещение систем','troop-on-tile':'Войска на систему',
                 'troop-placement':'Расстановка войск','order-placement':'Приказы','execution':'Исполнение приказов'};

@@ -37,7 +37,7 @@ from typing import Dict, List, Optional, Tuple
 import random
 
 from units import Unit, UnitCategory, GroundType, SpaceType
-from tiles import SystemTile, TileType, AREA_LAYOUTS, TILE_CATALOG
+from tiles import SystemTile, TileType, AreaType, AREA_LAYOUTS, TILE_CATALOG
 from board import Board
 from factions import Player, Faction, FACTIONS, UnitConfig, FACTION_CONFIGS
 from combat import BattleResult, resolve_battle, apply_battle, format_battle
@@ -131,8 +131,11 @@ class GameState:
         ]):
             p = Player(id=pi, name=name, color=f"p{pi+1}", faction=FACTIONS[fid])
             uc = config.unit_config(pi)
-            p.pool = uc.build_units(pi)
-            p.orders = [None, None]
+            p.pool       = uc.build_units(pi)
+            p.structures = uc.build_structures(pi)
+            p.resources  = uc.build_resources()
+            p.credits    = uc.credits
+            p.orders     = [None, None]
             self.players.append(p)
 
         # Сформировать пул обычных тайлов и перемешать
@@ -165,7 +168,8 @@ class GameState:
 
         # Внутреннее состояние для отмены
         self._last_placed: Optional[dict] = None   # {"player_id", "tile_key", "hand_idx"}
-        self._units_placed_this_turn: List[dict] = []  # [{"player_id","tile_key","area_idx","unit_id"}]
+        self._units_placed_this_turn: List[dict] = []   # [{"player_id","tile_key","area_idx","unit_id"}]
+        self._structs_placed_this_turn: List[dict] = [] # [{"player_id","tile_key","area_idx","struct_id"}]
 
         # Очередь исполнения приказов
         self._exec_queue: List[Order] = []
@@ -214,7 +218,8 @@ class GameState:
         # Сохранить для возможной отмены
         self._last_placed = {"player_id": player_id, "tile_key": tile.key,
                               "hand_idx": hand_index}
-        self._units_placed_this_turn = []
+        self._units_placed_this_turn   = []
+        self._structs_placed_this_turn = []
         p.hand[hand_index] = None  # помечаем как выбывший из руки
 
         self._add_log(
@@ -271,12 +276,13 @@ class GameState:
             self._add_log(f"{p.name} вернул систему [{snap['tile_key']}] в руку", player_id)
 
         self._last_placed = None
-        self._units_placed_this_turn = []
+        self._units_placed_this_turn   = []
+        self._structs_placed_this_turn = []
         self.phase = Phase.TILE_PLACEMENT
         return self._ok("Тайл возвращён в руку.")
 
     def _undo_all_troops_on_tile(self, player_id: int):
-        """Вернуть все войска текущего хода из тайла в резерв."""
+        """Вернуть все войска и постройки текущего хода из тайла в резерв."""
         p = self.players[player_id]
         for record in list(self._units_placed_this_turn):
             tile = self.board.tiles.get(record["tile_key"])
@@ -287,6 +293,15 @@ class GameState:
                     unit = area.units.pop(idx)
                     p.pool.append(unit)
         self._units_placed_this_turn = []
+        for record in list(self._structs_placed_this_turn):
+            tile = self.board.tiles.get(record["tile_key"])
+            if tile:
+                area = tile.areas[record["area_idx"]]
+                idx = next((i for i, s in enumerate(area.structures) if s.id == record["struct_id"]), None)
+                if idx is not None:
+                    struct = area.structures.pop(idx)
+                    p.structures.append(struct)
+        self._structs_placed_this_turn = []
 
     # ── UNIT PLACEMENT ──────────────────────────────────────────────────────
 
@@ -361,6 +376,76 @@ class GameState:
                 return self._ok(f"Юнит '{unit.label}' возвращён в резерв.")
         return self._err("Не удалось найти юнит для отмены.")
 
+    # ── STRUCTURE PLACEMENT ─────────────────────────────────────────────────
+
+    def place_structure(self, player_id: int, struct_index: int,
+                        tile_key: str, area_display_index: int) -> Tuple[bool, str]:
+        """
+        Разместить постройку из резерва (structures[struct_index]) на планету.
+        Постройки размещаются только на PLANET-зонах, не более одной на зону.
+        area_display_index — визуальная позиция (с учётом поворота тайла).
+        """
+        if self.phase not in (Phase.TROOP_ON_TILE, Phase.TROOP_PLACEMENT):
+            return self._err("Сейчас не фаза расстановки войск и построек.")
+        if player_id != self.current_player_id:
+            return self._err("Сейчас не ваш ход.")
+
+        p = self.players[player_id]
+        if struct_index < 0 or struct_index >= len(p.structures):
+            return self._err(f"Нет постройки с индексом {struct_index}.")
+
+        tile = self.board.tiles.get(tile_key)
+        if not tile:
+            return self._err(f"Тайл [{tile_key}] не найден на поле.")
+
+        if self.phase == Phase.TROOP_ON_TILE:
+            if not self._last_placed or self._last_placed["tile_key"] != tile_key:
+                return self._err("В эту фазу — только на только что поставленную систему.")
+
+        areas_display = tile.rotated_areas()
+        if area_display_index < 0 or area_display_index >= len(areas_display):
+            return self._err("Неверный индекс зоны.")
+        area = areas_display[area_display_index]
+        real_area_idx = tile.areas.index(area)
+
+        if area.area_type != AreaType.PLANET:
+            return self._err("Постройки можно размещать только на планетах.")
+        if area.structures:
+            return self._err("На этой планете уже есть постройка.")
+
+        struct = p.structures[struct_index]
+        area.structures.append(struct)
+        p.structures.pop(struct_index)
+        self._structs_placed_this_turn.append({
+            "player_id": player_id, "tile_key": tile_key,
+            "area_idx": real_area_idx, "struct_id": struct.id,
+        })
+        self._add_log(
+            f"{p.name} → [{tile_key}] зона {area_display_index+1} ({struct.label})", player_id)
+        return self._ok(f"Постройка '{struct.label}' размещена.")
+
+    def undo_last_structure(self, player_id: int) -> Tuple[bool, str]:
+        """Вернуть последнюю поставленную постройку обратно в резерв."""
+        if self.phase not in (Phase.TROOP_ON_TILE, Phase.TROOP_PLACEMENT):
+            return self._err("Сейчас нельзя отменить размещение постройки.")
+        if player_id != self.current_player_id:
+            return self._err("Сейчас не ваш ход.")
+        if not self._structs_placed_this_turn:
+            return self._err("Нечего отменять — в этот ход постройки ещё не размещались.")
+
+        record = self._structs_placed_this_turn.pop()
+        tile = self.board.tiles.get(record["tile_key"])
+        p = self.players[player_id]
+        if tile:
+            area = tile.areas[record["area_idx"]]
+            idx = next((i for i, s in enumerate(area.structures) if s.id == record["struct_id"]), None)
+            if idx is not None:
+                struct = area.structures.pop(idx)
+                p.structures.append(struct)
+                self._add_log(f"{p.name} вернул {struct.label} из [{record['tile_key']}]", player_id)
+                return self._ok(f"Постройка '{struct.label}' возвращена в резерв.")
+        return self._err("Не удалось найти постройку для отмены.")
+
     # ── TURN TRANSITIONS ────────────────────────────────────────────────────
 
     def end_troop_on_tile(self, player_id: int) -> Tuple[bool, str]:
@@ -371,7 +456,8 @@ class GameState:
             return self._err("Сейчас не ваш ход.")
 
         self._last_placed = None
-        self._units_placed_this_turn = []
+        self._units_placed_this_turn   = []
+        self._structs_placed_this_turn = []
         total_needed = self.config.tiles_per_player * 2
 
         if len(self.board.tiles) < total_needed:
@@ -400,7 +486,8 @@ class GameState:
         if player_id != self.current_player_id:
             return self._err("Сейчас не ваш ход.")
 
-        self._units_placed_this_turn = []
+        self._units_placed_this_turn   = []
+        self._structs_placed_this_turn = []
         other = self.players[1 - player_id]
         if len(other.pool) > 0:
             self.current_player_id = 1 - player_id
