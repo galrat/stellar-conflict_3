@@ -36,7 +36,10 @@ project/
 ├── CLAUDE.md
 ├── game_engine.html    ✅ Standalone browser frontend — full hot-seat game, no server needed
 │
-├── units.py            ✅ Unit, UnitCategory, GroundType, SpaceType, UNIT_STATS, make_unit()
+├── units.py            ✅ Unit, UnitCategory, GroundType, SpaceType, Structure, StructureType,
+│                          ResourceToken, UNIT_STATS, STRUCTURE_STATS, make_unit(), make_structure()
+├── player_hand.py      ✅ Cost, UnitSpec, StructureSpec, PlayerStartKit, UNIT_TIER_CATALOG,
+│                          STRUCTURE_CATALOG, build_start_kit() — full unit/building params + starting kit
 ├── tiles.py            ✅ Area, AreaType, SystemTile, TileType, AREA_LAYOUTS, rotation logic
 ├── board.py            ✅ Board — placement, adjacency, shape validation (3×2 or 2×3)
 ├── combat.py           ✅ BattleResult, resolve_battle(), apply_battle(), format_battle()
@@ -48,10 +51,11 @@ project/
 ├── factions.py         ✅ Thin re-export layer — all «from factions import …» still work
 └── faction_defs/       ✅ One file per faction (target: 12 total)
     ├── __init__.py        FACTIONS dict + FACTION_CONFIGS — add faction here (2 lines)
-    ├── federation.py      Федерация — balanced, diplomatic
-    ├── empire.py          Империя — heavy mechanized
-    ├── syndicate.py       Синдикат — fast marines, hit-and-run
-    └── collective.py      Коллектив — infantry swarm, hive mind
+    ├── chaos.py           Хаос
+    ├── marine.py          Space Marine
+    ├── orks.py            Орки
+    ├── eldar.py           Элдары
+    └── ...                (8 skeleton factions)
 ```
 
 ### Adding a New Faction
@@ -77,9 +81,39 @@ project/
 - `UnitCategory` — GROUND / SPACE
 - `GroundType` — INFANTRY, MARINES, MECHANIZED, ELITE
 - `SpaceType` — FIGHTER, DESTROYER
+- `StructureType` — FACTORY, CITY, BASTION
+- `ResourceType` — SUPPORT, DISCOUNT, FORGE
 - `Unit` — dataclass: player_id, category, unit_type: `Optional[Union[GroundType, SpaceType]]`
-- `UNIT_STATS` — dict with attack_bonus, symbol, label per unit type
-- `make_unit(player_id, category, unit_type)` — factory function
+- `Structure` — dataclass: player_id, structure_type
+- `ResourceToken` — dataclass: resource_type
+- `UNIT_STATS` — dict with attack_bonus, symbol, label per unit type (combat stats only)
+- `STRUCTURE_STATS`, `RESOURCE_STATS` — display symbols and labels
+- `make_unit()`, `make_structure()` — factory functions
+
+### player_hand.py
+Full unit and building specifications + starting-kit factory. **Separate from combat logic.**
+
+**Unit identifier format (formation phase):** `{faction_id}_{category}_t{tier}`
+- Example: `chaos_ground_t0`, `marine_space_t2`, `eldar_ground_t1`
+- `category`: `ground` or `space`
+- Ground tiers: t0 (infantry), t1 (marines/mechanized), t2 (elite), t3 (legendary)
+- Space tiers: **t0 (fighter) and t2 (destroyer) only — no t1**
+- Stats are per unit TYPE, not per tier: marines and mechanized are both t1 but have different stats
+
+**Classes:**
+- `Cost` — credits (₡) + optional forge_tokens (⚒ hammer tokens)
+- `UnitSpec` — full unit-type params: unit_id, display_name, category, tier, cost,
+  combat_strength, health, morale, start_count (deployed at setup), total_count (total in reserve)
+- `StructureSpec` — structure-type params: structure_id, display_name, cost, defense_bonus,
+  start_count, description + optional combat stats (combat_strength, health, morale).
+  **Bastion**: combat_strength=2, health=3, morale=2 (fixed, participates in combat).
+  **Factory / City**: no combat stats (None).
+- `PlayerStartKit` — everything a player holds at game start: unit_specs, structure_specs,
+  credits, support_tokens, discount_tokens, forge_tokens
+- `UNIT_TYPE_CATALOG` — dict keyed by unit type name (`"infantry"`, `"marines"`, `"mechanized"`,
+  `"elite"`, `"fighter"`, `"destroyer"`) → base stats. Allows different stats per type within same tier.
+- `STRUCTURE_CATALOG` — dict keyed `"bastion"|"factory"|"city"` → StructureSpec
+- `build_start_kit(faction_id, unit_config)` — builds PlayerStartKit from a UnitConfig
 
 ### tiles.py
 - `AreaType` — PLANET (ground units only) / SPACE (space units only)
@@ -120,8 +154,9 @@ Standalone file, opens directly in browser. Pure HTML + JavaScript, no server or
 Two implementations exist in parallel: Python backend (authoritative data model) and this JS frontend (simplified, playable prototype).
 
 **JS data model (simplified vs Python):**
-- Units: only two types — `ground` (▲/▼) and `space` (◈/◆), no subtypes (infantry/mechanized etc.)
-- Factions: 4 factions, all with identical troops 3 ground + 3 space, no special abilities or battle cards wired in
+- Units: two types — `ground` (▲/▼) and `space` (◈/◆), with tier (0/1/2); names from UNIT_NAMES keyed `{faction}_{type}_{tier}`
+- Factions: 12 factions defined; troops vary per faction; no special abilities or battle cards wired in
+- Unit tokens display size: `.ttok` pool tokens 39×39 px; `.atroop` board tokens 33×33 px (1.5× base)
 - Tiles: HOME = 3 planets + 1 space; NORMAL = 2 planets + 2 space; 3 tiles per player
 - Rounds: 2 by default
 - Rotation: RMAP lookup table maps original area index → display position for 0/90/180/270°
@@ -170,9 +205,12 @@ Two implementations exist in parallel: Python backend (authoritative data model)
 ### Python backend
 - [ ] Battle cards actually played during combat (data structure exists, game logic not wired in)
 - [ ] 4 order types — currently only "move" exists; need: attack, reinforce, dominate, build
-- [ ] 12 factions — currently 4 implemented (federation, empire, syndicate, collective)
+- [ ] 12 factions — 4 fully implemented (chaos, marine, orks, eldar); 8 are skeletons
 - [ ] Faction special abilities wired into game logic (data exists, effect not applied)
 - [ ] Order upgrades wired into game logic (data exists, effect not applied)
+- [ ] PlayerStartKit (player_hand.py) not yet wired into GameState — build_start_kit() exists but unused
+- [ ] UnitSpec health/morale not yet used in combat resolution (only combat_strength matters currently)
+- [ ] Structure placement logic — structures exist in UnitConfig but no place_structure() in GameState
 - [ ] Save/load game to SQLite
 - [ ] Network layer (FastAPI + WebSockets)
 - [ ] Faction selection phase (currently hardcoded in GameConfig)

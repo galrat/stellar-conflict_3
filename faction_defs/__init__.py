@@ -13,9 +13,9 @@ from typing import Dict
 from faction_base import Faction, UnitConfig
 
 from faction_defs.chaos     import CHAOS
-from faction_defs.empire    import EMPIRE
+from faction_defs.marine    import MARINE
 from faction_defs.orks      import ORKS
-from faction_defs.syndicate import SYNDICATE
+from faction_defs.eldar import ELDAR
 # ── Заготовки (TODO: заполнить данные в каждом файле) ─────────────────────────
 # Имя файла и имя переменной можно менять свободно —
 # главное чтобы импорт здесь совпадал с именем файла и переменной внутри него.
@@ -32,9 +32,9 @@ from faction_defs.crusaders import CRUSADERS
 # Для добавления новой: допишите импорт выше и добавьте объект сюда.
 _ALL_FACTIONS: list[Faction] = [
     CHAOS,
-    EMPIRE,
+    MARINE,
     ORKS,
-    SYNDICATE,
+    ELDAR,
     # заготовки — раскомментируй когда заполнишь данные:
     NOMADS,
     THEOCRACY,

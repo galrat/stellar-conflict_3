@@ -22,8 +22,8 @@ CHAOS = Faction(
         "Вы можете переместить культиста на свободный или дружественный мир соседней системы"
     ),
     unit_config = UnitConfig(
-        infantry=2, marines=1, mechanized=1, elite=0,
-        fighters=2, destroyers=1,
+        infantry=5, marines=1, mechanized=1, elite=0,
+        fighters=2, destroyers=2,
     ),
     battle_cards = [
         # ── Начальные ──────────────────────────────────────────────────────

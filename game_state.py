@@ -6,7 +6,7 @@ game_state.py — главный движок игры Stellar Conflict
 
     cfg = GameConfig(
         p1_name="Alpha", p1_faction="orks",
-        p2_name="Omega",  p2_faction="empire",
+        p2_name="Omega",  p2_faction="marine",
         total_rounds=2,
         # Переопределить начальные юниты (опционально):
         p1_unit_config=UnitConfig(infantry=3, marines=1, fighters=2, destroyers=1),
@@ -34,8 +34,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
+import random
+
 from units import Unit, UnitCategory, GroundType, SpaceType
-from tiles import SystemTile, TileType, AREA_LAYOUTS
+from tiles import SystemTile, TileType, AREA_LAYOUTS, TILE_CATALOG
 from board import Board
 from factions import Player, Faction, FACTIONS, UnitConfig, FACTION_CONFIGS
 from combat import BattleResult, resolve_battle, apply_battle, format_battle
@@ -78,7 +80,7 @@ class GameConfig:
     p1_name:        str = "Alpha"
     p1_faction:     str = "orks"
     p2_name:        str = "Omega"
-    p2_faction:     str = "empire"
+    p2_faction:     str = "marine"
     total_rounds:   int = 2
     tiles_per_player: int = 3
 
@@ -130,15 +132,36 @@ class GameState:
             p = Player(id=pi, name=name, color=f"p{pi+1}", faction=FACTIONS[fid])
             uc = config.unit_config(pi)
             p.pool = uc.build_units(pi)
-            # Построить руку тайлов
-            for t in range(config.tiles_per_player):
-                tile = SystemTile(
-                    tile_type=TileType.HOME if t == 0 else TileType.NORMAL,
-                    owner=pi
-                )
-                p.hand.append(tile)
             p.orders = [None, None]
             self.players.append(p)
+
+        # Сформировать пул обычных тайлов и перемешать
+        normal_ids = [tid for tid, td in TILE_CATALOG.items() if not td.is_home]
+        random.shuffle(normal_ids)
+        normal_pool = iter(normal_ids)
+
+        # Раздать тайлы каждому игроку
+        for pi, p in enumerate(self.players):
+            fid = p.faction.id
+            home_tile_id = p.faction.home_tile_id
+
+            # Домашний тайл — специфичный для фракции
+            home_tile = SystemTile(
+                tile_type=TileType.HOME,
+                tile_def_id=home_tile_id,
+                owner=pi,
+            )
+            p.hand.append(home_tile)
+
+            # Обычные тайлы — рандомно из пула
+            for _ in range(config.tiles_per_player - 1):
+                normal_id = next(normal_pool, None)
+                tile = SystemTile(
+                    tile_type=TileType.NORMAL,
+                    tile_def_id=normal_id or "",
+                    owner=pi,
+                )
+                p.hand.append(tile)
 
         # Внутреннее состояние для отмены
         self._last_placed: Optional[dict] = None   # {"player_id", "tile_key", "hand_idx"}

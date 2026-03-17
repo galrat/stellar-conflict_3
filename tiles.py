@@ -3,7 +3,7 @@ tiles.py — тайлы систем и области (зоны) внутри �
 """
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
+from typing import Dict, List, Optional
 import uuid
 
 from units import Unit, UnitCategory, Structure
@@ -29,6 +29,122 @@ AREA_LAYOUTS: dict[TileType, List[AreaType]] = {
     TileType.HOME:   [AreaType.PLANET, AreaType.PLANET, AreaType.PLANET, AreaType.SPACE],
     TileType.NORMAL: [AreaType.PLANET, AreaType.PLANET, AreaType.SPACE,  AreaType.SPACE],
 }
+
+
+# ── Каталог тайлов ──────────────────────────────────────────────────────────
+
+@dataclass
+class TileSideDef:
+    """Описание одной стороны тайла из каталога.
+
+    Все матрицы 2×2 развёрнуты в плоский список длиной 4 в порядке
+    row-major: [0][0]=TL, [0][1]=TR, [1][0]=BL, [1][1]=BR → индексы 0..3.
+    """
+    side:     str        # 'a' или 'b'
+    layout:   List[int]  # 1 = планета, 0 = космос
+    capacity: List[int]  # вместимость области (для планет = кол-во черепов)
+    valuable: List[int]  = field(default_factory=lambda: [0, 0, 0, 0])  # ценные ресурсы — красный кружок
+    joker:    List[int]  = field(default_factory=lambda: [0, 0, 0, 0])  # жетон джокера
+
+
+@dataclass
+class TileDef:
+    """Запись в каталоге системных тайлов."""
+    id:      str
+    is_home: bool
+    sides:   List[TileSideDef]
+
+    def make_areas(self, side_idx: int = 0) -> List["Area"]:
+        """Создать список из 4 объектов Area по определению стороны."""
+        s = self.sides[side_idx]
+        areas = []
+        for i in range(4):
+            atype = AreaType.PLANET if s.layout[i] == 1 else AreaType.SPACE
+            areas.append(Area(index=i, area_type=atype, skulls=s.capacity[i]))
+        return areas
+
+
+def _td(tid: str, is_home: bool, *sides_data) -> TileDef:
+    """Вспомогательная фабрика: принимает пары (layout_flat, capacity_flat)."""
+    sides = []
+    labels = ("a", "b")
+    for k, (layout, capacity) in enumerate(sides_data):
+        sides.append(TileSideDef(side=labels[k], layout=list(layout), capacity=list(capacity)))
+    return TileDef(id=tid, is_home=is_home, sides=sides)
+
+
+# Ключ — tile_def_id, совпадает с faction.home_tile_id для домашних тайлов.
+# layout/capacity хранятся как плоские 4-элементные списки: TL, TR, BL, BR.
+TILE_CATALOG: Dict[str, TileDef] = {t.id: t for t in [
+    # ── Домашние тайлы фракций (HOME: 3 планеты + 1 космос) ───────────────
+    _td("home_chaos",     True,
+        ([1,1,1,0], [2,1,2,3]),
+        ([1,1,1,0], [1,2,2,3])),
+    _td("home_empire",    True,
+        ([1,1,1,0], [3,2,1,3]),
+        ([1,1,0,1], [2,3,3,1])),
+    _td("home_orks",      True,
+        ([1,1,1,0], [3,3,2,3]),
+        ([1,1,1,0], [2,3,3,3])),
+    _td("home_syndicate", True,
+        ([1,0,1,1], [1,3,1,2]),
+        ([1,1,0,1], [2,1,3,1])),
+    _td("home_nomads",    True,
+        ([1,0,1,1], [1,3,2,1]),
+        ([1,1,1,0], [1,2,1,3])),
+    _td("home_theocracy", True,
+        ([1,1,1,0], [2,1,1,3]),
+        ([1,1,0,1], [1,2,3,1])),
+    _td("home_machines",  True,
+        ([1,1,1,0], [2,2,2,3]),
+        ([1,1,1,0], [3,2,1,3])),
+    _td("home_pirates",   True,
+        ([1,1,0,1], [1,2,3,1]),
+        ([1,0,1,1], [2,3,1,1])),
+    _td("home_elders",    True,
+        ([1,1,1,0], [1,1,1,3]),
+        ([1,0,1,1], [1,3,1,1])),
+    _td("home_traders",   True,
+        ([1,1,1,0], [1,2,1,3]),
+        ([1,1,0,1], [2,1,3,1])),
+    _td("home_mutants",   True,
+        ([1,1,1,0], [3,1,2,3]),
+        ([1,0,1,1], [2,3,3,1])),
+    _td("home_crusaders", True,
+        ([1,1,1,0], [3,2,3,3]),
+        ([1,1,1,0], [2,3,2,3])),
+    _td("home_marine",    True,
+        ([1,1,1,0], [3,2,2,3]),
+        ([1,1,1,0], [2,3,3,3])),
+    _td("home_eldar",     True,
+        ([1,0,1,1], [2,3,1,2]),
+        ([1,1,0,1], [1,2,3,1])),
+    # ── Обычные тайлы (NORMAL: 2 планеты + 2 космоса) ─────────────────────
+    _td("normal_01", False,
+        ([1,1,0,0], [2,1,3,3]),
+        ([1,0,1,0], [1,3,2,3])),
+    _td("normal_02", False,
+        ([1,0,1,0], [1,3,1,3]),
+        ([0,1,0,1], [3,2,3,1])),
+    _td("normal_03", False,
+        ([1,0,0,0], [3,3,3,3]),
+        ([1,1,0,0], [2,1,3,3])),
+    _td("normal_04", False,
+        ([1,0,0,1], [2,3,3,1]),
+        ([1,0,1,0], [3,3,1,3])),
+    _td("normal_05", False,
+        ([1,1,0,0], [1,1,3,3]),
+        ([1,0,1,0], [2,3,1,3])),
+    _td("normal_06", False,
+        ([1,1,0,0], [2,2,3,3]),
+        ([1,1,0,0], [1,3,3,3])),
+    _td("normal_07", False,
+        ([0,1,0,1], [3,1,3,2]),
+        ([1,1,0,0], [1,1,3,3])),
+    _td("normal_08", False,
+        ([1,0,0,1], [1,3,3,2]),
+        ([1,1,0,0], [2,2,3,3])),
+]}
 
 
 @dataclass
@@ -95,13 +211,14 @@ class SystemTile:
         0 1      0°   →   0 1      90°  →   2 0     180° →   3 2     270° →   1 3
         2 3               2 3               3 1               1 0               0 2
     """
-    id:        str       = field(default_factory=lambda: str(uuid.uuid4())[:8])
-    tile_type: TileType  = TileType.NORMAL
-    owner:     int       = 0          # player_id владельца
-    col:       int       = 0          # колонка на поле (может быть < 0)
-    row:       int       = 0          # строка на поле
-    rotation:  int       = 0          # 0 | 90 | 180 | 270
-    areas:     List[Area] = field(default_factory=list)
+    id:          str       = field(default_factory=lambda: str(uuid.uuid4())[:8])
+    tile_type:   TileType  = TileType.NORMAL
+    tile_def_id: str       = ""        # ID из TILE_CATALOG; если задан — области берутся из каталога
+    owner:       int       = 0         # player_id владельца
+    col:         int       = 0         # колонка на поле (может быть < 0)
+    row:         int       = 0         # строка на поле
+    rotation:    int       = 0         # 0 | 90 | 180 | 270
+    areas:       List[Area] = field(default_factory=list)
 
     # Таблица переупорядочивания индексов при повороте
     # _ROTATION_MAP[r//90] = [new_pos_for_original_0, ...1, ...2, ...3]
@@ -114,8 +231,11 @@ class SystemTile:
 
     def __post_init__(self):
         if not self.areas:
-            layout = AREA_LAYOUTS[self.tile_type]
-            self.areas = [Area(index=i, area_type=t) for i, t in enumerate(layout)]
+            if self.tile_def_id and self.tile_def_id in TILE_CATALOG:
+                self.areas = TILE_CATALOG[self.tile_def_id].make_areas(side_idx=0)
+            else:
+                layout = AREA_LAYOUTS[self.tile_type]
+                self.areas = [Area(index=i, area_type=t) for i, t in enumerate(layout)]
 
     @property
     def key(self) -> str:
@@ -157,14 +277,15 @@ class SystemTile:
 
     def to_dict(self) -> dict:
         return {
-            "id":        self.id,
-            "tile_type": self.tile_type.value,
-            "owner":     self.owner,
-            "col":       self.col,
-            "row":       self.row,
-            "rotation":  self.rotation,
-            "key":       self.key,
-            "is_home":   self.is_home,
-            "areas":     [a.to_dict() for a in self.areas],
+            "id":          self.id,
+            "tile_type":   self.tile_type.value,
+            "tile_def_id": self.tile_def_id,
+            "owner":       self.owner,
+            "col":         self.col,
+            "row":         self.row,
+            "rotation":    self.rotation,
+            "key":         self.key,
+            "is_home":     self.is_home,
+            "areas":       [a.to_dict() for a in self.areas],
             "rotated_areas": [a.to_dict() for a in self.rotated_areas()],
         }

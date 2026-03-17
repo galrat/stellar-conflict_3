@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(python3 -c \"\nwith open\\('C:/Users/Airat/Desktop/fs_code/tiles.js', 'r', encoding='utf-8'\\) as f:\n    lines = f.readlines\\(\\)\nfor i, line in enumerate\\(lines[660:672], start=661\\):\n    print\\(f'{i}: {repr\\(line[:60]\\)}'\\)\n\")",
+      "Bash(node -e \"\nconst fs = require\\('fs'\\);\nconst lines = fs.readFileSync\\('C:/Users/Airat/Desktop/fs_code/tiles.js', 'utf8'\\).split\\('\\\\n'\\);\nlines.slice\\(660, 672\\).forEach\\(\\(l, i\\) => console.log\\(661+i + ': ' + JSON.stringify\\(l.substring\\(0,60\\)\\)\\)\\);\n\")",
+      "Bash(powershell -Command \"Get-Content 'C:/Users/Airat/Desktop/fs_code/tiles.js' | Select-Object -Skip 660 -First 12 | ForEach-Object { $_ }\")"
     ]
   }
 }

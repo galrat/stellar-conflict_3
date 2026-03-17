@@ -1,28 +1,24 @@
 """
-faction_defs/empire.py — фракция «Империя»
+faction_defs/marine.py — фракция «marine»
 
 Тяжёлая бронированная держава. Опирается на механизированные войска
 и эсминцы. Медленная, но сокрушительная в прямом столкновении.
 """
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
-EMPIRE = Faction(
-    id    = "empire",
-    name  = "Империя",
+MARINE = Faction(
+    id    = "marine",
+    name  = "Space marine",
     icon  = "◆",
-    color        = "#C0392B",
-    home_tile_id = "home_empire",
+    color        = "1F4E9E",
+    home_tile_id = "home_marine",
     flavor = (
-        "Железный кулак, сжимающий галактику. Империя не знает компромиссов: "
-        "её бронеколонны давят сопротивление весом стали, "
-        "а орбитальные эсминцы обеспечивают господство в космосе "
-        "прежде, чем десант коснётся поверхности."
+         "Особое свойство доминации:"
+        "вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал "
     ),
-    special_ability_name = "Бронированный авангард",
+    special_ability_name = "Тренировка",
     special_ability_desc = (
-        "Все механизированные юниты Империи имеют постоянный +1 к attack_bonus "
-        "(суммируется со стандартным значением). "
-        "Эффект применяется автоматически при каждом бою."
+        "вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал "
     ),
     unit_config = UnitConfig(
         infantry=1, marines=1, mechanized=2, elite=0,

@@ -1,28 +1,26 @@
 """
-faction_defs/syndicate.py — фракция «Синдикат»
+faction_defs/eldar.py — фракция «Эльдары»
 
-Теневая организация. Ставит на скорость, десантников и манипуляцию.
-Слаба в затяжных боях, но смертоносна в засадах и рейдах.
+Хитрые и маневренные.
 """
 from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
 
-SYNDICATE = Faction(
-    id    = "syndicate",
-    name  = "Синдикат",
+ELDAR = Faction(
+    id    = "eldar",
+    name  = "Eldar",
     icon  = "◉",
-    color        = "#8E44AD",
-    home_tile_id = "home_syndicate",
+    color        = "#F2C94C",
+    home_tile_id = "home_eldar",
     flavor = (
         "Теневой рынок, правящий из темноты. Синдикат не держит фронтов — "
         "он проникает за линии, покупает предателей и наносит удар "
         "там, где его никто не ждёт. Его десантники — лучшие "
         "бойцы в ближнем бою, а истребители — тени в звёздном небе."
     ),
-    special_ability_name = "Теневая операция",
+    special_ability_name = "Телепорт",
     special_ability_desc = (
-        "После победы в бою десантники Синдиката могут немедленно "
-        "переместиться в любую смежную зону того же тайла (бесплатно). "
-        "Это движение не считается приказом."
+        " Особое свойство доминации:"
+        "вы можете переместить одного юнита из мира активной системы в дружественный мир"
     ),
     unit_config = UnitConfig(
         infantry=2, marines=2, mechanized=0, elite=0,

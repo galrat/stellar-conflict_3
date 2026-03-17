@@ -51,7 +51,7 @@ separator("СЦЕНАРИЙ 1 — дефолтная конфигурация")
 
 game = GameState(GameConfig(
     p1_name="Alpha", p1_faction="chaos",
-    p2_name="Omega",  p2_faction="empire",
+    p2_name="Omega",  p2_faction="marine",
 ))
 show_log(game, 3)
 show_pool(game, 0)

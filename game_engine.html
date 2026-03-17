@@ -88,7 +88,7 @@ input[type=text]:focus{border-color:var(--p1);}
 .pool-sec{display:flex;flex-direction:column;gap:3px;}
 .pool-type-lbl{font-size:.58rem;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;}
 .tpool{display:flex;flex-wrap:wrap;gap:3px;}
-.ttok{width:23px;height:23px;display:flex;align-items:center;justify-content:center;font-size:.56rem;font-weight:700;cursor:pointer;transition:all .15s;border:2px solid;user-select:none;}
+.ttok{width:39px;height:39px;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s;border:2px solid;user-select:none;}
 .ttok.ground{border-radius:50%;}
 .ttok.space{border-radius:3px;}
 .ttok.c1{background:rgba(0,200,255,.15);border-color:var(--p1);color:var(--p1);}
@@ -109,7 +109,7 @@ input[type=text]:focus{border-color:var(--p1);}
 .le1{color:rgba(0,200,255,.85);}.le2{color:rgba(255,77,109,.85);}.les{color:var(--gold);}
 
 /* ── MAP ── */
-.map-container{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px;overflow:auto;}
+.map-container{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;overflow:auto;min-height:0;}
 .map-board{position:relative;}
 .drop-cell{position:absolute;border:2px solid var(--p1);background:rgba(0,200,255,.05);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:pc .9s ease-in-out infinite;}
 .drop-cell:hover{background:rgba(0,200,255,.13);}
@@ -117,21 +117,24 @@ input[type=text]:focus{border-color:var(--p1);}
 
 /* tile */
 .stile{position:absolute;border-radius:8px;overflow:visible;}
-.stilei{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;padding:3px;background:transparent;border-radius:8px;}
+.stile-bg{position:absolute;inset:0;border-radius:8px;overflow:hidden;z-index:0;pointer-events:none;}
+.stile-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;transform-origin:center;}
+.stile::before{content:'';position:absolute;inset:0;border-radius:8px;background:rgba(2,8,18,.38);z-index:1;pointer-events:none;}
+.stilei{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;padding:3px;background:transparent;border-radius:8px;position:relative;z-index:2;}
 .stile.hp1{box-shadow:inset 0 0 0 2px var(--p1),0 0 14px rgba(0,200,255,.2);}
 .stile.hp2{box-shadow:inset 0 0 0 2px var(--p2),0 0 14px rgba(255,77,109,.2);}
 .stile.np1{box-shadow:inset 0 0 0 1px rgba(0,200,255,.3);}
 .stile.np2{box-shadow:inset 0 0 0 1px rgba(255,77,109,.3);}
 .stile.just{box-shadow:inset 0 0 0 2px var(--gold),0 0 12px rgba(255,215,0,.25);}
-.hbadge{position:absolute;top:2px;left:3px;font-size:.44rem;color:var(--gold);z-index:5;pointer-events:none;}
-.tcoord{position:absolute;top:2px;right:3px;font-size:.4rem;font-family:'Orbitron',monospace;color:var(--dim);z-index:5;pointer-events:none;}
+.hbadge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.6rem;color:var(--gold);z-index:5;pointer-events:none;text-shadow:0 2px 8px #000,0 0 6px #000;}
+.tcoord{position:absolute;top:4px;right:5px;font-size:.8rem;font-family:'Orbitron',monospace;color:var(--dim);z-index:5;pointer-events:none;text-shadow:0 1px 3px #000;}
 
 /* area */
-.tarea{border:1px solid rgba(255,255,255,.07);border-radius:3px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1px;padding:2px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
-.tarea.aplanet{background:rgba(10,30,16,.55);}
-.tarea.aspace{background:rgba(6,14,26,.55);}
-.tarea.aplanet::after{content:'🪐';position:absolute;bottom:1px;right:2px;font-size:.5rem;opacity:.4;pointer-events:none;}
-.tarea.aspace::after{content:'✦';position:absolute;bottom:1px;right:2px;font-size:.5rem;opacity:.3;color:#88aaff;pointer-events:none;}
+.tarea{border:1px solid rgba(255,255,255,.22);border-radius:3px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1px;padding:2px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.tarea.aplanet{background:rgba(10,30,16,.12);}
+.tarea.aspace{background:rgba(6,14,40,.12);}
+.tarea.aplanet::after{content:'🪐';position:absolute;bottom:2px;right:3px;font-size:1rem;opacity:.7;pointer-events:none;}
+.tarea.aspace::after{content:'✦';position:absolute;bottom:2px;right:3px;font-size:1rem;opacity:.6;color:#88aaff;pointer-events:none;}
 .tarea:hover{border-color:var(--dim);}
 .tarea.aok{border-color:var(--p1);animation:adp .8s ease-in-out infinite;cursor:pointer;}
 .tarea.aok:hover{background:rgba(0,200,255,.1);}
@@ -140,16 +143,16 @@ input[type=text]:focus{border-color:var(--p1);}
 .tarea.h1{border-color:rgba(0,200,255,.4);}.tarea.h2{border-color:rgba(255,77,109,.4);}
 .tarea.contested{border-color:#ff9500;animation:bat .45s ease-in-out infinite;}
 @keyframes bat{0%,100%{background:rgba(255,149,0,.05);}50%{background:rgba(255,149,0,.15);}}
-.atlbl{position:absolute;top:1px;left:2px;font-size:.55rem;pointer-events:none;opacity:.8;z-index:3;letter-spacing:.05em;}
-.acap{position:absolute;bottom:1px;right:2px;font-size:.5rem;font-family:'Orbitron',monospace;color:var(--dim);pointer-events:none;z-index:3;}
-.atroop{width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.44rem;font-weight:700;border:1px solid;flex-shrink:0;}
+.atlbl{position:absolute;top:2px;left:4px;font-size:1.1rem;pointer-events:none;opacity:.95;z-index:3;letter-spacing:.05em;text-shadow:0 1px 5px #000,0 0 4px #000;}
+.acap{position:absolute;bottom:2px;right:4px;font-size:1rem;font-family:'Orbitron',monospace;color:var(--dim);pointer-events:none;z-index:3;text-shadow:0 1px 4px #000;}
+.atroop{width:33px;height:33px;display:flex;align-items:center;justify-content:center;font-size:.87rem;font-weight:700;border:1px solid;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.8);}
 .atroop.ground{border-radius:50%;}
 .atroop.space{border-radius:2px;}
-.atroop.c1{background:rgba(0,200,255,.2);border-color:var(--p1);color:var(--p1);}
-.atroop.c2{background:rgba(255,77,109,.2);border-color:var(--p2);color:var(--p2);}
-.opip{position:absolute;width:11px;height:11px;border-radius:50%;font-size:.38rem;font-family:'Orbitron',monospace;display:flex;align-items:center;justify-content:center;z-index:4;}
-.opip.op1{background:rgba(0,200,255,.3);color:var(--p1);border:1px solid var(--p1);top:1px;right:1px;}
-.opip.op2{background:rgba(255,77,109,.3);color:var(--p2);border:1px solid var(--p2);bottom:1px;left:1px;}
+.atroop.c1{background:#001d28;border-color:var(--p1);color:var(--p1);}
+.atroop.c2{background:#28000e;border-color:var(--p2);color:var(--p2);}
+.opip{position:absolute;width:11px;height:11px;border-radius:50%;font-size:.38rem;font-family:'Orbitron',monospace;display:flex;align-items:center;justify-content:center;z-index:4;box-shadow:0 1px 4px rgba(0,0,0,.8);}
+.opip.op1{background:rgba(0,200,255,.75);color:#001820;border:1px solid var(--p1);top:1px;right:1px;}
+.opip.op2{background:rgba(255,77,109,.75);color:#200010;border:1px solid var(--p2);bottom:1px;left:1px;}
 
 /* ── BOTTOM BAR ── */
 .bottom-bar{display:flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px 14px;flex-shrink:0;flex-wrap:wrap;}
@@ -186,10 +189,14 @@ input[type=text]:focus{border-color:var(--p1);}
 .sval{font-size:2.6rem;font-family:'Orbitron',monospace;font-weight:900;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 /* ── ЖЕТОНЫ РЕСУРСОВ ── */
-.tok-sup,.tok-dis,.tok-frg{font-size:.42rem;font-family:'Orbitron',monospace;font-weight:700;padding:0 2px;border-radius:2px;border:1px solid;line-height:1.3;pointer-events:none;}
+.tok-sup,.tok-dis,.tok-frg,.tok-jok{font-size:.84rem;font-family:'Orbitron',monospace;font-weight:700;padding:1px 3px;border-radius:3px;border:1px solid;line-height:1.3;pointer-events:none;}
 .tok-sup{background:rgba(255,215,0,.25);color:#ffd700;border-color:rgba(255,215,0,.6);}
 .tok-dis{background:rgba(0,200,255,.25);color:#00c8ff;border-color:rgba(0,200,255,.6);}
 .tok-frg{background:rgba(255,140,0,.25);color:#ff8c00;border-color:rgba(255,140,0,.6);}
+.tok-jok{background:rgba(180,0,255,.25);color:#c87aff;border-color:rgba(180,0,255,.6);}
+/* доход: зелёный кружок; ценные: красный кружок */
+.inc-mark{color:#4caf50;font-weight:700;text-shadow:0 1px 3px #000;}
+.val-mark{color:#ff4444;font-weight:700;text-shadow:0 1px 3px #000;}
 </style>
 </head>
 <body>
@@ -318,10 +325,10 @@ input[type=text]:focus{border-color:var(--p1);}
 //  CONSTANTS  (declared at module scope — never inside functions)
 // ══════════════════════════════════════════════
 const FACTIONS = [
-  { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos', flavor:'Особое свойство доминации:вы можете переместить культиста на свободный или дружественный мир соседней системы', troops:{ground:4,space:3} },
-  { id:'empire', name:'Империя', icon:'◆', color:'#C0392B', homeTileId:'home_empire', flavor:'Железный кулак, сжимающий галактику. Империя не знает компромиссов: её бронеколонны давят сопротивление весом стали, а орбитальные эсминцы обеспечивают господство в космосе прежде, чем десант коснётся поверхности.', troops:{ground:4,space:3} },
+  { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos', flavor:'Особое свойство доминации:вы можете переместить культиста на свободный или дружественный мир соседней системы', troops:{ground:7,space:4} },
+  { id:'marine', name:'Space marine', icon:'◆', color:'#1F4E9E', homeTileId:'home_marine', flavor:'Особое свойство доминации:вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал', troops:{ground:4,space:3} },
   { id:'orks', name:'Орки', icon:'💀', color:'#2E7D32', homeTileId:'home_orks', flavor:'Особое свойство фракции: вы можете купить один отряд и поместить его в дружественный мир активнйо системы', troops:{ground:6,space:2} },
-  { id:'syndicate', name:'Синдикат', icon:'◉', color:'#8E44AD', homeTileId:'home_syndicate', flavor:'Теневой рынок, правящий из темноты. Синдикат не держит фронтов — он проникает за линии, покупает предателей и наносит удар там, где его никто не ждёт. Его десантники — лучшие бойцы в ближнем бою, а истребители — тени в звёздном небе.', troops:{ground:4,space:3} },
+  { id:'eldar', name:'Eldar', icon:'◉', color:'#F2C94C', homeTileId:'home_eldar', flavor:'Теневой рынок, правящий из темноты. Синдикат не держит фронтов — он проникает за линии, покупает предателей и наносит удар там, где его никто не ждёт. Его десантники — лучшие бойцы в ближнем бою, а истребители — тени в звёздном небе.', troops:{ground:4,space:3} },
   { id:'nomads', name:'Кочевники', icon:'✦', color:'#E67E22', homeTileId:'home_nomads', flavor:'Племена без дома, скитающиеся между звёздами. Их сила — в скорости и непредсказуемости.', troops:{ground:5,space:3} },
   { id:'theocracy', name:'Теократия', icon:'✝', color:'#F39C12', homeTileId:'home_theocracy', flavor:'Фанатичные крестоносцы, несущие волю Бога-Императора. Сильны в обороне священных миров и массированных атаках.', troops:{ground:6,space:2} },
   { id:'machines', name:'Машины', icon:'⚙', color:'#7F8C8D', homeTileId:'home_machines', flavor:'Древний искусственный интеллект, пробудившийся спустя тысячелетия. Не знают страха и усталости — каждый юнит заменяем.', troops:{ground:6,space:2} },
@@ -332,8 +339,34 @@ const FACTIONS = [
   { id:'crusaders', name:'Крестоносцы', icon:'⚔', color:'#2980B9', homeTileId:'home_crusaders', flavor:'Рыцарский орден звёздного фронтира. Предпочитают честный бой и никогда не отступают.', troops:{ground:6,space:2} },
 ];
 
+// Коды юнитов: {faction}_{type}_{tier}  →  название юнита
+// Формат: фракция_тип_уровень (ground/space, 0-3)
+const UNIT_NAMES = {
+  // Хаос
+  'chaos_ground_0': 'Культист',
+  'chaos_ground_1': 'Берсерк',
+  'chaos_ground_2': 'Демон Хаоса',
+  'chaos_space_0':  'Налётчик',
+  'chaos_space_1':  'Разрушитель',
+  // Space Marine
+  'marine_ground_0': 'Боевой брат',
+  'marine_ground_1': 'Десантник',
+  'marine_ground_2': 'Терминатор',
+  'marine_space_0':  'Перехватчик',
+  'marine_space_1':  'Крейсер',
+  // Орки
+  'orks_ground_0': 'Боёр',
+  'orks_ground_1': 'Штормбой',
+  'orks_ground_2': 'Мек',
+  'orks_space_0':  'Вааг-файтер',
+  // Элдары
+  'eldar_ground_0': 'Аспект',
+  'eldar_ground_1': 'Рейнджер',
+  'eldar_space_0':  'Истребитель',
+};
+
 const TILES_PP = 3;
-const CELL     = 160;
+const CELL     = 320;
 
 // TILE_CATALOG и функция tileDefToAreas загружены из tiles.js
 
@@ -437,7 +470,7 @@ function buildFactionUI() {
     });
   });
   G.players[0].faction = 'chaos';
-  G.players[1].faction = 'empire';
+  G.players[1].faction = 'marine';
   refreshFactionUI();
 }
 
@@ -497,8 +530,13 @@ function startGame() {
   G.players.forEach((p, pi) => {
     const fac = FACTIONS.find(f => f.id === p.faction);
     p.pool = [];
-    for (let i=0; i<fac.troops.ground; i++) p.pool.push({ id:nextId++, player:pi, unitType:'ground' });
-    for (let i=0; i<fac.troops.space;  i++) p.pool.push({ id:nextId++, player:pi, unitType:'space'  });
+    if (fac.unitTiers) {
+      fac.unitTiers.ground.forEach(tier => p.pool.push({ id:nextId++, player:pi, unitType:'ground', tier }));
+      fac.unitTiers.space.forEach(tier  => p.pool.push({ id:nextId++, player:pi, unitType:'space',  tier }));
+    } else {
+      for (let i=0; i<fac.troops.ground; i++) p.pool.push({ id:nextId++, player:pi, unitType:'ground', tier:0 });
+      for (let i=0; i<fac.troops.space;  i++) p.pool.push({ id:nextId++, player:pi, unitType:'space',  tier:0 });
+    }
 
     const myHome = TILE_CATALOG.find(t => t.id === fac.homeTileId)
                 || TILE_CATALOG.find(t => t.isHome);
@@ -749,9 +787,11 @@ function exportMap() {
         type:     a.type,
         capacity: a.capacity,
         income:   a.income,
+        valuable: a.valuable,
         support:  a.support,
         discount: a.discount,
         forge:    a.forge,
+        joker:    a.joker,
         troops:   a.troops.map(u => ({ player:u.player, unitType:u.unitType })),
       })),
     })),
@@ -821,7 +861,7 @@ function placeUnit(key, displayIdx) {
     return;
   }
 
-  area.troops.push({ player:G.curP, id:unit.id, unitType:unit.unitType });
+  area.troops.push({ player:G.curP, id:unit.id, unitType:unit.unitType, tier:unit.tier??0 });
   cp.pool.splice(G.selUnitIdx, 1);
 
   // Record for undo
@@ -910,7 +950,29 @@ function endTurn() {
 // ══════════════════════════════════════════════
 //  ORDERS
 // ══════════════════════════════════════════════
+// После расстановки тайлов разворачивает поле так, чтобы 3 тайла шли по горизонтали.
+// Если ширина < высоты — транспонирует координаты (col ↔ row) всех тайлов.
+function orientBoardHorizontal() {
+  const tiles = Object.values(G.map);
+  if (!tiles.length) return;
+  const cols   = tiles.map(t => t.col);
+  const rows   = tiles.map(t => t.row);
+  const width  = Math.max(...cols) - Math.min(...cols) + 1;
+  const height = Math.max(...rows) - Math.min(...rows) + 1;
+  if (width >= height) return; // уже горизонтальная или квадратная
+  const newMap = {};
+  tiles.forEach(t => {
+    const tmp = t.col;
+    t.col = t.row;
+    t.row = tmp;
+    t.key = `${t.col},${t.row}`;
+    newMap[t.key] = t;
+  });
+  G.map = newMap;
+}
+
 function startOrderPhase() {
+  orientBoardHorizontal();
   G.players.forEach(p => p.orders = [null,null]);
   G.curP = 0;
   showHP(G.players[0].name, 'Расставьте приказы (2 шт.)', () => setPhase('order-placement'));
@@ -1111,9 +1173,14 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
     }
     const side = tile.side || 0;
     const imgSuffix = side === 0 ? 'a' : 'b';
-    el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`+
-      `background-image:url('tiles/${tile.tileDefId}_${imgSuffix}.png');`+
-      `background-size:cover;background-position:center;`;
+    el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`;
+
+    // Rotating background image
+    const bgWrap = document.createElement('div'); bgWrap.className = 'stile-bg';
+    const bgImg  = document.createElement('div'); bgImg.className  = 'stile-bg-img';
+    bgImg.style.backgroundImage = `url('tiles/${tile.tileDefId}_${imgSuffix}.png')`;
+    bgImg.style.transform       = `rotate(${tile.rotation || 0}deg)`;
+    bgWrap.appendChild(bgImg); el.appendChild(bgWrap);
 
     if (tile.isHome) {
       const hb=document.createElement('div'); hb.className='hbadge'; hb.textContent='🏠'; el.appendChild(hb);
@@ -1136,11 +1203,13 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
       const lbl=document.createElement('div'); lbl.className='atlbl';
       if (area.type==='planet') {
         const capMark = '●'.repeat(cap);
-        const incMark = area.income > 0 ? ` ★${area.income}` : '';
-        let lblHTML = capMark + incMark;
+        const incMark = area.income   > 0 ? ` <span class="inc-mark">●${area.income}</span>`   : '';
+        const valMark = area.valuable > 0 ? ` <span class="val-mark">◆${area.valuable}</span>` : '';
+        let lblHTML = capMark + incMark + valMark;
         if (area.support)  lblHTML += ' <span class="tok-sup">П</span>';
         if (area.discount) lblHTML += ' <span class="tok-dis">С</span>';
         if (area.forge)    lblHTML += ' <span class="tok-frg">М</span>';
+        if (area.joker)    lblHTML += ' <span class="tok-jok">Д</span>';
         lbl.innerHTML = lblHTML;
       } else {
         lbl.textContent = '✦';
@@ -1155,7 +1224,8 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
       area.troops.forEach(u => {
         const tok=document.createElement('div');
         tok.className=`atroop ${u.unitType} ${u.player===0?'c1':'c2'}`;
-        tok.textContent=u.unitType==='ground'?(u.player===0?'▲':'▼'):(u.player===0?'◈':'◆');
+        tok.textContent=`T${u.tier??0}`;
+        tok.title=UNIT_NAMES[`${G.players[u.player].faction}_${u.unitType}_${u.tier??0}`]||`T${u.tier??0}`;
         ae.appendChild(tok);
       });
 
@@ -1234,7 +1304,9 @@ function renderSide() {
         const gi=cp.pool.indexOf(u);
         const tok=document.createElement('div');
         tok.className=`ttok ground ${cp.color}${G.selUnitIdx===gi?' sel':''}`;
-        tok.textContent='▲'; tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
+        tok.textContent=`T${u.tier??0}`;
+        tok.title=UNIT_NAMES[`${cp.faction}_ground_${u.tier??0}`]||`T${u.tier??0}`;
+        tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
       });
       sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
     }
@@ -1246,7 +1318,9 @@ function renderSide() {
         const gi=cp.pool.indexOf(u);
         const tok=document.createElement('div');
         tok.className=`ttok space ${cp.color}${G.selUnitIdx===gi?' sel':''}`;
-        tok.textContent='◈'; tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
+        tok.textContent=`T${u.tier??0}`;
+        tok.title=UNIT_NAMES[`${cp.faction}_space_${u.tier??0}`]||`T${u.tier??0}`;
+        tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
       });
       sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
     }
@@ -1257,7 +1331,7 @@ function renderSide() {
     G.players.forEach(p=>p.pool.forEach(u=>{
       const tok=document.createElement('div');
       tok.className=`ttok ${u.unitType==='space'?'space':'ground'} ${p.color}`;
-      tok.textContent=u.unitType==='space'?'◈':'▲'; pool.appendChild(tok);
+      tok.textContent=`T${u.tier??0}`; pool.appendChild(tok);
     }));
     poolCont.appendChild(pool);
   }
