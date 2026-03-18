@@ -58,7 +58,7 @@ input[type=text]:focus{border-color:var(--p1);}
 .pfac{font-size:.62rem;color:var(--dim);}
 .ptroops{font-size:.78rem;color:var(--dim);}
 .ptnum{font-weight:700;}.s1 .ptnum{color:var(--p1);}.s2 .ptnum{color:var(--p2);}
-.pres{font-size:.65rem;color:var(--dim);margin-top:1px;letter-spacing:.03em;}
+.pres{font-size:1.3rem;color:var(--dim);margin-top:1px;letter-spacing:.03em;}
 .phase-info{text-align:center;}
 .phase-lbl{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.3em;color:var(--dim);text-transform:uppercase;}
 .phase-name{font-family:'Orbitron',monospace;font-size:.78rem;color:var(--gold);white-space:nowrap;}
@@ -158,9 +158,19 @@ input[type=text]:focus{border-color:var(--p1);}
 .opip{position:absolute;width:11px;height:11px;border-radius:50%;font-size:.38rem;font-family:'Orbitron',monospace;display:flex;align-items:center;justify-content:center;z-index:4;box-shadow:0 1px 4px rgba(0,0,0,.8);}
 .opip.op1{background:rgba(0,200,255,.75);color:#001820;border:1px solid var(--p1);top:1px;right:1px;}
 .opip.op2{background:rgba(255,77,109,.75);color:#200010;border:1px solid var(--p2);bottom:1px;left:1px;}
+/* Подсветка тайла при выборе тайла для приказа */
+.stile.tok{box-shadow:0 0 0 3px rgba(0,200,255,.9),inset 0 0 16px rgba(0,200,255,.18);animation:adp .8s ease-in-out infinite;cursor:pointer;}
+.stile.tno{opacity:.25;}
+/* Жетон приказа рубашкой вниз / раскрытый — в центре тайла */
+.order-fd{position:absolute;width:46px;height:46px;border-radius:8px;border:2px solid;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;font-family:'Orbitron',monospace;pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 2px 10px rgba(0,0,0,.85);}
+.order-fd.op1{background:rgba(0,30,55,.92);border-color:var(--p1);color:var(--p1);}
+.order-fd.op2{background:rgba(55,0,18,.92);border-color:var(--p2);color:var(--p2);}
+.order-fd.clickable{pointer-events:auto;cursor:pointer;animation:adp .8s ease-in-out infinite;border-width:3px;}
+.order-fd.clickable:hover{filter:brightness(1.4);}
 
 /* ── BOTTOM BAR ── */
 .bottom-bar{display:flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px 14px;flex-shrink:0;flex-wrap:wrap;}
+#btn-et{margin-left:auto;}
 .pinstr{flex:1;font-size:.8rem;color:var(--text);line-height:1.4;min-width:200px;}
 .pinstr strong{color:var(--gold);font-family:'Orbitron',monospace;font-size:.65rem;}
 .abtn{padding:8px 13px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.1em;cursor:pointer;border:1px solid;transition:all .2s;text-transform:uppercase;white-space:nowrap;}
@@ -193,6 +203,24 @@ input[type=text]:focus{border-color:var(--p1);}
 .scard.winner{border-color:var(--gold);box-shadow:0 0 16px rgba(255,215,0,.18);}
 .sval{font-size:2.6rem;font-family:'Orbitron',monospace;font-weight:900;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+/* ── ЖЕТОНЫ ПРИКАЗОВ (панель) ── */
+#left-panel{overflow-y:auto;}
+.otok-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:5px 0;}
+/* 2× размер: ширина = 1 из 2 колонок панели (~83px), высота фиксирована */
+.otok{width:100%!important;height:auto!important;min-height:74px;border-radius:10px;font-size:1.9rem;flex-direction:column;gap:2px;border-width:2px;}
+.otok .olabel{font-size:.52rem;font-family:'Orbitron',monospace;letter-spacing:.07em;margin-top:1px;opacity:.9;}
+/* Цвет по типу приказа */
+.otok-move    {background:rgba(0,180,255,.28);border-color:#00b4ff;color:#00d8ff;}
+.otok-build   {background:rgba(255,185,0,.28); border-color:#ffbb00;color:#ffe040;}
+.otok-dominate{background:rgba(255,45,75,.28); border-color:#ff2d4b;color:#ff607a;}
+.otok-plan    {background:rgba(140,70,255,.28);border-color:#8c46ff;color:#c090ff;}
+/* Выбранный жетон */
+.otok-move.sel    {background:rgba(0,180,255,.6); box-shadow:0 0 12px rgba(0,200,255,.9); border-color:#00e8ff;}
+.otok-build.sel   {background:rgba(255,185,0,.6); box-shadow:0 0 12px rgba(255,200,0,.9); border-color:#ffe040;}
+.otok-dominate.sel{background:rgba(255,45,75,.6); box-shadow:0 0 12px rgba(255,60,90,.9); border-color:#ff8090;}
+.otok-plan.sel    {background:rgba(140,70,255,.6);box-shadow:0 0 12px rgba(160,90,255,.9);border-color:#c090ff;}
+/* Использованный (серый) */
+.otok-used{background:rgba(60,60,80,.18);border-color:rgba(100,100,130,.3);color:rgba(140,140,160,.4);cursor:default!important;pointer-events:none;}
 /* ── ЖЕТОНЫ РЕСУРСОВ ── */
 .tok-sup,.tok-dis,.tok-frg,.tok-jok{font-size:.84rem;font-family:'Orbitron',monospace;font-weight:700;padding:1px 3px;border-radius:3px;border:1px solid;line-height:1.3;pointer-events:none;}
 .tok-sup{background:rgba(255,215,0,.25);color:#ffd700;border-color:rgba(255,215,0,.6);}
@@ -233,7 +261,6 @@ input[type=text]:focus{border-color:var(--p1);}
       <div class="pstats s1">
         <div class="pname" id="h-p1-name">Alpha</div>
         <div class="pfac"  id="h-p1-fac">—</div>
-        <div class="ptroops">Войска: <span class="ptnum" id="h-p1-t">6</span></div>
         <div class="pres" id="h-p1-res"></div>
       </div>
     </div>
@@ -247,7 +274,6 @@ input[type=text]:focus{border-color:var(--p1);}
       <div class="pstats s2" style="text-align:right">
         <div class="pname" id="h-p2-name">Omega</div>
         <div class="pfac"  id="h-p2-fac">—</div>
-        <div class="ptroops">Войска: <span class="ptnum" id="h-p2-t">6</span></div>
         <div class="pres" id="h-p2-res"></div>
       </div>
       <div class="pavatar av2" id="h-p2-init">P2</div>
@@ -255,16 +281,13 @@ input[type=text]:focus{border-color:var(--p1);}
   </div>
 
   <div class="game-content">
-    <div class="side-panel">
+    <div class="side-panel" id="left-panel">
       <div class="ptitle">Системы в руке</div>
       <div class="tile-hand" id="tile-hand"></div>
       <div class="ptitle">Резерв войск</div>
       <div id="pool-cont"></div>
       <div class="ptitle">Приказы</div>
-      <div id="orders-cont">
-        <div class="oslot" id="os0">— приказ 1</div>
-        <div class="oslot" id="os1">— приказ 2</div>
-      </div>
+      <div id="orders-cont"></div>
     </div>
     <div class="map-container"><div class="map-board" id="map-board"></div></div>
     <div class="side-panel">
@@ -280,10 +303,14 @@ input[type=text]:focus{border-color:var(--p1);}
     <button class="abtn bp" id="btn-fl"   onclick="flipTile()"       style="display:none">⇄ Перевернуть</button>
     <button class="abtn bp" id="btn-rccw" onclick="rotateTile(false)" style="display:none">↺ Повернуть</button>
     <button class="abtn bp" id="btn-rcw"  onclick="rotateTile(true)"  style="display:none">↻ Повернуть</button>
-    <button class="abtn bp" id="btn-et"   onclick="endTurn()"        style="display:none">Готово →</button>
-    <button class="abtn bg" id="btn-ex"   onclick="execNext()"       style="display:none">⚡ Выполнить</button>
-    <button class="abtn br" id="btn-er"   onclick="endRound()"       style="display:none">Завершить раунд →</button>
-    <button class="abtn bg" id="btn-em"   onclick="exportMap()"      style="display:none">💾 Сохранить карту</button>
+    <button class="abtn bg" id="btn-ex"   onclick="execNext()"          style="display:none">⚡ Выполнить</button>
+    <button class="abtn br" id="btn-er"   onclick="endRound()"          style="display:none">Завершить раунд →</button>
+    <button class="abtn bg" id="btn-em"   onclick="exportMap()"         style="display:none">💾 Сохранить карту</button>
+    <button class="abtn br" id="btn-co"   onclick="cancelCurrentOrder()" style="display:none">✕ Отменить приказ</button>
+    <button class="abtn bw" id="btn-undo" onclick="historyUndo()"        style="display:none">↩ Отменить ход</button>
+    <button class="abtn bw" id="btn-redo" onclick="historyRedo()"        style="display:none">↪ Вернуть ход</button>
+    <button class="abtn bg" id="btn-pass-exec" onclick="passExecTurn()" style="display:none">Передать ход →</button>
+    <button class="abtn bp" id="btn-et"   onclick="endTurn()"           style="display:none">Готово →</button>
   </div>
 </div>
 
@@ -294,6 +321,16 @@ input[type=text]:focus{border-color:var(--p1);}
     <div class="wname" id="end-winner">—</div>
     <div class="sgrid" id="end-scores"></div>
     <button class="start-btn" onclick="restartGame()">↺ НОВАЯ ИГРА</button>
+  </div>
+</div>
+
+<!-- Peek overlay — личный просмотр приказа (только текущий игрок видит) -->
+<div id="peek-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+  <div style="color:var(--dim);font-size:.8rem;letter-spacing:.15em;text-transform:uppercase">Только вы видите этот приказ</div>
+  <div id="peek-content" style="display:flex;flex-direction:column;align-items:center;gap:10px;"></div>
+  <div style="display:flex;gap:12px;margin-top:10px;">
+    <button class="abtn bp" style="font-size:1rem;padding:10px 28px;" onclick="playOrder()">▶ Играть приказ</button>
+    <button class="abtn bw" style="font-size:1rem;padding:10px 20px;" onclick="cancelPeek()">✕ Скрыть</button>
   </div>
 </div>
 
@@ -326,6 +363,8 @@ input[type=text]:focus{border-color:var(--p1);}
 </div>
 
 <script src="tiles.js"></script>
+<script src="game_history.js"></script>
+<script src="order_placement.js"></script>
 <script>
 'use strict';
 // ══════════════════════════════════════════════
@@ -335,21 +374,30 @@ const FACTIONS = [
   { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos',
     flavor:'Особое свойство доминации: вы можете переместить культиста на свободный или дружественный мир соседней системы',
     unitTiers:{ground:[0,0,1,1],space:[0]},
+    // maxTiers: полный резерв (старт + докупаемые). T0=пехота T1=штурм T2=механизированные/разрушитель T3=элита
+    maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
+    unitNames:{ground_0:'Культист', ground_1:'Берсерк', ground_2:'Культиватор', ground_3:'Демон Хаоса', space_0:'Налётчик', space_2:'Разрушитель'},
     structures:['factory','city','bastion'],
     credits:6, tokens:{support:1,discount:1,forge:1} },
   { id:'marine', name:'Space marine', icon:'◆', color:'#1F4E9E', homeTileId:'home_marine',
     flavor:'Особое свойство доминации: вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал',
     unitTiers:{ground:[0,0,0,0,1],space:[0]},
+    maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2,2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
+    unitNames:{ground_0:'Боевой брат', ground_1:'Десантник', ground_2:'Дредноут', ground_3:'Терминатор', space_0:'Перехватчик', space_2:'Крейсер'},
     structures:['factory'],
     credits:6, tokens:{support:0,discount:1,forge:2} },
   { id:'orks', name:'Орки', icon:'💀', color:'#2E7D32', homeTileId:'home_orks',
     flavor:'Особое свойство фракции: вы можете купить один отряд и поместить его в дружественный мир активной системы',
     unitTiers:{ground:[0,0,0,0,1],space:[]},
+    maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
+    unitNames:{ground_0:'Боёр', ground_1:'Штормбой', ground_2:'Боевая машина', ground_3:'Мек', space_0:'Вааг-файтер', space_2:'Крейсер орков'},
     structures:['factory'],
     credits:6, tokens:{support:2,discount:1,forge:0} },
   { id:'eldar', name:'Eldar', icon:'◉', color:'#F2C94C', homeTileId:'home_eldar',
     flavor:'По доминации вы можете переместить одного юнита из мира активной системы в дружественный мир.',
-    unitTiers:{ground:[0,0,1],space:[0,0]},
+    unitTiers:{ground:[0,0,0,1],space:[0,0]},
+    maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1, 2,2,2, 3,3,3], space:[0,0,0,0,0,0, 2,2,2]},
+    unitNames:{ground_0:'Аспект', ground_1:'Рейнджер', ground_2:'Страж', ground_3:'Феникс-Лорд', space_0:'Истребитель', space_2:'Воидкрафт'},
     structures:['city'],
     credits:6, tokens:{support:1,discount:2,forge:1} },
   { id:'nomads', name:'Кочевники', icon:'✦', color:'#E67E22', homeTileId:'home_nomads', flavor:'Племена без дома, скитающиеся между звёздами. Их сила — в скорости и непредсказуемости.', troops:{ground:5,space:3} },
@@ -362,31 +410,12 @@ const FACTIONS = [
   { id:'crusaders', name:'Крестоносцы', icon:'⚔', color:'#2980B9', homeTileId:'home_crusaders', flavor:'Рыцарский орден звёздного фронтира. Предпочитают честный бой и никогда не отступают.', troops:{ground:6,space:2} },
 ];
 
-// Коды юнитов: {faction}_{type}_{tier}  →  название юнита
-// Формат: фракция_тип_уровень (ground/space, 0-3)
-const UNIT_NAMES = {
-  // Хаос
-  'chaos_ground_0': 'Культист',
-  'chaos_ground_1': 'Берсерк',
-  'chaos_ground_2': 'Демон Хаоса',
-  'chaos_space_0':  'Налётчик',
-  'chaos_space_1':  'Разрушитель',
-  // Space Marine
-  'marine_ground_0': 'Боевой брат',
-  'marine_ground_1': 'Десантник',
-  'marine_ground_2': 'Терминатор',
-  'marine_space_0':  'Перехватчик',
-  'marine_space_1':  'Крейсер',
-  // Орки
-  'orks_ground_0': 'Боёр',
-  'orks_ground_1': 'Штормбой',
-  'orks_ground_2': 'Мек',
-  'orks_space_0':  'Вааг-файтер',
-  // Элдары
-  'eldar_ground_0': 'Аспект',
-  'eldar_ground_1': 'Рейнджер',
-  'eldar_space_0':  'Истребитель',
-};
+// Название юнита берётся из fac.unitNames['{ground|space}_{tier}'].
+// Fallback: 'T{tier}' если фракция не определена или названия нет.
+function getUnitName(factionId, unitType, tier) {
+  const fac = FACTIONS.find(f => f.id === factionId);
+  return (fac && fac.unitNames && fac.unitNames[`${unitType}_${tier}`]) || `T${tier}`;
+}
 
 const STRUCTURE_INFO = {
   factory: { icon:'⚙', label:'Фабрика' },
@@ -446,8 +475,8 @@ let G;
 function makeState() {
   return {
     players: [
-      { name:'Alpha', faction:null, color:'c1', pool:[], hand:[], orders:[null,null] },
-      { name:'Omega', faction:null, color:'c2', pool:[], hand:[], orders:[null,null] },
+      { name:'Alpha', faction:null, color:'c1', pool:[], hand:[], orders:[null,null,null,null] },
+      { name:'Omega', faction:null, color:'c2', pool:[], hand:[], orders:[null,null,null,null] },
     ],
     phase: 'setup',
     curP: 0,
@@ -465,9 +494,14 @@ function makeState() {
     selUnitType: null,
     selStructIdx: null,    // index in cp.structurePool
     selOrderSlot: null,
+    // ── order placement (new) ───────────────
+    orderStep: 0,                 // 0–7: чей ход в чередовании (0,2,4,6=P0; 1,3,5,7=P1)
+    currentStepOrderPlaced: false,// текущий игрок уже поставил жетон на этом шаге
+    selectedOrderType: null,      // выбранный тип приказа (до клика на тайл)
+    _thisStepOrderSlot: null,     // слот, занятый на этом шаге (для отмены)
     // ── execution ──────────────────────────
-    execQueue: [],
-    execPos: 0,
+    execTurn: 0,       // чей ход в исполнении (0 или 1)
+    execPeeked: null,  // { pi, oi } — текущий подглянутый жетон
     _battleCb: null,
   };
 }
@@ -587,7 +621,7 @@ function startGame() {
       isHome:    td.isHome,
       placed:    false,
     }));
-    p.orders = [null,null];
+    p.orders      = [null, null, null, null];
   });
 
   showScreen('game-screen');
@@ -607,7 +641,8 @@ function setPhase(phase) {
   G.selOrderSlot = null;
 
   // Hide all action buttons
-  ['btn-ut','btn-uu','btn-fl','btn-rccw','btn-rcw','btn-et','btn-ex','btn-er','btn-em'].forEach(id => {
+  ['btn-ut','btn-uu','btn-fl','btn-rccw','btn-rcw','btn-et','btn-ex','btn-er','btn-em',
+   'btn-co','btn-undo','btn-redo','btn-pass-exec'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
 
@@ -641,22 +676,24 @@ function setPhase(phase) {
   else if (phase === 'order-placement') {
     G.tileSnap    = null;
     G.unitsPlaced = [];
-    ins.innerHTML = `<strong>РАССТАНОВКА ПРИКАЗОВ</strong><br>${cp.name}: выберите слот приказа, затем кликните зону назначения.`;
+    const ordCount = (cp.orders || []).filter(o => o !== null).length;
+    ins.innerHTML = `<strong>РАССТАНОВКА ПРИКАЗОВ</strong><br>${cp.name}: выберите жетон приказа (${ordCount}/4 размещено), затем кликните допустимую систему.`;
     show('btn-et');
-    document.getElementById('btn-et').textContent = 'Подтвердить приказы →';
+    document.getElementById('btn-et').textContent = 'Готово →';
+    if (G.currentStepOrderPlaced) show('btn-co');
+    _histUpdateBtns();
     renderSide(); renderBoard();
   }
   else if (phase === 'execution') {
     G.tileSnap    = null;
     G.unitsPlaced = [];
-    buildExecQueue();
-    addLog('=== ПРИКАЗЫ РАСКРЫТЫ ===', -1);
-    G.players.forEach((p,pi) => p.orders.forEach((o,oi) => {
-      if (o) addLog(`${p.name} приказ ${oi+1} → [${o.key}] зона ${o.aIdx+1}`, pi);
-    }));
-    show('btn-ex'); show('btn-em');
-    ins.innerHTML = `<strong>ИСПОЛНЕНИЕ ПРИКАЗОВ</strong><br>Нажмите кнопку для выполнения каждого приказа.`;
-    renderBoard();
+    G.execTurn    = G.execTurn ?? 0;
+    G.execPeeked  = null;
+    if (!G.players.some(p=>(p.orders||[]).some(o=>o&&o.revealed)))
+      addLog('=== ИСПОЛНЕНИЕ ПРИКАЗОВ ===', -1);
+    show('btn-em'); _histUpdateBtns();
+    _execSetInstruction();
+    renderSide(); renderBoard();
   }
   updateHeader();
 }
@@ -911,13 +948,8 @@ function areaClick(key, displayIdx) {
     placeUnit(key, displayIdx); return;
   }
   if (G.phase === 'order-placement') {
-    if (G.selOrderSlot === null) { showMsg('Выберите слот','Сначала выберите слот приказа.'); return; }
-    const cp = G.players[G.curP];
-    cp.orders[G.selOrderSlot] = { key, aIdx: displayIdx };
-    addLog(`${cp.name}: приказ ${G.selOrderSlot+1} → [${key}] зона ${displayIdx+1}`, G.curP);
-    G.selOrderSlot = null;
-    renderSide(); renderBoard();
-    document.getElementById('pinstr').innerHTML = `<strong>РАССТАНОВКА ПРИКАЗОВ</strong><br>${cp.name}: выберите слот приказа, затем кликните зону назначения.`;
+    placeOrderOnTile(key);
+    return;
   }
 }
 
@@ -1033,14 +1065,27 @@ function endTurn() {
   }
 
   if (G.phase === 'order-placement') {
-    if (cp.orders.filter(o=>o!==null).length < 2) { showMsg('Нужно 2 приказа','Разместите оба приказа перед передачей хода.'); return; }
-    G.curP = 1 - G.curP;
-    const op = G.players[G.curP];
-    if (op.orders.filter(o=>o!==null).length < 2) {
-      showHP(op.name, 'Расставьте приказы (2 шт.)', () => setPhase('order-placement'));
-    } else {
+    if (!G.currentStepOrderPlaced) {
+      showMsg('Нужно разместить приказ', 'Выберите жетон приказа и кликните допустимую систему.');
+      return;
+    }
+    const prevName = G.players[G.curP].name;
+    G.orderStep++;
+    G.currentStepOrderPlaced = false;
+    G._thisStepOrderSlot = null;
+    G.selectedOrderType = null;
+
+    if (G.orderStep >= 8) {
+      // Все 8 приказов размещены
+      historySave('Все приказы размещены');
+      G.execTurn = 0;
       G.curP = 0;
-      showHP('ВСЕ ИГРОКИ', 'Приказы раскрыты!', () => setPhase('execution'));
+      showHP(G.players[0].name, 'Начинается исполнение приказов. Разыграйте ваш верхний жетон.', () => setPhase('execution'));
+    } else {
+      G.curP = G.orderStep % 2;
+      const nextCount = (G.players[G.curP].orders || []).filter(o => o !== null).length + 1;
+      historySave(`${prevName} разместил приказ`);
+      showHP(G.players[G.curP].name, `Разместите приказ ${nextCount}/4`, () => setPhase('order-placement'));
     }
     return;
   }
@@ -1072,9 +1117,19 @@ function orientBoardHorizontal() {
 
 function startOrderPhase() {
   orientBoardHorizontal();
-  G.players.forEach(p => p.orders = [null,null]);
+  // Сохранить состояние после создания карты (функция 1)
+  G.players.forEach(p => {
+    p.orders      = [null, null, null, null];
+  });
+  G.orderStep              = 0;
+  G.currentStepOrderPlaced = false;
+  G.selectedOrderType      = null;
+  G._thisStepOrderSlot     = null;
   G.curP = 0;
-  showHP(G.players[0].name, 'Расставьте приказы (2 шт.)', () => setPhase('order-placement'));
+  G.phase = 'order-placement';  // установить фазу ДО сохранения снимка
+  historySave('Карта создана — начало фазы приказов');
+  historySetFloor();  // нельзя откатиться в фазу расстановки тайлов
+  showHP(G.players[0].name, 'Разместите приказ 1/4', () => setPhase('order-placement'));
 }
 
 function selectOrderSlot(idx) {
@@ -1085,59 +1140,168 @@ function selectOrderSlot(idx) {
 }
 
 // ══════════════════════════════════════════════
-//  EXECUTION
+//  EXECUTION — интерактивная система с подглядыванием
 // ══════════════════════════════════════════════
-function buildExecQueue() {
-  G.execQueue = []; G.execPos = 0;
-  for (let oi=0; oi<2; oi++)
-    for (let pi=0; pi<2; pi++)
-      if (G.players[pi].orders[oi]) G.execQueue.push({ player:pi, oi });
+
+/**
+ * Проверить, есть ли у игрока pi хотя бы один приказ, являющийся
+ * абсолютным верхним на своём тайле (нет ни одного неисполненного приказа
+ * от ЛЮБОГО игрока с более высоким placedAt на том же тайле).
+ */
+function hasAccessibleTop(pi) {
+  return (G.players[pi].orders || []).some(ord => {
+    if (!ord || ord.executed) return false;
+    return !G.players.some(pl =>
+      (pl.orders||[]).some(o =>
+        o && !o.executed && o.key === ord.key && (o.placedAt??0) > (ord.placedAt??0)
+      )
+    );
+  });
 }
 
-function execNext() {
-  if (G.execPos >= G.execQueue.length) { endRound(); return; }
-  const item = G.execQueue[G.execPos++];
-  const p    = G.players[item.player];
-  const ord  = p.orders[item.oi];
-  if (!ord) { execNextUI(); return; }
+/** Обновить инструкцию для текущего хода исполнения. */
+function _execSetInstruction() {
+  const ins = document.getElementById('pinstr');
+  const anyLeft = G.players.some(p => (p.orders||[]).some(o => o && !o.executed));
+  if (!anyLeft) {
+    ins.innerHTML = `<strong>ВСЕ ПРИКАЗЫ ВЫПОЛНЕНЫ</strong><br>Завершите раунд.`;
+    show('btn-er');
+    return;
+  }
+  // Проверить: заблокирован ли текущий игрок (есть приказы, но ни один не является верхним на своём тайле)
+  const pi = G.execTurn;
+  const hasOwn = (G.players[pi].orders||[]).some(o => o && !o.executed);
+  if (hasOwn && !hasAccessibleTop(pi)) {
+    // Все приказы перекрыты — сообщить игроку, дать ему явно передать ход
+    G.curP = pi;
+    renderSide(); updateHeader();
+    showMsg(
+      'Все приказы перекрыты',
+      `${G.players[pi].name}: ваши приказы на доске перекрыты приказами противника. Передайте ход.`,
+      () => {
+        ins.innerHTML = `<strong>ВСЕ ПРИКАЗЫ ПЕРЕКРЫТЫ</strong><br>` +
+          `${G.players[pi].name}: ваши приказы заблокированы. Нажмите «Передать ход».`;
+        show('btn-pass-exec');
+      }
+    );
+    return;
+  }
+  G.curP = pi;
+  ins.innerHTML = `<strong>ИСПОЛНЕНИЕ ПРИКАЗОВ</strong><br>` +
+    `${G.players[pi].name}: нажмите ваш верхний жетон приказа на доске, чтобы посмотреть и разыграть его.`;
+}
 
+/** Игрок с заблокированными приказами явно передаёт ход. */
+function passExecTurn() {
+  document.getElementById('btn-pass-exec').style.display = 'none';
+  const other = 1 - G.execTurn;
+  if (hasAccessibleTop(other)) {
+    G.execTurn = other;
+    G.curP = other;
+    showHP(G.players[other].name, 'Ваш ход — разыграйте верхний приказ', () => setPhase('execution'));
+  } else {
+    // Оба заблокированы — такого не должно быть при правильном стеке, но на всякий случай
+    _execSetInstruction();
+  }
+}
+
+/** Игрок нажал на свой верхний жетон — показать ему тип приказа (только ему). */
+function peekTopOrder(pi, oi) {
+  if (G.phase !== 'execution') return;
+  if (pi !== G.execTurn) return;
+  const ord = G.players[pi].orders[oi];
+  if (!ord || ord.executed) return;
+  // Проверить: это абсолютный верхний жетон тайла (нет ни одного выше от ЛЮБОГО игрока)?
+  const higherExists = G.players.some(pl =>
+    (pl.orders||[]).some(o =>
+      o && !o.executed && o.key===ord.key && (o.placedAt??0) > (ord.placedAt??0)
+    )
+  );
+  if (higherExists) return;
+  G.execPeeked = { pi, oi };
+  const ot = ORDER_TYPES_DATA.find(o => o.id === ord.type);
+  const fac = FACTIONS.find(f => f.id === G.players[pi].faction);
+  const content = document.getElementById('peek-content');
+  content.innerHTML =
+    `<div class="order-fd op${pi+1}" style="position:relative;top:auto;left:auto;transform:none;width:80px;height:80px;pointer-events:none;">` +
+      `<span style="font-size:2.2rem">${ot?.icon||'?'}</span>` +
+      `<span style="font-size:.55rem;opacity:.85">${ot?.label||ord.type}</span>` +
+    `</div>` +
+    `<div style="color:var(--text);font-size:.85rem">${fac?.icon||''} ${G.players[pi].name}</div>`;
+  document.getElementById('peek-overlay').style.display = 'flex';
+}
+
+/** Скрыть подглядывание без разыгрывания. */
+function cancelPeek() {
+  G.execPeeked = null;
+  document.getElementById('peek-overlay').style.display = 'none';
+}
+
+/** Разыграть подглянутый приказ. */
+function playOrder() {
+  if (!G.execPeeked) return;
+  const { pi, oi } = G.execPeeked;
+  G.execPeeked = null;
+  document.getElementById('peek-overlay').style.display = 'none';
+  // Публично раскрыть жетон на доске
+  G.players[pi].orders[oi].revealed = true;
+  renderBoard();
+  // Исполнить приказ
+  _executeSpecificOrder(pi, oi);
+}
+
+/** Исполнить конкретный приказ игрока pi в слоте oi. */
+function _executeSpecificOrder(pi, oi) {
+  const p   = G.players[pi];
+  const ord = p.orders[oi];
+  if (!ord) { _execAfterOrder(pi, oi); return; }
   const target = G.map[ord.key];
-  if (!target) { execNextUI(); return; }
+  if (!target) { _execAfterOrder(pi, oi); return; }
 
-  const destAreaDisplay = ord.aIdx;
   const neighbors = getNeighborKeys(ord.key);
   let moved = 0;
-
   neighbors.forEach(nk => {
     const nt = G.map[nk]; if (!nt) return;
     nt.areas.forEach(srcArea => {
-      const mv = srcArea.troops.filter(t => t.player === item.player);
-      mv.forEach(unit => {
+      srcArea.troops.filter(t => t.player === pi).slice().forEach(unit => {
         srcArea.troops.splice(srcArea.troops.indexOf(unit), 1);
-        // Try to place in preferred display area, else any compatible
-        const prefArea = getAreaByDisplay(target, destAreaDisplay);
-        const compat = isCompatible(unit, prefArea.type) ? prefArea
+        const prefArea = getAreaByDisplay(target, ord.aIdx ?? 0);
+        const compat = (prefArea && isCompatible(unit, prefArea.type)) ? prefArea
           : target.areas.find(a => isCompatible(unit, a.type));
         if (compat) { compat.troops.push(unit); moved++; }
       });
     });
   });
 
-  addLog(`${p.name} приказ ${item.oi+1}: → [${ord.key}] зона ${ord.aIdx+1} (${moved} войск)`, item.player);
+  const ot = ORDER_TYPES_DATA.find(o => o.id === ord.type);
+  addLog(`${p.name}: ${ot?.icon||''} ${ot?.label||ord.type} → [${ord.key}] (${moved} войск)`, pi);
   updateHeader(); renderBoard();
 
-  // Check for battles in all areas of target
   let battleFound = false;
-  for (let ai=0; ai<target.areas.length; ai++) {
+  for (let ai = 0; ai < target.areas.length; ai++) {
     const area = target.areas[ai];
     if (area.troops.some(t=>t.player===0) && area.troops.some(t=>t.player===1)) {
       if (!battleFound) {
         battleFound = true;
-        doBattle(ord.key, ai, () => { renderBoard(); updateHeader(); execNextUI(); });
+        doBattle(ord.key, ai, () => { renderBoard(); updateHeader(); _execAfterOrder(pi, oi); });
       }
     }
   }
-  if (!battleFound) execNextUI();
+  if (!battleFound) _execAfterOrder(pi, oi);
+}
+
+/** После исполнения приказа: пометить, передать ход. */
+function _execAfterOrder(pi, oi) {
+  G.players[pi].orders[oi].executed = true;
+  renderBoard();
+  const anyLeft = G.players.some(p => (p.orders||[]).some(o => o && !o.executed));
+  if (!anyLeft) { _execSetInstruction(); updateHeader(); return; }
+  // Передать ход другому игроку, если у него есть доступный верхний приказ
+  const other = 1 - pi;
+  G.execTurn = hasAccessibleTop(other) ? other : pi;
+  G.curP = G.execTurn;
+  showHP(G.players[G.execTurn].name, 'Ваш ход — разыграйте верхний приказ',
+    () => setPhase('execution'));
 }
 
 function isCompatible(unit, areaType) {
@@ -1145,19 +1309,9 @@ function isCompatible(unit, areaType) {
          (unit.unitType==='space'  && areaType==='space');
 }
 
-function execNextUI() {
-  const ins  = document.getElementById('pinstr');
-  if (G.execPos >= G.execQueue.length) {
-    ins.innerHTML = `<strong>ВСЕ ПРИКАЗЫ ВЫПОЛНЕНЫ</strong><br>Завершите раунд.`;
-    document.getElementById('btn-ex').style.display = 'none';
-    show('btn-er');
-  } else {
-    const item = G.execQueue[G.execPos];
-    const p = G.players[item.player];
-    const ord = p.orders[item.oi];
-    ins.innerHTML = `<strong>СЛЕДУЮЩИЙ ПРИКАЗ</strong><br>${p.name} #${item.oi+1} → [${ord?.key}] зона ${ord?ord.aIdx+1:'?'}`;
-  }
-}
+// Заглушки для обратной совместимости (onclick у btn-ex больше не используется)
+function execNext() {}
+function execNextUI() {}
 
 function getNeighborKeys(key) {
   const [c,r] = key.split(',').map(Number);
@@ -1260,6 +1414,10 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
     });
   }
 
+  // Предвычислить допустимые тайлы для приказов (один раз на весь рендер)
+  const validOrderTiles = (G.phase==='order-placement' && G.selectedOrderType)
+    ? getValidOrderTiles(G.curP) : null;
+
   // Placed tiles
   tiles.forEach(tile => {
     const p=px(tile.col,tile.row);
@@ -1333,7 +1491,7 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
         const tok=document.createElement('div');
         tok.className=`atroop ${u.unitType} ${u.player===0?'c1':'c2'}`;
         tok.textContent=`T${u.tier??0}`;
-        tok.title=UNIT_NAMES[`${G.players[u.player].faction}_${u.unitType}_${u.tier??0}`]||`T${u.tier??0}`;
+        tok.title=getUnitName(G.players[u.player].faction, u.unitType, u.tier??0);
         ae.appendChild(tok);
       });
 
@@ -1343,7 +1501,7 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
       else if (h1) ae.classList.add('h1');
       else if (h2) ae.classList.add('h2');
 
-      // Drop highlighting
+      // Drop highlighting (area-level — только для фаз расстановки войск, не для приказов)
       const isFocusTile = tile.key===highlightKey;
       if (allDrop || orderDrop || isFocusTile) {
         if (G.selUnitType) {
@@ -1354,19 +1512,81 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
         }
       }
 
-      // Order pips
-      G.players.forEach((pl,pi) => pl.orders.forEach((ord,oi) => {
-        if (ord && ord.key===tile.key && ord.aIdx===displayIdx) {
-          const pip=document.createElement('div'); pip.className=`opip op${pi+1}`;
-          pip.textContent=oi+1; ae.appendChild(pip);
-        }
-      }));
-
       ae.onclick=()=>areaClick(tile.key, displayIdx);
       inner.appendChild(ae);
     });
 
+    // ── Подсветка целого тайла для фазы приказов ─────────────────────────────
+    if (validOrderTiles) {
+      if (validOrderTiles.has(tile.key)) el.classList.add('tok');
+      else el.classList.add('tno');
+    }
+
     el.appendChild(inner);
+
+    // ── Жетоны приказов (рубашкой вниз / раскрыты) — стек-лесенка в центре тайла ──
+    const ordersOnTile = [];
+    G.players.forEach((pl,pi) => (pl.orders||[]).forEach((ord,oi) => {
+      if (ord && ord.key===tile.key) ordersOnTile.push({pi, ord, oi});
+    }));
+    // Сортировка по placedAt по возрастанию: нижний (ранний) рендерится первым, верхний — последним
+    ordersOnTile.sort((a,b) => (a.ord.placedAt ?? 0) - (b.ord.placedAt ?? 0));
+    const STEP = 9; // пикселей смещения на каждый уровень стека
+
+    // Абсолютный верхний неисполненный жетон на тайле (от любого игрока)
+    let tileAbsoluteTop = null;
+    if (G.phase === 'execution') {
+      ordersOnTile.forEach(item => {
+        if (item.ord.executed) return;
+        if (!tileAbsoluteTop || (item.ord.placedAt??0) > (tileAbsoluteTop.ord.placedAt??0))
+          tileAbsoluteTop = item;
+      });
+    }
+
+    // Рендерим только неисполненные жетоны — выполненные убираются с доски
+    const renderOrders = ordersOnTile.filter(item => !item.ord.executed);
+    const n = renderOrders.length;
+    renderOrders.forEach((item, stackIdx) => {
+      const {pi, ord, oi} = item;
+      const fac = FACTIONS.find(f => f.id === G.players[pi].faction);
+      const facIcon = fac ? fac.icon : (pi===0?'①':'②');
+      const offset = (n - 1 - stackIdx) * STEP;
+      const tok = document.createElement('div');
+      tok.className = `order-fd op${pi+1}`;
+      tok.style.top      = `calc(50% + ${offset}px)`;
+      tok.style.left     = `calc(50% - ${offset}px)`;
+      tok.style.zIndex   = 10 + stackIdx;
+      if (ord.revealed || G.phase==='ended') {
+        const ot = ORDER_TYPES_DATA.find(o=>o.id===ord.type);
+        tok.innerHTML = `<span style="font-size:1.3rem">${ot?ot.icon:'?'}</span>`+
+                        `<span style="font-size:.38rem;opacity:.85">${ot?ot.label:ord.type}</span>`;
+        tok.title = `${G.players[pi].name}: ${ot?ot.label:ord.type}`;
+      } else {
+        // Кликабелен только если: абсолютный верх тайла И принадлежит текущему игроку
+        const isClickable = G.phase==='execution' && pi===G.execTurn &&
+          tileAbsoluteTop === item;
+        tok.innerHTML = `<span style="font-size:1.1rem">${facIcon}</span>`+
+                        `<span style="font-size:.55rem;opacity:.75">▼</span>`;
+        tok.title = isClickable
+          ? `${G.players[pi].name}: ваш верхний приказ — нажмите, чтобы посмотреть`
+          : `${G.players[pi].name}: приказ (скрыт)`;
+        if (isClickable) {
+          tok.classList.add('clickable');
+          tok.onclick = () => peekTopOrder(pi, oi);
+        }
+      }
+      el.appendChild(tok);
+    });
+
+    // ── Кликабельный оверлей для фазы приказов ───────────────────────────────
+    if (G.phase==='order-placement') {
+      const overlay = document.createElement('div');
+      const isValid = validOrderTiles && validOrderTiles.has(tile.key);
+      overlay.style.cssText = `position:absolute;inset:0;z-index:9;cursor:${isValid?'pointer':'not-allowed'};`;
+      overlay.onclick = (e) => { e.stopPropagation(); placeOrderOnTile(tile.key); };
+      el.appendChild(overlay);
+    }
+
     board.appendChild(el);
   });
 }
@@ -1413,7 +1633,7 @@ function renderSide() {
         const tok=document.createElement('div');
         tok.className=`ttok ground ${cp.color}${G.selUnitIdx===gi?' sel':''}`;
         tok.textContent=`T${u.tier??0}`;
-        tok.title=UNIT_NAMES[`${cp.faction}_ground_${u.tier??0}`]||`T${u.tier??0}`;
+        tok.title=getUnitName(cp.faction, 'ground', u.tier??0);
         tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
       });
       sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
@@ -1427,7 +1647,7 @@ function renderSide() {
         const tok=document.createElement('div');
         tok.className=`ttok space ${cp.color}${G.selUnitIdx===gi?' sel':''}`;
         tok.textContent=`T${u.tier??0}`;
-        tok.title=UNIT_NAMES[`${cp.faction}_space_${u.tier??0}`]||`T${u.tier??0}`;
+        tok.title=getUnitName(cp.faction, 'space', u.tier??0);
         tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
       });
       sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
@@ -1462,22 +1682,58 @@ function renderSide() {
     poolCont.appendChild(pool);
   }
 
-  // Orders
-  for (let i=0;i<2;i++) {
-    const slot=document.getElementById(`os${i}`);
-    const ord=cp.orders[i];
-    if (G.phase==='order-placement') {
-      if (ord) {
-        slot.className=`oslot of${cp.color==='c1'?1:2}`;
-        slot.textContent=`📌 ${i+1}: [${ord.key}] зона ${ord.aIdx+1}`;
-        slot.onclick=()=>{ cp.orders[i]=null; renderSide(); renderBoard(); };
-      } else {
-        slot.className=`oslot${G.selOrderSlot===i?' oactive':''}`;
-        slot.textContent=`[ Приказ ${i+1} — нажмите ]`;
-        slot.onclick=()=>selectOrderSlot(i);
-      }
-    } else {
-      slot.className='oslot'; slot.textContent=`— приказ ${i+1}`; slot.onclick=null;
+  // Orders — рендерит order_placement.js
+  renderOrderPanel(document.getElementById('orders-cont'));
+
+  // Execution panel — ресурсы и резерв войск
+  if (G.phase === 'execution') {
+    const cont = document.getElementById('orders-cont');
+    const execPi = G.execTurn ?? 0;
+    const ep = G.players[execPi];
+    const fac = FACTIONS.find(f=>f.id===ep.faction);
+    const hdr = document.createElement('div');
+    hdr.className = 'pool-type-lbl';
+    hdr.style.cssText = 'margin-top:8px;font-size:1.16rem;';
+    hdr.textContent = `${fac?.icon||''} ${ep.name} — ресурсы:`;
+    cont.appendChild(hdr);
+    // Деньги и жетоны
+    const res = document.createElement('div');
+    res.style.cssText = 'font-size:1.44rem;padding:4px 0;display:flex;gap:8px;flex-wrap:wrap;';
+    const tok = ep.tokens || {};
+    const parts = [`💰 ${ep.credits??0}₡`];
+    Object.entries(TOKEN_INFO).forEach(([k,info]) => { if ((tok[k]||0)>0) parts.push(`${info.icon} ×${tok[k]}`); });
+    res.innerHTML = parts.map(p=>`<span style="color:var(--text)">${p}</span>`).join('');
+    cont.appendChild(res);
+    // Доступные войска: максимум фракции минус уже выставленные на поле
+    if (fac && fac.unitTiers) {
+      const poolHdr = document.createElement('div');
+      poolHdr.className = 'pool-type-lbl';
+      poolHdr.style.cssText = 'margin-top:6px;font-size:1.16rem;';
+      poolHdr.textContent = 'Доступные войска:';
+      cont.appendChild(poolHdr);
+      // Подсчёт выставленных на поле по типу и уровню
+      const onBoard = {};
+      Object.values(G.map).forEach(tile => tile.areas.forEach(ar => ar.troops.filter(u=>u.player===execPi).forEach(u => {
+        const key = `${u.unitType}_${u.tier??0}`;
+        onBoard[key] = (onBoard[key]||0) + 1;
+      })));
+      // Максимум по фракции: берём maxTiers (полный резерв), fallback на unitTiers
+      const tiers = fac.maxTiers || fac.unitTiers;
+      const maxCounts = {};
+      (tiers.ground||[]).forEach(tier => { const k=`ground_${tier}`; maxCounts[k]=(maxCounts[k]||0)+1; });
+      (tiers.space||[]).forEach(tier   => { const k=`space_${tier}`;  maxCounts[k]=(maxCounts[k]||0)+1; });
+      const availDiv = document.createElement('div');
+      availDiv.style.cssText = 'font-size:1.3rem;display:flex;flex-direction:column;gap:3px;margin-top:2px;';
+      Object.entries(maxCounts).forEach(([key, maxCount]) => {
+        const [uType, tier] = key.split('_');
+        const avail = maxCount - (onBoard[key]||0);
+        const uName = getUnitName(ep.faction, uType, tier);
+        const row = document.createElement('div');
+        row.style.cssText = `color:${avail>0?'var(--text)':'var(--dim)'};`;
+        row.textContent = `${uName}: ${avail}/${maxCount}`;
+        availDiv.appendChild(row);
+      });
+      cont.appendChild(availDiv);
     }
   }
 }
@@ -1493,8 +1749,6 @@ function updateHeader() {
     document.getElementById(`h-${pfx}-init`).textContent=p.name.substring(0,2).toUpperCase();
     const fac=FACTIONS.find(f=>f.id===p.faction);
     document.getElementById(`h-${pfx}-fac`).textContent=fac?`${fac.icon} ${fac.name}`:'—';
-    const onBoard=Object.values(G.map).reduce((s,t)=>s+t.areas.reduce((a,ar)=>a+ar.troops.filter(u=>u.player===pi).length,0),0);
-    document.getElementById(`h-${pfx}-t`).textContent=onBoard+(p.pool?p.pool.length:0);
     const resEl = document.getElementById(`h-${pfx}-res`);
     if (resEl && p.credits !== undefined) {
       const tok = p.tokens || {};
@@ -1531,12 +1785,17 @@ function closeHP() {
   document.getElementById('hpov').classList.remove('active');
   if(_hpCb){_hpCb();_hpCb=null;}
 }
-function showMsg(t,b){
+let _msgCb = null;
+function showMsg(t,b,cb){
+  _msgCb = cb || null;
   document.getElementById('msg-title').textContent=t;
   document.getElementById('msg-body').textContent=b;
   document.getElementById('msg-modal').classList.add('active');
 }
-function closeMsg(){document.getElementById('msg-modal').classList.remove('active');}
+function closeMsg(){
+  document.getElementById('msg-modal').classList.remove('active');
+  if(_msgCb){const f=_msgCb;_msgCb=null;f();}
+}
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');

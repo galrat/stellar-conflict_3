@@ -21,22 +21,23 @@ ELDAR = Faction(
     ),
     unit_config = UnitConfig(
         # ── Стартовый состав войск ──────────────────────────────────────────
-        infantry=2, marines=1, mechanized=0, elite=0,
+        infantry=3, marines=1, mechanized=0, elite=0,
         fighters=2, destroyers=0,
         # ── Стартовые постройки ─────────────────────────────────────────────
         # Характеристики построек — см. STRUCTURE_CATALOG в player_hand.py.
-        factories=0, cities=1, bastions=0,
+        factories=1, cities=0, bastions=0,
         # ── Стартовые ресурсы ───────────────────────────────────────────────
-        credits=6, support_tokens=1, discount_tokens=2, forge_tokens=1,
+        credits=6, support_tokens=0, discount_tokens=0, forge_tokens=1,
         # ── Характеристики юнитов (cost 2–5 + forge, strength 0–6, health 1–6, morale 0–6) ──
         # Эльдары: хрупкие, но с высокой моралью и точностью. Истребители — ударная сила.
         unit_stats={
-            "infantry":   dict(cost=2,                  combat_strength=1, health=1, morale=4),
-            "marines":    dict(cost=3,                  combat_strength=2, health=1, morale=5),
-            "mechanized": dict(cost=3,                  combat_strength=2, health=2, morale=4),
-            "elite":      dict(cost=4, cost_forge=1,    combat_strength=3, health=2, morale=6),
-            "fighter":    dict(cost=2,                  combat_strength=2, health=1, morale=4),
-            "destroyer":  dict(cost=3, cost_forge=1,    combat_strength=3, health=2, morale=5),
+            # name — отображаемое название; cost — стоимость; max_count — максимальный резерв
+            "infantry":   dict(name="Аспект",        cost=2,               combat_strength=1, health=1, morale=4, max_count=9),
+            "marines":    dict(name="Рейнджер",      cost=3,               combat_strength=2, health=1, morale=5, max_count=3),
+            "mechanized": dict(name="Корар",         cost=3,               combat_strength=2, health=2, morale=4, max_count=3),
+            "elite":      dict(name="Титан",         cost=4, cost_forge=1, combat_strength=3, health=2, morale=6, max_count=3),
+            "fighter":    dict(name="Истребитель",   cost=2,               combat_strength=2, health=1, morale=4, max_count=6),
+            "destroyer":  dict(name="Воидкрафт",     cost=3, cost_forge=1, combat_strength=3, health=2, morale=5, max_count=3),
         },
     ),
     battle_cards = [

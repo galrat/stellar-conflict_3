@@ -26,16 +26,17 @@ ORKS = Faction(
         # Характеристики построек — см. STRUCTURE_CATALOG в player_hand.py.
         factories=1, cities=0, bastions=0,
         # ── Стартовые ресурсы ───────────────────────────────────────────────
-        credits=6, support_tokens=2, discount_tokens=1, forge_tokens=0,
+        credits=6, support_tokens=1, discount_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов (cost 2–5 + forge, strength 0–6, health 1–6, morale 0–6) ──
         # Орки: высокая боевая сила, крепкое телосложение, но слабая дисциплина.
         unit_stats={
-            "infantry":   dict(cost=2,                  combat_strength=2, health=2, morale=1),
-            "marines":    dict(cost=3,                  combat_strength=3, health=3, morale=2),
-            "mechanized": dict(cost=4,                  combat_strength=3, health=3, morale=2),
-            "elite":      dict(cost=5, cost_forge=1,    combat_strength=5, health=4, morale=2),
-            "fighter":    dict(cost=2,                  combat_strength=2, health=2, morale=1),
-            "destroyer":  dict(cost=4, cost_forge=1,    combat_strength=4, health=3, morale=2),
+            # name — отображаемое название; cost — стоимость; max_count — максимальный резерв
+            "infantry":   dict(name="Боёр",          cost=2,               combat_strength=2, health=2, morale=1, max_count=9),
+            "marines":    dict(name="Штормбой",      cost=3,               combat_strength=3, health=3, morale=2, max_count=6),
+            "mechanized": dict(name="Боевая машина", cost=4,               combat_strength=3, health=3, morale=2, max_count=3),
+            "elite":      dict(name="Мек",           cost=5, cost_forge=1, combat_strength=5, health=4, morale=2, max_count=3),
+            "fighter":    dict(name="Вааг-файтер",   cost=2,               combat_strength=2, health=2, morale=1, max_count=3),
+            "destroyer":  dict(name="Крейсер орков", cost=4, cost_forge=1, combat_strength=4, health=3, morale=2, max_count=3),
         },
     ),
     battle_cards = [
