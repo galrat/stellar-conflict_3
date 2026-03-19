@@ -22,85 +22,144 @@ CHAOS = Faction(
         "Вы можете переместить культиста на свободный или дружественный мир соседней системы"
     ),
     unit_config = UnitConfig(
-        # ── Стартовый состав войск ──────────────────────────────────────────
+        # ── Стартовый состав войск (по базе данных Forbidden Stars) ─────────
         infantry=2, marines=2, mechanized=0, elite=0,
         fighters=1, destroyers=0,
         # ── Стартовые постройки ─────────────────────────────────────────────
-        # Характеристики построек — см. STRUCTURE_CATALOG в player_hand.py.
         factories=1, cities=0, bastions=0,
         # ── Стартовые ресурсы ───────────────────────────────────────────────
         credits=6, support_tokens=0, discount_tokens=0, forge_tokens=0,
-        # ── Характеристики юнитов (cost 2–5 + forge, strength 0–6, health 1–6, morale 0–6) ──
+        # ── Характеристики юнитов (источник: Forbidden_Stars_Unit_and_Card_Database) ──
         unit_stats={
-            # name — отображаемое название; cost — стоимость; max_count — максимальный резерв
-            "infantry":   dict(name="Культист",     cost=2,               combat_strength=1, health=2, morale=2, max_count=9),
-            "marines":    dict(name="Берсерк",      cost=3,               combat_strength=3, health=3, morale=2, max_count=6),
-            "mechanized": dict(name="Культиватор",  cost=4,               combat_strength=3, health=3, morale=2, max_count=3),
-            "elite":      dict(name="Демон Хаоса",  cost=5, cost_forge=1, combat_strength=4, health=3, morale=3, max_count=3),
-            "fighter":    dict(name="Налётчик",     cost=2,               combat_strength=2, health=2, morale=2, max_count=3),
-            "destroyer":  dict(name="Разрушитель",  cost=5, cost_forge=1, combat_strength=4, health=3, morale=3, max_count=3),
+            # name — название; cost — стоимость; max_count — макс. резерв
+            "infantry":   dict(name="Cultists",                   cost=2,               combat_strength=1, health=2, morale=2, max_count=9),
+            "marines":    dict(name="Chaos Space Marines",        cost=3,               combat_strength=3, health=3, morale=2, max_count=6),
+            "mechanized": dict(name="Helbrute",                   cost=4,               combat_strength=3, health=4, morale=3, max_count=3),
+            "elite":      dict(name="Chaos Reaver Titan",         cost=5, cost_forge=1, combat_strength=4, health=5, morale=3, max_count=3),
+            "fighter":    dict(name="Iconoclast Destroyer",        cost=2,               combat_strength=2, health=2, morale=2, max_count=3),
+            "destroyer":  dict(name="Repulsive Cruiser",          cost=5, cost_forge=1, combat_strength=4, health=5, morale=4, max_count=3),
         },
     ),
     battle_cards = [
-        # ── Начальные ──────────────────────────────────────────────────────
+        # ── Начальные (бесплатные) ──────────────────────────────────────────
         BattleCard(
-            name     = "Тактическое отступление",
+            name     = "Dark Faith",
             level    = CardLevel.INITIAL,
-            effect_1 = "До подсчёта потерь переместите 1 своего юнита в соседнюю дружественную зону.",
-            effect_2 = "Противник получает −1 к боевому счёту в следующем бою этого раунда.",
+            effect_1 = "Gain 1 [M]. Requires: Cultist / Iconoclast.",
+            effect_2 = "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system.",
         ),
         BattleCard(
-            name     = "Организованная оборона",
+            name     = "Foul Worship",
             level    = CardLevel.INITIAL,
-            effect_1 = "Защитник добавляет +1 за каждые 2 своих юнита в зоне (не более +3).",
-            effect_2 = "Если защитник победил — один юнит атакующего переходит в его резерв.",
+            effect_1 = "Gain 1 [?]. Requires: Cultist / Iconoclast.",
+            effect_2 = "If enemy has routed unit, gain 1 (s) per unrouted Cultist or Iconoclast.",
+        ),
+        BattleCard(
+            name     = "Impure Zeal",
+            level    = CardLevel.INITIAL,
+            effect_1 = "If more [M] than enemy, rally 1 unit. Requires: Cultist / Iconoclast.",
+            effect_2 = "Enemy routs 1 unit, or you gain 1 (g) per unrouted Cultist or Iconoclast.",
+        ),
+        BattleCard(
+            name     = "Khorne's Rage",
+            level    = CardLevel.INITIAL,
+            effect_1 = "Spend 1 [G] to gain 3 (g). Requires: Marine / Iconoclast.",
+            effect_2 = "Enemy spends 1 [S] or routs unit of his choosing.",
+        ),
+        BattleCard(
+            name     = "Lure of Chaos",
+            level    = CardLevel.INITIAL,
+            effect_1 = "Enemy may choose a unit to rout to gain 1 [?]. Otherwise place a free Cultist or Iconoclast in the area. Requires: Cultist / Iconoclast.",
+            effect_2 = "Gain 2 (g) or 2 (s).",
         ),
         # ── Нулевой уровень ────────────────────────────────────────────────
         BattleCard(
-            name     = "Залповый огонь",
+            name     = "Mark of Khorne",
             level    = CardLevel.ZERO,
-            effect_1 = "Добавьте +1 к боевому счёту за каждый отряд механизированной пехоты в зоне.",
-            effect_2 = "Если результат кубика ≤ 2 — перебросьте его один раз.",
+            effect_1 = "Spend 1 [G] or 1 [M] to gain 3 (g). Requires: Marine / Iconoclast.",
+            effect_2 = "Enemy spends 1 [S] or destroys 1 routed unit.",
         ),
         BattleCard(
-            name     = "Воздушное прикрытие",
+            name     = "Mark of Nurgle",
             level    = CardLevel.ZERO,
-            effect_1 = "Ваши истребители добавляют +1 к наземному бою на той же планете.",
-            effect_2 = "Уничтожьте 1 вражеский истребитель до начала космического боя на этом тайле.",
+            effect_1 = "Spend 1 [S] or 1 [M] to gain 3 (s). Requires: Marine / Iconoclast.",
+            effect_2 = "Enemy destroys 1 routed unit, otherwise gain 2 (s).",
+        ),
+        BattleCard(
+            name     = "Mark of Slaanesh",
+            level    = CardLevel.ZERO,
+            effect_1 = "Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice. Requires: Marine.",
+            effect_2 = "If enemy has routed unit, place free Cultist on this world.",
+        ),
+        BattleCard(
+            name     = "Mark of Tzeentch",
+            level    = CardLevel.ZERO,
+            effect_1 = "Gain 1 [M]. If more [M] than enemy, upgrade 1 Cultist / (R) to Marine. Requires: Chaos Marine / Iconoclast.",
+            effect_2 = "Convert up to 2 [M] to [G] and/or [S].",
         ),
         # ── Второй уровень ────────────────────────────────────────────────
         BattleCard(
-            name     = "Координированная атака",
+            name     = "Chaos United",
             level    = CardLevel.TWO,
-            effect_1 = "Все ваши юниты в бою получают +1 к атаке.",
-            effect_2 = "Если у вас строго больше юнитов — победитель не несёт потерь.",
+            effect_1 = "Enemy may rout 1 of its units. If not, gain a die of your choice. Requires: Cultist / Marine / Helbrute.",
+            effect_2 = "Take 1 unit from any world and place it on this world. Command level cannot exceed number of Cultists in this system.",
         ),
         BattleCard(
-            name     = "Вызов подкреплений",
+            name     = "Daemonic Resilience",
             level    = CardLevel.TWO,
-            effect_1 = "Немедленно переместите до 2 юнитов из резерва в текущую зону боя.",
-            effect_2 = "Эти юниты участвуют в бою, но не могут быть использованы в следующем приказе.",
+            effect_1 = "Gain 1 [M] or 1 [S]. Requires: Helbrute / Cruiser.",
+            effect_2 = "Gain 4 (s) unless enemy destroys 1 unit of his choice.",
+        ),
+        BattleCard(
+            name     = "Inhuman Strength",
+            level    = CardLevel.TWO,
+            effect_1 = "Gain 1 [G] or 1 [M]. Requires: Helbrute / Cruiser.",
+            effect_2 = "Destroy 1 unit to gain 4 (g).",
         ),
         # ── Третий уровень ────────────────────────────────────────────────
         BattleCard(
-            name     = "Стратегическая инициатива",
+            name     = "Chaos Victorious",
             level    = CardLevel.THREE,
-            effect_1 = "Замените результат кубика противника на 1.",
-            effect_2 = "Ваши элитные юниты в этом бою имеют attack_bonus +3 вместо обычного.",
+            effect_1 = "Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units. Requires: Titan / Cruiser.",
+            effect_2 = "Rout 1 enemy unit.",
+        ),
+        BattleCard(
+            name     = "Death and Despair",
+            level    = CardLevel.THREE,
+            effect_1 = "Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit. Requires: Titan / Cruiser.",
+            effect_2 = "If more [M] than enemy, destroy 1 routed unit.",
         ),
     ],
     order_upgrades = [
         OrderUpgrade(
-            name       = "Стремительный марш",
-            order_type = "move",
-            effect_1   = "Войска могут перемещаться через 2 тайла за один приказ вместо 1.",
-            effect_2   = "Пехота не тратит слот приказа при перемещении на планету союзного тайла.",
+            name       = "Fear from Above",
+            order_type = "advance",
+            effect_1   = "Orbital Strike, once per round. Gain [?].",
+            effect_2   = "Spend 1 [M] to force any unit taking damage to rout.",
         ),
         OrderUpgrade(
-            name       = "Массированное подкрепление",
-            order_type = "reinforce",
-            effect_1   = "Разместите до 3 юнитов из резерва вместо стандартных 2.",
-            effect_2   = "Если на целевом тайле находится ваша домашняя система — +1 дополнительный юнит.",
+            name       = "Dread Ritual",
+            order_type = "deploy",
+            effect_1   = "Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in active system.",
+            effect_2   = "Factory not required.",
+        ),
+        OrderUpgrade(
+            name       = "Favour of the Dark Gods",
+            order_type = "strategize",
+            effect_1   = "Place 2 order tokens from play area onto top of event deck.",
+            effect_2   = "Once per round.",
+        ),
+        OrderUpgrade(
+            name       = "From the Warp",
+            order_type = "advance",
+            effect_1   = "Ships can move through Warp Storms.",
+            effect_2   = "Once per round.",
+        ),
+        OrderUpgrade(
+            name       = "Complete Destruction",
+            order_type = "advance",
+            effect_1   = "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
+            effect_2   = "Spend 2 [S] to force enemy to choose unit or structure to destroy.",
         ),
     ],
     extra = {

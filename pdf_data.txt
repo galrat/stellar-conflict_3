@@ -1,0 +1,891 @@
+================================================================================
+FORBIDDEN STARS — UNIT AND CARD DATABASE (extracted from PDF)
+================================================================================
+
+LEGEND / SYMBOLS:
+  [?] - random combat die result
+  [G] - combat die with gun / offence result
+  [S] - combat die with shield / defence result
+  [M] - combat die with morale / aquila result
+  (g) - gun / offence token
+  (s) - shield / defence token
+  (R) - reinforcement token
+  (F) - forge token
+  Tier # - Command Level # unit or upgrade
+
+================================================================================
+PAGE 1: SPACE MARINES
+================================================================================
+
+DOMINATE ABILITY:
+  Spend 1 materiel to upgrade a Scout to a Space Marine, or a Space Marine to a
+  Land Raider, in active system.
+
+--- UNITS ---
+Tier  Name               Materiel      Dice  Health  Morale  Starting  Max
+-     Factory            2             -     -       -       1         -
+-     City               3             -     -       -       -         9 Total
+-     Bastion            2             2     3       2       1         -
+T0    Scout              2             1     2       2       4         6
+T0    Strike Cruiser     2             2     2       2       1         3
+T1    Space Marine       3             2     3       3       1         6
+T2    Land Raider        4             3     4       3       -         6
+T2    Battle Barge       5 + 1(F)      4     5       4       -         3
+T3    Warlord Titan      5 + 1(F)      3     5       4       -         3
+
+--- COMBAT CARDS ---
+Tier  Name                    Materiel  Icons(G/S/M)  Primary Effect / Requires
+                                                       Secondary Effect
+--    Ambush                  -         -/1/-          PRIM: Gain 2 (g).
+                                                       REQ: Scout / Cruiser
+                                                       SEC: When enemy is routed this round, must spend [M] or be destroyed.
+
+--    Blessed Power           -         -/-/1          PRIM: Gain 2 (s).
+                  (Blessed Power Armour)               REQ: Bastion / Marine / Cruiser
+                                                       SEC: Convert up to 2 dice to [S].
+
+--    Faith in the Emperor    -         -/-/1          PRIM: Gain 1 [?].
+                                                       REQ: Scout / Marine / Cruiser
+                                                       SEC: Rally 1 unit or gain 1 [M].
+
+--    Fury of the Ultramar    -         -/1/-          PRIM: Enemy rerolls 1 [S]. You may reroll 1 [S].
+                                                       REQ: Marine / Cruiser
+                                                       SEC: Force enemy to lose 1 [S] or 2 (s).
+
+--    Reconnaissance          -         -/-/1          PRIM: If attacking, look at enemy card first.
+                                                       REQ: Scout / Cruiser
+                                                       SEC: Spend 1 [M] to retreat 1 unit.
+
+T0    Drop Pod Assault        2         1/1/-          PRIM: Gain 1 [?].
+                                                       REQ: Marine
+                                                       SEC: Spend 1 [M] to take 1 scout or 1 marine from any world to this world.
+
+T0    Glory and Death         2         1/-/1          PRIM: Gain 2 (g). If attacking, rally 1 unit.
+                                                       REQ: Marine / Cruiser
+                                                       SEC: Force enemy to lose 1 [S] or 1 [M].
+
+T0    Hold the Line           2         -/1/1          PRIM: Gain 2 (s). If defending, rally 1 unit.
+                                                       REQ: Bastion / Marine / Cruiser
+                                                       SEC: Gain 1 [S] or 1 [M].
+
+T0    Veteran Scouts          2         1/1/1          PRIM: For each morale dice, gain 1 (g) or (s).
+                                                       REQ: Scout / Cruiser
+                                                       SEC: Spend any [M]; retreat 1 unit per die.
+
+T2    Armoured Advance        4         2/1/-          PRIM: Gain 1 [?].
+                                                       REQ: Land Raider / Battle Barge
+                                                       SEC: Resolve 1 additional assess damage step this round (including tokens etc).
+
+T2    Break the Line          4         1/2/-          PRIM: Convert up to 3 [M] to [G] and/or [S].
+                                                       REQ: Land Raider / Battle Barge
+                                                       SEC: Enemy chooses 1 face up combat card to discard.
+
+T2    Show No Fear            4         -/2/1          PRIM: Own units cannot become routed this round.
+                                                       REQ: Bastion / Marine / Cruiser
+                                                       SEC: Spend 1 [M] rally all units.
+
+T3    Emperor's Glory         6         -/2/2          PRIM: Gain 2 [?].
+                                                       REQ: Titan / Battle Barge
+                                                       SEC: Rally all units. Convert any dice to [M].
+
+T3    Emperor's Might         6         3/-/-          PRIM: Gain 2 [?].
+                                                       REQ: Titan / Battle Barge
+                                                       SEC: Spend any [G]; gain 2 (g) per die.
+
+--- ENHANCED ORDERS ---
+Tier  Name                    Materiel  Order Type            Limit
+T0    Reign of Fire           1         Advance               Orbital Strike, once per round
+      Effect: Gain [?], convert 1 [M] into [G].
+
+T1    Crusade                 2         Advance               Once per round
+      Effect: If no friendly worlds in system, gain 1 (R).
+
+T1    Direct the Faithful     2         Strategize            Once per round
+      Effect: May change 1 structure to a different structure.
+
+T1    Recruitment Worlds      2         Deploy                Once per round
+      Effect: Treat Bastions as Factories, lower deployment limit by 1 each.
+
+T2    Drop Pods               3         Advance               Orbital Strike, once per round
+      Effect: Bastions do not prevent orbital strike. Spend 2 [S] to place free Marine (may start combat).
+
+--- EVENT CARDS ---
+Name                      Warp Storm Move  Type    Effect
+Adeptus Mechanicus        Across           Scheme  At start of assess damage, discard to gain 2 (s), plus 1 (s) per (F) you have.
+Emperor's Champion        Sideways         Scheme  At start of assess damage, discard to rally 1 unit.
+Exterminatus             Top Left/Bot Rgt  Scheme  Before orbital strike, discard to convert all dice to [G].
+Heroic Intervention       Across           Tactic  Place free Marine on friendly structure or free Scout on any friendly world.
+Rites of Battle          Top Left/Bot Rgt  Tactic  Purchase 1 order upgrade, reduce by 1 materiel per Bastion.
+The Emperor Protects      Sideways         Tactic  Place Bastion on friendly world. Free if no other structure there, otherwise cost 2 materiel.
+Unwavering Resolve       Top Rgt/Bot Left  Scheme  Instead of revealing an order, discard to rally all units in a system.
+Work of the Righteous    Top Rgt/Bot Left  Tactic  Gain assets or materiel from a friendly world.
+
+
+================================================================================
+PAGE 2: CHAOS SPACE MARINES
+================================================================================
+
+DOMINATE ABILITY:
+  Take 1 cultist from active system and place on friendly or uncontested world
+  in adjacent system.
+
+--- UNITS ---
+Tier  Name                    Materiel      Dice  Health  Morale  Starting  Max
+-     Factory                 2             -     -       -       1         -
+-     City                    3             -     -       -       -         9 Total
+-     Bastion                 2             2     3       2       -         -
+T0    Cultist                 2             1     2       2       2         9
+T0    Iconoclast Destroyer    2             2     2       2       1         3
+T1    Chaos Marine            3             3     3       2       2         6
+T2    Helbrute                4             3     4       3       -         3
+T2    Repulsive Cruiser       5 + 1(F)      4     5       4       -         3
+T3    Chaos Reaver Titan      5 + 1(F)      4     5       3       -         3
+
+--- COMBAT CARDS ---
+Tier  Name                    Materiel  Icons(G/S/M)  Primary Effect / Requires
+                                                       Secondary Effect
+--    Dark Faith               -        -/-/1          PRIM: Gain 1 [M].
+                                                       REQ: Cultist / Iconoclast
+                                                       SEC: If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system.
+
+--    Foul Worship             -        -/1/-          PRIM: Gain 1 [?].
+                                                       REQ: Cultist / Iconoclast
+                                                       SEC: If enemy has routed unit, gain 1 (s) per unrouted Cultist or Iconoclast.
+
+--    Impure Zeal              -        1/1/-          PRIM: If more [M] than enemy, rally 1 unit.
+                                                       REQ: Cultist / Iconoclast
+                                                       SEC: Enemy routs 1 unit, or you gain 1 (g) per unrouted Cultist or Iconoclast.
+
+--    Khorne's Rage            -        1/-/-          PRIM: Spend 1 [G] to gain 3 (g).
+                                                       REQ: Marine / Iconoclast
+                                                       SEC: Enemy spends 1 [S] or routs unit of his choosing.
+
+--    Lure of Chaos            -        -/-/1          PRIM: Enemy may choose a unit to rout to gain 1 [?]. Otherwise, place a free Cultist or Iconoclast in the area.
+                                                       REQ: Cultist / Iconoclast
+                                                       SEC: Gain 2 (g) or 2 (s).
+
+T0    Mark of Khorne           2        2/-/-          PRIM: Spend 1 [G] or 1 [M] to gain 3 (g).
+                                                       REQ: Marine / Iconoclast
+                                                       SEC: Enemy spends 1 [S] or destroys 1 routed unit.
+
+T0    Mark of Nurgle           2        -/2/-          PRIM: Spend 1 [S] or 1 [M] to gain 3 (s).
+                                                       REQ: Marine / Iconoclast
+                                                       SEC: Enemy destroys 1 routed unit, otherwise gain 2 (s).
+
+T0    Mark of Slaanesh         2        1/1/-          PRIM: Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice.
+                                                       REQ: Marine
+                                                       SEC: If enemy has routed unit, place free Cultist on this world.
+
+T0    Mark of Tzeentch         2        -/-/2          PRIM: Gain 1 [M]. If more [M] than enemy, upgrade 1 Cultist / (R) to Marine.
+                                                       REQ: Chaos Marine / Iconoclast
+                                                       SEC: Convert up to 2 [M] to [G] and/or [S].
+
+T2    Chaos United             4        1/1/1          PRIM: Enemy may rout 1 of its units. If not, gain a die of your choice.
+                                                       REQ: Cultist / Marine / Helbrute
+                                                       SEC: Take 1 unit from any world and place it on this world. Command level cannot exceed number of Cultists in this system.
+
+T2    Daemonic Resilience      4        -/2/1          PRIM: Gain 1 [M] or 1 [S].
+                                                       REQ: Helbrute / Cruiser
+                                                       SEC: Gain 4 (s) unless enemy destroys 1 unit of his choice.
+
+T2    Inhuman Strength         4        2/-/1          PRIM: Gain 1 [G] or 1 [M].
+                                                       REQ: Helbrute / Cruiser
+                                                       SEC: Destroy 1 unit to gain 4 (g).
+
+T3    Chaos Victorious         6        1/1/1          PRIM: Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units.
+                                                       REQ: Titan / Cruiser
+                                                       SEC: Rout 1 enemy unit.
+
+T3    Death and Despair        6        2/-/1          PRIM: Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit.
+                                                       REQ: Titan / Cruiser
+                                                       SEC: If more [M] than enemy, destroy 1 routed unit.
+
+--- ENHANCED ORDERS ---
+Tier  Name                    Materiel  Order Type            Limit
+T0    Fear from Above         1         Advance               Orbital Strike, once per round
+      Effect: Gain [?], spend 1 [M] to force any unit taking damage to rout.
+
+T1    Dread Ritual            2         Deploy                Once per round
+      Effect: Purchase 1 Tier 0-2 unit; reduce cost by 1 per Cultist in active system. Factory not required.
+
+T1    Favour of the Dark Gods 2         Strategize            Once per round
+      Effect: Place 2 order tokens from play area onto top of event deck.
+
+T1    From the Warp           2         Advance               Once per round
+      Effect: Ships can move through Warp Storms.
+
+T2    Complete Destruction     3        Advance               Orbital Strike, once per round
+      Effect: Bastions do not prevent orbital strike. Spend 2 [S] to force enemy to choose unit or structure to destroy.
+
+--- EVENT CARDS ---
+Name                        Warp Storm Move  Type    Effect
+Blight of Nurgle            Across           Scheme  Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units.
+Incantation of Tzeentch     Across           Tactic  Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move).
+Prayer to the Dark Gods     Top Rgt/Bot Left Scheme  When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction.
+Prophets and Signs          Top Rgt/Bot Left Tactic  Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world.
+Seduced by Chaos            Sideways         Scheme  At end of assess damage in a Chaos combat, discard to rout 1 unit in combat.
+Spoils of War               Top Left/Bot Rgt Tactic  Gain 1 (F) and 1 (R).
+Through the Warp            Top Left/Bot Rgt Scheme  When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start.
+Touched by the Warp         Sideways         Tactic  Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system.
+
+
+================================================================================
+PAGE 3: ORKS
+================================================================================
+
+DOMINATE ABILITY:
+  Purchase 1 unit and place it on a world in the active system.
+
+--- UNITS ---
+Tier  Name                    Materiel      Dice  Health  Morale  Starting  Max
+-     Factory                 2             -     -       -       1         -
+-     City                    3             -     -       -       -         9 Total
+-     Bastion                 2             2     3       2       -         -
+T0    Ork Boyz                2             2     2       1       4         9
+T0    Onslaught Attack Ships  2             1     3       2       -         3
+T1    Nobz                    3             2     4       2       1         6
+T2    Battlewagons            4             3     5       3       -         3
+T2    Kill Kroozers           5 + 1(F)      3     6       4       -         3
+T3    Gargants                5 + 1(F)      3     6       3       -         3
+                              + 1(R)
+
+--- COMBAT CARDS ---
+Tier  Name                    Materiel  Icons(G/S/M)  Primary Effect / Requires
+                                                       Secondary Effect
+--    'Ard Boyz               -         -/2/-          PRIM: You must reroll all of your [G].
+                                                       REQ: Boyz
+                                                       SEC: Enemy must reroll 1 [G] for each unrouted Boyz.
+
+--    Gretchin                -         -/-/-          PRIM: Gain 1 (g) and 1 (s). Enemy rerolls 1 die of your choice.
+                                                       REQ: Onslaught
+                                                       SEC: Destroy 1 Onslaught to force enemy to choose & destroy one of his units.
+
+--    Mek Boyz                -         -/-/1          PRIM: Gain 1 [?].
+                                                       REQ: Boyz / Onslaught
+                                                       SEC: Enemy discards top card of his combat deck. You gain the card's combat icons until end of this execution round.
+
+--    Shoota Boyz             -         2/-/-          PRIM: You must reroll all of your [S].
+                                                       REQ: Boyz
+                                                       SEC: Enemy must reroll 1 [S] for each unrouted Boyz.
+
+--    Slugga Boyz             -         1/1/-          PRIM: Both sides must reroll all [M].
+                                                       REQ: Boyz / Onslaught
+                                                       SEC: Rally 1 unit.
+
+T0    Biker Nobz              2         2/1/-          PRIM: Enemy must reroll all [G].
+                                                       REQ: Nobz / Onslaught
+                                                       SEC: Gain 1 (g).
+
+T0    Mega Nobz               2         1/2/-          PRIM: Enemy must reroll all [S].
+                                                       REQ: Nobz / Onslaught
+                                                       SEC: Gain 1 (s).
+
+T0    Sea of Green            2         1/1/-          PRIM: Place free (R) in this area. If you have more unrouted units, enemy spends 1 [M] or routs 1 unit of his choice.
+                                                       REQ: -
+                                                       SEC: -
+
+T0    Waaagh!!!!              2         -/-/3          PRIM: Rally 1 unit.
+                                                       REQ: Boyz / Onslaught
+                                                       SEC: Gain 1 (g) per unrouted Boyz / Onslaught.
+
+T2    Party Wagon             4         1/2/-          PRIM: Place free (R) in this area.
+                                                       REQ: Wagon / Kroozer
+                                                       SEC: If you have more unrouted units, gain 2 (g) and 2 (s).
+
+T2    Rokkit Wagon            4         3/-/-          PRIM: -
+                                                       REQ: Wagon / Kroozer
+                                                       SEC: Gain 3 (g). Enemy may retreat 1 unit.
+
+T2    Weirdboyz               4         1/1/1          PRIM: Both sides must reroll all dice.
+                                                       REQ: Boyz / Onslaught
+                                                       SEC: In this combat, each time enemy gets (g) or (s), you gain the same tokens as well.
+
+T3    Smasher Gargant         6         2/3/-          PRIM: -
+                                                       REQ: Gargant / Kroozer
+                                                       SEC: Choose enemy unit. Destroy unit unless enemy spends dice equal to its Tier.
+
+T3    Snapper Gargant         6         4/1/-          PRIM: -
+                                                       REQ: Gargant / Kroozer
+                                                       SEC: Discard 1 of enemy face up combat cards.
+
+--- ENHANCED ORDERS ---
+Tier  Name                    Materiel  Order Type            Limit
+T0    Lootin'                 1         Advance               Orbital Strike, once per round
+      Effect: Gain 1 [?], spend 1 die to gain 1 materiel and force enemy to lose 1 materiel.
+
+T1    Werk Fasta!             2         Deploy                Once per round
+      Effect: May purchase structure before purchasing units.
+
+T1    The Green Tide          2         Strategize            Once per round
+      Effect: When revealed, can resolve it as one of the other orders instead.
+
+T0    Ork Roks                2         Advance               Once per round
+      Effect: Can move up to 2 units through 1 uncontrolled void as if it were a friendly area.
+
+T2    Stealin'!               3         Advance               Orbital Strike, once per round
+      Effect: Bastions do not prevent orbital strike. Spend 1 [M] to discard an enemy asset token; you gain that token.
+
+--- EVENT CARDS ---
+Name                    Warp Storm Move  Type    Effect
+Gitz Dem!               Top Rgt/Bot Left Scheme  When an enemy unit routs in combat, discard to destroy that unit.
+How We Getz Here?       Top Rgt/Bot Left Tactic  Take 1 unit from any world and place on any uncontrolled world.
+Letz Get Fightin'       Across           Tactic  Either place 2 free Boyz on a world containing a Nob, or 1 free Boyz on a friendly world.
+Lootin' 'n Stealin'     Top Left/Bot Rgt Tactic  Gain 2 materiel. Choose a player to lose 1 asset of your choice.
+Moar Boyz!              Sideways         Tactic  Gain 2 (R).
+Mob Up!                 Sideways         Scheme  Instead of revealing Order, discard to resolve an Advance Order in a system with at least 2 of your own units.
+Teer it Down!           Top Left/Bot Rgt Scheme  End of assess damage step in Ork combat, discard to destroy 1 structure on that world.
+Warboss                 Across           Scheme  When purchasing, reduce cost by 1 per (R) you have.
+
+
+================================================================================
+PAGE 4: ELDAR
+================================================================================
+
+DOMINATE ABILITY:
+  Take 1 unit from a world in the active system, and place it on any friendly world.
+
+--- UNITS ---
+Tier  Name                    Materiel      Dice  Health  Morale  Starting  Max
+-     Factory                 2             -     -       -       1         -
+-     City                    3             -     -       -       -         9 Total
+-     Bastion                 2             2     3       2       -         -
+T0    Aspect Warriors         2             2     1       2       3         6
+T0    Hellebore Frigates      2             3     2       1       2         6
+T1    Wraithguard             3             2     4       2       1         3
+T2    Falcons                 4             3     4       3       -         3
+T2    Void Stalkers           5 + 1(F)      4     5       4       -         3
+T3    Warlock Titans          5 + 1(F)      4     5       3       -         3
+
+--- COMBAT CARDS ---
+Tier  Name                    Materiel  Icons(G/S/M)  Primary Effect / Requires
+                                                       Secondary Effect
+--    Command of the Autarch  -         -/-/-          PRIM: Either rally 1 unit or gain 1 [M]. Play 1 card from your hand - gain its combat icons but not its abilities.
+                                                       REQ: -
+                                                       SEC: -
+
+--    Hit and Run             -         1/-/-          PRIM: Gain 2 (g).
+                                                       REQ: Aspect / Frigate
+                                                       SEC: Spend 1 [M] to move 1 unit to adjacent friendly or uncontrolled area.
+
+--    Howling Banshees        -         1/-/-          PRIM: Gain 1 [?].
+                                                       REQ: Aspect / Frigate
+                                                       SEC: Spend 1 [M] to force enemy to rout a unit of his choice.
+
+--    Ranger Support          -         -/1/1          PRIM: If attacking, gain 1 (g) and 1 (s). If defending, you may retreat 1 unit.
+                                                       REQ: -
+                                                       SEC: -
+
+--    Striking Scorpions      -         -/1/-          PRIM: Gain 1 [?].
+                                                       REQ: Aspect / Frigate
+                                                       SEC: Enemy loses 1 die of his choice.
+
+T0    Fire Dragon's Vengeance 2         2/-/-          PRIM: If you are attacking, enemy cannot gain (s) this execution round.
+                                                       REQ: Aspect / Frigate
+                                                       SEC: Gain 2 (s).
+
+T0    Swooping Hawks           2        -/2/-          PRIM: If you are defending, enemy loses 3 (g).
+                                                       REQ: Aspect / Frigate
+                                                       SEC: Spend 1 [M] to gain 2 (g).
+
+T0    Wraithguard Advance      2        1/-/1          PRIM: Gain 1 [?] or 1 [M]. Convert up to 2 [S] into [G].
+                                                       REQ: Wraithguard / Frigate / Stalker
+                                                       SEC: Enemy spends 1 [M] or routs unit of his choosing.
+
+T0    Wraithguard Support      2        -/1/1          PRIM: Gain 1 [?] or 1 [M]. Convert up to 2 [G] into [S].
+                                                       REQ: Wraithguard / Frigate / Stalker
+                                                       SEC: Spend 1 [M] to rally 1 unit.
+
+T2    Fire Prism               4        2/1/-          PRIM: Convert any [M] into [G].
+                                                       REQ: Falcon / Stalker
+                                                       SEC: If attacking, gain 2 (g). If defending, force enemy to lose 5 (s).
+
+T2    Spiritseer's Guidance    4        1/1/1          PRIM: Gain 1 [M]. Rout 1 unit; units cannot suffer any damage this execution round.
+                                                       REQ: -
+                                                       SEC: -
+
+T2    Wave Serpent             4        1/2/-          PRIM: Gain 1 [?]. Gain 3 (s) unless enemy spends 1 [M].
+                                                       REQ: Falcon / Stalker
+                                                       SEC: Spend 1 [M] to move any number of Tier 0 and Tier 1 units to an adjacent area - may start a new combat. Same area if card is played again.
+
+T3    Holofield Emitter        6        1/2/1          PRIM: Gain 1 [?]. Draw 1 combat card.
+                                                       REQ: Titan / Stalker
+                                                       SEC: Play 1 card from your hand - gain its combat icons but not its abilities.
+
+T3    Psychic Lance            6        2/1/-          PRIM: Gain 1 [?]. Enemy discards 1 random combat card from his hand.
+                                                       REQ: Titan / Stalker
+                                                       SEC: Gain 4 (g) unless enemy discards 1 face up card of your choice.
+
+--- ENHANCED ORDERS ---
+Tier  Name                    Materiel  Order Type            Limit
+T0    Tactical Strikes        1         Advance               Orbital Strike, once per round
+      Effect: Gain 1 [?], spend 1 [M] to choose enemy unit on the world - this must suffer damage first.
+
+T1    Wraithbone Singers      2         Deploy                Once per round
+      Effect: When purchasing structure, may place it on world containing exactly 1 different structure.
+
+T1    Farseer                 2         Strategize            Once per round
+      Effect: This order can be resolved even if there are no units in the active system.
+
+T1    Corsair Raid            2         Advance               Once per round
+      Effect: After resolving a combat with this order, you may perform 1 orbital strike in the active system.
+
+T2    Strafing Run            3         Advance               Orbital Strike, once per round
+      Effect: Bastions do not prevent orbital strike. Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system (still resolve attack).
+
+--- EVENT CARDS ---
+Name                    Warp Storm Move  Type    Effect
+Exodite Colony          Top Rgt/Bot Left Tactic  Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token.
+Farsight                Across           Scheme  At start of assess damage, discard to take all units in this combat and place on any friendly area.
+Legacy of Vaul          Sideways         Tactic  Gain 2 (F).
+Outcasts Returned       Across           Tactic  Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void.
+Outmanoeuvre            Sideways         Scheme  At end of Planning Phase, discard to look at 1 of your order tokens anywhere in a stack. Then place on top or bottom of the stack.
+Path of the Warrior     Top Left/Bot Rgt Tactic  Purchase 1 combat upgrade, reducing its cost by 1 per friendly world with a city.
+Vicious Raids           Top Left/Bot Rgt Scheme  When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice.
+Warp Gate               Top Rgt/Bot Left Scheme  Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled).
+
+
+================================================================================
+PAGE 5: NECRONS
+================================================================================
+
+DOMINATE ABILITY:
+  Take any of your units from 1 world and place them on a friendly world
+  containing a structure in the active system.
+
+--- UNITS ---
+Tier  Name                    Materiel      Dice  Health  Morale  Starting  Max
+-     Factory                 2             -     -       -       1         -
+-     City                    3             -     -       -       -         9 Total
+-     Bastion                 2             2     3       2       -         -
+T0    Warriors                2             2     3       0       4         4
+T0    Scythe-Class Harvest    2             2     3       1       -         2
+      Ships
+T1    Immortals               3             3     4       1       1         3
+T2    Monoliths               4             3     5       2       -         2
+T2    Cairn-Class Tomb Ships  5 + 1(F)      3     6       4       -         2
+T3    C'tan Star God Shard    5 + 1(F)      3     6       3       -         1
+                              + 1(R) + (F)
+
+--- COMBAT CARDS ---
+Tier  Name                    Materiel  Icons(G/S/M)  Primary Effect / Requires
+                                                       Secondary Effect
+--    Attack Subroutines      -         2/-/-          PRIM: -
+                                                       REQ: Warrior / Harvest Ship
+                                                       SEC: Gain 1 [M].
+
+--    Everlasting Conquest    -         -/-/-          PRIM: Gain 1 [M]. Rally 1 of your units.
+                                                       REQ: Warrior / Immortal / Harvest Ship
+                                                       SEC: For each [M] you have, gain either 1 [G] or 1 [S].
+
+--    Flayed Ones             -         1/-/-          PRIM: Gain 2 (g).
+                                                       REQ: Warrior / Harvest Ship
+                                                       SEC: If enemy has any [M], gain 1 [M] and force enemy to lose 1 [M].
+
+--    Foretelling Cryptek     -         -/-/1          PRIM: Gain 1 [G], 1 [S] or 1 [M]. Spend 1 [M] to either take 1 of your units and place it routed on a friendly world containing a structure or take 1 of your Tier 0 or Tier 1 units from a world containing a structure and place it on this world.
+                                                       REQ: -
+                                                       SEC: -
+
+--    Warrior Phalanx         -         -/2/-          PRIM: -
+                                                       REQ: Warrior / Harvest Ship
+                                                       SEC: Gain 1 [M].
+
+T0    Canoptek Swarm          2         1/-/1          PRIM: Gain 1 [?]. Place 1 free reinforcement token in this area.
+                                                       REQ: -
+                                                       SEC: -
+
+T0    Destroyers              2         2/-/1          PRIM: Spend either 1 [S] or 1 [M] to gain 2 (s).
+                                                       REQ: Immortal / Harvest Ship
+                                                       SEC: If your enemy has at least 1 routed unit, gain 2 (g).
+
+T0    Lychguard               2         -/2/1          PRIM: Rout 1 of your units. If you do, your enemy chooses and routs 1 of his units.
+                                                       REQ: Immortal / Harvest Ship
+                                                       SEC: If your enemy has at least 1 routed unit, gain 2 (s).
+
+T0    Overlord's Will         2         -/-/3          PRIM: Rally 1 of your units. Reroll up to 2 of your dice.
+                                                       REQ: -
+                                                       SEC: -
+
+T2    Doomsday Phalanx        4         3/-/-          PRIM: Force your enemy to lose 1 [S].
+                                                       REQ: Monolith / Tomb Ship
+                                                       SEC: When an enemy unit is routed during the assess damage step of this execution round, it is destroyed unless your enemy spends 1 [S].
+
+T2    Monolith Phalanx        4         2/1/-          PRIM: If your units or bastions suffer no damage during this execution round, your enemy chooses and retreats 1 of his units.
+                                                       REQ: Monolith / Tomb Ship
+                                                       SEC: Gain 3 (s).
+
+T2    Triarch Praetorians     4         1/1/1          PRIM: Either rally 1 of your units or place 1 free reinforcement token in this area.
+                                                       REQ: Warrior / Harvest Ship
+                                                       SEC: For each unrouted Warrior or Harvest Ship, spend up to 1 die to gain 1 [G], 1 [S] or 1 [M].
+
+T3    Shard of the Nightbringer 6       2/1/-          PRIM: Either gain 3 (g) or destroy 1 Tier 0 unit.
+                                                       REQ: C'tan Shard / Tomb Ship
+                                                       SEC: Destroy 1 Tier 0 or Tier 1 unit.
+
+T3    Shard of the Deceiver   6         1/1/2          PRIM: Play the top card from your combat deck. Do not resolve its abilities, but gain its combat icons during this combat.
+                                                       REQ: C'tan Shard / Tomb Ship
+                                                       SEC: Take your C'tan Shard and place it on any friendly world.
+
+--- ENHANCED ORDERS ---
+Tier  Name                    Materiel  Order Type            Limit
+T0    Harvest Raid            1         Advance               Orbital Strike, once per round
+      Effect: Gain 1 [?], and you may choose 1 Tier 0 unit on the world. That unit must suffer damage first during this orbital strike.
+
+T1    Eternity Gate           2         Advance               Once per round
+      Effect: After moving your units, you may take any of your Tier 0 or Tier 1 units from 1 friendly world containing a structure and place them on any world in the active system containing an unrouted Monolith.
+
+T1    Reanimation Protocols   2         Strategize            Once per round
+      Effect: When you reveal this order token, rally all of your units in the active system and all of your ground units in every other system.
+
+T1    Tomb Worlds             2         Deploy                Once per round
+      Effect: After you resolve this order, if you purchased at least 1 unit or structure, you may purchase 1 bastion and place it on a friendly or uncontrolled world in either the active system or an adjacent system.
+
+T1    Translocation Crypts    2         Deploy                Once per round
+      Effect: While resolving this order, you may treat all your cities in the active system as factories.
+
+--- EVENT CARDS ---
+Name                      Warp Storm Move  Type    Effect
+Chronomancy               Across           Scheme  At start of execution round of combat, you may discard this card to draw up to 2 combat cards and then discard that many combat cards from your hand.
+Deathmarks                Across           Scheme  At start of execution round of combat, may discard this card to rout 1 enemy Tier 0 or Tier 1 unit.
+Doom Scythes              Sideways         Scheme  At start of execution round of combat, may discard this card and rout up to 2 of your units. If you do, enemy destroys 1 (R) in this area for each unit you routed.
+Remorseless Advance       Top Rgt/Bot Left Scheme  At start of execution round of combat, may discard this card to resolve 1 additional assess damage step during execution round.
+Resurrection Orb          Top Rgt/Bot Left Scheme  When 1 of your Tier 0 or Tier 1 units is routed or destroyed during combat, may discard this card to take it and place it back unrouted in this area at the end of the assess damage step.
+Tomb World Awakening      Sideways         Tactic  Purchase 1 structure and place it on a friendly world not containing a structure.
+Tomb World Archives       Top Left/Bot Rgt Tactic  Purchase 1 combat upgrade.
+Wrath of the Void Dragon  Top Left/Bot Rgt Scheme  At start of execution round of combat, may discard this card. If you do, you and your enemy suffer an additional 3 damage during this assess damage step.
+
+
+================================================================================
+PAGE 6: TYRANIDS
+================================================================================
+
+DOMINATE ABILITY:
+  Gain 1 additional asset token of your choice. You can have up to 4 of each
+  asset token in your play area at any time.
+
+--- UNITS ---
+Tier  Name                    Materiel      Dice  Health  Morale  Starting  Max
+-     Factory                 2             -     -       -       1         -
+-     City                    3             -     -       -       -         9 Total
+-     Bastion                 2             2     3       2       1         -
+T0    Gaunts                  2             1     1       3       3         6
+T0    Devourer Bio-Ships      2             1     2       3       1         5
+T1    Warriors                3             3     2       3       -         6
+T2    Carnifexes              4             4     3       3       -         3
+T2    Leviathan Hive Ships    5 + 1(F)      3     6       4       1         3
+T3    Hierophant Bio-Titans   5 + 1(F)      5     4       3       -         3
+                              + 1(R)
+
+--- COMBAT CARDS ---
+Tier  Name                    Materiel  Icons(G/S/M)  Primary Effect / Requires
+                                                       Secondary Effect
+--    Burrowing Organisms     -         -/1/-          PRIM: If attacking, gain 2 (g). If defending, either place 1 free (R) in this area or destroy 2 unrouted Gaunts to place 1 free bastion on this world if it does not already contain a structure.
+                                                       REQ: -
+                                                       SEC: -
+
+--    Genestealer Hybrids     -         1/-/-          PRIM: -
+                                                       REQ: Gaunt / Devourer
+                                                       SEC: Force enemy to lose 1 [G], 1 [S], or 1 [M], whichever he has most of. If tied, you choose. Then gain 1 [G], 1 [S], or 1 [M], whichever your enemy lost.
+
+--    Hive Tyrant             -         1/-/-          PRIM: Play 1 combat card from your hand. Do not resolve its abilities, but gain its combat icons during this combat.
+                                                       REQ: Warrior / Hive Ship
+                                                       SEC: Either rally 1 of your units. Spend 1 [M] to gain either 1 [G] or 1 [S].
+
+--    Hormagaunt Brood        -         1/-/-          PRIM: Gain 1 (s).
+                                                       REQ: Gaunt / Devourer
+                                                       SEC: Destroy 1 unrouted Gaunt or Devourer to gain 3 (g).
+
+--    Rain of Spores          -         -/1/-          PRIM: Destroy 1 unrouted Devourer in this system to place 1 free Warrior on [this world].
+                                                       REQ: -
+                                                       SEC: -
+
+T0    Ripper Swarms           2         2/-/-          PRIM: Gain 2 (g).
+                                                       REQ: Gaunt / Devourer
+                                                       SEC: At the end of this execution round, gain 1 materiel for each unit destroyed during this execution round, to a maximum of 2.
+
+T0    Termagaunt Brood        2         1/1/-          PRIM: Either gain 1 (g) for each unrouted Gaunt or Devourer or place 1 free reinforcement token in this area. For each Gaunt or Devourer destroyed or routed this execution round, reduce damage you suffer in the next execution round by 1.
+                                                       REQ: -
+                                                       SEC: -
+
+T0    Warrior Brood           2         1/1/-          PRIM: Destroy 1 of your unrouted units to gain 2 (s) and reduce the damage you suffer in the next execution round by 2.
+                                                       REQ: Warrior / Hive Ship
+                                                       SEC: Reroll all of your [G], [S], or [M].
+
+T0    Winged Horror           2         2/-/-          PRIM: Destroy 1 of your unrouted units to gain 3 (g).
+                                                       REQ: Warrior / Devourer
+                                                       SEC: Your enemy may allow you to gain 2 (s). If he does not, add 2 to your offence value in the next execution round.
+
+T2    Crushing Claws          4         1/2/-          PRIM: Destroy 1 of your unrouted units to gain 3 (g).
+                                                       REQ: Carnifex / Hive Ship
+                                                       SEC: Spend either 1 [G] or 1 [M] to force your enemy to lose 2 [S].
+
+T2    Scything Talons         4         2/1/-          PRIM: During this execution round, if enemy has to assign any damage, he assigns 3 additional damage.
+                                                       REQ: Carnifex / Hive Ship
+                                                       SEC: Destroy 1 unrouted Carnifex or Hive Ship to gain 3 (g) and 2 (s).
+
+T2    Synaptic Control        4         1/1/-          PRIM: Gain 1 [?]. Place 1 free (R) in this area.
+                                                       REQ: Warrior / Hive Ship
+                                                       SEC: Rally 1 of your units. Gain either 1 (g) or 1 (s) for each of your unrouted units in excess of the number of your enemy's unrouted units.
+
+T3    Glory of the Swarm      6         3/1/-          PRIM: Spend any number of [M]. For each [M] you spend, gain either 1 [G] or 1 [S].
+                                                       REQ: Bio-Titan / Hive Ship
+                                                       SEC: Rally all of your units. During this execution round, you assign damage to your enemy's units and bastions.
+
+T3    Overwhelming Presence   6         1/2/-          PRIM: Destroy 1 of your unrouted units to gain either 3 (g) or 3 (s).
+                                                       REQ: Bio-Titan / Hive Ship
+                                                       SEC: Force your enemy to choose 3 times to either choose and rout 1 of his units or lose 1 die of his choice.
+
+--- ENHANCED ORDERS ---
+Tier  Name                    Materiel  Order Type            Limit
+T0    Genestealer Infiltration 1        Advance               Orbital Strike, once per round
+      Effect: Gain 1 [?], may spend up to 2 [G] to gain 1 (R) for each [G] you spend.
+
+T1    Breeding Chambers       2         Deploy                Once per round
+      Effect: After you resolve this order, may purchase up to 2 units for each unrouted Hive Ship in the active system and place them on any friendly or unfriendly worlds in the active system.
+
+T1    Capillary Towers        2         Strategize            Once per round
+      Effect: After you resolve this order, may destroy any of your units or structures on a world in the active system to temporarily gain materiel equal to their materiel cost. Then use this materiel only to purchase any number of ships and place them on friendly or uncontrolled worlds in the active system. Cache tokens cannot be used and any materiel left is lost. A destroyed city counts towards your Tier for the duration of the purchase.
+
+T1    Without Number          2         Advance               Once per round
+      Effect: While resolving this order in a system in which you have an unrouted ship, you may place 1 free (R) in the contested area at the start of a reinforce step of combat.
+
+T2    Mycetic Spores          3         Advance               Orbital Strike, once per round; requires Breeding Chambers
+      Effect: Bastions do not prevent orbital strike. Spend up to 2 [G] for each participating Hive Ship. For each [G] you spend, purchase 1 unit Tier 2 or less and place it on the world. This can start a combat after resolving this orbital strike.
+
+--- EVENT CARDS ---
+Name                      Warp Storm Move  Type    Effect
+Brood Nests               Top Rgt/Bot Left Scheme  Before revealing an order during the Operations Phase, may discard to place 1 free Gaunt on each of 2 different friendly worlds.
+Devourer of Worlds        Across           Tactic  Choose a system. Gain materiel equal to the materiel value of friendly worlds in that system.
+Hive Mind                 Top Left/Bot Rgt Scheme  While resolving an order, may discard this card to increase your Tier by 1 for each of your Hive Ships.
+Infiltration Organisms    Top Rgt/Bot Left Tactic  Purchase 1 combat upgrade, reducing its materiel cost by 1 for each of your Hive Ships.
+Rapid Mutation            Sideways         Tactic  Gain 2 (F).
+Rise of the Faithful      Across           Scheme  Instead of revealing an order during the Operations Phase, may discard this card to place 1 free bastion on a friendly world not containing a structure.
+Shadow in the Warp        Across           Scheme  May discard this card when you start a combat. If you do, your enemy cannot use reinforcement tokens during the combat.
+Splinter Fleet            Top Left/Bot Rgt Tactic  Place 1 free Devourer on any friendly void.
+
+
+================================================================================
+PAGE 7: TAU
+================================================================================
+
+DOMINATE ABILITY:
+  When you resolve a dominate order in a system containing at least 1 of your
+  units or structures, you may draw 4 cards from the top of your event deck.
+  Resolve the ability of 1 of those cards and discard the others.
+
+--- UNITS ---
+Tier  Name                    Materiel      Dice  Health  Morale  Starting  Max
+-     Factory                 2             -     -       -       1         -
+-     City                    3             -     -       -       -         9 Total
+-     Bastion                 2             2     3       2       -         -
+T0    Fire Warriors           2             2     1       2       3         6
+T0    Protector Cruisers      2             3     1       2       -         2
+T1    XV8 Crisis Battlesuits  3             3     3       2       2         6
+T2    TX7 Hammerhead Gunships 4             4     4       2       -         3
+T2    Custodian Carriers      5 + 1(F)      5     4       4       -         2
+T3    KX139 Supremacy Armour  5 + 1(F)      4     5       3       -         3
+      Battlesuits
+
+--- COMBAT CARDS ---
+Tier  Name                    Materiel  Icons(G/S/M)  Primary Effect / Requires
+                                                       Secondary Effect
+--    Crossfire                -        1/-/-          PRIM: At the start of the assess damage step of this execution round, your enemy loses 3 (g).
+                                                       REQ: Fire Warrior / Battlesuit / Protector
+                                                       SEC: Gain 2 (g).
+
+--    Kroot Hunting Packs      -        1/-/-          PRIM: If you have fewer units than your enemy, gain 1 (s) and your enemy loses 1 [G]. Otherwise, gain 1 (g).
+                                                       REQ: Fire Warrior / Protector
+                                                       SEC: Gain 1 [?].
+
+--    Pathfinder Teams         -        -/-/-          PRIM: -
+                                                       REQ: Fire Warrior / Protector
+                                                       SEC: If you are attacking, look at your enemy's facedown combat card. Play 1 combat card from your hand. Then discard this card.
+
+--    Stealth Teams            -        1/-/-          PRIM: Gain 1 (s).
+                                                       REQ: Fire Warrior / Protector
+                                                       SEC: Your enemy may choose and rout 1 of his units. If he does not, force your enemy to lose 1 [G], 1 [S], or 1 [M].
+
+--    Tactical Retreat         -        -/1/-          PRIM: Retreat 1 of your units. If you do, you may spend 1 [M] to rally that unit.
+                                                       REQ: Fire Warrior / Protector
+                                                       SEC: Gain 2 (s).
+
+T0    Evasion                  2        -/1/1          PRIM: Gain 1 [?].
+                                                       REQ: Fire Warrior / Protector
+                                                       SEC: During this execution round, if any of your unrouted Tier 0 units become routed or are destroyed, you may take them and place them back in this area at the end of the assess damage step.
+
+T0    Feigned Retreat          2        -/2/-          PRIM: Your enemy must reroll all [S]. You must reroll either 2 [S] or retreat 1 of your units.
+                                                       REQ: Fire Warrior / Battlesuit / Protector
+                                                       SEC: If none of your units retreated during this execution round, gain 2 (g).
+
+T0    Kauyon                   2        -/2/-          PRIM: Gain 1 (s). At the end of this execution round, if you are defending, you may move 1 of your units from an adjacent area to this area. Gain [?] equal to that unit's combat value.
+                                                       REQ: -
+                                                       SEC: -
+
+T0    Mont'ka                  2        1/-/-          PRIM: Gain 2 (g). Choose 1 of your enemy's units or bastions. That unit or bastion suffers damage first during this execution round. Damage in excess of the chosen unit's or bastion's health value is lost.
+                                                       REQ: Battlesuit / Protector
+                                                       SEC: Spend up to 2 dice. For each dice you spend, gain 2 (g).
+
+T2    Fire and Movement        4        2/1/-          PRIM: Reroll all of your [G], [S], or [M].
+                                                       REQ: Hammerhead / Custodian
+                                                       SEC: During this execution round, when 1 of your units is destroyed during the assess damage step, you may retreat that unit instead.
+
+T2    Firefight                4        3/-/-          PRIM: At the start of the assess damage step of this execution round, enemy loses 3 (g).
+                                                       REQ: Battlesuit / Hammerhead / Custodian
+                                                       SEC: Gain 1 (s). Force your enemy to lose either 1 [G] or 1 [M].
+
+T2    Regroup                  4        1/1/1          PRIM: Spend any number of dice. For every 2 dice you spend, rally 1 of your units.
+                                                       REQ: Hammerhead / Custodian
+                                                       SEC: Gain 2 [?].
+
+T3    For the Greater Good     6        2/-/3          PRIM: Your enemy must reroll all [G].
+                                                       REQ: Supremacy / Custodian
+                                                       SEC: Force your enemy to lose 3 [M]. For each [M] your enemy cannot lose, gain 2 (g).
+
+T3    Supremacy                6        3/1/-          PRIM: Gain 2 (g). Spend up to 2 [M]. For each [M], gain either 1 [G] or 1 [S].
+                                                       REQ: Supremacy / Custodian
+                                                       SEC: During this execution round, the health value of your enemy's units is reduced to 3.
+
+--- ENHANCED ORDERS ---
+Tier  Name                    Materiel  Order Type            Limit
+T1    Gue'vesa Allies         2         Deploy                Once per round
+      Effect: When you reveal this order token in a system containing 1 of your units or structures and a friendly or uncontrolled world, you may spend 1 materiel to place 1 free Tier 0 unit on a friendly or uncontrolled area in the active system.
+
+T1    Mobilised Hunter Cadres 2         Advance               Once per round
+      Effect: Before you resolve this order, you may resolve an additional Advance Order using only 1 of your Tier 0 or Tier 1 units already in the active system. If combat occurs, resolve 1 execution round only. That unit may not participate in the second Advance Order.
+
+T1    Precision Strikes       2         Advance               Orbital Strike, once per round
+      Effect: Gain 1 [?] and you may spend 1 die of your choice to choose 1 enemy unit on the world. That unit must suffer damage first during this orbital strike.
+
+T1    Targeting Array         2         Advance               Orbital Strike, once per round
+      Effect: Enemy bastions do not prevent this orbital strike. During orbital strike, gain 1 [?].
+
+T1    Teachings of Tau'va     2         Strategize            Once per round
+      Effect: When you reveal this order token, you may place 3 of your order tokens from your play area onto the top of your event deck.
+
+--- EVENT CARDS ---
+Name                      Warp Storm Move  Type    Effect
+Autonomous Drones         Sideways         Tactic  Rout 1 enemy unit of Tier 2 or less that is in a system containing at least 1 of your units.
+Critical Strike           Top Left/Bot Rgt Scheme  When an enemy unit suffers damage during combat, you may discard this card to destroy that unit.
+Denial of Supplies        Across           Scheme  You may discard this card at the start of combat. If you do, your enemy cannot place (R) from his play area into the contested area during the reinforce step of combat.
+Evacuation                Across           Tactic  Destroy 1 of your structures in any system to place 1 free structure on a different friendly world not containing a structure in the same or adjacent system.
+Philosophy of War         Top Rgt/Bot Left Scheme  You may discard this card at the start of combat. If you do, replace any number of pairs of combat cards from your combat deck with pairs of combat cards of the same or lower Tier from your upgrade deck.
+Rapid Response            Top Left/Bot Rgt Tactic  Choose a system. Move any of your units between friendly or uncontrolled areas in the chosen system.
+Sabotage                  Top Left/Bot Rgt Tactic  Destroy 1 of your unrouted units in any system to destroy 1 enemy structure in that system.
+War Council               Sideways         Scheme  Before revealing an order during the Operations Phase, you may discard this card to rally all of your units in any 1 system.
+
+
+================================================================================
+PAGE 8: IMPERIAL GUARD
+================================================================================
+
+DOMINATE ABILITY:
+  When you resolve a dominate order, you may resolve a deploy order, only to
+  purchase 2 or more identical units and placing them on either 1 friendly world
+  containing a structure or 1 friendly or uncontrolled void in the active system.
+  Reduce the materiel cost of each unit by 1. You may use cache tokens to reduce
+  the cost of 2 command level 0 units by 1 each.
+
+--- UNITS ---
+Tier  Name                    Materiel      Dice  Health  Morale  Starting  Max
+-     Factory                 2             -     -       -       1         -
+-     City                    3             -     -       -       -         9 Total
+-     Bastion                 2             2     3       2       -         -
+T0    Guardsmen               2             1     1       2       3         12
+T0    Lunar-Class Cruisers    2             2     2       2       1         3
+T1    Ogryns                  3             2     4       2       2         6
+T2    Leman Russ Battle Tanks 4             3     4       3       -         6
+T2    Emperor-Class           5 + 1(F)      4     6       3       -         3
+      Battleships
+T3    Warhound Titans         5 + 1(F)      3     5       4       -         3
+                              + 3(R)
+
+--- COMBAT CARDS ---
+Tier  Name                    Materiel  Icons(G/S/M)  Primary Effect / Requires
+                                                       Secondary Effect
+--    Fire Support            -         1/-/-          PRIM: If you are defending, gain 2 (s). Otherwise, opponent loses 2 (s).
+                                                       REQ: Guardsman / Cruiser
+                                                       SEC: Reroll 1 [S].
+
+--    For the Emperor!        -         1/-/-          PRIM: Reroll 1 of your dice.
+                                                       REQ: Guardsman / Cruiser
+                                                       SEC: Gain 1 (g) for each unrouted Guardsman or Cruiser, to a maximum of 3.
+
+--    Incoming!               -         -/1/-          PRIM: Gain 1 [?].
+                                                       REQ: Guardsman / Cruiser
+                                                       SEC: Gain 1 (s) for each unrouted Guardsman or Cruiser, to a maximum of 3.
+
+--    Iron Discipline         -         -/-/1          PRIM: Gain 1 [?] for each of your unrouted units of a different Tier.
+                                                       REQ: Guardsman / Cruiser
+                                                       SEC: Rally 1 of your units.
+
+--    Ratling Marksmen        -         1/-/-          PRIM: At the start of the assess damage step of this execution round, your enemy loses 2 (g).
+                                                       REQ: Guardsman / Cruiser
+                                                       SEC: Your enemy chooses and routs 1 of his units unless he spends 1 die of his choice.
+
+T0    Bullgryn Bulwark        2         -/2/-          PRIM: You must reroll 2 [G] or [M].
+                                                       REQ: Ogryn / Cruiser
+                                                       SEC: Gain 1 (g) for each unrouted Guardsman or Cruiser, to a maximum of 3.
+
+T0    Mechanised Combat Group 2         1/1/1          PRIM: At the start of the assess damage step of this execution round, your enemy loses either 3 (g) or 3 (s) for each pairing of unrouted Guardsmen with Ogryns or Cruisers with Battleships.
+                                                       REQ: -
+                                                       SEC: -
+
+T0    Ogryn Shock Troops      2         2/-/-          PRIM: You must reroll 2 [S] or [M].
+                                                       REQ: Ogryn / Cruiser
+                                                       SEC: Gain 1 (s) for each unrouted Guardsman or Cruiser, to a maximum of 3.
+
+T0    Sentinel Reconnaissance 2         -/1/-          PRIM: If you have more unrouted units than your enemy, your enemy chooses and routs 1 of his units unless he spends 1 [M].
+                                                       REQ: Ogryn / Cruiser
+                                                       SEC: If you are attacking, look at your enemy's facedown combat card. Gain either 2 [G] or 2 [S].
+
+T2    Armoured Spearhead      4         3/-/-          PRIM: Either destroy up to 2 unrouted Guardsmen to force your enemy to lose 2 dice of his choice for each destroyed Guardsman or destroy 1 unrouted Cruiser to force your enemy to lose 3 dice of his choice.
+                                                       REQ: Leman Russ / Battleship
+                                                       SEC: Choose 1 of your enemy's Tier 2 or Tier 3 units or bastions. That unit or bastion suffers damage first during this execution round.
+
+T2    Combined Arms           4         1/1/-          PRIM: For each of your unrouted ground units of a different Tier, gain either 1 (g) or 1 (s). For each of your unrouted ships of a different Tier, gain either 2 (g) or 2 (s). Gain 1 [?]. Rally 1 of your units.
+                                                       REQ: -
+                                                       SEC: -
+
+T2    Wyvern Suppression Fire 4         1/2/-          PRIM: If you have more unrouted Tier 0 units than your enemy, your enemy chooses and routs 1 of his units.
+                                                       REQ: Leman Russ / Battleship
+                                                       SEC: Your enemy chooses and destroys 1 of his routed Tier 0 or Tier 1 units.
+
+T3    Hammer of the Emperor   6         3/-/1          PRIM: Force your enemy to lose 1 [S].
+                                                       REQ: Warhound Titan / Battleship
+                                                       SEC: Warhound Titan: Gain 2 (g) for each of your unrouted units of a different Tier, to a maximum of 6. Battleship: Gain 3 (g) for each of your unrouted units of a different Tier.
+
+T3    Titan Support           6         1/2/2          PRIM: Your enemy must reroll 1 [G] for each of your unrouted units of a different Tier.
+                                                       REQ: Warhound Titan / Battleship
+                                                       SEC: During this execution round, your units of Tier 2 or less cannot become routed.
+
+--- ENHANCED ORDERS ---
+Tier  Name                    Materiel  Order Type            Limit
+T0    Saturation Bombing      1         Advance               Orbital Strike, once per round
+      Effect: Gain 1 [?], and you may convert 1 of your [M] into 1 [G].
+
+T1    Adeptus Astronomica     2         Advance               Once per round
+      Effect: While resolving this order, you may move up to 6 units to a world, if at least 1 of those units is a Guardsman. After you resolve this order, you may retreat any Guardsmen in excess of that world's unit capacity.
+
+T1    Departmento Munitorum   2         Strategize            Once per round
+      Effect: While resolving this order, you may purchase 1 upgrade only. Then resolve a limited Deploy (deploying in 1 area), Advance (moving from 1 area) or Dominate order (collecting assets from 1 world and/or resolving your faction ability on the same world) in the active system.
+
+T1    Forced Recruitment      2         Deploy                Once per round; unit capacity increase is persistent
+      Effect: While resolving this order, you may treat all your cities in the active system as factories capable of deploying Guardsmen only. The unit capacity of friendly worlds containing a city is increased by 2, to a maximum of 4. The additional capacity applies to Guardsmen only.
+
+T2    Virus Bombs             3         Advance               Orbital Strike, once per round
+      Effect: Enemy bastions do not prevent orbital strike. During this orbital strike, the health value of your enemy's units is reduced to 3.
+
+--- EVENT CARDS ---
+Name                      Warp Storm Move  Type    Effect
+Call of the Astropaths    Across           Scheme  At the end of a reinforce step of combat, if you are defending, you may discard this card to place 2 free (R) in the contested area.
+Deathstrike Missile       Sideways         Scheme  You may discard this card at the start of combat on any world. If you do, either destroy 1 Tier 0 or 1 Tier 1 unit on that world or rout 1 Tier 2 unit on that world at the end of the first assess damage step.
+Order of the High Command Top Left/Bot Rgt Tactic  Purchase 1 combat upgrade, reducing its materiel cost by 1 for each friendly world containing a factory.
+Imperial Tithe            Top Rgt/Bot Left Tactic  Either place 2 free Guardsmen on 1 friendly world in a system containing at least 1 of your factories or place 1 free Guardsman on any friendly world.
+Military Production Shift Across           Tactic  Choose a friendly world. Gain assets from this world and gain materiel equal to its materiel value.
+Lance Strike              Top Rgt/Bot Left Scheme  Before you perform an orbital strike, you may discard this card to add 2 to the total amount of damage suffered by your enemy's units.
+Tactical Genius           Top Left/Bot Rgt Scheme  Instead of playing a combat card from your hand, you may discard this card to play any card from either your combat deck or your upgrade deck, other than a card that has already been played.
+Tempestus Scions          Sideways         Tactic  Rout 1 enemy Tier 0 or Tier 1 unit that is either in a system containing at least 1 of your units or in an adjacent system.
+
+
+================================================================================
+END OF EXTRACTED DATA
+================================================================================

@@ -46,8 +46,8 @@ input[type=text]:focus{border-color:var(--p1);}
 .start-btn:hover{background:linear-gradient(135deg,rgba(0,200,255,.25),rgba(255,77,109,.25));border-color:var(--p1);transform:translateY(-1px);}
 
 /* ── GAME ── */
-#game-screen{min-height:100vh;padding:8px;gap:8px;}
-.game-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:8px 16px;background:var(--panel);border:1px solid var(--border);border-radius:10px;gap:10px;flex-shrink:0;}
+#game-screen{height:100vh;padding:6px;gap:5px;overflow:hidden;}
+.game-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:5px 14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;gap:10px;flex-shrink:0;}
 .pinfo{display:flex;align-items:center;gap:10px;}.pinfo.r{justify-content:flex-end;}
 .pavatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;border:2px solid;flex-shrink:0;}
 .av1{border-color:var(--p1);background:rgba(0,200,255,.1);color:var(--p1);}
@@ -68,7 +68,7 @@ input[type=text]:focus{border-color:var(--p1);}
 .ti2{background:rgba(255,77,109,.15);color:var(--p2);border:1px solid rgba(255,77,109,.3);}
 
 /* ── LAYOUT ── */
-.game-content{display:grid;grid-template-columns:195px 1fr 195px;gap:8px;flex:1;min-height:0;}
+.game-content{display:grid;grid-template-columns:195px 1fr 195px;gap:5px;flex:1;min-height:0;overflow:hidden;}
 .side-panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px;display:flex;flex-direction:column;gap:7px;overflow:hidden;}
 .ptitle{font-family:'Orbitron',monospace;font-size:.56rem;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--border);padding-bottom:5px;}
 
@@ -114,7 +114,7 @@ input[type=text]:focus{border-color:var(--p1);}
 .le1{color:rgba(0,200,255,.85);}.le2{color:rgba(255,77,109,.85);}.les{color:var(--gold);}
 
 /* ── MAP ── */
-.map-container{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;overflow:auto;min-height:0;}
+.map-container{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:6px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;overflow:auto;min-height:0;}
 .map-board{position:relative;}
 .drop-cell{position:absolute;border:2px solid var(--p1);background:rgba(0,200,255,.05);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:pc .9s ease-in-out infinite;}
 .drop-cell:hover{background:rgba(0,200,255,.13);}
@@ -169,7 +169,7 @@ input[type=text]:focus{border-color:var(--p1);}
 .order-fd.clickable:hover{filter:brightness(1.4);}
 
 /* ── BOTTOM BAR ── */
-.bottom-bar{display:flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px 14px;flex-shrink:0;flex-wrap:wrap;}
+.bottom-bar{display:flex;gap:5px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:5px 10px;flex-shrink:0;overflow-x:auto;}
 #btn-et{margin-left:auto;}
 .pinstr{flex:1;font-size:.8rem;color:var(--text);line-height:1.4;min-width:200px;}
 .pinstr strong{color:var(--gold);font-family:'Orbitron',monospace;font-size:.65rem;}
@@ -373,41 +373,78 @@ input[type=text]:focus{border-color:var(--p1);}
 const FACTIONS = [
   { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos',
     flavor:'Особое свойство доминации: вы можете переместить культиста на свободный или дружественный мир соседней системы',
-    unitTiers:{ground:[0,0,1,1],space:[0]},
-    // maxTiers: полный резерв (старт + докупаемые). T0=пехота T1=штурм T2=механизированные/разрушитель T3=элита
+    // Стартовый пул: infantry×2(T0) marines×2(T1) fighter×1(T0)  — из chaos.py
+    unitTiers:{ground:[0,0,1,1], space:[0]},
+    // Максимальный резерв из max_count в chaos.py
     maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Культист', ground_1:'Берсерк', ground_2:'Культиватор', ground_3:'Демон Хаоса', space_0:'Налётчик', space_2:'Разрушитель'},
-    structures:['factory','city','bastion'],
-    credits:6, tokens:{support:1,discount:1,forge:1} },
+    unitNames:{ground_0:'Cultists', ground_1:'Chaos Space Marines', ground_2:'Helbrute', ground_3:'Chaos Reaver Titan', space_0:'Iconoclast Raider', space_2:'Repulsive Grand Cruiser'},
+    structures:['factory'],          // factories=1 — из chaos.py
+    credits:6, tokens:{support:0,discount:0,forge:0} },
   { id:'marine', name:'Space marine', icon:'◆', color:'#1F4E9E', homeTileId:'home_marine',
     flavor:'Особое свойство доминации: вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал',
-    unitTiers:{ground:[0,0,0,0,1],space:[0]},
-    maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2,2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Боевой брат', ground_1:'Десантник', ground_2:'Дредноут', ground_3:'Терминатор', space_0:'Перехватчик', space_2:'Крейсер'},
+    // infantry×4(T0) marines×1(T1) fighter×1(T0)  — из marine.py
+    unitTiers:{ground:[0,0,0,0,1], space:[0]},
+    maxTiers:{ground:[0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2,2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
+    unitNames:{ground_0:'Scout', ground_1:'Space Marine', ground_2:'Land Raider', ground_3:'Warlord Titan', space_0:'Strike Cruiser', space_2:'Battle Barge'},
     structures:['factory'],
-    credits:6, tokens:{support:0,discount:1,forge:2} },
+    credits:6, tokens:{support:0,discount:0,forge:0} },
   { id:'orks', name:'Орки', icon:'💀', color:'#2E7D32', homeTileId:'home_orks',
     flavor:'Особое свойство фракции: вы можете купить один отряд и поместить его в дружественный мир активной системы',
-    unitTiers:{ground:[0,0,0,0,1],space:[]},
+    // infantry×4(T0) marines×1(T1) нет космических  — из orks.py
+    unitTiers:{ground:[0,0,0,0,1], space:[]},
     maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Боёр', ground_1:'Штормбой', ground_2:'Боевая машина', ground_3:'Мек', space_0:'Вааг-файтер', space_2:'Крейсер орков'},
+    unitNames:{ground_0:'Ork Boyz', ground_1:'Nobz', ground_2:'Battlewagons', ground_3:'Gargants', space_0:'Onslaught Attack Ships', space_2:'Kill Kroozers'},
     structures:['factory'],
-    credits:6, tokens:{support:2,discount:1,forge:0} },
+    credits:6, tokens:{support:1,discount:0,forge:0} },
   { id:'eldar', name:'Eldar', icon:'◉', color:'#F2C94C', homeTileId:'home_eldar',
     flavor:'По доминации вы можете переместить одного юнита из мира активной системы в дружественный мир.',
-    unitTiers:{ground:[0,0,0,1],space:[0,0]},
-    maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1, 2,2,2, 3,3,3], space:[0,0,0,0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Аспект', ground_1:'Рейнджер', ground_2:'Страж', ground_3:'Феникс-Лорд', space_0:'Истребитель', space_2:'Воидкрафт'},
-    structures:['city'],
-    credits:6, tokens:{support:1,discount:2,forge:1} },
-  { id:'nomads', name:'Кочевники', icon:'✦', color:'#E67E22', homeTileId:'home_nomads', flavor:'Племена без дома, скитающиеся между звёздами. Их сила — в скорости и непредсказуемости.', troops:{ground:5,space:3} },
-  { id:'theocracy', name:'Теократия', icon:'✝', color:'#F39C12', homeTileId:'home_theocracy', flavor:'Фанатичные крестоносцы, несущие волю Бога-Императора. Сильны в обороне священных миров и массированных атаках.', troops:{ground:6,space:2} },
-  { id:'machines', name:'Машины', icon:'⚙', color:'#7F8C8D', homeTileId:'home_machines', flavor:'Древний искусственный интеллект, пробудившийся спустя тысячелетия. Не знают страха и усталости — каждый юнит заменяем.', troops:{ground:6,space:2} },
-  { id:'pirates', name:'Пираты', icon:'☠', color:'#E74C3C', homeTileId:'home_pirates', flavor:'Вольные капитаны звёздного океана. Живут грабежом, умирают в абордажных схватках. Никакой дисциплины — только удача и смелость.', troops:{ground:4,space:4} },
-  { id:'elders', name:'Предтечи', icon:'◎', color:'#1ABC9C', homeTileId:'home_elders', flavor:'Древнейшая цивилизация галактики, ушедшая в тень. Малочисленны, но каждый их юнит — произведение утраченных технологий.', troops:{ground:4,space:3} },
-  { id:'traders', name:'Торговый союз', icon:'₿', color:'#16A085', homeTileId:'home_traders', flavor:'Межзвёздные купцы, контролирующие торговые пути. Армия небольшая, но лучшая, которую можно купить за деньги.', troops:{ground:4,space:4} },
-  { id:'mutants', name:'Мутанты', icon:'⚗', color:'#9B59B6', homeTileId:'home_mutants', flavor:'Жертвы экспериментов, ставшие оружием. Непредсказуемые в бою, регенерируют быстрее, чем их успевают убивать.', troops:{ground:6,space:2} },
-  { id:'crusaders', name:'Крестоносцы', icon:'⚔', color:'#2980B9', homeTileId:'home_crusaders', flavor:'Рыцарский орден звёздного фронтира. Предпочитают честный бой и никогда не отступают.', troops:{ground:6,space:2} },
+    // infantry×3(T0) marines×1(T1) fighter×2(T0)  — из eldar.py
+    unitTiers:{ground:[0,0,0,1], space:[0,0]},
+    maxTiers:{ground:[0,0,0,0,0,0, 1,1,1, 2,2,2, 3,3,3], space:[0,0,0,0,0,0, 2,2,2]},
+    unitNames:{ground_0:'Aspect Warriors', ground_1:'Wraithguard', ground_2:'Falcons', ground_3:'Warlock Titans', space_0:'Hellebore Frigates', space_2:'Void Stalkers'},
+    structures:['factory'],
+    credits:6, tokens:{support:0,discount:0,forge:1} },
+  { id:'necrons', name:'Necrons', icon:'☥', color:'#00BCD4', homeTileId:'home_necrons',
+    flavor:'Dominate: Take any of your units from 1 world and place them on a friendly world containing a structure in the active system.',
+    // Warriors×4(T0) Immortals×1(T1)  — из necrons.py
+    unitTiers:{ground:[0,0,0,0,1], space:[]},
+    // max: Warriors=4, Immortals=3, Monoliths=2, C'tan=1, HarvestShips=2, TombShips=2
+    maxTiers:{ground:[0,0,0,0, 1,1,1, 2,2, 3], space:[0,0, 2,2]},
+    unitNames:{ground_0:'Warriors', ground_1:'Immortals', ground_2:'Monoliths', ground_3:"C'tan Star God Shard", space_0:'Scythe-Class Harvest Ships', space_2:'Cairn-Class Tomb Ships'},
+    structures:['factory'],
+    credits:6, tokens:{support:0,discount:0,forge:0} },
+  { id:'tyranids', name:'Tyranids', icon:'🧬', color:'#6A1B9A', homeTileId:'home_tyranids',
+    flavor:'Dominate: Gain 1 additional asset token of your choice (up to 4 of each type).',
+    // Gaunts×3(T0) Devourers×1(T0 space) HiveShips×1(T2 space)  — из tyranids.py
+    unitTiers:{ground:[0,0,0], space:[0,2]},
+    // max: Gaunts=6, Warriors=6, Carnifexes=3, Bio-Titans=3, Devourers=6, HiveShips=3
+    maxTiers:{ground:[0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0,0,0,0, 2,2,2]},
+    unitNames:{ground_0:'Gaunts', ground_1:'Warriors', ground_2:'Carnifexes', ground_3:'Hierophant Bio-Titans', space_0:'Devourer Bio-Ships', space_2:'Leviathan Hive Ships'},
+    structures:['factory','bastion'],
+    credits:6, tokens:{support:1,discount:0,forge:0} },
+  { id:'tau', name:'Tau', icon:'⊕', color:'#00897B', homeTileId:'home_tau',
+    flavor:'Dominate: Draw 4 event cards, resolve 1 ability, discard the rest.',
+    // FireWarriors×3(T0) CrisisBattlesuits×2(T1)  — из tau.py
+    unitTiers:{ground:[0,0,0,1,1], space:[]},
+    // max: FireWarriors=6, CrisisBattlesuits=6, Hammerheads=3, Supremacy=3, Protectors=2, Custodians=2
+    maxTiers:{ground:[0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0, 2,2]},
+    unitNames:{ground_0:'Fire Warriors', ground_1:'XV8 Crisis Battlesuits', ground_2:'TX7 Hammerhead Gunships', ground_3:'KX139 Supremacy Armour', space_0:'Protector Cruisers', space_2:'Custodian Carriers'},
+    structures:['factory'],
+    credits:6, tokens:{support:0,discount:0,forge:0} },
+  { id:'imperial_guard', name:'Imperial Guard', icon:'⚜', color:'#795548', homeTileId:'home_imperial_guard',
+    flavor:'Dominate: Deploy order — purchase 2+ identical units with 1 materiel discount each.',
+    // Guardsmen×3(T0) Ogryns×2(T1) Cruisers×1(T0 space)  — из imperial_guard.py
+    unitTiers:{ground:[0,0,0,1,1], space:[0]},
+    // max: Guardsmen=12, Ogryns=6, LemanRuss=6, Warhounds=3, Cruisers=3, Battleships=3
+    maxTiers:{ground:[0,0,0,0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2,2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
+    unitNames:{ground_0:'Guardsmen', ground_1:'Ogryns', ground_2:'Leman Russ Battle Tanks', ground_3:'Warhound Titans', space_0:'Lunar-Class Cruisers', space_2:'Emperor-Class Battleships'},
+    structures:['factory'],
+    credits:6, tokens:{support:0,discount:0,forge:0} },
+  // ── Заготовки ──────────────────────────────────────────────────────────────
+  { id:'theocracy', name:'Теократия', icon:'✝', color:'#F39C12', homeTileId:'home_theocracy', flavor:'Фанатичные крестоносцы, несущие волю Бога-Императора.', troops:{ground:6,space:2} },
+  { id:'machines', name:'Машины', icon:'⚙', color:'#7F8C8D', homeTileId:'home_machines', flavor:'Древний искусственный интеллект, пробудившийся спустя тысячелетия.', troops:{ground:6,space:2} },
+  { id:'pirates', name:'Пираты', icon:'☠', color:'#E74C3C', homeTileId:'home_pirates', flavor:'Вольные капитаны звёздного океана.', troops:{ground:4,space:4} },
+  { id:'crusaders', name:'Крестоносцы', icon:'⚔', color:'#2980B9', homeTileId:'home_crusaders', flavor:'Рыцарский орден звёздного фронтира.', troops:{ground:6,space:2} },
 ];
 
 // Название юнита берётся из fac.unitNames['{ground|space}_{tier}'].
@@ -1297,11 +1334,22 @@ function _execAfterOrder(pi, oi) {
   const anyLeft = G.players.some(p => (p.orders||[]).some(o => o && !o.executed));
   if (!anyLeft) { _execSetInstruction(); updateHeader(); return; }
   // Передать ход другому игроку, если у него есть доступный верхний приказ
+  // Всегда передаём ход другому игроку — даже если он заблокирован.
+  // _execSetInstruction при его входе сам покажет сообщение о перекрытии.
   const other = 1 - pi;
-  G.execTurn = hasAccessibleTop(other) ? other : pi;
-  G.curP = G.execTurn;
-  showHP(G.players[G.execTurn].name, 'Ваш ход — разыграйте верхний приказ',
-    () => setPhase('execution'));
+  const otherHasAny = (G.players[other].orders||[]).some(o => o && !o.executed);
+  if (otherHasAny) {
+    G.execTurn = other;
+    G.curP = other;
+    showHP(G.players[other].name, 'Ваш ход — разыграйте верхний приказ', () => setPhase('execution'));
+  } else if (hasAccessibleTop(pi)) {
+    // У другого игрока ходов нет — текущий продолжает
+    G.execTurn = pi;
+    G.curP = pi;
+    showHP(G.players[pi].name, 'Ваш ход — разыграйте верхний приказ', () => setPhase('execution'));
+  } else {
+    _execSetInstruction(); updateHeader();
+  }
 }
 
 function isCompatible(unit, areaType) {
