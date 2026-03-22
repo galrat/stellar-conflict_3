@@ -6,7 +6,11 @@
       "Bash(node -e \"\nconst fs = require\\('fs'\\);\nconst lines = fs.readFileSync\\('C:/Users/Airat/Desktop/fs_code/tiles.js', 'utf8'\\).split\\('\\\\n'\\);\nlines.slice\\(660, 672\\).forEach\\(\\(l, i\\) => console.log\\(661+i + ': ' + JSON.stringify\\(l.substring\\(0,60\\)\\)\\)\\);\n\")",
       "Bash(powershell -Command \"Get-Content 'C:/Users/Airat/Desktop/fs_code/tiles.js' | Select-Object -Skip 660 -First 12 | ForEach-Object { $_ }\")",
       "Bash(pip install:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(ls -la /c/users/airat/desktop/fs_code/*.js)",
+      "Bash(node --check \"C:\\\\Users\\\\Airat\\\\Desktop\\\\fs_code\\\\game_engine.html\")",
+      "Bash(node --check /c/users/airat/desktop/fs_code/game_engine.html)",
+      "Bash(where node:*)"
     ]
   }
 }

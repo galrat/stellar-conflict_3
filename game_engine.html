@@ -42,6 +42,7 @@ input[type=text]:focus{border-color:var(--p1);}
 .fi{font-size:1.4rem;display:block;margin-bottom:3px;}
 .fn{font-size:.78rem;font-weight:600;letter-spacing:.08em;}
 .ff{font-size:.6rem;color:var(--dim);margin-top:2px;}
+.fres{font-size:.58rem;color:var(--dim);margin-top:4px;letter-spacing:.04em;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
 .start-btn{margin-top:18px;width:100%;max-width:980px;padding:14px;background:linear-gradient(135deg,rgba(0,200,255,.12),rgba(255,77,109,.12));border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Orbitron',monospace;font-size:.85rem;letter-spacing:.2em;cursor:pointer;transition:all .3s;text-transform:uppercase;}
 .start-btn:hover{background:linear-gradient(135deg,rgba(0,200,255,.25),rgba(255,77,109,.25));border-color:var(--p1);transform:translateY(-1px);}
 
@@ -52,13 +53,13 @@ input[type=text]:focus{border-color:var(--p1);}
 .pavatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;border:2px solid;flex-shrink:0;}
 .av1{border-color:var(--p1);background:rgba(0,200,255,.1);color:var(--p1);}
 .av2{border-color:var(--p2);background:rgba(255,77,109,.1);color:var(--p2);}
-.pstats{line-height:1.2;}
-.pname{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;}
+.pstats{line-height:1.3;}
+.pname{font-family:'Orbitron',monospace;font-size:2.1rem;font-weight:700;}
 .s1 .pname{color:var(--p1);}.s2 .pname{color:var(--p2);}
-.pfac{font-size:.62rem;color:var(--dim);}
+.pfac{font-size:1.4rem;color:var(--dim);}
 .ptroops{font-size:.78rem;color:var(--dim);}
 .ptnum{font-weight:700;}.s1 .ptnum{color:var(--p1);}.s2 .ptnum{color:var(--p2);}
-.pres{font-size:1.3rem;color:var(--dim);margin-top:1px;letter-spacing:.03em;}
+.pres{font-size:1.4rem;color:var(--dim);margin-top:2px;letter-spacing:.04em;}
 .phase-info{text-align:center;}
 .phase-lbl{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.3em;color:var(--dim);text-transform:uppercase;}
 .phase-name{font-family:'Orbitron',monospace;font-size:.78rem;color:var(--gold);white-space:nowrap;}
@@ -94,9 +95,7 @@ input[type=text]:focus{border-color:var(--p1);}
 .ttok.space{border-radius:3px;}
 .ttok.c1{background:rgba(0,200,255,.15);border-color:var(--p1);color:var(--p1);}
 .ttok.stok{border-radius:4px;font-size:1.1rem;}
-.astruc{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;border-radius:3px;border:1px solid;margin:1px;}
-.astruc.c1{background:rgba(0,200,255,.2);border-color:var(--p1);color:var(--p1);}
-.astruc.c2{background:rgba(255,77,109,.2);border-color:var(--p2);color:var(--p2);}
+.astruc{width:33px;height:33px;display:inline-flex;align-items:center;justify-content:center;font-size:1.15rem;border-radius:3px;border:2px solid;margin:1px;}
 .ttok.c2{background:rgba(255,77,109,.15);border-color:var(--p2);color:var(--p2);}
 .ttok.sel{transform:scale(1.2);box-shadow:0 0 7px currentColor;}
 .ttok:hover{transform:scale(1.1);}
@@ -203,6 +202,12 @@ input[type=text]:focus{border-color:var(--p1);}
 .scard.winner{border-color:var(--gold);box-shadow:0 0 16px rgba(255,215,0,.18);}
 .sval{font-size:2.6rem;font-family:'Orbitron',monospace;font-weight:900;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+/* Hint tooltip */
+#phase-tip{display:none;position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:90;
+  background:rgba(0,20,40,.95);border:1px solid var(--gold);border-radius:10px;
+  padding:8px 18px;font-size:.8rem;color:var(--gold);text-align:center;
+  box-shadow:0 0 18px rgba(255,215,0,.25);pointer-events:none;max-width:480px;line-height:1.5;}
+#phase-tip::before{content:'💡 ';font-size:1rem;}
 /* ── ЖЕТОНЫ ПРИКАЗОВ (панель) ── */
 #left-panel{overflow-y:auto;}
 .otok-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:5px 0;}
@@ -230,6 +235,81 @@ input[type=text]:focus{border-color:var(--p1);}
 /* доход: зелёный кружок; ценные: красный кружок */
 .inc-mark{color:#4caf50;font-weight:700;text-shadow:0 1px 3px #000;}
 .val-mark{color:#ff4444;font-weight:700;text-shadow:0 1px 3px #000;}
+/* ── DEPLOY / DOMINATE / STRATEGIZE MODALS ── */
+.modal-wide{max-width:560px;width:95%;}
+.modal-section{border-top:1px solid var(--border);margin-top:12px;padding-top:10px;}
+.modal-section h3{font-family:'Orbitron',monospace;font-size:.75rem;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:8px;}
+.res-bar{font-size:1rem;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid var(--border);}
+.res-val{font-family:'Orbitron',monospace;font-weight:700;}
+.res-credits{color:var(--gold);}
+.res-forge{color:#ff8c00;}
+.res-discount{color:#00c8ff;}
+.unit-buy-row{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:1rem;}
+.unit-buy-row .uname{flex:1;text-align:left;color:var(--text);}
+.unit-buy-row .ucost{font-size:.9rem;color:var(--dim);white-space:nowrap;}
+.unit-buy-row .udis{font-size:.85rem;color:#00c8ff;cursor:pointer;border:1px solid #00c8ff;border-radius:4px;padding:2px 6px;opacity:.8;}
+.unit-buy-row .udis:hover{opacity:1;background:rgba(0,200,255,.1);}
+.unit-buy-row.ubuying .uname{color:var(--gold);}
+.unit-buy-row.udisabled{opacity:.3;pointer-events:none;}
+.qty-ctrl{display:flex;align-items:center;gap:6px;}
+.qty-btn{width:30px;height:30px;border-radius:50%;border:1px solid;cursor:pointer;font-size:1.2rem;line-height:1;display:flex;align-items:center;justify-content:center;background:transparent;}
+.qty-btn.qminus{border-color:var(--p2);color:var(--p2);}.qty-btn.qminus:hover{background:rgba(255,77,109,.15);}
+.qty-btn.qplus{border-color:var(--p1);color:var(--p1);}.qty-btn.qplus:hover{background:rgba(0,200,255,.15);}
+.qty-num{font-family:'Orbitron',monospace;font-size:1rem;min-width:22px;text-align:center;}
+.struct-row{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:1rem;}
+.struct-row .sname{flex:1;text-align:left;}
+.struct-sel{border:2px solid var(--gold)!important;}
+/* Battle card styles */
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
+.bcard{background:#060e1a;border:1px solid var(--border);border-radius:8px;padding:8px;text-align:left;cursor:default;}
+.bcard.clevel-initial{border-color:#555;}
+.bcard.clevel-zero{border-color:#00c8ff;}
+.bcard.clevel-two{border-color:#ffd700;}
+.bcard.clevel-three{border-color:#ff4d6d;}
+.bcard.buyable{cursor:pointer;}.bcard.buyable:hover{filter:brightness(1.25);}
+.bcard.bsel{box-shadow:0 0 8px var(--gold);border-color:var(--gold)!important;}
+.bcard-name{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.1em;margin-bottom:4px;}
+.bcard-lvl{font-size:.58rem;color:var(--dim);margin-bottom:4px;}
+.bcard-e1{font-size:.68rem;color:var(--text);margin-bottom:3px;}
+.bcard-e2{font-size:.65rem;color:var(--dim);}
+.upg-row{background:#060e1a;border:1px solid var(--border);border-radius:8px;padding:8px;text-align:left;cursor:pointer;margin-bottom:6px;}
+.upg-row:hover{border-color:var(--dim);}
+.upg-row.usel{box-shadow:0 0 8px var(--gold);border-color:var(--gold);}
+.upg-name{font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.1em;margin-bottom:3px;}
+.upg-e{font-size:.7rem;color:var(--text);}
+.view-cards-btn{font-size:.58rem;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.04);cursor:pointer;color:var(--dim);}
+.view-cards-btn:hover{border-color:var(--dim);color:var(--text);}
+/* ── RESOURCE TOOLTIPS ── */
+.res-tooltip{position:relative;display:inline-flex;align-items:center;cursor:help;}
+.res-tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:rgba(0,20,40,.98);border:1px solid var(--gold);border-radius:6px;padding:4px 10px;font-size:.72rem;color:var(--gold);white-space:nowrap;z-index:999;pointer-events:none;margin-bottom:4px;}
+/* ── WARP STORM ── */
+.warp-storm{position:absolute;z-index:6;pointer-events:none;
+  background-image:repeating-conic-gradient(#111 0% 25%,#eee 0% 50%);
+  background-size:8px 8px;}
+.warp-storm-h{height:8px;left:0;right:0;}
+.warp-storm-v{width:8px;top:0;bottom:0;}
+.warp-storm-top{top:0;}.warp-storm-bottom{bottom:0;}
+.warp-storm-left{left:0;}.warp-storm-right{right:0;}
+/* Clickable border segments during warp storm placement */
+.ws-border{position:absolute;z-index:7;cursor:pointer;opacity:.18;background:#000;}
+.ws-border:hover{opacity:.55;background:#333;}
+.ws-border-h{height:14px;left:0;right:0;}
+.ws-border-v{width:14px;top:0;bottom:0;}
+/* ── EVENT STACK INDICATOR ── */
+.event-stack-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(140,70,255,.25);border:1px solid rgba(140,70,255,.6);border-radius:4px;padding:1px 5px;font-size:.72rem;color:#c090ff;font-family:'Orbitron',monospace;}
+/* ── DEPLOY PLACING INDICATOR ── */
+@keyframes banner_blink{0%,100%{box-shadow:0 0 12px rgba(0,200,255,.3);border-color:var(--accent1);opacity:1;}50%{box-shadow:0 0 28px rgba(0,200,255,.8);border-color:#fff;opacity:.85;}}
+#deploy-placing-banner{display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:91;background:rgba(0,20,40,.97);border:2px solid var(--accent1);border-radius:10px;padding:10px 28px;font-size:1.15rem;font-family:'Orbitron',monospace;font-weight:700;letter-spacing:.1em;color:var(--accent1);text-align:center;box-shadow:0 0 12px rgba(0,200,255,.3);pointer-events:none;animation:banner_blink 1s ease-in-out infinite;}
+/* ── ACTION INSTRUCTION BLINKING ── */
+@keyframes action_blink{0%,100%{color:var(--gold);}50%{color:#fff;text-shadow:0 0 8px var(--gold);}}
+#tile-peek-popup{pointer-events:auto;cursor:pointer;transition:opacity .2s;}
+.tile-peek-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:200px;height:200px;}
+.tile-peek-cell.planet{background:rgba(0,120,40,.3);border:1px solid rgba(0,200,80,.4);}
+.tile-peek-cell.space{background:rgba(0,30,80,.3);border:1px solid rgba(0,80,200,.3);}
+.tile-peek-cell{border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;font-size:.72rem;}
+.pinstr-action{animation:action_blink 1.1s ease-in-out infinite;}
+/* ── STRUCT ROW DISABLED ── */
+.struct-row.udisabled{opacity:.3;pointer-events:none;cursor:default;}
 </style>
 </head>
 <body>
@@ -250,7 +330,10 @@ input[type=text]:focus{border-color:var(--p1);}
       <div class="field-group"><div class="field-label">Фракция</div><div class="faction-select" id="p2-factions"></div></div>
     </div>
   </div>
-  <button class="start-btn" onclick="startGame()">▶ НАЧАТЬ ИГРУ</button>
+  <div style="display:flex;gap:10px;width:100%;max-width:980px;">
+    <button class="start-btn" onclick="startGame()" style="flex:1;">▶ НАЧАТЬ ИГРУ</button>
+    <button class="start-btn" onclick="loadGame()" style="flex:0 0 auto;width:200px;background:linear-gradient(135deg,rgba(0,200,255,.07),rgba(255,215,0,.07));border-color:rgba(255,215,0,.3);">📂 ЗАГРУЗИТЬ</button>
+  </div>
 </div>
 
 <!-- GAME -->
@@ -267,8 +350,11 @@ input[type=text]:focus{border-color:var(--p1);}
     <div class="phase-info">
       <div class="phase-lbl">Фаза</div>
       <div class="phase-name" id="h-phase">—</div>
-      <div class="round-info" id="h-round">Раунд 1/2</div>
-      <div class="turn-ind ti1" id="h-turn">—</div>
+      <div class="turn-ind ti1" id="h-turn" style="margin-top:4px;">—</div>
+      <div style="display:flex;gap:6px;margin-top:6px;justify-content:center;">
+        <button class="abtn bp" style="font-size:.6rem;padding:3px 10px;" onclick="saveGame()">💾 Сохранить</button>
+        <button class="abtn bw" style="font-size:.6rem;padding:3px 10px;" onclick="loadGame()">📂 Загрузить</button>
+      </div>
     </div>
     <div class="pinfo r s2">
       <div class="pstats s2" style="text-align:right">
@@ -280,16 +366,23 @@ input[type=text]:focus{border-color:var(--p1);}
     </div>
   </div>
 
+  <div id="phase-tip"></div>
   <div class="game-content">
     <div class="side-panel" id="left-panel">
       <div class="ptitle">Системы в руке</div>
       <div class="tile-hand" id="tile-hand"></div>
-      <div class="ptitle">Резерв войск</div>
-      <div id="pool-cont"></div>
-      <div class="ptitle">Приказы</div>
-      <div id="orders-cont"></div>
+      <div id="unit-pool-section" style="display:none">
+        <div class="ptitle" style="margin-top:10px">Резерв войск</div>
+        <div class="tpool" id="unit-pool" style="display:flex;flex-wrap:wrap;gap:5px;padding:6px 0;"></div>
+      </div>
+      <div id="struct-pool-section" style="display:none">
+        <div class="ptitle" style="margin-top:8px">Постройки</div>
+        <div class="tpool" id="struct-pool" style="display:flex;flex-wrap:wrap;gap:5px;padding:4px 0;"></div>
+      </div>
     </div>
-    <div class="map-container"><div class="map-board" id="map-board"></div></div>
+    <div class="map-container" style="position:relative;">
+      <div class="map-board" id="map-board"></div>
+    </div>
     <div class="side-panel">
       <div class="ptitle">Журнал событий</div>
       <div class="alog" id="alog"></div>
@@ -303,13 +396,6 @@ input[type=text]:focus{border-color:var(--p1);}
     <button class="abtn bp" id="btn-fl"   onclick="flipTile()"       style="display:none">⇄ Перевернуть</button>
     <button class="abtn bp" id="btn-rccw" onclick="rotateTile(false)" style="display:none">↺ Повернуть</button>
     <button class="abtn bp" id="btn-rcw"  onclick="rotateTile(true)"  style="display:none">↻ Повернуть</button>
-    <button class="abtn bg" id="btn-ex"   onclick="execNext()"          style="display:none">⚡ Выполнить</button>
-    <button class="abtn br" id="btn-er"   onclick="endRound()"          style="display:none">Завершить раунд →</button>
-    <button class="abtn bg" id="btn-em"   onclick="exportMap()"         style="display:none">💾 Сохранить карту</button>
-    <button class="abtn br" id="btn-co"   onclick="cancelCurrentOrder()" style="display:none">✕ Отменить приказ</button>
-    <button class="abtn bw" id="btn-undo" onclick="historyUndo()"        style="display:none">↩ Отменить ход</button>
-    <button class="abtn bw" id="btn-redo" onclick="historyRedo()"        style="display:none">↪ Вернуть ход</button>
-    <button class="abtn bg" id="btn-pass-exec" onclick="passExecTurn()" style="display:none">Передать ход →</button>
     <button class="abtn bp" id="btn-et"   onclick="endTurn()"           style="display:none">Готово →</button>
   </div>
 </div>
@@ -324,33 +410,12 @@ input[type=text]:focus{border-color:var(--p1);}
   </div>
 </div>
 
-<!-- Peek overlay — личный просмотр приказа (только текущий игрок видит) -->
-<div id="peek-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);flex-direction:column;align-items:center;justify-content:center;gap:20px;">
-  <div style="color:var(--dim);font-size:.8rem;letter-spacing:.15em;text-transform:uppercase">Только вы видите этот приказ</div>
-  <div id="peek-content" style="display:flex;flex-direction:column;align-items:center;gap:10px;"></div>
-  <div style="display:flex;gap:12px;margin-top:10px;">
-    <button class="abtn bp" style="font-size:1rem;padding:10px 28px;" onclick="playOrder()">▶ Играть приказ</button>
-    <button class="abtn bw" style="font-size:1rem;padding:10px 20px;" onclick="cancelPeek()">✕ Скрыть</button>
-  </div>
-</div>
-
 <!-- Hotpass overlay -->
 <div class="hpoverlay" id="hpov">
   <div class="hpsub">ПЕРЕДАТЬ ХОД</div>
   <div class="hpname" id="hp-name">—</div>
   <div class="hpsub" id="hp-action">Ваш ход</div>
   <button class="hpbtn" id="hp-btn" onclick="closeHP()">ГОТОВ ▶</button>
-</div>
-
-<!-- Battle modal -->
-<div class="moverlay" id="bat-modal">
-  <div class="modal">
-    <h2>⚔ СРАЖЕНИЕ</h2>
-    <p id="bat-desc"></p>
-    <div class="droll" id="bat-dice">🎲</div>
-    <div id="bat-result"></div>
-    <div class="mbtns"><button class="abtn bg" onclick="closeBattle()">Продолжить →</button></div>
-  </div>
 </div>
 
 <!-- Msg modal -->
@@ -363,8 +428,6 @@ input[type=text]:focus{border-color:var(--p1);}
 </div>
 
 <script src="tiles.js"></script>
-<script src="game_history.js"></script>
-<script src="order_placement.js"></script>
 <script>
 'use strict';
 // ══════════════════════════════════════════════
@@ -373,37 +436,158 @@ input[type=text]:focus{border-color:var(--p1);}
 const FACTIONS = [
   { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos',
     flavor:'Особое свойство доминации: вы можете переместить культиста на свободный или дружественный мир соседней системы',
+    specialAbilityName:'Особое свойство',
+    specialAbilityDesc:'Вы можете переместить культиста на свободный или дружественный мир соседней системы',
     // Стартовый пул: infantry×2(T0) marines×2(T1) fighter×1(T0)  — из chaos.py
     unitTiers:{ground:[0,0,1,1], space:[0]},
     // Максимальный резерв из max_count в chaos.py
     maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
     unitNames:{ground_0:'Cultists', ground_1:'Chaos Space Marines', ground_2:'Helbrute', ground_3:'Chaos Reaver Titan', space_0:'Iconoclast Raider', space_2:'Repulsive Grand Cruiser'},
-    structures:['factory'],          // factories=1 — из chaos.py
-    credits:6, tokens:{support:0,discount:0,forge:0} },
+    unitCosts:{ground_0:{c:2,f:0},ground_1:{c:3,f:0},ground_2:{c:4,f:0},ground_3:{c:5,f:1},space_0:{c:2,f:0},space_2:{c:5,f:1}},
+    structures:['factory'],
+    credits:6, tokens:{support:0,discount:0,forge:0},
+    battleCards:[
+      {name:'Dark Faith',          level:'initial', e1:'Gain 1 [M]. Requires: Cultist / Iconoclast.',                                                         e2:'If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system.'},
+      {name:'Foul Worship',        level:'initial', e1:'Gain 1 [?]. Requires: Cultist / Iconoclast.',                                                         e2:'If enemy has routed unit, gain 1 ⊕ per unrouted Cultist or Iconoclast.'},
+      {name:'Impure Zeal',         level:'initial', e1:'If more [M] than enemy, rally 1 unit. Requires: Cultist / Iconoclast.',                               e2:'Enemy routs 1 unit, or you gain 1 ⚒ per unrouted Cultist or Iconoclast.'},
+      {name:"Khorne's Rage",       level:'initial', e1:'Spend 1 [G] to gain 3 (g). Requires: Marine / Iconoclast.',                                           e2:'Enemy spends 1 [S] or routs unit of his choosing.'},
+      {name:'Lure of Chaos',       level:'initial', e1:'Enemy may choose a unit to rout to gain 1 [?]. Otherwise place a free Cultist or Iconoclast in the area. Requires: Cultist / Iconoclast.', e2:'Gain 2 (g) or 2 (s).'},
+      {name:'Mark of Khorne',      level:'zero',    e1:'Spend 1 [G] or 1 [M] to gain 3 (g). Requires: Marine / Iconoclast.',                                 e2:'Enemy spends 1 [S] or destroys 1 routed unit.'},
+      {name:'Mark of Nurgle',      level:'zero',    e1:'Spend 1 [S] or 1 [M] to gain 3 (s). Requires: Marine / Iconoclast.',                                 e2:'Enemy destroys 1 routed unit, otherwise gain 2 (s).'},
+      {name:'Mark of Slaanesh',    level:'zero',    e1:'Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice. Requires: Marine.',               e2:'If enemy has routed unit, place free Cultist on this world.'},
+      {name:'Mark of Tzeentch',    level:'zero',    e1:'Gain 1 [M]. If more [M] than enemy, upgrade 1 Cultist to Marine. Requires: Chaos Marine / Iconoclast.', e2:'Convert up to 2 [M] to [G] and/or [S].'},
+      {name:'Chaos United',        level:'two',     e1:'Enemy may rout 1 of its units. If not, gain a die of your choice. Requires: Cultist / Marine / Helbrute.', e2:'Take 1 unit from any world and place it on this world.'},
+      {name:'Daemonic Resilience', level:'two',     e1:'Gain 1 [M] or 1 [S]. Requires: Helbrute / Cruiser.',                                                 e2:'Gain 4 (s) unless enemy destroys 1 unit of his choice.'},
+      {name:'Inhuman Strength',    level:'two',     e1:'Gain 1 [G] or 1 [M]. Requires: Helbrute / Cruiser.',                                                 e2:'Destroy 1 unit to gain 4 (g).'},
+      {name:'Chaos Victorious',    level:'three',   e1:'Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units. Requires: Titan / Cruiser.',           e2:'Rout 1 enemy unit.'},
+      {name:'Death and Despair',   level:'three',   e1:'Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit. Requires: Titan / Cruiser.',        e2:'If more [M] than enemy, destroy 1 routed unit.'},
+    ],
+    orderUpgrades:[
+      {name:'Fear from Above',         orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Gain [?].',                             e2:'Spend 1 [M] to force any unit taking damage to rout.'},
+      {name:'Dread Ritual',            orderType:'build', tier:0, cost:0, e1:'Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in system.',    e2:'Factory not required.', noFactoryRequired:true},
+      {name:'Favour of the Dark Gods', orderType:'plan',  tier:0, cost:0, e1:'Place 2 order tokens from play area onto top of event deck.',          e2:'Once per round.'},
+      {name:'From the Warp',           orderType:'move',  tier:0, cost:0, e1:'Ships can move through Warp Storms. Once per round.',                  e2:'Once per round.'},
+      {name:'Complete Destruction',    orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Bastions do not prevent orbital strike.', e2:'Spend 2 [S] to force enemy to choose unit or structure to destroy.'},
+    ],
+    eventCards:[
+      {name:'Warp Surge',   effect:'Все ваши юниты получают +1 к атаке в этом раунде.'},
+      {name:'Dark Ritual',  effect:'Немедленно получите 1 культиста на дружественной планете.'},
+      {name:'Chaos Rift',   effect:'Один вражеский юнит на любой планете дезертирует (удаляется).'},
+    ] },
   { id:'marine', name:'Space marine', icon:'◆', color:'#1F4E9E', homeTileId:'home_marine',
     flavor:'Особое свойство доминации: вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал',
-    // infantry×4(T0) marines×1(T1) fighter×1(T0)  — из marine.py
+    specialAbilityName:'Тренировка',
+    specialAbilityDesc:'Вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал',
     unitTiers:{ground:[0,0,0,0,1], space:[0]},
     maxTiers:{ground:[0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2,2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
     unitNames:{ground_0:'Scout', ground_1:'Space Marine', ground_2:'Land Raider', ground_3:'Warlord Titan', space_0:'Strike Cruiser', space_2:'Battle Barge'},
+    unitCosts:{ground_0:{c:2,f:0},ground_1:{c:3,f:0},ground_2:{c:4,f:0},ground_3:{c:5,f:1},space_0:{c:2,f:0},space_2:{c:5,f:1}},
     structures:['factory'],
-    credits:6, tokens:{support:0,discount:0,forge:0} },
+    credits:6, tokens:{support:0,discount:0,forge:0},
+    battleCards:[
+      {name:'Ambush',              level:'initial', e1:'Gain 2 (g). Requires: Scout / Cruiser.',                                                          e2:'When enemy is routed this round, must spend [M] or be destroyed.'},
+      {name:'Blessed Power Armour',level:'initial', e1:'Gain 2 (s). Requires: Bastion / Marine / Cruiser.',                                               e2:'Convert up to 2 dice to [S].'},
+      {name:'Faith in the Emperor',level:'initial', e1:'Gain 1 [?]. Requires: Scout / Marine / Cruiser.',                                                 e2:'Rally 1 unit or gain 1 [M].'},
+      {name:'Fury of the Ultramar',level:'initial', e1:'Enemy rerolls 1 [S]. You may reroll 1 [S]. Requires: Marine / Cruiser.',                          e2:'Force enemy to lose 1 [S] or 2 (s).'},
+      {name:'Reconnaissance',      level:'initial', e1:'If attacking, look at enemy card first. Requires: Scout / Cruiser.',                              e2:'Spend 1 [M] to retreat 1 unit.'},
+      {name:'Drop Pod Assault',    level:'zero',    e1:'Gain 1 [?]. Requires: Marine.',                                                                   e2:'Spend 1 [M] to take 1 Scout or 1 Marine from any world to this world.'},
+      {name:'Glory and Death',     level:'zero',    e1:'Gain 2 (g). If attacking, rally 1 unit. Requires: Marine / Cruiser.',                             e2:'Force enemy to lose 1 [S] or 1 [M].'},
+      {name:'Hold the Line',       level:'zero',    e1:'Gain 2 (s). If defending, rally 1 unit. Requires: Bastion / Marine / Cruiser.',                   e2:'Gain 1 [S] or 1 [M].'},
+      {name:'Veteran Scouts',      level:'zero',    e1:'For each morale dice, gain 1 (g) or (s). Requires: Scout / Cruiser.',                             e2:'Spend any [M]; retreat 1 unit per die.'},
+      {name:'Armoured Advance',    level:'two',     e1:'Gain 1 [?]. Requires: Land Raider / Battle Barge.',                                               e2:'Resolve 1 additional assess damage step this round.'},
+      {name:'Break the Line',      level:'two',     e1:'Convert up to 3 [M] to [G] and/or [S]. Requires: Land Raider / Battle Barge.',                    e2:'Enemy chooses 1 face up combat card to discard.'},
+      {name:'Show No Fear',        level:'two',     e1:'Own units cannot become routed this round. Requires: Bastion / Marine / Cruiser.',                 e2:'Spend 1 [M] to rally all units.'},
+      {name:"Emperor's Glory",     level:'three',   e1:'Gain 2 [?]. Requires: Titan / Battle Barge.',                                                     e2:'Rally all units. Convert any dice to [M].'},
+      {name:"Emperor's Might",     level:'three',   e1:'Gain 2 [?]. Requires: Titan / Battle Barge.',                                                     e2:'Spend any [G]; gain 2 (g) per die.'},
+    ],
+    orderUpgrades:[
+      {name:'Reign of Fire',      orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Gain [?].',                                   e2:'Convert 1 [M] into [G].'},
+      {name:'Crusade',            orderType:'move',  tier:1, cost:2, e1:'If no friendly worlds in system, gain 1 (R). Once per round.',                e2:'Command Level 1.'},
+      {name:'Direct the Faithful',orderType:'plan',  tier:1, cost:2, e1:'May change 1 structure to a different structure. Once per round.',            e2:'Command Level 1.'},
+      {name:'Recruitment Worlds', orderType:'build', tier:1, cost:2, e1:'Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.', e2:'Command Level 1.'},
+      {name:'Drop Pods',          orderType:'move',  tier:2, cost:3, e1:'Orbital Strike, once per round. Bastions do not prevent orbital strike.',     e2:'Spend 2 [S] to place free Marine (may start combat). Command Level 2.'},
+    ],
+    eventCards:[
+      {name:'For the Emperor',  effect:'Один ваш юнит немедленно восстанавливается с ближайшего резерва.'},
+      {name:'Orbital Barrage',  effect:'Нанесите 1 урон любому вражескому юниту на виду.'},
+      {name:'Iron Will',        effect:'В этом раунде ваши юниты не теряют боевой дух.'},
+    ] },
   { id:'orks', name:'Орки', icon:'💀', color:'#2E7D32', homeTileId:'home_orks',
     flavor:'Особое свойство фракции: вы можете купить один отряд и поместить его в дружественный мир активной системы',
-    // infantry×4(T0) marines×1(T1) нет космических  — из orks.py
+    specialAbilityName:'Dominate',
+    specialAbilityDesc:'Purchase 1 unit and place it on a friendly world in the active system',
     unitTiers:{ground:[0,0,0,0,1], space:[]},
     maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
     unitNames:{ground_0:'Ork Boyz', ground_1:'Nobz', ground_2:'Battlewagons', ground_3:'Gargants', space_0:'Onslaught Attack Ships', space_2:'Kill Kroozers'},
+    unitCosts:{ground_0:{c:2,f:0},ground_1:{c:3,f:0},ground_2:{c:4,f:0},ground_3:{c:5,f:1},space_0:{c:2,f:0},space_2:{c:4,f:1}},
     structures:['factory'],
-    credits:6, tokens:{support:1,discount:0,forge:0} },
+    credits:6, tokens:{support:1,discount:0,forge:0},
+    battleCards:[
+      {name:"'Ard Boyz",    level:'initial', e1:'You must reroll all of your [G]. Requires: Boyz.',                                                  e2:'Enemy must reroll 1 [G] for each unrouted Boyz.'},
+      {name:'Gretchin',     level:'initial', e1:'Gain 1 (g) and 1 (s). Enemy rerolls 1 die of your choice. Requires: Onslaught.',                   e2:'Destroy 1 Onslaught to force enemy to choose & destroy one of his units.'},
+      {name:'Mek Boyz',     level:'initial', e1:'Gain 1 [?]. Requires: Boyz / Onslaught.',                                                          e2:'Enemy discards top card of his combat deck. You gain the card\'s combat icons.'},
+      {name:'Shoota Boyz',  level:'initial', e1:'You must reroll all of your [S]. Requires: Boyz.',                                                  e2:'Enemy must reroll 1 [S] for each unrouted Boyz.'},
+      {name:'Slugga Boyz',  level:'initial', e1:'Both sides must reroll all [M]. Requires: Boyz / Onslaught.',                                       e2:'Rally 1 unit.'},
+      {name:'Biker Nobz',   level:'zero',    e1:'Enemy must reroll all [G]. Requires: Nobz / Onslaught.',                                            e2:'Gain 1 (g).'},
+      {name:'Mega Nobz',    level:'zero',    e1:'Enemy must reroll all [S]. Requires: Nobz / Onslaught.',                                            e2:'Gain 1 (s).'},
+      {name:'Sea of Green', level:'zero',    e1:'Place free (R) in this area. If you have more unrouted units, enemy spends 1 [M] or routs 1 unit.', e2:'—'},
+      {name:'Waaagh!!!!',   level:'zero',    e1:'Rally 1 unit. Requires: Boyz / Onslaught.',                                                         e2:'Gain 1 (g) per unrouted Boyz / Onslaught.'},
+      {name:'Party Wagon',  level:'two',     e1:'Place free (R) in this area. Requires: Wagon / Kroozer.',                                           e2:'If you have more unrouted units, gain 2 (g) and 2 (s).'},
+      {name:'Rokkit Wagon', level:'two',     e1:'Requires: Wagon / Kroozer.',                                                                        e2:'Gain 3 (g). Enemy may retreat 1 unit.'},
+      {name:'Weirdboyz',    level:'two',     e1:'Both sides must reroll all dice. Requires: Boyz / Onslaught.',                                       e2:'In this combat, each time enemy gets (g) or (s), you gain the same tokens as well.'},
+      {name:'Smasher Gargant', level:'three', e1:'Requires: Gargant / Kroozer.',                                                                     e2:'Choose enemy unit. Destroy unit unless enemy spends dice equal to its Tier.'},
+      {name:'Snapper Gargant', level:'three', e1:'Requires: Gargant / Kroozer.',                                                                     e2:'Discard 1 of enemy face up combat cards.'},
+    ],
+    orderUpgrades:[
+      {name:"Lootin'",       orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Gain 1 [?].',                                       e2:'Spend 1 die to gain 1 materiel and force enemy to lose 1 materiel.'},
+      {name:'Werk Fasta!',   orderType:'build', tier:1, cost:2, e1:'May purchase structure before purchasing units. Once per round.',                   e2:'Command Level 1.'},
+      {name:'The Green Tide',orderType:'plan',  tier:1, cost:2, e1:'When revealed, can resolve it as one of the other orders instead. Once per round.', e2:'Command Level 1.'},
+      {name:'Ork Roks',      orderType:'move',  tier:1, cost:2, e1:'Can move up to 2 units through 1 uncontrolled void. Once per round.',               e2:'Command Level 1.'},
+      {name:"Stealin'!",     orderType:'move',  tier:2, cost:3, e1:'Orbital Strike, once per round. Bastions do not prevent orbital strike.',           e2:'Spend 1 [M] to discard an enemy asset token; you gain that token. Command Level 2.'},
+    ],
+    eventCards:[
+      {name:'WAAAGH!',        effect:'Все ваши Орки Бойз получают +2 к атаке в ближайшем бою.'},
+      {name:'Mek Scrap',      effect:'Немедленно получите 1 жетон молотка.'},
+      {name:'Big Stomp',      effect:'Один вражеский юнит T0 уничтожается в соседней системе.'},
+    ] },
   { id:'eldar', name:'Eldar', icon:'◉', color:'#F2C94C', homeTileId:'home_eldar',
     flavor:'По доминации вы можете переместить одного юнита из мира активной системы в дружественный мир.',
-    // infantry×3(T0) marines×1(T1) fighter×2(T0)  — из eldar.py
+    specialAbilityName:'Телепорт',
+    specialAbilityDesc:'Вы можете переместить одного юнита из мира активной системы в дружественный мир',
     unitTiers:{ground:[0,0,0,1], space:[0,0]},
     maxTiers:{ground:[0,0,0,0,0,0, 1,1,1, 2,2,2, 3,3,3], space:[0,0,0,0,0,0, 2,2,2]},
     unitNames:{ground_0:'Aspect Warriors', ground_1:'Wraithguard', ground_2:'Falcons', ground_3:'Warlock Titans', space_0:'Hellebore Frigates', space_2:'Void Stalkers'},
+    unitCosts:{ground_0:{c:2,f:0},ground_1:{c:3,f:0},ground_2:{c:4,f:0},ground_3:{c:5,f:1},space_0:{c:2,f:0},space_2:{c:4,f:1}},
     structures:['factory'],
-    credits:6, tokens:{support:0,discount:0,forge:1} },
+    credits:6, tokens:{support:0,discount:0,forge:1},
+    battleCards:[
+      {name:'Command of the Autarch', level:'initial', e1:'Either rally 1 unit or gain 1 [M]. Play 1 card from your hand — gain its combat icons but not its abilities.', e2:'—'},
+      {name:'Hit and Run',            level:'initial', e1:'Gain 2 (g). Requires: Aspect / Frigate.',                                                             e2:'Spend 1 [M] to move 1 unit to adjacent friendly or uncontrolled area.'},
+      {name:'Howling Banshees',       level:'initial', e1:'Gain 1 [?]. Requires: Aspect / Frigate.',                                                             e2:'Spend 1 [M] to force enemy to rout a unit of his choice.'},
+      {name:'Ranger Support',         level:'initial', e1:'If attacking, gain 1 (g) and 1 (s). If defending, you may retreat 1 unit.',                           e2:'—'},
+      {name:'Striking Scorpions',     level:'initial', e1:'Gain 1 [?]. Requires: Aspect / Frigate.',                                                             e2:'Enemy loses 1 die of his choice.'},
+      {name:"Fire Dragon's Vengeance",level:'zero',    e1:'If attacking, enemy cannot gain (s) this round. Requires: Aspect / Frigate.',                          e2:'Gain 2 (s).'},
+      {name:'Swooping Hawks',         level:'zero',    e1:'If defending, enemy loses 3 (g). Requires: Aspect / Frigate.',                                         e2:'Spend 1 [M] to gain 2 (g).'},
+      {name:'Wraithguard Advance',    level:'zero',    e1:'Gain 1 [?] or 1 [M]. Convert up to 2 [S] into [G]. Requires: Wraithguard / Frigate / Stalker.',       e2:'Enemy spends 1 [M] or routs unit of his choosing.'},
+      {name:'Wraithguard Support',    level:'zero',    e1:'Gain 1 [?] or 1 [M]. Convert up to 2 [G] into [S]. Requires: Wraithguard / Frigate / Stalker.',       e2:'Spend 1 [M] to rally 1 unit.'},
+      {name:'Fire Prism',             level:'two',     e1:'Convert any [M] into [G]. Requires: Falcon / Stalker.',                                                e2:'If attacking, gain 2 (g). If defending, force enemy to lose 5 (s).'},
+      {name:"Spiritseer's Guidance",  level:'two',     e1:'Gain 1 [M]. Rout 1 unit; units cannot suffer any damage this round.',                                  e2:'—'},
+      {name:'Wave Serpent',           level:'two',     e1:'Gain 1 [?]. Gain 3 (s) unless enemy spends 1 [M]. Requires: Falcon / Stalker.',                        e2:'Spend 1 [M] to move Tier 0–1 units to adjacent area — may start new combat.'},
+      {name:'Holofield Emitter',      level:'three',   e1:'Gain 1 [?]. Draw 1 combat card. Requires: Titan / Stalker.',                                           e2:'Play 1 card from your hand — gain its combat icons but not its abilities.'},
+      {name:'Psychic Lance',          level:'three',   e1:'Gain 1 [?]. Enemy discards 1 random combat card. Requires: Titan / Stalker.',                          e2:'Gain 4 (g) unless enemy discards 1 face up card of your choice.'},
+    ],
+    orderUpgrades:[
+      {name:'Tactical Strikes',    orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Gain 1 [?].',                                         e2:'Spend 1 [M] to choose enemy unit — this must suffer damage first.'},
+      {name:'Wraithbone Singers',  orderType:'build', tier:1, cost:2, e1:'When purchasing structure, may place it on world containing exactly 1 different structure. Once per round.', e2:'Command Level 1.', allowDoubleStructure:true},
+      {name:'Farseer',             orderType:'plan',  tier:1, cost:2, e1:'This order can be resolved even if there are no units in the active system. Once per round.', e2:'Command Level 1.'},
+      {name:'Corsair Raid',        orderType:'move',  tier:1, cost:2, e1:'After combat, you may perform 1 orbital strike in the active system. Once per round.',  e2:'Command Level 1.'},
+      {name:'Strafing Run',        orderType:'move',  tier:2, cost:3, e1:'Orbital Strike, once per round. Bastions do not prevent orbital strike.',               e2:'Spend 1 [S] to move ships to adjacent system. Command Level 2.'},
+    ],
+    eventCards:[
+      {name:'Webway Gate',    effect:'Переместите одного вашего юнита в любую дружественную систему.'},
+      {name:'Prescience',     effect:'Посмотрите один случайный приказ противника.'},
+      {name:'Eldar Ambush',   effect:'Нанесите 1 урон вражескому юниту на планете с вашими юнитами.'},
+    ] },
   { id:'necrons', name:'Necrons', icon:'☥', color:'#00BCD4', homeTileId:'home_necrons',
     flavor:'Dominate: Take any of your units from 1 world and place them on a friendly world containing a structure in the active system.',
     // Warriors×4(T0) Immortals×1(T1)  — из necrons.py
@@ -463,7 +647,20 @@ const TOKEN_INFO = {
   support:  { icon:'⊕', label:'Поддержка' },
   discount: { icon:'⊖', label:'Скидка'    },
   forge:    { icon:'⚒', label:'Молоток'   },
+  joker:    { icon:'★', label:'Ценный'    },
 };
+
+const MAX_TOKENS_DEFAULT = 3;
+const MAX_TOKENS_TYRANIDS = 4;
+
+function _capTokens(p) {
+  const maxPerType = (p.faction === 'tyranids') ? MAX_TOKENS_TYRANIDS : MAX_TOKENS_DEFAULT;
+  if (p.tokens) {
+    Object.keys(p.tokens).forEach(k => {
+      if (p.tokens[k] > maxPerType) p.tokens[k] = maxPerType;
+    });
+  }
+}
 
 const TILES_PP = 3;
 const CELL     = 320;
@@ -478,9 +675,9 @@ const CELL     = 320;
 // 90° CW  → top-left gets original bottom-left, etc.
 const RMAP = [
   [0,1,2,3],  // 0°
-  [2,0,3,1],  // 90° CW
+  [1,3,0,2],  // 90° CW  (TL→TR, TR→BR, BL→TL, BR→BL)
   [3,2,1,0],  // 180°
-  [1,3,0,2],  // 270° CW
+  [2,0,3,1],  // 270° CW (TL→BL, TR→TL, BL→BR, BR→TR)
 ];
 
 // ══════════════════════════════════════════════
@@ -517,7 +714,8 @@ function makeState() {
     ],
     phase: 'setup',
     curP: 0,
-    round: 1, totalRounds: 2,
+    round: 1, totalRounds: 8,
+    firstPlayer: 0,    // кто ходит первым в этом раунде (чередуется)
     map: {},           // "col,row" → tile obj
     tilesPlaced: 0,
     lastKey: null,
@@ -525,6 +723,8 @@ function makeState() {
     tileSnap: null,        // { handIdx, key } — set by dropTile, cleared by undoTile or endTurn
     unitsPlaced: [],       // [{ key, realAreaIdx, unitId }]
     structsPlaced: [],     // [{ key, realAreaIdx, structId }]
+    // ── turn snapshot (for undo to start of turn) ───
+    _turnSnap: null,       // deep snapshot at start of each player's turn
     // ── selection ──────────────────────────
     selHandIdx: null,
     selUnitIdx: null,
@@ -539,7 +739,23 @@ function makeState() {
     // ── execution ──────────────────────────
     execTurn: 0,       // чей ход в исполнении (0 или 1)
     execPeeked: null,  // { pi, oi } — текущий подглянутый жетон
+    _execQueue: null,  // [{pi}] — interleaved execution order, null = not built yet
+    _execQueueIdx: 0,  // current position in _execQueue
     _battleCb: null,
+    _domCb: null,
+    // ── deploy sub-placement ──────────────
+    _deployPlacement: null, // { pi, oi, tileKey, boughtUnits }
+    _orderInProgress: false, // true while an order is being resolved (between playOrder and _execAfterOrder)
+    // ── warp storm placement ──────────────
+    warpStorms: [],    // [{ tileKey, side:'top'|'bottom'|'left'|'right' }]
+    warpStormPhase: null,  // null | { step: 0|1 } (0=P2 places, 1=P1 places)
+    // ── event stacks (one per player) ────
+    eventStacks: [[], []],  // legacy — order placement skips
+    eventDiscardPile: [[], []],  // per-player event deck (discarded/skipped execution orders)
+    // ── dominate tracking ────────────────────
+    _domAbilityUsed: false,
+    _domGained: null,
+    _domJokerTotal: 0,
   };
 }
 
@@ -561,8 +777,60 @@ function hexAlpha(hex, a) {
 }
 
 // ══════════════════════════════════════════════
+//  SAVE / LOAD
+// ══════════════════════════════════════════════
+const SAVE_KEY = 'stellar_conflict_map';
+
+function saveGame() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(G));
+    showMsg('Сохранено', 'Состояние карты сохранено.');
+  } catch(e) {
+    showMsg('Ошибка', 'Не удалось сохранить: ' + e.message);
+  }
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) { showMsg('Нет сохранения', 'Сохранённая игра не найдена.'); return; }
+    const saved = JSON.parse(raw);
+    Object.keys(G).forEach(k => delete G[k]);
+    Object.assign(G, saved);
+    showScreen('game-screen');
+    setPhase(G.phase);
+    updateHeader();
+    renderBoard();
+    renderSide();
+    addLog('Игра загружена', -1);
+  } catch(e) {
+    showMsg('Ошибка', 'Не удалось загрузить: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════════
 //  SETUP UI
 // ══════════════════════════════════════════════
+
+/** HTML строка с начальными ресурсами фракции для кнопки выбора */
+function _facResHtml(f) {
+  const parts = [];
+  if (f.credits)  parts.push(`💰${f.credits}`);
+  if (f.tokens?.support)  parts.push(`⊕${f.tokens.support}`);
+  if (f.tokens?.discount) parts.push(`⊖${f.tokens.discount}`);
+  if (f.tokens?.forge)    parts.push(`⚒${f.tokens.forge}`);
+  if (f.structures?.length) {
+    const counts = {};
+    f.structures.forEach(s => { counts[s] = (counts[s] || 0) + 1; });
+    Object.entries(counts).forEach(([s, n]) => {
+      const info = STRUCTURE_INFO[s] || { icon:'?' };
+      parts.push(`${info.icon}${n > 1 ? n : ''}`);
+    });
+  }
+  if (!parts.length) return '';
+  return parts.map(p => `<span style="background:rgba(255,255,255,.06);padding:1px 4px;border-radius:3px;">${p}</span>`).join('');
+}
+
 function buildFactionUI() {
   [0,1].forEach(pi => {
     const cont = document.getElementById(`p${pi+1}-factions`);
@@ -571,7 +839,8 @@ function buildFactionUI() {
       const btn = document.createElement('div');
       btn.className = 'faction-btn';
       btn.dataset.fid = f.id;
-      btn.innerHTML = `<span class="fi">${f.icon}</span><div class="fn">${f.name}</div><div class="ff">${f.flavor}</div>`;
+      const resHtml = _facResHtml(f);
+      btn.innerHTML = `<span class="fi">${f.icon}</span><div class="fn">${f.name}</div><div class="ff">${f.flavor}</div><div class="fres">${resHtml}</div>`;
       btn.onclick = () => pickFaction(pi, f.id);
       cont.appendChild(btn);
     });
@@ -647,6 +916,12 @@ function startGame() {
     p.structurePool = (fac.structures || []).map(type => ({ id:nextId++, player:pi, type }));
     p.credits = fac.credits ?? 6;
     p.tokens  = { ...(fac.tokens ?? {support:0,discount:0,forge:0}) };
+    // Боевая колода: 5 начальных карт по 2 экземпляра = 10 карт
+    p.battleDeck = (fac.battleCards || [])
+      .filter(c => c.level === 'initial')
+      .map(c => ({ ...c, count: 2 }));
+    // Купленные улучшения приказов
+    p.purchasedOrderUpgrades = [];
 
     const myHome = TILE_CATALOG.find(t => t.id === fac.homeTileId)
                 || TILE_CATALOG.find(t => t.isHome);
@@ -661,6 +936,7 @@ function startGame() {
     p.orders      = [null, null, null, null];
   });
 
+  G.firstPlayer = 0;
   showScreen('game-screen');
   updateHeader();
   renderBoard();
@@ -675,11 +951,9 @@ function setPhase(phase) {
   G.selHandIdx = null;
   G.selUnitIdx = null;
   G.selUnitType = null;
-  G.selOrderSlot = null;
 
   // Hide all action buttons
-  ['btn-ut','btn-uu','btn-fl','btn-rccw','btn-rcw','btn-et','btn-ex','btn-er','btn-em',
-   'btn-co','btn-undo','btn-redo','btn-pass-exec'].forEach(id => {
+  ['btn-ut','btn-fl','btn-rccw','btn-rcw','btn-et'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
 
@@ -687,50 +961,20 @@ function setPhase(phase) {
   const ins = document.getElementById('pinstr');
 
   if (phase === 'tile-placement') {
-    // Clear undo state — starting fresh tile pick
     G.tileSnap   = null;
     G.unitsPlaced = [];
     const rem = cp.hand.filter(h => !h.placed).length;
     ins.innerHTML = `<strong>РАЗМЕЩЕНИЕ СИСТЕМ</strong><br>${cp.name}: выберите систему из руки, затем кликните ячейку. Осталось: ${rem}`;
+    _showTip(`${cp.name}: выберите любую систему из левой панели и кликните ячейку на поле.`);
     renderSide(); renderBoard();
   }
   else if (phase === 'troop-on-tile') {
-    // tileSnap + unitsPlaced already set by dropTile — DO NOT CLEAR THEM
+    // tileSnap + unitsPlaced уже заданы в dropTile — НЕ сбрасывать
     ins.innerHTML = `<strong>ВОЙСКА НА СИСТЕМУ</strong><br>${cp.name}: размещайте войска на только что поставленной системе.<br><small style="color:var(--dim)">▲ наземные → 🪐 · ◈ космические → ✦</small>`;
+    _showTip(`Выберите войско из резерва (левая панель) и кликните область системы. Нажмите «Готово» когда закончите.`);
     show('btn-ut'); show('btn-uu'); show('btn-fl'); show('btn-rccw'); show('btn-rcw'); show('btn-et');
     document.getElementById('btn-et').textContent = 'Готово →';
     renderSide(); renderBoard(G.lastKey);
-  }
-  else if (phase === 'troop-placement') {
-    G.tileSnap      = null;
-    G.unitsPlaced   = [];
-    G.structsPlaced = [];
-    ins.innerHTML = `<strong>РАССТАНОВКА ВОЙСК</strong><br>${cp.name}: расставьте оставшиеся войска.<br><small style="color:var(--dim)">▲ наземные → 🪐 · ◈ космические → ✦</small>`;
-    show('btn-uu'); show('btn-et');
-    document.getElementById('btn-et').textContent = 'Завершить расстановку →';
-    renderSide(); renderBoard(null, true);
-  }
-  else if (phase === 'order-placement') {
-    G.tileSnap    = null;
-    G.unitsPlaced = [];
-    const ordCount = (cp.orders || []).filter(o => o !== null).length;
-    ins.innerHTML = `<strong>РАССТАНОВКА ПРИКАЗОВ</strong><br>${cp.name}: выберите жетон приказа (${ordCount}/4 размещено), затем кликните допустимую систему.`;
-    show('btn-et');
-    document.getElementById('btn-et').textContent = 'Готово →';
-    if (G.currentStepOrderPlaced) show('btn-co');
-    _histUpdateBtns();
-    renderSide(); renderBoard();
-  }
-  else if (phase === 'execution') {
-    G.tileSnap    = null;
-    G.unitsPlaced = [];
-    G.execTurn    = G.execTurn ?? 0;
-    G.execPeeked  = null;
-    if (!G.players.some(p=>(p.orders||[]).some(o=>o&&o.revealed)))
-      addLog('=== ИСПОЛНЕНИЕ ПРИКАЗОВ ===', -1);
-    show('btn-em'); _histUpdateBtns();
-    _execSetInstruction();
-    renderSide(); renderBoard();
   }
   updateHeader();
 }
@@ -744,6 +988,7 @@ function selectHandTile(idx) {
   if (G.phase !== 'tile-placement') return;
   if (G.players[G.curP].hand[idx].placed) return;
   G.selHandIdx = idx;
+  _cancelTileHover(); _cancelTileHideTimer(); _dismissTilePreview();
   renderSide(); renderBoard();
 }
 
@@ -803,15 +1048,14 @@ function dropTile(col, row) {
 
   addLog(`${cp.name} разместил${ht.isHome?' домашнюю':''} систему [${key}]`, G.curP);
 
-  // setPhase('troop-on-tile') will NOT clear tileSnap / unitsPlaced
-  setPhase('troop-on-tile');
+  _afterTilePlaced();
 }
 
 // ══════════════════════════════════════════════
 //  UNDO TILE  — fully self-contained, no setPhase call for cleanup
 // ══════════════════════════════════════════════
 function undoTile() {
-  if (G.phase !== 'troop-on-tile') return;
+  if (G.phase !== 'tile-placement' && G.phase !== 'troop-on-tile') return;
   if (!G.tileSnap) { showMsg('Нечего отменять','Нет активного тайла для возврата.'); return; }
 
   const cp   = G.players[G.curP];
@@ -832,6 +1076,7 @@ function undoTile() {
     if (!tile) continue;
     const area = tile.areas[rec.realAreaIdx];
     if (!area) continue;
+    if (!area.structures) area.structures = [];
     const idx = area.structures.findIndex(s => s.id === rec.structId);
     if (idx >= 0) { cp.structurePool.push(area.structures.splice(idx, 1)[0]); }
   }
@@ -857,20 +1102,20 @@ function undoTile() {
 //  TILE ROTATION
 // ══════════════════════════════════════════════
 function rotateTile(cw) {
-  if (G.phase !== 'troop-on-tile' || !G.lastKey) return;
+  if (!G.lastKey) return;
   const tile = G.map[G.lastKey];
   if (!tile) return;
   tile.rotation = cw ? (tile.rotation + 90) % 360 : (tile.rotation + 270) % 360;
   addLog(`Поворот [${tile.key}] ${cw?'по ч.':'пр. ч.'} → ${tile.rotation}°`, G.curP);
-  renderBoard(G.lastKey);
+  renderBoard();
 }
 
 function flipTile() {
-  if (G.phase !== 'troop-on-tile' || !G.lastKey) return;
+  if (!G.lastKey) return;
   const tile = G.map[G.lastKey];
   if (!tile) return;
-  if (G.unitsPlaced.length > 0) {
-    showMsg('Нельзя перевернуть', 'Сначала верните все размещённые войска (↩ Вернуть войско).');
+  if (G.unitsPlaced.length > 0 || G.structsPlaced.length > 0) {
+    showMsg('Нельзя перевернуть', 'Сначала верните все размещённые войска и постройки.');
     return;
   }
   const tileDef = TILE_CATALOG.find(t => t.id === tile.tileDefId);
@@ -880,10 +1125,12 @@ function flipTile() {
   }
   tile.side = 1 - (tile.side || 0);
   const sideData = tileDef.sides[tile.side];
-  tile.areas    = tileDefToAreas(sideData);
+  tile.areas    = tileDefToAreas(sideData).map(a => ({...a, structures: []}));
   tile.rotation = 0;
+  G.selStructIdx = null; G.selUnitIdx = null; G.selUnitType = null;
   addLog(`${G.players[G.curP].name} перевернул тайл [${tile.key}] → сторона ${tile.side===0?'A':'B'}`, G.curP);
-  renderBoard(G.lastKey);
+  renderBoard();
+  renderSide();
 }
 
 // ── СОХРАНЕНИЕ КАРТЫ ─────────────────────────────────────────────────────────
@@ -929,501 +1176,184 @@ function exportMap() {
 }
 
 // ══════════════════════════════════════════════
-//  UNIT PLACEMENT
+//  AFTER TILE PLACED
 // ══════════════════════════════════════════════
-function selectUnit(idx) {
-  if (G.phase !== 'troop-on-tile' && G.phase !== 'troop-placement') return;
-  const cp = G.players[G.curP];
-  G.selUnitIdx  = idx;
-  G.selUnitType = cp.pool[idx]?.unitType || null;
-  G.selStructIdx = null;
-  renderSide();
-  if (G.phase === 'troop-placement') renderBoard(null, true);
-  else renderBoard(G.lastKey);
+function _afterTilePlaced() {
+  // Always go to troop-on-tile first — endTurn() handles the next step
+  setPhase('troop-on-tile');
 }
 
-function selectStructure(idx) {
-  if (G.phase !== 'troop-on-tile' && G.phase !== 'troop-placement') return;
-  G.selStructIdx = idx;
-  G.selUnitIdx   = null;
-  G.selUnitType  = null;
-  renderSide();
-  if (G.phase === 'troop-placement') renderBoard(null, true);
-  else renderBoard(G.lastKey);
-}
+// ══════════════════════════════════════════════
+//  AREA CLICK (stub — no unit placement)
+// ══════════════════════════════════════════════
+function areaClick(key, displayIdx) {
+  if (G.phase !== 'troop-on-tile') return;
+  if (key !== G.lastKey) { showMsg('Другой тайл', 'Размещайте войска только на только что поставленной системе.'); return; }
 
-function placeStructure(key, displayIdx) {
   const cp = G.players[G.curP];
-  if (G.selStructIdx === null) return;
-  const struct = cp.structurePool[G.selStructIdx];
-  if (!struct) return;
   const tile = G.map[key];
   if (!tile) return;
   const area = getAreaByDisplay(tile, displayIdx);
   const realIdx = tile.areas.indexOf(area);
-  if (area.type !== 'planet') { showMsg('Только планеты','Постройки размещаются только на планетах (🪐).'); return; }
-  if (area.structures.length > 0) { showMsg('Занято','На этой планете уже есть постройка.'); return; }
-  area.structures.push(struct);
-  cp.structurePool.splice(G.selStructIdx, 1);
-  G.structsPlaced.push({ key, realAreaIdx: realIdx, structId: struct.id, _seq: nextId++ });
-  const info = STRUCTURE_INFO[struct.type] || { icon:'?', label:struct.type };
-  addLog(`${cp.name} → [${key}] зона ${displayIdx+1} (${info.icon} ${info.label})`, G.curP);
-  G.selStructIdx = null;
-  updateHeader(); renderSide();
-  if (G.phase === 'troop-placement') renderBoard(null, true);
-  else renderBoard(G.lastKey);
-}
 
-function areaClick(key, displayIdx) {
-  if (G.phase === 'troop-on-tile') {
-    if (key !== G.lastKey) { showMsg('Не та система','В этой фазе — только на только что поставленную систему.'); return; }
-    if (G.selStructIdx !== null) { placeStructure(key, displayIdx); return; }
-    placeUnit(key, displayIdx); return;
-  }
-  if (G.phase === 'troop-placement') {
-    if (G.selStructIdx !== null) { placeStructure(key, displayIdx); return; }
-    placeUnit(key, displayIdx); return;
-  }
-  if (G.phase === 'order-placement') {
-    placeOrderOnTile(key);
+  // Разместить постройку
+  if (G.selStructIdx !== null) {
+    const struct = cp.structurePool[G.selStructIdx];
+    if (!struct) return;
+    if (area.type !== 'planet') { showMsg('Только планеты', 'Постройки размещаются только на планетах (🪐).'); return; }
+    if (!area.structures) area.structures = [];
+    if (area.structures.length > 0) { showMsg('Занято', 'На этой планете уже есть постройка.'); return; }
+    area.structures.push(struct);
+    cp.structurePool.splice(G.selStructIdx, 1);
+    G.structsPlaced.push({ key, realAreaIdx: realIdx, structId: struct.id, _seq: nextId++ });
+    const info = STRUCTURE_INFO[struct.type] || { icon:'?', label:struct.type };
+    addLog(`${cp.name} → [${key}] зона ${displayIdx+1} (${info.icon} ${info.label})`, G.curP);
+    G.selStructIdx = null;
+    renderSide(); renderBoard(G.lastKey);
     return;
   }
-}
 
-function placeUnit(key, displayIdx) {
-  const cp = G.players[G.curP];
-  if (G.selUnitIdx === null) { showMsg('Выберите войско','Сначала выберите войско из резерва.'); return; }
-
+  // Разместить юнита
+  if (G.selUnitIdx === null) return;
   const unit = cp.pool[G.selUnitIdx];
   if (!unit) return;
-
-  const tile = G.map[key];
-  if (!tile) return;
-
-  const area = getAreaByDisplay(tile, displayIdx);
-  const realIdx = tile.areas.indexOf(area);
-
-  if (unit.unitType === 'ground' && area.type !== 'planet') {
-    showMsg('Тип не совпадает','Наземные войска — только на планеты (🪐).'); return;
-  }
-  if (unit.unitType === 'space' && area.type !== 'space') {
-    showMsg('Тип не совпадает','Космические войска — только в космос (✦).'); return;
-  }
-  const cap = area.capacity;
-  if (area.troops.length >= cap) {
-    showMsg('Зона заполнена', `Максимум ${cap} войска в этой зоне.`);
+  if (!isCompatible(unit, area.type)) {
+    showMsg('Несовместимо', unit.unitType === 'ground' ? 'Наземные войска — только на планеты 🪐.' : 'Космические войска — только в космос ✦.');
     return;
   }
-
-  area.troops.push({ player:G.curP, id:unit.id, unitType:unit.unitType, tier:unit.tier??0 });
+  if (area.troops.length >= area.capacity) { showMsg('Переполнено', `Максимальная вместимость: ${area.capacity}.`); return; }
+  area.troops.push(unit);
   cp.pool.splice(G.selUnitIdx, 1);
-
-  // Record for undo
   G.unitsPlaced.push({ key, realAreaIdx: realIdx, unitId: unit.id, _seq: nextId++ });
-
-  addLog(`${cp.name} → [${key}] зона ${displayIdx+1} (${unit.unitType==='ground'?'наземный':'космический'})`, G.curP);
-
-  G.selUnitIdx  = null;
-  G.selUnitType = null;
-  updateHeader(); renderSide();
-  if (G.phase === 'troop-placement') renderBoard(null, true);
-  else renderBoard(G.lastKey);
-}
-
-function undoLastUnit() {
-  if (G.phase !== 'troop-on-tile' && G.phase !== 'troop-placement') return;
-  const cp = G.players[G.curP];
-  // Undo last placement — structure takes priority if placed after last unit
-  if (G.structsPlaced.length > 0 && (G.unitsPlaced.length === 0 ||
-      G.structsPlaced[G.structsPlaced.length-1]._seq > (G.unitsPlaced[G.unitsPlaced.length-1]?._seq ?? -1))) {
-    const rec = G.structsPlaced.pop();
-    const tile = G.map[rec.key];
-    if (tile) {
-      const area = tile.areas[rec.realAreaIdx];
-      const idx = area.structures.findIndex(s => s.id === rec.structId);
-      if (idx >= 0) {
-        const s = area.structures.splice(idx, 1)[0];
-        cp.structurePool.push(s);
-        const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
-        addLog(`${cp.name} вернул ${info.icon}${info.label} из [${rec.key}]`, G.curP);
-      }
-    }
-  } else if (G.unitsPlaced.length > 0) {
-    const rec = G.unitsPlaced.pop();
-    const tile = G.map[rec.key];
-    if (tile) {
-      const area = tile.areas[rec.realAreaIdx];
-      const idx  = area.troops.findIndex(t => t.id === rec.unitId);
-      if (idx >= 0) {
-        cp.pool.push(area.troops.splice(idx, 1)[0]);
-        addLog(`${cp.name} вернул войско из [${rec.key}]`, G.curP);
-      }
-    }
-  } else { showMsg('Нечего отменять','В этот ход ничего ещё не размещалось.'); return; }
-  G.selUnitIdx = null; G.selUnitType = null; G.selStructIdx = null;
-  updateHeader(); renderSide();
-  if (G.phase === 'troop-placement') renderBoard(null, true);
-  else renderBoard(G.lastKey);
+  addLog(`${cp.name} → [${key}] зона ${displayIdx+1} (${unit.unitType === 'ground' ? '▲' : '◈'} T${unit.tier ?? 0})`, G.curP);
+  G.selUnitIdx = null; G.selUnitType = null;
+  renderSide(); renderBoard(G.lastKey);
 }
 
 // ══════════════════════════════════════════════
 //  TURN TRANSITIONS
 // ══════════════════════════════════════════════
 function endTurn() {
+  if (G.phase !== 'troop-on-tile') return;
   const cp = G.players[G.curP];
 
-  if (G.phase === 'troop-on-tile') {
-    // Сколько тайлов текущий игрок уже разместил (включая текущий)
-    const myTilesPlaced = Object.values(G.map).filter(t => t.owner === G.curP).length;
-    const isMyLastTile  = myTilesPlaced >= TILES_PP;
-
-    // На последнем тайле игрок обязан разместить все войска, которые туда помещаются
-    if (isMyLastTile && cp.pool.length > 0) {
-      const tile = G.map[G.lastKey];
-      const canPlace = tile && cp.pool.some(u =>
-        getRotatedAreas(tile).some(a => {
-          return isCompatible(u, a.type) && a.troops.length < a.capacity;
-        })
-      );
-      if (canPlace) {
-        showMsg('Разместите войска', 'Это ваш последний тайл — разместите все войска, которые сюда помещаются.');
-        return;
-      }
-    }
-
-    G.tileSnap = null; G.unitsPlaced = [];
-    if (G.tilesPlaced < TILES_PP * 2) {
-      G.curP = 1 - G.curP;
-      showHP(G.players[G.curP].name, 'Разместите систему', () => setPhase('tile-placement'));
-    } else {
-      startOrderPhase();
-    }
-    return;
-  }
-
-  if (G.phase === 'order-placement') {
-    if (!G.currentStepOrderPlaced) {
-      showMsg('Нужно разместить приказ', 'Выберите жетон приказа и кликните допустимую систему.');
+  // На последнем тайле — обязательно разместить все войска, которые туда помещаются
+  const myTilesPlaced = Object.values(G.map).filter(t => t.owner === G.curP).length;
+  if (myTilesPlaced >= TILES_PP && cp.pool.length > 0) {
+    const tile = G.map[G.lastKey];
+    const canPlace = tile && cp.pool.some(u =>
+      getRotatedAreas(tile).some(a => isCompatible(u, a.type) && a.troops.length < a.capacity)
+    );
+    if (canPlace) {
+      showMsg('Разместите войска', 'Это ваш последний тайл — разместите все войска, которые сюда помещаются.');
       return;
     }
-    const prevName = G.players[G.curP].name;
-    G.orderStep++;
-    G.currentStepOrderPlaced = false;
-    G._thisStepOrderSlot = null;
-    G.selectedOrderType = null;
-
-    if (G.orderStep >= 8) {
-      // Все 8 приказов размещены
-      historySave('Все приказы размещены');
-      G.execTurn = 0;
-      G.curP = 0;
-      showHP(G.players[0].name, 'Начинается исполнение приказов. Разыграйте ваш верхний жетон.', () => setPhase('execution'));
-    } else {
-      G.curP = G.orderStep % 2;
-      const nextCount = (G.players[G.curP].orders || []).filter(o => o !== null).length + 1;
-      historySave(`${prevName} разместил приказ`);
-      showHP(G.players[G.curP].name, `Разместите приказ ${nextCount}/4`, () => setPhase('order-placement'));
-    }
-    return;
   }
-}
 
-// ══════════════════════════════════════════════
-//  ORDERS
-// ══════════════════════════════════════════════
-// После расстановки тайлов разворачивает поле так, чтобы 3 тайла шли по горизонтали.
-// Если ширина < высоты — транспонирует координаты (col ↔ row) всех тайлов.
-function orientBoardHorizontal() {
-  const tiles = Object.values(G.map);
-  if (!tiles.length) return;
-  const cols   = tiles.map(t => t.col);
-  const rows   = tiles.map(t => t.row);
-  const width  = Math.max(...cols) - Math.min(...cols) + 1;
-  const height = Math.max(...rows) - Math.min(...rows) + 1;
-  if (width >= height) return; // уже горизонтальная или квадратная
-  const newMap = {};
-  tiles.forEach(t => {
-    const tmp = t.col;
-    t.col = t.row;
-    t.row = tmp;
-    t.key = `${t.col},${t.row}`;
-    newMap[t.key] = t;
-  });
-  G.map = newMap;
-}
+  G.tileSnap = null; G.unitsPlaced = []; G.structsPlaced = [];
+  G.selUnitIdx = null; G.selUnitType = null; G.selStructIdx = null;
 
-function startOrderPhase() {
-  orientBoardHorizontal();
-  // Сохранить состояние после создания карты (функция 1)
-  G.players.forEach(p => {
-    p.orders      = [null, null, null, null];
-  });
-  G.orderStep              = 0;
-  G.currentStepOrderPlaced = false;
-  G.selectedOrderType      = null;
-  G._thisStepOrderSlot     = null;
-  G.curP = 0;
-  G.phase = 'order-placement';  // установить фазу ДО сохранения снимка
-  historySave('Карта создана — начало фазы приказов');
-  historySetFloor();  // нельзя откатиться в фазу расстановки тайлов
-  showHP(G.players[0].name, 'Разместите приказ 1/4', () => setPhase('order-placement'));
-}
-
-function selectOrderSlot(idx) {
-  if (G.phase !== 'order-placement') return;
-  G.selOrderSlot = idx;
-  renderSide(); renderBoard(null, false, true);
-  document.getElementById('pinstr').innerHTML = `<strong>ПРИКАЗ ${idx+1}</strong><br>Кликните на зону назначения.`;
-}
-
-// ══════════════════════════════════════════════
-//  EXECUTION — интерактивная система с подглядыванием
-// ══════════════════════════════════════════════
-
-/**
- * Проверить, есть ли у игрока pi хотя бы один приказ, являющийся
- * абсолютным верхним на своём тайле (нет ни одного неисполненного приказа
- * от ЛЮБОГО игрока с более высоким placedAt на том же тайле).
- */
-function hasAccessibleTop(pi) {
-  return (G.players[pi].orders || []).some(ord => {
-    if (!ord || ord.executed) return false;
-    return !G.players.some(pl =>
-      (pl.orders||[]).some(o =>
-        o && !o.executed && o.key === ord.key && (o.placedAt??0) > (ord.placedAt??0)
-      )
-    );
-  });
-}
-
-/** Обновить инструкцию для текущего хода исполнения. */
-function _execSetInstruction() {
-  const ins = document.getElementById('pinstr');
-  const anyLeft = G.players.some(p => (p.orders||[]).some(o => o && !o.executed));
-  if (!anyLeft) {
-    ins.innerHTML = `<strong>ВСЕ ПРИКАЗЫ ВЫПОЛНЕНЫ</strong><br>Завершите раунд.`;
-    show('btn-er');
-    return;
-  }
-  // Проверить: заблокирован ли текущий игрок (есть приказы, но ни один не является верхним на своём тайле)
-  const pi = G.execTurn;
-  const hasOwn = (G.players[pi].orders||[]).some(o => o && !o.executed);
-  if (hasOwn && !hasAccessibleTop(pi)) {
-    // Все приказы перекрыты — сообщить игроку, дать ему явно передать ход
-    G.curP = pi;
-    renderSide(); updateHeader();
-    showMsg(
-      'Все приказы перекрыты',
-      `${G.players[pi].name}: ваши приказы на доске перекрыты приказами противника. Передайте ход.`,
-      () => {
-        ins.innerHTML = `<strong>ВСЕ ПРИКАЗЫ ПЕРЕКРЫТЫ</strong><br>` +
-          `${G.players[pi].name}: ваши приказы заблокированы. Нажмите «Передать ход».`;
-        show('btn-pass-exec');
-      }
-    );
-    return;
-  }
-  G.curP = pi;
-  ins.innerHTML = `<strong>ИСПОЛНЕНИЕ ПРИКАЗОВ</strong><br>` +
-    `${G.players[pi].name}: нажмите ваш верхний жетон приказа на доске, чтобы посмотреть и разыграть его.`;
-}
-
-/** Игрок с заблокированными приказами явно передаёт ход. */
-function passExecTurn() {
-  document.getElementById('btn-pass-exec').style.display = 'none';
-  const other = 1 - G.execTurn;
-  if (hasAccessibleTop(other)) {
-    G.execTurn = other;
-    G.curP = other;
-    showHP(G.players[other].name, 'Ваш ход — разыграйте верхний приказ', () => setPhase('execution'));
+  if (G.tilesPlaced < TILES_PP * 2) {
+    G.curP = 1 - G.curP;
+    showHP(G.players[G.curP].name, 'Разместите систему', () => setPhase('tile-placement'));
   } else {
-    // Оба заблокированы — такого не должно быть при правильном стеке, но на всякий случай
-    _execSetInstruction();
+    renderBoard(); updateHeader();
+    showEndMapDialog();
   }
 }
 
-/** Игрок нажал на свой верхний жетон — показать ему тип приказа (только ему). */
-function peekTopOrder(pi, oi) {
-  if (G.phase !== 'execution') return;
-  if (pi !== G.execTurn) return;
-  const ord = G.players[pi].orders[oi];
-  if (!ord || ord.executed) return;
-  // Проверить: это абсолютный верхний жетон тайла (нет ни одного выше от ЛЮБОГО игрока)?
-  const higherExists = G.players.some(pl =>
-    (pl.orders||[]).some(o =>
-      o && !o.executed && o.key===ord.key && (o.placedAt??0) > (ord.placedAt??0)
-    )
-  );
-  if (higherExists) return;
-  G.execPeeked = { pi, oi };
-  const ot = ORDER_TYPES_DATA.find(o => o.id === ord.type);
-  const fac = FACTIONS.find(f => f.id === G.players[pi].faction);
-  const content = document.getElementById('peek-content');
-  content.innerHTML =
-    `<div class="order-fd op${pi+1}" style="position:relative;top:auto;left:auto;transform:none;width:80px;height:80px;pointer-events:none;">` +
-      `<span style="font-size:2.2rem">${ot?.icon||'?'}</span>` +
-      `<span style="font-size:.55rem;opacity:.85">${ot?.label||ord.type}</span>` +
-    `</div>` +
-    `<div style="color:var(--text);font-size:.85rem">${fac?.icon||''} ${G.players[pi].name}</div>`;
-  document.getElementById('peek-overlay').style.display = 'flex';
+// ══════════════════════════════════════════════
+//  UNIT PLACEMENT
+// ══════════════════════════════════════════════
+function selectUnitFromPool(idx) {
+  if (G.phase !== 'troop-on-tile') return;
+  G.selUnitIdx  = idx;
+  G.selUnitType = G.players[G.curP].pool[idx]?.unitType || null;
+  G.selStructIdx = null;
+  renderSide(); renderBoard(G.lastKey);
 }
 
-/** Скрыть подглядывание без разыгрывания. */
-function cancelPeek() {
-  G.execPeeked = null;
-  document.getElementById('peek-overlay').style.display = 'none';
+function selectStructFromPool(idx) {
+  if (G.phase !== 'troop-on-tile') return;
+  G.selStructIdx = idx;
+  G.selUnitIdx   = null;
+  G.selUnitType  = null;
+  renderSide(); renderBoard(G.lastKey);
 }
 
-/** Разыграть подглянутый приказ. */
-function playOrder() {
-  if (!G.execPeeked) return;
-  const { pi, oi } = G.execPeeked;
-  G.execPeeked = null;
-  document.getElementById('peek-overlay').style.display = 'none';
-  // Публично раскрыть жетон на доске
-  G.players[pi].orders[oi].revealed = true;
-  renderBoard();
-  // Исполнить приказ
-  _executeSpecificOrder(pi, oi);
-}
+function undoLastUnit() {
+  if (G.phase !== 'troop-on-tile') return;
+  const cp = G.players[G.curP];
+  const lastUnitSeq   = G.unitsPlaced.length  > 0 ? (G.unitsPlaced[G.unitsPlaced.length-1]._seq   ?? -1) : -1;
+  const lastStructSeq = G.structsPlaced.length > 0 ? (G.structsPlaced[G.structsPlaced.length-1]._seq ?? -1) : -1;
 
-/** Исполнить конкретный приказ игрока pi в слоте oi. */
-function _executeSpecificOrder(pi, oi) {
-  const p   = G.players[pi];
-  const ord = p.orders[oi];
-  if (!ord) { _execAfterOrder(pi, oi); return; }
-  const target = G.map[ord.key];
-  if (!target) { _execAfterOrder(pi, oi); return; }
-
-  const neighbors = getNeighborKeys(ord.key);
-  let moved = 0;
-  neighbors.forEach(nk => {
-    const nt = G.map[nk]; if (!nt) return;
-    nt.areas.forEach(srcArea => {
-      srcArea.troops.filter(t => t.player === pi).slice().forEach(unit => {
-        srcArea.troops.splice(srcArea.troops.indexOf(unit), 1);
-        const prefArea = getAreaByDisplay(target, ord.aIdx ?? 0);
-        const compat = (prefArea && isCompatible(unit, prefArea.type)) ? prefArea
-          : target.areas.find(a => isCompatible(unit, a.type));
-        if (compat) { compat.troops.push(unit); moved++; }
-      });
-    });
-  });
-
-  const ot = ORDER_TYPES_DATA.find(o => o.id === ord.type);
-  addLog(`${p.name}: ${ot?.icon||''} ${ot?.label||ord.type} → [${ord.key}] (${moved} войск)`, pi);
-  updateHeader(); renderBoard();
-
-  let battleFound = false;
-  for (let ai = 0; ai < target.areas.length; ai++) {
-    const area = target.areas[ai];
-    if (area.troops.some(t=>t.player===0) && area.troops.some(t=>t.player===1)) {
-      if (!battleFound) {
-        battleFound = true;
-        doBattle(ord.key, ai, () => { renderBoard(); updateHeader(); _execAfterOrder(pi, oi); });
+  if (G.structsPlaced.length > 0 && lastStructSeq > lastUnitSeq) {
+    const rec  = G.structsPlaced.pop();
+    const tile = G.map[rec.key];
+    if (tile) {
+      const area = tile.areas[rec.realAreaIdx];
+      if (!area.structures) area.structures = [];
+      const idx = area.structures.findIndex(s => s.id === rec.structId);
+      if (idx >= 0) {
+        const s = area.structures.splice(idx, 1)[0];
+        cp.structurePool.push(s);
+        const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
+        addLog(`${cp.name} вернул ${info.icon}${info.label}`, G.curP);
       }
     }
-  }
-  if (!battleFound) _execAfterOrder(pi, oi);
-}
-
-/** После исполнения приказа: пометить, передать ход. */
-function _execAfterOrder(pi, oi) {
-  G.players[pi].orders[oi].executed = true;
-  renderBoard();
-  const anyLeft = G.players.some(p => (p.orders||[]).some(o => o && !o.executed));
-  if (!anyLeft) { _execSetInstruction(); updateHeader(); return; }
-  // Передать ход другому игроку, если у него есть доступный верхний приказ
-  // Всегда передаём ход другому игроку — даже если он заблокирован.
-  // _execSetInstruction при его входе сам покажет сообщение о перекрытии.
-  const other = 1 - pi;
-  const otherHasAny = (G.players[other].orders||[]).some(o => o && !o.executed);
-  if (otherHasAny) {
-    G.execTurn = other;
-    G.curP = other;
-    showHP(G.players[other].name, 'Ваш ход — разыграйте верхний приказ', () => setPhase('execution'));
-  } else if (hasAccessibleTop(pi)) {
-    // У другого игрока ходов нет — текущий продолжает
-    G.execTurn = pi;
-    G.curP = pi;
-    showHP(G.players[pi].name, 'Ваш ход — разыграйте верхний приказ', () => setPhase('execution'));
+  } else if (G.unitsPlaced.length > 0) {
+    const rec  = G.unitsPlaced.pop();
+    const tile = G.map[rec.key];
+    if (tile) {
+      const area = tile.areas[rec.realAreaIdx];
+      const idx  = area.troops.findIndex(t => t.id === rec.unitId);
+      if (idx >= 0) {
+        cp.pool.push(area.troops.splice(idx, 1)[0]);
+        addLog(`${cp.name} вернул юнита`, G.curP);
+      }
+    }
   } else {
-    _execSetInstruction(); updateHeader();
+    showMsg('Нечего отменять', 'Нет размещённых войск для возврата.');
+    return;
   }
+  G.selUnitIdx = null; G.selUnitType = null; G.selStructIdx = null;
+  renderSide(); renderBoard(G.lastKey);
 }
 
+// ══════════════════════════════════════════════
+//  ISCOMPATIBLE (kept for undoTile internal use)
+// ══════════════════════════════════════════════
 function isCompatible(unit, areaType) {
   return (unit.unitType==='ground' && areaType==='planet') ||
          (unit.unitType==='space'  && areaType==='space');
 }
 
-// Заглушки для обратной совместимости (onclick у btn-ex больше не используется)
-function execNext() {}
-function execNextUI() {}
-
-function getNeighborKeys(key) {
-  const [c,r] = key.split(',').map(Number);
-  return [[0,1],[0,-1],[1,0],[-1,0]].map(([dc,dr])=>`${c+dc},${r+dr}`).filter(k=>G.map[k]);
+// ══════════════════════════════════════════════
+//  END MAP DIALOG
+// ══════════════════════════════════════════════
+function showEndMapDialog() {
+  const modal = document.getElementById('msg-modal');
+  modal.querySelector('#msg-title').textContent = 'Карта сформирована';
+  modal.querySelector('#msg-body').innerHTML = 'Все системы расставлены.<br><br>Завершить игру?';
+  const btns = modal.querySelector('.mbtns');
+  btns.innerHTML = `
+    <button class="abtn br" onclick="closeMsgAndRestart()">Да — начать заново</button>
+    <button class="abtn bp" onclick="closeMsgModal()">Нет — остаться на карте</button>
+  `;
+  modal.classList.add('active');
+}
+function closeMsgModal() {
+  document.getElementById('msg-modal').classList.remove('active');
+  renderBoard(); updateHeader();
+}
+function closeMsgAndRestart() {
+  document.getElementById('msg-modal').classList.remove('active');
+  restartGame();
 }
 
 // ══════════════════════════════════════════════
-//  BATTLE
+//  RESTART
 // ══════════════════════════════════════════════
-function doBattle(key, ai, cb) {
-  const area = G.map[key].areas[ai];
-  const tp1 = area.troops.filter(t=>t.player===0);
-  const tp2 = area.troops.filter(t=>t.player===1);
-  const d1=Math.ceil(Math.random()*6), d2=Math.ceil(Math.random()*6);
-  const s1=d1+tp1.length, s2=d2+tp2.length;
-  const de=['','⚀','⚁','⚂','⚃','⚄','⚅'];
-  const wi=s1>=s2?0:1;
-  area.troops = wi===0?tp1:tp2;
-  addLog(`БИТВА [${key}] зона ${ai+1}: ${G.players[wi].name} победил!`,-1);
-  document.getElementById('bat-desc').innerHTML=
-    `<b style="color:var(--p1)">${G.players[0].name}</b>: ${tp1.length}+${de[d1]}(${d1})=<b>${s1}</b><br>`+
-    `<b style="color:var(--p2)">${G.players[1].name}</b>: ${tp2.length}+${de[d2]}(${d2})=<b>${s2}</b>`;
-  document.getElementById('bat-dice').innerHTML=`${de[d1]} ${de[d2]}`;
-  document.getElementById('bat-result').innerHTML=
-    `<p style="color:var(--gold);font-family:Orbitron;font-size:.9rem">⚡ ${G.players[wi].name} ПОБЕДИЛ!</p>`+
-    `<p style="color:var(--dim);font-size:.75rem">${G.players[1-wi].name} потерял войска в зоне</p>`;
-  document.getElementById('bat-modal').classList.add('active');
-  G._battleCb = cb;
-}
-function closeBattle() {
-  document.getElementById('bat-modal').classList.remove('active');
-  if (G._battleCb){G._battleCb();G._battleCb=null;}
-  updateHeader();
-}
-
-// ══════════════════════════════════════════════
-//  ROUND / END
-// ══════════════════════════════════════════════
-function endRound() {
-  if (G.round >= G.totalRounds) { endGame(); return; }
-  G.round++;
-  addLog(`=== РАУНД ${G.round} НАЧАЛСЯ ===`,-1);
-  startOrderPhase();
-}
-
-function endGame() {
-  const counts=[0,0];
-  Object.values(G.map).forEach(t=>t.areas.forEach(a=>a.troops.forEach(u=>counts[u.player]++)));
-  const wi=counts[0]>=counts[1]?0:1;
-  showScreen('end-screen');
-  const wn=document.getElementById('end-winner');
-  wn.textContent=G.players[wi].name; wn.style.color=wi===0?'var(--p1)':'var(--p2)';
-  document.getElementById('end-scores').innerHTML=G.players.map((p,i)=>{
-    const f=FACTIONS.find(x=>x.id===p.faction);
-    return `<div class="scard${i===wi?' winner':''}">
-      <div style="font-family:Orbitron;font-size:.68rem;letter-spacing:.2em;color:${i===0?'var(--p1)':'var(--p2)'};margin-bottom:5px">${p.name}</div>
-      <div style="color:var(--dim);font-size:.65rem;margin-bottom:7px">${f?.icon} ${f?.name}</div>
-      <div class="sval" style="color:${i===0?'var(--p1)':'var(--p2)'}">${counts[i]}</div>
-      <div style="color:var(--dim);font-size:.7rem;margin-top:4px">войск на поле</div>
-      ${i===wi?'<div style="color:var(--gold);font-size:.65rem;margin-top:7px;font-family:Orbitron;letter-spacing:.2em">★ ПОБЕДА</div>':''}
-    </div>`;
-  }).join('');
-}
-
 function restartGame() {
   document.documentElement.style.setProperty('--p1', '#00c8ff');
   document.documentElement.style.setProperty('--p2', '#ff4d6d');
@@ -1431,9 +1361,13 @@ function restartGame() {
 }
 
 // ══════════════════════════════════════════════
+//  STUBS (not used but kept for safety)
+// ══════════════════════════════════════════════
+
+// ══════════════════════════════════════════════
 //  RENDER BOARD
 // ══════════════════════════════════════════════
-function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
+function renderBoard() {
   const board = document.getElementById('map-board');
   board.innerHTML = '';
   const tiles = Object.values(G.map);
@@ -1449,7 +1383,7 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
 
   const px = (col,row) => ({left:(col-minC)*CELL, top:(row-minR)*CELL});
 
-  // Drop cells
+  // Drop cells (tile-placement phase)
   if (G.phase==='tile-placement' && G.selHandIdx!==null) {
     getValidDrops().forEach(({col,row}) => {
       const p=px(col,row);
@@ -1462,20 +1396,12 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
     });
   }
 
-  // Предвычислить допустимые тайлы для приказов (один раз на весь рендер)
-  const validOrderTiles = (G.phase==='order-placement' && G.selectedOrderType)
-    ? getValidOrderTiles(G.curP) : null;
-
   // Placed tiles
   tiles.forEach(tile => {
     const p=px(tile.col,tile.row);
     const el=document.createElement('div');
     el.className='stile';
-    if (tile.key===G.lastKey && G.phase==='troop-on-tile') {
-      el.classList.add('just');
-    } else {
-      el.classList.add(tile.isHome?(tile.owner===0?'hp1':'hp2'):(tile.owner===0?'np1':'np2'));
-    }
+    el.classList.add(tile.isHome?(tile.owner===0?'hp1':'hp2'):(tile.owner===0?'np1':'np2'));
     const side = tile.side || 0;
     const imgSuffix = side === 0 ? 'a' : 'b';
     el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`;
@@ -1488,36 +1414,34 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
     bgWrap.appendChild(bgImg); el.appendChild(bgWrap);
 
     if (tile.isHome) {
-      const hb=document.createElement('div'); hb.className='hbadge'; hb.textContent='🏠'; el.appendChild(hb);
+      const hb=document.createElement('div'); hb.className='hbadge'; hb.textContent='\u{1F3E0}'; el.appendChild(hb);
     }
     const cb=document.createElement('div'); cb.className='tcoord';
     const sideLabel = side===1?' [B]':'';
-    cb.textContent=tile.key+(tile.rotation?` ${tile.rotation}°`:'')+sideLabel; el.appendChild(cb);
+    cb.textContent=tile.key+(tile.rotation?` ${tile.rotation}\u00b0`:'')+sideLabel; el.appendChild(cb);
 
     const inner=document.createElement('div'); inner.className='stilei';
 
-    // Render areas in rotated display order
     const rotAreas = getRotatedAreas(tile);
     rotAreas.forEach((area, displayIdx) => {
       const ae=document.createElement('div');
-      ae.className=`tarea a${area.type}`; // aplanet or aspace
+      ae.className=`tarea a${area.type}`;
 
-      // Вместимость и метка области
       const cap = area.capacity;
       const used = area.troops.length;
       const lbl=document.createElement('div'); lbl.className='atlbl';
       if (area.type==='planet') {
-        const capMark = '●'.repeat(cap);
-        const incMark = area.income   > 0 ? ` <span class="inc-mark">●${area.income}</span>`   : '';
-        const valMark = area.valuable > 0 ? ` <span class="val-mark">◆${area.valuable}</span>` : '';
+        const capMark = '\u25cf'.repeat(cap);
+        const incMark = area.income   > 0 ? ` <span class="inc-mark">\u25cf${area.income}</span>`   : '';
+        const valMark = area.valuable > 0 ? ` <span class="val-mark">\u25c6${area.valuable}</span>` : '';
         let lblHTML = capMark + incMark + valMark;
-        if (area.support)  lblHTML += ' <span class="tok-sup">П</span>';
-        if (area.discount) lblHTML += ' <span class="tok-dis">С</span>';
-        if (area.forge)    lblHTML += ' <span class="tok-frg">М</span>';
-        if (area.joker)    lblHTML += ' <span class="tok-jok">Д</span>';
+        if (area.support)  lblHTML += ' <span class="tok-sup">\u2295</span>';
+        if (area.discount) lblHTML += ' <span class="tok-dis">\u2296</span>';
+        if (area.forge)    lblHTML += ' <span class="tok-frg">\u2692</span>';
+        if (area.joker)    lblHTML += ' <span class="tok-jok">\u2605</span>';
         lbl.innerHTML = lblHTML;
       } else {
-        lbl.textContent = '✦';
+        lbl.textContent = '\u2736';
       }
       ae.appendChild(lbl);
       const capEl=document.createElement('div'); capEl.className='acap';
@@ -1529,7 +1453,11 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
       (area.structures||[]).forEach(s => {
         const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
         const tok=document.createElement('div');
-        tok.className=`astruc ${s.player===0?'c1':'c2'}`;
+        tok.className='astruc';
+        const sFacColor = FACTIONS.find(f=>f.id===G.players[s.player].faction)?.color || (s.player===0?'#00c8ff':'#ff4d6d');
+        tok.style.background = hexAlpha(sFacColor, 0.5);
+        tok.style.borderColor = sFacColor;
+        tok.style.color = getTextColor(sFacColor);
         tok.textContent=info.icon; tok.title=info.label;
         ae.appendChild(tok);
       });
@@ -1543,20 +1471,20 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
         ae.appendChild(tok);
       });
 
-      // Status classes
+      // Ownership highlight
       const h1=area.troops.some(t=>t.player===0), h2=area.troops.some(t=>t.player===1);
       if (h1&&h2) ae.classList.add('contested');
       else if (h1) ae.classList.add('h1');
       else if (h2) ae.classList.add('h2');
 
-      // Drop highlighting (area-level — только для фаз расстановки войск, не для приказов)
-      const isFocusTile = tile.key===highlightKey;
-      if (allDrop || orderDrop || isFocusTile) {
-        if (G.selUnitType) {
-          const ok=(G.selUnitType==='ground'&&area.type==='planet')||(G.selUnitType==='space'&&area.type==='space');
-          ae.classList.add(ok?'aok':'ano');
-        } else {
-          ae.classList.add('aok');
+      // Подсветка допустимых зон при размещении войск
+      if (G.phase === 'troop-on-tile' && tile.key === G.lastKey) {
+        const cp2 = G.players[G.curP];
+        if (G.selUnitIdx !== null) {
+          const u = cp2.pool[G.selUnitIdx];
+          if (u) ae.classList.add(isCompatible(u, area.type) && area.troops.length < area.capacity ? 'aok' : 'ano');
+        } else if (G.selStructIdx !== null) {
+          ae.classList.add(area.type === 'planet' && (!area.structures || area.structures.length === 0) ? 'aok' : 'ano');
         }
       }
 
@@ -1564,86 +1492,128 @@ function renderBoard(highlightKey=null, allDrop=false, orderDrop=false) {
       inner.appendChild(ae);
     });
 
-    // ── Подсветка целого тайла для фазы приказов ─────────────────────────────
-    if (validOrderTiles) {
-      if (validOrderTiles.has(tile.key)) el.classList.add('tok');
-      else el.classList.add('tno');
-    }
-
     el.appendChild(inner);
-
-    // ── Жетоны приказов (рубашкой вниз / раскрыты) — стек-лесенка в центре тайла ──
-    const ordersOnTile = [];
-    G.players.forEach((pl,pi) => (pl.orders||[]).forEach((ord,oi) => {
-      if (ord && ord.key===tile.key) ordersOnTile.push({pi, ord, oi});
-    }));
-    // Сортировка по placedAt по возрастанию: нижний (ранний) рендерится первым, верхний — последним
-    ordersOnTile.sort((a,b) => (a.ord.placedAt ?? 0) - (b.ord.placedAt ?? 0));
-    const STEP = 9; // пикселей смещения на каждый уровень стека
-
-    // Абсолютный верхний неисполненный жетон на тайле (от любого игрока)
-    let tileAbsoluteTop = null;
-    if (G.phase === 'execution') {
-      ordersOnTile.forEach(item => {
-        if (item.ord.executed) return;
-        if (!tileAbsoluteTop || (item.ord.placedAt??0) > (tileAbsoluteTop.ord.placedAt??0))
-          tileAbsoluteTop = item;
-      });
-    }
-
-    // Рендерим только неисполненные жетоны — выполненные убираются с доски
-    const renderOrders = ordersOnTile.filter(item => !item.ord.executed);
-    const n = renderOrders.length;
-    renderOrders.forEach((item, stackIdx) => {
-      const {pi, ord, oi} = item;
-      const fac = FACTIONS.find(f => f.id === G.players[pi].faction);
-      const facIcon = fac ? fac.icon : (pi===0?'①':'②');
-      const offset = (n - 1 - stackIdx) * STEP;
-      const tok = document.createElement('div');
-      tok.className = `order-fd op${pi+1}`;
-      tok.style.top      = `calc(50% + ${offset}px)`;
-      tok.style.left     = `calc(50% - ${offset}px)`;
-      tok.style.zIndex   = 10 + stackIdx;
-      if (ord.revealed || G.phase==='ended') {
-        const ot = ORDER_TYPES_DATA.find(o=>o.id===ord.type);
-        tok.innerHTML = `<span style="font-size:1.3rem">${ot?ot.icon:'?'}</span>`+
-                        `<span style="font-size:.38rem;opacity:.85">${ot?ot.label:ord.type}</span>`;
-        tok.title = `${G.players[pi].name}: ${ot?ot.label:ord.type}`;
-      } else {
-        // Кликабелен только если: абсолютный верх тайла И принадлежит текущему игроку
-        const isClickable = G.phase==='execution' && pi===G.execTurn &&
-          tileAbsoluteTop === item;
-        tok.innerHTML = `<span style="font-size:1.1rem">${facIcon}</span>`+
-                        `<span style="font-size:.55rem;opacity:.75">▼</span>`;
-        tok.title = isClickable
-          ? `${G.players[pi].name}: ваш верхний приказ — нажмите, чтобы посмотреть`
-          : `${G.players[pi].name}: приказ (скрыт)`;
-        if (isClickable) {
-          tok.classList.add('clickable');
-          tok.onclick = () => peekTopOrder(pi, oi);
-        }
-      }
-      el.appendChild(tok);
-    });
-
-    // ── Кликабельный оверлей для фазы приказов ───────────────────────────────
-    if (G.phase==='order-placement') {
-      const overlay = document.createElement('div');
-      const isValid = validOrderTiles && validOrderTiles.has(tile.key);
-      overlay.style.cssText = `position:absolute;inset:0;z-index:9;cursor:${isValid?'pointer':'not-allowed'};`;
-      overlay.onclick = (e) => { e.stopPropagation(); placeOrderOnTile(tile.key); };
-      el.appendChild(overlay);
-    }
-
     board.appendChild(el);
   });
+}
+
+// ── Tile hover preview ────────────────────────────────────────────────────────
+let _tileHoverTimer = null;
+let _tileHideTimer = null;
+function _startTileHover(el, tileDefId) {
+  _cancelTileHideTimer();
+  _tileHoverTimer = setTimeout(() => { _showTilePreviewPopup(el, tileDefId); _tileHoverTimer = null; }, 1000);
+}
+function _cancelTileHover() {
+  if (_tileHoverTimer) { clearTimeout(_tileHoverTimer); _tileHoverTimer = null; }
+  _scheduleTileHide();
+}
+function _cancelTileHideTimer() {
+  if (_tileHideTimer) { clearTimeout(_tileHideTimer); _tileHideTimer = null; }
+}
+function _scheduleTileHide() {
+  _cancelTileHideTimer();
+  _tileHideTimer = setTimeout(() => { _dismissTilePreview(); _tileHideTimer = null; }, 1000);
+}
+function _dismissTilePreview() {
+  const old = document.getElementById('tile-peek-popup'); if (old) old.remove();
+}
+function _showTilePreviewPopup(anchorEl, tileDefId) {
+  const old = document.getElementById('tile-peek-popup'); if (old) old.remove();
+  const tileDef = TILE_CATALOG.find(t => t.id === tileDefId); if (!tileDef) return;
+  const areas = tileDefToAreas(tileDef.sides[0]);
+  const pop = document.createElement('div');
+  pop.id = 'tile-peek-popup';
+  pop.style.cssText = 'position:fixed;z-index:900;background:var(--panel);border:2px solid var(--gold);border-radius:12px;padding:14px;box-shadow:0 0 28px rgba(255,215,0,.3);';
+  const ttl = document.createElement('div');
+  ttl.style.cssText = "font-family:'Orbitron',monospace;font-size:.6rem;color:var(--gold);letter-spacing:.2em;margin-bottom:8px;text-align:center;";
+  ttl.textContent = tileDef.isHome ? 'ДОМАШНИЙ МИР' : 'СИСТЕМА';
+  pop.appendChild(ttl);
+  const grid = document.createElement('div'); grid.className = 'tile-peek-grid';
+  areas.forEach(a => {
+    const c = document.createElement('div');
+    c.className = 'tile-peek-cell ' + a.type;
+    if (a.type === 'planet') {
+      let html = `<div>🪐</div><div>${'●'.repeat(a.capacity||2)}</div>`;
+      if (a.income>0) html += `<div class="inc-mark">+${a.income}</div>`;
+      if (a.support) html += `<div class="tok-sup">П</div>`;
+      if (a.discount) html += `<div class="tok-dis">С</div>`;
+      if (a.forge) html += `<div class="tok-frg">М</div>`;
+      if (a.joker) html += `<div class="tok-jok">Д</div>`;
+      c.innerHTML = html;
+    } else { c.innerHTML = '<div style="font-size:1.2rem;color:var(--dim)">✦</div>'; }
+    grid.appendChild(c);
+  });
+  pop.appendChild(grid);
+  const hint = document.createElement('div');
+  hint.style.cssText = 'color:var(--dim);font-size:.6rem;text-align:center;margin-top:6px;';
+  hint.textContent = 'Нажмите для закрытия';
+  pop.appendChild(hint);
+  pop.onclick = () => { _cancelTileHideTimer(); pop.remove(); };
+  pop.addEventListener('mouseenter', _cancelTileHideTimer);
+  pop.addEventListener('mouseleave', _scheduleTileHide);
+  document.body.appendChild(pop);
+  const rect = anchorEl.getBoundingClientRect();
+  let lft = rect.right + 8, top = rect.top;
+  if (lft + 250 > window.innerWidth) lft = rect.left - 250;
+  if (top + 270 > window.innerHeight) top = window.innerHeight - 275;
+  pop.style.left = Math.max(0, lft) + 'px';
+  pop.style.top = Math.max(0, top) + 'px';
 }
 
 // ══════════════════════════════════════════════
 //  RENDER SIDE PANEL
 // ══════════════════════════════════════════════
 function renderSide() {
+  _cancelTileHover(); _cancelTileHideTimer(); _dismissTilePreview();
   const cp = G.players[G.curP];
+
+  // В фазе размещения войск — показываем пул, скрываем руку тайлов
+  const poolSection   = document.getElementById('unit-pool-section');
+  const structSection = document.getElementById('struct-pool-section');
+  if (G.phase === 'troop-on-tile') {
+    document.getElementById('tile-hand').innerHTML = '';
+
+    // Пул юнитов
+    const poolEl = document.getElementById('unit-pool');
+    poolSection.style.display = 'block';
+    poolEl.innerHTML = '';
+    if (cp.pool.length > 0) {
+      cp.pool.forEach((u, idx) => {
+        const tok = document.createElement('div');
+        tok.className = `ttok ${u.unitType} ${G.curP===0?'c1':'c2'}${G.selUnitIdx===idx?' sel':''}`;
+        tok.textContent = `T${u.tier??0}`;
+        tok.title = getUnitName(cp.faction, u.unitType, u.tier??0);
+        tok.onclick = () => selectUnitFromPool(idx);
+        poolEl.appendChild(tok);
+      });
+    } else {
+      poolEl.innerHTML = '<span style="color:var(--dim);font-size:.75rem">Нет войск</span>';
+    }
+
+    // Пул построек
+    const structEl = document.getElementById('struct-pool');
+    if (cp.structurePool && cp.structurePool.length > 0) {
+      structSection.style.display = 'block';
+      structEl.innerHTML = '';
+      cp.structurePool.forEach((s, idx) => {
+        const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
+        const tok = document.createElement('div');
+        tok.className = `ttok stok ${G.curP===0?'c1':'c2'}${G.selStructIdx===idx?' sel':''}`;
+        tok.innerHTML = info.icon;
+        tok.title = info.label;
+        tok.onclick = () => selectStructFromPool(idx);
+        structEl.appendChild(tok);
+      });
+    } else {
+      structSection.style.display = 'none';
+    }
+    return;
+  }
+
+  // В других фазах — скрыть пул
+  if (poolSection)   poolSection.style.display   = 'none';
+  if (structSection) structSection.style.display = 'none';
 
   // Tile hand
   const handEl = document.getElementById('tile-hand');
@@ -1659,136 +1629,29 @@ function renderSide() {
     sideLayout.forEach(v=>{ const d=document.createElement('div'); d.className=`hpa ${v===1?'hpp':'hps'}`; prev.appendChild(d); });
     const lbl=document.createElement('div'); lbl.className='htlabel';
     const fac=FACTIONS.find(f=>f.id===cp.faction);
-    lbl.textContent=ht.isHome?`${fac?.icon} Домашняя`:`Система ${idx+1}`;
+    lbl.textContent=ht.isHome?`${fac?.icon} \u0414\u043e\u043c\u0430\u0448\u043d\u044f\u044f`:`\u0421\u0438\u0441\u0442\u0435\u043c\u0430 ${idx+1}`;
     el.appendChild(prev); el.appendChild(lbl);
     el.onclick=()=>selectHandTile(idx);
+    el.addEventListener('mouseenter', () => _startTileHover(el, ht.tileDefId));
+    el.addEventListener('mouseleave', _cancelTileHover);
     handEl.appendChild(el);
   });
-
-  // Pool
-  const poolCont = document.getElementById('pool-cont');
-  poolCont.innerHTML='';
-  const showPool = G.phase==='troop-on-tile'||G.phase==='troop-placement';
-  if (showPool && cp.pool.length>0) {
-    const groundPool = cp.pool.filter(u=>u.unitType==='ground');
-    const spacePool  = cp.pool.filter(u=>u.unitType==='space');
-    if (groundPool.length) {
-      const sec=document.createElement('div'); sec.className='pool-sec';
-      const lbl=document.createElement('div'); lbl.className='pool-type-lbl'; lbl.textContent='▲ Наземные';
-      const pool=document.createElement('div'); pool.className='tpool';
-      groundPool.forEach(u=>{
-        const gi=cp.pool.indexOf(u);
-        const tok=document.createElement('div');
-        tok.className=`ttok ground ${cp.color}${G.selUnitIdx===gi?' sel':''}`;
-        tok.textContent=`T${u.tier??0}`;
-        tok.title=getUnitName(cp.faction, 'ground', u.tier??0);
-        tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
-      });
-      sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
-    }
-    if (spacePool.length) {
-      const sec=document.createElement('div'); sec.className='pool-sec';
-      const lbl=document.createElement('div'); lbl.className='pool-type-lbl'; lbl.textContent='◈ Космические';
-      const pool=document.createElement('div'); pool.className='tpool';
-      spacePool.forEach(u=>{
-        const gi=cp.pool.indexOf(u);
-        const tok=document.createElement('div');
-        tok.className=`ttok space ${cp.color}${G.selUnitIdx===gi?' sel':''}`;
-        tok.textContent=`T${u.tier??0}`;
-        tok.title=getUnitName(cp.faction, 'space', u.tier??0);
-        tok.onclick=()=>selectUnit(gi); pool.appendChild(tok);
-      });
-      sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
-    }
-  }
-  // Structure pool (shown alongside troops during placement phases)
-  if (showPool && cp.structurePool && cp.structurePool.length > 0) {
-    const sec=document.createElement('div'); sec.className='pool-sec';
-    const lbl=document.createElement('div'); lbl.className='pool-type-lbl'; lbl.textContent='⚙ Постройки';
-    const pool=document.createElement('div'); pool.className='tpool';
-    cp.structurePool.forEach((s, si) => {
-      const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
-      const tok=document.createElement('div');
-      tok.className=`ttok stok ${cp.color}${G.selStructIdx===si?' sel':''}`;
-      tok.textContent=info.icon; tok.title=info.label;
-      tok.onclick=()=>selectStructure(si); pool.appendChild(tok);
-    });
-    sec.appendChild(lbl); sec.appendChild(pool); poolCont.appendChild(sec);
-  }
-
-  if (!showPool && !cp.pool?.length) {
-    // nothing to show
-  } else if (showPool && !cp.pool?.length && (!cp.structurePool?.length)) {
-    poolCont.innerHTML='<span style="color:var(--dim);font-size:.7rem">Войска размещены</span>';
-  } else if (!showPool) {
-    const pool=document.createElement('div'); pool.className='tpool';
-    G.players.forEach(p=>p.pool.forEach(u=>{
-      const tok=document.createElement('div');
-      tok.className=`ttok ${u.unitType==='space'?'space':'ground'} ${p.color}`;
-      tok.textContent=`T${u.tier??0}`; pool.appendChild(tok);
-    }));
-    poolCont.appendChild(pool);
-  }
-
-  // Orders — рендерит order_placement.js
-  renderOrderPanel(document.getElementById('orders-cont'));
-
-  // Execution panel — ресурсы и резерв войск
-  if (G.phase === 'execution') {
-    const cont = document.getElementById('orders-cont');
-    const execPi = G.execTurn ?? 0;
-    const ep = G.players[execPi];
-    const fac = FACTIONS.find(f=>f.id===ep.faction);
-    const hdr = document.createElement('div');
-    hdr.className = 'pool-type-lbl';
-    hdr.style.cssText = 'margin-top:8px;font-size:1.16rem;';
-    hdr.textContent = `${fac?.icon||''} ${ep.name} — ресурсы:`;
-    cont.appendChild(hdr);
-    // Деньги и жетоны
-    const res = document.createElement('div');
-    res.style.cssText = 'font-size:1.44rem;padding:4px 0;display:flex;gap:8px;flex-wrap:wrap;';
-    const tok = ep.tokens || {};
-    const parts = [`💰 ${ep.credits??0}₡`];
-    Object.entries(TOKEN_INFO).forEach(([k,info]) => { if ((tok[k]||0)>0) parts.push(`${info.icon} ×${tok[k]}`); });
-    res.innerHTML = parts.map(p=>`<span style="color:var(--text)">${p}</span>`).join('');
-    cont.appendChild(res);
-    // Доступные войска: максимум фракции минус уже выставленные на поле
-    if (fac && fac.unitTiers) {
-      const poolHdr = document.createElement('div');
-      poolHdr.className = 'pool-type-lbl';
-      poolHdr.style.cssText = 'margin-top:6px;font-size:1.16rem;';
-      poolHdr.textContent = 'Доступные войска:';
-      cont.appendChild(poolHdr);
-      // Подсчёт выставленных на поле по типу и уровню
-      const onBoard = {};
-      Object.values(G.map).forEach(tile => tile.areas.forEach(ar => ar.troops.filter(u=>u.player===execPi).forEach(u => {
-        const key = `${u.unitType}_${u.tier??0}`;
-        onBoard[key] = (onBoard[key]||0) + 1;
-      })));
-      // Максимум по фракции: берём maxTiers (полный резерв), fallback на unitTiers
-      const tiers = fac.maxTiers || fac.unitTiers;
-      const maxCounts = {};
-      (tiers.ground||[]).forEach(tier => { const k=`ground_${tier}`; maxCounts[k]=(maxCounts[k]||0)+1; });
-      (tiers.space||[]).forEach(tier   => { const k=`space_${tier}`;  maxCounts[k]=(maxCounts[k]||0)+1; });
-      const availDiv = document.createElement('div');
-      availDiv.style.cssText = 'font-size:1.3rem;display:flex;flex-direction:column;gap:3px;margin-top:2px;';
-      Object.entries(maxCounts).forEach(([key, maxCount]) => {
-        const [uType, tier] = key.split('_');
-        const avail = maxCount - (onBoard[key]||0);
-        const uName = getUnitName(ep.faction, uType, tier);
-        const row = document.createElement('div');
-        row.style.cssText = `color:${avail>0?'var(--text)':'var(--dim)'};`;
-        row.textContent = `${uName}: ${avail}/${maxCount}`;
-        availDiv.appendChild(row);
-      });
-      cont.appendChild(availDiv);
-    }
-  }
 }
 
 // ══════════════════════════════════════════════
 //  HEADER
 // ══════════════════════════════════════════════
+function _showTip(text) {
+  const el = document.getElementById('phase-tip');
+  if (!el) return;
+  el.style.display = 'block';
+  el.textContent = '\u{1F4A1} ' + text;
+}
+function _hideTip() {
+  const el = document.getElementById('phase-tip');
+  if (el) el.style.display = 'none';
+}
+
 function updateHeader() {
   const cp=G.players[G.curP];
   [0,1].forEach(pi=>{
@@ -1798,20 +1661,23 @@ function updateHeader() {
     const fac=FACTIONS.find(f=>f.id===p.faction);
     document.getElementById(`h-${pfx}-fac`).textContent=fac?`${fac.icon} ${fac.name}`:'—';
     const resEl = document.getElementById(`h-${pfx}-res`);
-    if (resEl && p.credits !== undefined) {
-      const tok = p.tokens || {};
-      const parts = [`💰${p.credits}₡`];
-      Object.entries(TOKEN_INFO).forEach(([k,info]) => { if (tok[k]>0) parts.push(`${info.icon}×${tok[k]}`); });
-      resEl.textContent = parts.join(' ');
+    if (resEl) {
+      const parts = [];
+      if (p.credits != null) parts.push(`💰${p.credits}`);
+      if (p.tokens?.support)  parts.push(`⊕${p.tokens.support}`);
+      if (p.tokens?.discount) parts.push(`⊖${p.tokens.discount}`);
+      if (p.tokens?.forge)    parts.push(`⚒${p.tokens.forge}`);
+      resEl.textContent = parts.join('  ') || '';
     }
   });
-  const labels={'tile-placement':'Размещение систем','troop-on-tile':'Войска на систему',
-                'troop-placement':'Расстановка войск','order-placement':'Приказы','execution':'Исполнение приказов'};
-  document.getElementById('h-phase').textContent=labels[G.phase]||G.phase;
-  document.getElementById('h-round').textContent=`Раунд ${G.round}/${G.totalRounds}`;
+  const phaseLabels = {'tile-placement':'\u0420\u0430\u0437\u043c\u0435\u0449\u0435\u043d\u0438\u0435 \u0441\u0438\u0441\u0442\u0435\u043c'};
+  document.getElementById('h-phase').textContent=phaseLabels[G.phase]||G.phase;
+  const hRound = document.getElementById('h-round'); if (hRound) hRound.textContent='';
   const ind=document.getElementById('h-turn');
-  ind.textContent=`${cp.name} ход`;
+  ind.textContent=`${cp.name} \u0445\u043e\u0434`;
   ind.className=`turn-ind ${G.curP===0?'ti1':'ti2'}`;
+  const edsp = document.getElementById('event-stack-disp');
+  if (edsp) edsp.style.display='none';
 }
 
 // ══════════════════════════════════════════════
@@ -1837,7 +1703,9 @@ let _msgCb = null;
 function showMsg(t,b,cb){
   _msgCb = cb || null;
   document.getElementById('msg-title').textContent=t;
-  document.getElementById('msg-body').textContent=b;
+  document.getElementById('msg-body').innerHTML=b;
+  // Always restore standard OK button
+  document.querySelector('#msg-modal .mbtns').innerHTML='<button class="abtn bp" onclick="closeMsg()">OK</button>';
   document.getElementById('msg-modal').classList.add('active');
 }
 function closeMsg(){

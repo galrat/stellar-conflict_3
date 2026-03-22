@@ -27,7 +27,7 @@ ELDAR = Faction(
         # Характеристики построек — см. STRUCTURE_CATALOG в player_hand.py.
         factories=1, cities=0, bastions=0,
         # ── Стартовые ресурсы ───────────────────────────────────────────────
-        credits=6, support_tokens=0, discount_tokens=0, forge_tokens=1,
+        credits=6, support_tokens=0, discount_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов (cost 2–5 + forge, strength 0–6, health 1–6, morale 0–6) ──
         # Эльдары: хрупкие, но с высокой моралью и точностью. Истребители — ударная сила.
         unit_stats={

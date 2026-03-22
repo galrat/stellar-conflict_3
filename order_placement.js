@@ -11,10 +11,10 @@
 
 // ── Определение типов приказов ───────────────────────────────────────────────
 const ORDER_TYPES_DATA = [
-  { id: 'move',     label: 'Перемещение', icon: '➤' },
-  { id: 'build',    label: 'Стройка',     icon: '⚙' },
-  { id: 'dominate', label: 'Доминация',   icon: '★' },
-  { id: 'plan',     label: 'Планирование', icon: '◎' },
+  { id: 'move',     label: 'Advance',    icon: '➤' },
+  { id: 'build',    label: 'Deploy',     icon: '⚙' },
+  { id: 'dominate', label: 'Dominate',   icon: '★' },
+  { id: 'plan',     label: 'Strategize', icon: '◎' },
 ];
 
 // Быстрый поиск иконки по id типа (используется в renderBoard)

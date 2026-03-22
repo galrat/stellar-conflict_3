@@ -680,7 +680,8 @@ function tileDefToAreas(side) {
         discount: side.discount[r][c],
         forge:    side.forge[r][c],
         joker:    side.joker[r][c],
-        troops:   [],
+        troops:     [],
+        structures: [],
       });
     }
   }
