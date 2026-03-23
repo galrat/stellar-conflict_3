@@ -208,24 +208,8 @@ input[type=text]:focus{border-color:var(--p1);}
   padding:8px 18px;font-size:.8rem;color:var(--gold);text-align:center;
   box-shadow:0 0 18px rgba(255,215,0,.25);pointer-events:none;max-width:480px;line-height:1.5;}
 #phase-tip::before{content:'💡 ';font-size:1rem;}
-/* ── ЖЕТОНЫ ПРИКАЗОВ (панель) ── */
+/* ── ЖЕТОНЫ РЕСУРСОВ ── */
 #left-panel{overflow-y:auto;}
-.otok-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:5px 0;}
-/* 2× размер: ширина = 1 из 2 колонок панели (~83px), высота фиксирована */
-.otok{width:100%!important;height:auto!important;min-height:74px;border-radius:10px;font-size:1.9rem;flex-direction:column;gap:2px;border-width:2px;}
-.otok .olabel{font-size:.52rem;font-family:'Orbitron',monospace;letter-spacing:.07em;margin-top:1px;opacity:.9;}
-/* Цвет по типу приказа */
-.otok-move    {background:rgba(0,180,255,.28);border-color:#00b4ff;color:#00d8ff;}
-.otok-build   {background:rgba(255,185,0,.28); border-color:#ffbb00;color:#ffe040;}
-.otok-dominate{background:rgba(255,45,75,.28); border-color:#ff2d4b;color:#ff607a;}
-.otok-plan    {background:rgba(140,70,255,.28);border-color:#8c46ff;color:#c090ff;}
-/* Выбранный жетон */
-.otok-move.sel    {background:rgba(0,180,255,.6); box-shadow:0 0 12px rgba(0,200,255,.9); border-color:#00e8ff;}
-.otok-build.sel   {background:rgba(255,185,0,.6); box-shadow:0 0 12px rgba(255,200,0,.9); border-color:#ffe040;}
-.otok-dominate.sel{background:rgba(255,45,75,.6); box-shadow:0 0 12px rgba(255,60,90,.9); border-color:#ff8090;}
-.otok-plan.sel    {background:rgba(140,70,255,.6);box-shadow:0 0 12px rgba(160,90,255,.9);border-color:#c090ff;}
-/* Использованный (серый) */
-.otok-used{background:rgba(60,60,80,.18);border-color:rgba(100,100,130,.3);color:rgba(140,140,160,.4);cursor:default!important;pointer-events:none;}
 /* ── ЖЕТОНЫ РЕСУРСОВ ── */
 .tok-sup,.tok-dis,.tok-frg,.tok-jok{font-size:.84rem;font-family:'Orbitron',monospace;font-weight:700;padding:1px 3px;border-radius:3px;border:1px solid;line-height:1.3;pointer-events:none;}
 .tok-sup{background:rgba(255,215,0,.25);color:#ffd700;border-color:rgba(255,215,0,.6);}
@@ -235,81 +219,33 @@ input[type=text]:focus{border-color:var(--p1);}
 /* доход: зелёный кружок; ценные: красный кружок */
 .inc-mark{color:#4caf50;font-weight:700;text-shadow:0 1px 3px #000;}
 .val-mark{color:#ff4444;font-weight:700;text-shadow:0 1px 3px #000;}
-/* ── DEPLOY / DOMINATE / STRATEGIZE MODALS ── */
-.modal-wide{max-width:560px;width:95%;}
-.modal-section{border-top:1px solid var(--border);margin-top:12px;padding-top:10px;}
-.modal-section h3{font-family:'Orbitron',monospace;font-size:.75rem;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:8px;}
-.res-bar{font-size:1rem;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid var(--border);}
-.res-val{font-family:'Orbitron',monospace;font-weight:700;}
-.res-credits{color:var(--gold);}
-.res-forge{color:#ff8c00;}
-.res-discount{color:#00c8ff;}
-.unit-buy-row{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:1rem;}
-.unit-buy-row .uname{flex:1;text-align:left;color:var(--text);}
-.unit-buy-row .ucost{font-size:.9rem;color:var(--dim);white-space:nowrap;}
-.unit-buy-row .udis{font-size:.85rem;color:#00c8ff;cursor:pointer;border:1px solid #00c8ff;border-radius:4px;padding:2px 6px;opacity:.8;}
-.unit-buy-row .udis:hover{opacity:1;background:rgba(0,200,255,.1);}
-.unit-buy-row.ubuying .uname{color:var(--gold);}
-.unit-buy-row.udisabled{opacity:.3;pointer-events:none;}
-.qty-ctrl{display:flex;align-items:center;gap:6px;}
-.qty-btn{width:30px;height:30px;border-radius:50%;border:1px solid;cursor:pointer;font-size:1.2rem;line-height:1;display:flex;align-items:center;justify-content:center;background:transparent;}
-.qty-btn.qminus{border-color:var(--p2);color:var(--p2);}.qty-btn.qminus:hover{background:rgba(255,77,109,.15);}
-.qty-btn.qplus{border-color:var(--p1);color:var(--p1);}.qty-btn.qplus:hover{background:rgba(0,200,255,.15);}
-.qty-num{font-family:'Orbitron',monospace;font-size:1rem;min-width:22px;text-align:center;}
-.struct-row{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:1rem;}
-.struct-row .sname{flex:1;text-align:left;}
-.struct-sel{border:2px solid var(--gold)!important;}
-/* Battle card styles */
-.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
-.bcard{background:#060e1a;border:1px solid var(--border);border-radius:8px;padding:8px;text-align:left;cursor:default;}
-.bcard.clevel-initial{border-color:#555;}
-.bcard.clevel-zero{border-color:#00c8ff;}
-.bcard.clevel-two{border-color:#ffd700;}
-.bcard.clevel-three{border-color:#ff4d6d;}
-.bcard.buyable{cursor:pointer;}.bcard.buyable:hover{filter:brightness(1.25);}
-.bcard.bsel{box-shadow:0 0 8px var(--gold);border-color:var(--gold)!important;}
-.bcard-name{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.1em;margin-bottom:4px;}
-.bcard-lvl{font-size:.58rem;color:var(--dim);margin-bottom:4px;}
-.bcard-e1{font-size:.68rem;color:var(--text);margin-bottom:3px;}
-.bcard-e2{font-size:.65rem;color:var(--dim);}
-.upg-row{background:#060e1a;border:1px solid var(--border);border-radius:8px;padding:8px;text-align:left;cursor:pointer;margin-bottom:6px;}
-.upg-row:hover{border-color:var(--dim);}
-.upg-row.usel{box-shadow:0 0 8px var(--gold);border-color:var(--gold);}
-.upg-name{font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.1em;margin-bottom:3px;}
-.upg-e{font-size:.7rem;color:var(--text);}
-.view-cards-btn{font-size:.58rem;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.04);cursor:pointer;color:var(--dim);}
-.view-cards-btn:hover{border-color:var(--dim);color:var(--text);}
-/* ── RESOURCE TOOLTIPS ── */
-.res-tooltip{position:relative;display:inline-flex;align-items:center;cursor:help;}
-.res-tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:rgba(0,20,40,.98);border:1px solid var(--gold);border-radius:6px;padding:4px 10px;font-size:.72rem;color:var(--gold);white-space:nowrap;z-index:999;pointer-events:none;margin-bottom:4px;}
-/* ── WARP STORM ── */
-.warp-storm{position:absolute;z-index:6;pointer-events:none;
-  background-image:repeating-conic-gradient(#111 0% 25%,#eee 0% 50%);
-  background-size:8px 8px;}
-.warp-storm-h{height:8px;left:0;right:0;}
-.warp-storm-v{width:8px;top:0;bottom:0;}
-.warp-storm-top{top:0;}.warp-storm-bottom{bottom:0;}
-.warp-storm-left{left:0;}.warp-storm-right{right:0;}
-/* Clickable border segments during warp storm placement */
-.ws-border{position:absolute;z-index:7;cursor:pointer;opacity:.18;background:#000;}
-.ws-border:hover{opacity:.55;background:#333;}
-.ws-border-h{height:14px;left:0;right:0;}
-.ws-border-v{width:14px;top:0;bottom:0;}
-/* ── EVENT STACK INDICATOR ── */
-.event-stack-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(140,70,255,.25);border:1px solid rgba(140,70,255,.6);border-radius:4px;padding:1px 5px;font-size:.72rem;color:#c090ff;font-family:'Orbitron',monospace;}
-/* ── DEPLOY PLACING INDICATOR ── */
-@keyframes banner_blink{0%,100%{box-shadow:0 0 12px rgba(0,200,255,.3);border-color:var(--accent1);opacity:1;}50%{box-shadow:0 0 28px rgba(0,200,255,.8);border-color:#fff;opacity:.85;}}
-#deploy-placing-banner{display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:91;background:rgba(0,20,40,.97);border:2px solid var(--accent1);border-radius:10px;padding:10px 28px;font-size:1.15rem;font-family:'Orbitron',monospace;font-weight:700;letter-spacing:.1em;color:var(--accent1);text-align:center;box-shadow:0 0 12px rgba(0,200,255,.3);pointer-events:none;animation:banner_blink 1s ease-in-out infinite;}
-/* ── ACTION INSTRUCTION BLINKING ── */
-@keyframes action_blink{0%,100%{color:var(--gold);}50%{color:#fff;text-shadow:0 0 8px var(--gold);}}
 #tile-peek-popup{pointer-events:auto;cursor:pointer;transition:opacity .2s;}
 .tile-peek-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:200px;height:200px;}
 .tile-peek-cell.planet{background:rgba(0,120,40,.3);border:1px solid rgba(0,200,80,.4);}
 .tile-peek-cell.space{background:rgba(0,30,80,.3);border:1px solid rgba(0,80,200,.3);}
 .tile-peek-cell{border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;font-size:.72rem;}
-.pinstr-action{animation:action_blink 1.1s ease-in-out infinite;}
-/* ── STRUCT ROW DISABLED ── */
-.struct-row.udisabled{opacity:.3;pointer-events:none;cursor:default;}
+/* ── FIRST PLAYER SELECTOR ── */
+.fp-select{display:flex;align-items:center;gap:18px;padding:11px 20px;background:var(--panel);border:1px solid var(--border);border-radius:10px;width:100%;max-width:980px;justify-content:center;}
+.fp-select > span{font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;}
+.fp-label{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.88rem;padding:5px 14px;border-radius:7px;border:1px solid var(--border);transition:all .2s;color:var(--text);}
+.fp-label:hover{border-color:var(--dim);}
+.fp-label.fp-p1.active{border-color:var(--p1);background:rgba(0,200,255,.12);color:var(--p1);}
+.fp-label.fp-p2.active{border-color:var(--p2);background:rgba(255,77,109,.12);color:var(--p2);}
+/* ── WARP STORM ── */
+.warp-storm{position:absolute;z-index:6;pointer-events:none;
+  background-image:repeating-conic-gradient(rgba(10,10,10,.85) 0% 25%,rgba(210,210,210,.85) 0% 50%);
+  background-size:8px 8px;}
+.warp-storm-h{height:10px;left:0;right:0;}
+.warp-storm-v{width:10px;top:0;bottom:0;}
+.warp-storm-top{top:0;}.warp-storm-bottom{bottom:0;}
+.warp-storm-left{left:0;}.warp-storm-right{right:0;}
+.ws-border{position:absolute;z-index:7;cursor:pointer;opacity:.18;background:#fff;transition:opacity .15s;}
+.ws-border:hover{opacity:.65;background:#ffd700;}
+.ws-border-h{height:16px;left:0;right:0;}
+.ws-border-v{width:16px;top:0;bottom:0;}
+/* ── OBJECTIVE MARKER ── */
+.obj-marker{width:30px;height:19px;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;border-radius:4px;border:2px solid;font-weight:700;margin:1px;}
+.aok-obj{outline:2px dashed var(--gold);outline-offset:-3px;}
 </style>
 </head>
 <body>
@@ -321,14 +257,23 @@ input[type=text]:focus{border-color:var(--p1);}
   <div class="setup-players">
     <div class="player-setup ps1">
       <div class="player-label">◈ Командир I</div>
-      <div class="field-group"><div class="field-label">Позывной</div><input type="text" id="p1-name" value="Alpha"></div>
+      <div class="field-group"><div class="field-label">Позывной</div><input type="text" id="p1-name" value="Alpha" oninput="document.getElementById('fp-name-0').textContent=this.value||'Alpha'"></div>
       <div class="field-group"><div class="field-label">Фракция</div><div class="faction-select" id="p1-factions"></div></div>
     </div>
     <div class="player-setup ps2">
       <div class="player-label">◈ Командир II</div>
-      <div class="field-group"><div class="field-label">Позывной</div><input type="text" id="p2-name" value="Omega"></div>
+      <div class="field-group"><div class="field-label">Позывной</div><input type="text" id="p2-name" value="Omega" oninput="document.getElementById('fp-name-1').textContent=this.value||'Omega'"></div>
       <div class="field-group"><div class="field-label">Фракция</div><div class="faction-select" id="p2-factions"></div></div>
     </div>
+  </div>
+  <div class="fp-select" id="fp-select">
+    <span>Первый ход:</span>
+    <label class="fp-label fp-p1 active" id="fp-lbl-0" onclick="pickFirstPlayer(0)">
+      <input type="radio" name="first-player" value="0" checked style="display:none"> <span id="fp-name-0">Alpha</span>
+    </label>
+    <label class="fp-label fp-p2" id="fp-lbl-1" onclick="pickFirstPlayer(1)">
+      <input type="radio" name="first-player" value="1" style="display:none"> <span id="fp-name-1">Omega</span>
+    </label>
   </div>
   <div style="display:flex;gap:10px;width:100%;max-width:980px;">
     <button class="start-btn" onclick="startGame()" style="flex:1;">▶ НАЧАТЬ ИГРУ</button>
@@ -462,18 +407,7 @@ const FACTIONS = [
       {name:'Chaos Victorious',    level:'three',   e1:'Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units. Requires: Titan / Cruiser.',           e2:'Rout 1 enemy unit.'},
       {name:'Death and Despair',   level:'three',   e1:'Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit. Requires: Titan / Cruiser.',        e2:'If more [M] than enemy, destroy 1 routed unit.'},
     ],
-    orderUpgrades:[
-      {name:'Fear from Above',         orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Gain [?].',                             e2:'Spend 1 [M] to force any unit taking damage to rout.'},
-      {name:'Dread Ritual',            orderType:'build', tier:0, cost:0, e1:'Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in system.',    e2:'Factory not required.', noFactoryRequired:true},
-      {name:'Favour of the Dark Gods', orderType:'plan',  tier:0, cost:0, e1:'Place 2 order tokens from play area onto top of event deck.',          e2:'Once per round.'},
-      {name:'From the Warp',           orderType:'move',  tier:0, cost:0, e1:'Ships can move through Warp Storms. Once per round.',                  e2:'Once per round.'},
-      {name:'Complete Destruction',    orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Bastions do not prevent orbital strike.', e2:'Spend 2 [S] to force enemy to choose unit or structure to destroy.'},
-    ],
-    eventCards:[
-      {name:'Warp Surge',   effect:'Все ваши юниты получают +1 к атаке в этом раунде.'},
-      {name:'Dark Ritual',  effect:'Немедленно получите 1 культиста на дружественной планете.'},
-      {name:'Chaos Rift',   effect:'Один вражеский юнит на любой планете дезертирует (удаляется).'},
-    ] },
+  },
   { id:'marine', name:'Space marine', icon:'◆', color:'#1F4E9E', homeTileId:'home_marine',
     flavor:'Особое свойство доминации: вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал',
     specialAbilityName:'Тренировка',
@@ -500,18 +434,7 @@ const FACTIONS = [
       {name:"Emperor's Glory",     level:'three',   e1:'Gain 2 [?]. Requires: Titan / Battle Barge.',                                                     e2:'Rally all units. Convert any dice to [M].'},
       {name:"Emperor's Might",     level:'three',   e1:'Gain 2 [?]. Requires: Titan / Battle Barge.',                                                     e2:'Spend any [G]; gain 2 (g) per die.'},
     ],
-    orderUpgrades:[
-      {name:'Reign of Fire',      orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Gain [?].',                                   e2:'Convert 1 [M] into [G].'},
-      {name:'Crusade',            orderType:'move',  tier:1, cost:2, e1:'If no friendly worlds in system, gain 1 (R). Once per round.',                e2:'Command Level 1.'},
-      {name:'Direct the Faithful',orderType:'plan',  tier:1, cost:2, e1:'May change 1 structure to a different structure. Once per round.',            e2:'Command Level 1.'},
-      {name:'Recruitment Worlds', orderType:'build', tier:1, cost:2, e1:'Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.', e2:'Command Level 1.'},
-      {name:'Drop Pods',          orderType:'move',  tier:2, cost:3, e1:'Orbital Strike, once per round. Bastions do not prevent orbital strike.',     e2:'Spend 2 [S] to place free Marine (may start combat). Command Level 2.'},
-    ],
-    eventCards:[
-      {name:'For the Emperor',  effect:'Один ваш юнит немедленно восстанавливается с ближайшего резерва.'},
-      {name:'Orbital Barrage',  effect:'Нанесите 1 урон любому вражескому юниту на виду.'},
-      {name:'Iron Will',        effect:'В этом раунде ваши юниты не теряют боевой дух.'},
-    ] },
+  },
   { id:'orks', name:'Орки', icon:'💀', color:'#2E7D32', homeTileId:'home_orks',
     flavor:'Особое свойство фракции: вы можете купить один отряд и поместить его в дружественный мир активной системы',
     specialAbilityName:'Dominate',
@@ -538,18 +461,7 @@ const FACTIONS = [
       {name:'Smasher Gargant', level:'three', e1:'Requires: Gargant / Kroozer.',                                                                     e2:'Choose enemy unit. Destroy unit unless enemy spends dice equal to its Tier.'},
       {name:'Snapper Gargant', level:'three', e1:'Requires: Gargant / Kroozer.',                                                                     e2:'Discard 1 of enemy face up combat cards.'},
     ],
-    orderUpgrades:[
-      {name:"Lootin'",       orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Gain 1 [?].',                                       e2:'Spend 1 die to gain 1 materiel and force enemy to lose 1 materiel.'},
-      {name:'Werk Fasta!',   orderType:'build', tier:1, cost:2, e1:'May purchase structure before purchasing units. Once per round.',                   e2:'Command Level 1.'},
-      {name:'The Green Tide',orderType:'plan',  tier:1, cost:2, e1:'When revealed, can resolve it as one of the other orders instead. Once per round.', e2:'Command Level 1.'},
-      {name:'Ork Roks',      orderType:'move',  tier:1, cost:2, e1:'Can move up to 2 units through 1 uncontrolled void. Once per round.',               e2:'Command Level 1.'},
-      {name:"Stealin'!",     orderType:'move',  tier:2, cost:3, e1:'Orbital Strike, once per round. Bastions do not prevent orbital strike.',           e2:'Spend 1 [M] to discard an enemy asset token; you gain that token. Command Level 2.'},
-    ],
-    eventCards:[
-      {name:'WAAAGH!',        effect:'Все ваши Орки Бойз получают +2 к атаке в ближайшем бою.'},
-      {name:'Mek Scrap',      effect:'Немедленно получите 1 жетон молотка.'},
-      {name:'Big Stomp',      effect:'Один вражеский юнит T0 уничтожается в соседней системе.'},
-    ] },
+  },
   { id:'eldar', name:'Eldar', icon:'◉', color:'#F2C94C', homeTileId:'home_eldar',
     flavor:'По доминации вы можете переместить одного юнита из мира активной системы в дружественный мир.',
     specialAbilityName:'Телепорт',
@@ -576,18 +488,7 @@ const FACTIONS = [
       {name:'Holofield Emitter',      level:'three',   e1:'Gain 1 [?]. Draw 1 combat card. Requires: Titan / Stalker.',                                           e2:'Play 1 card from your hand — gain its combat icons but not its abilities.'},
       {name:'Psychic Lance',          level:'three',   e1:'Gain 1 [?]. Enemy discards 1 random combat card. Requires: Titan / Stalker.',                          e2:'Gain 4 (g) unless enemy discards 1 face up card of your choice.'},
     ],
-    orderUpgrades:[
-      {name:'Tactical Strikes',    orderType:'move',  tier:0, cost:0, e1:'Orbital Strike, once per round. Gain 1 [?].',                                         e2:'Spend 1 [M] to choose enemy unit — this must suffer damage first.'},
-      {name:'Wraithbone Singers',  orderType:'build', tier:1, cost:2, e1:'When purchasing structure, may place it on world containing exactly 1 different structure. Once per round.', e2:'Command Level 1.', allowDoubleStructure:true},
-      {name:'Farseer',             orderType:'plan',  tier:1, cost:2, e1:'This order can be resolved even if there are no units in the active system. Once per round.', e2:'Command Level 1.'},
-      {name:'Corsair Raid',        orderType:'move',  tier:1, cost:2, e1:'After combat, you may perform 1 orbital strike in the active system. Once per round.',  e2:'Command Level 1.'},
-      {name:'Strafing Run',        orderType:'move',  tier:2, cost:3, e1:'Orbital Strike, once per round. Bastions do not prevent orbital strike.',               e2:'Spend 1 [S] to move ships to adjacent system. Command Level 2.'},
-    ],
-    eventCards:[
-      {name:'Webway Gate',    effect:'Переместите одного вашего юнита в любую дружественную систему.'},
-      {name:'Prescience',     effect:'Посмотрите один случайный приказ противника.'},
-      {name:'Eldar Ambush',   effect:'Нанесите 1 урон вражескому юниту на планете с вашими юнитами.'},
-    ] },
+  },
   { id:'necrons', name:'Necrons', icon:'☥', color:'#00BCD4', homeTileId:'home_necrons',
     flavor:'Dominate: Take any of your units from 1 world and place them on a friendly world containing a structure in the active system.',
     // Warriors×4(T0) Immortals×1(T1)  — из necrons.py
@@ -643,24 +544,6 @@ const STRUCTURE_INFO = {
   city:    { icon:'⬡', label:'Город'   },
   bastion: { icon:'⛉', label:'Бастион' },
 };
-const TOKEN_INFO = {
-  support:  { icon:'⊕', label:'Поддержка' },
-  discount: { icon:'⊖', label:'Скидка'    },
-  forge:    { icon:'⚒', label:'Молоток'   },
-  joker:    { icon:'★', label:'Ценный'    },
-};
-
-const MAX_TOKENS_DEFAULT = 3;
-const MAX_TOKENS_TYRANIDS = 4;
-
-function _capTokens(p) {
-  const maxPerType = (p.faction === 'tyranids') ? MAX_TOKENS_TYRANIDS : MAX_TOKENS_DEFAULT;
-  if (p.tokens) {
-    Object.keys(p.tokens).forEach(k => {
-      if (p.tokens[k] > maxPerType) p.tokens[k] = maxPerType;
-    });
-  }
-}
 
 const TILES_PP = 3;
 const CELL     = 320;
@@ -709,8 +592,8 @@ let G;
 function makeState() {
   return {
     players: [
-      { name:'Alpha', faction:null, color:'c1', pool:[], hand:[], orders:[null,null,null,null] },
-      { name:'Omega', faction:null, color:'c2', pool:[], hand:[], orders:[null,null,null,null] },
+      { name:'Alpha', faction:null, color:'c1', pool:[], hand:[] },
+      { name:'Omega', faction:null, color:'c2', pool:[], hand:[] },
     ],
     phase: 'setup',
     curP: 0,
@@ -731,31 +614,9 @@ function makeState() {
     selUnitType: null,
     selStructIdx: null,    // index in cp.structurePool
     selOrderSlot: null,
-    // ── order placement (new) ───────────────
-    orderStep: 0,                 // 0–7: чей ход в чередовании (0,2,4,6=P0; 1,3,5,7=P1)
-    currentStepOrderPlaced: false,// текущий игрок уже поставил жетон на этом шаге
-    selectedOrderType: null,      // выбранный тип приказа (до клика на тайл)
-    _thisStepOrderSlot: null,     // слот, занятый на этом шаге (для отмены)
-    // ── execution ──────────────────────────
-    execTurn: 0,       // чей ход в исполнении (0 или 1)
-    execPeeked: null,  // { pi, oi } — текущий подглянутый жетон
-    _execQueue: null,  // [{pi}] — interleaved execution order, null = not built yet
-    _execQueueIdx: 0,  // current position in _execQueue
-    _battleCb: null,
-    _domCb: null,
-    // ── deploy sub-placement ──────────────
-    _deployPlacement: null, // { pi, oi, tileKey, boughtUnits }
-    _orderInProgress: false, // true while an order is being resolved (between playOrder and _execAfterOrder)
-    // ── warp storm placement ──────────────
+    // ── warp storms ──────────────────────────
     warpStorms: [],    // [{ tileKey, side:'top'|'bottom'|'left'|'right' }]
-    warpStormPhase: null,  // null | { step: 0|1 } (0=P2 places, 1=P1 places)
-    // ── event stacks (one per player) ────
-    eventStacks: [[], []],  // legacy — order placement skips
-    eventDiscardPile: [[], []],  // per-player event deck (discarded/skipped execution orders)
-    // ── dominate tracking ────────────────────
-    _domAbilityUsed: false,
-    _domGained: null,
-    _domJokerTotal: 0,
+    warpStormStep: 0,  // 0 = second player places, 1 = first player places
   };
 }
 
@@ -889,10 +750,21 @@ function refreshFactionUI() {
 // ══════════════════════════════════════════════
 //  START
 // ══════════════════════════════════════════════
+function pickFirstPlayer(pi) {
+  document.getElementById('fp-lbl-0').classList.toggle('active', pi === 0);
+  document.getElementById('fp-lbl-1').classList.toggle('active', pi === 1);
+  document.querySelector(`input[name="first-player"][value="${pi}"]`).checked = true;
+}
+
 function startGame() {
   if (!G.players[0].faction || !G.players[1].faction) { showMsg('Выберите фракции','Оба игрока должны выбрать фракцию.'); return; }
   G.players[0].name = document.getElementById('p1-name').value.trim() || 'Alpha';
   G.players[1].name = document.getElementById('p2-name').value.trim() || 'Omega';
+
+  // Первый игрок
+  const fpVal = parseInt(document.querySelector('input[name="first-player"]:checked')?.value ?? '0');
+  G.firstPlayer = fpVal;
+  G.curP = fpVal;
 
   // Применяем цвета выбранных фракций как CSS-переменные игроков
   const f1 = FACTIONS.find(f => f.id === G.players[0].faction);
@@ -916,13 +788,6 @@ function startGame() {
     p.structurePool = (fac.structures || []).map(type => ({ id:nextId++, player:pi, type }));
     p.credits = fac.credits ?? 6;
     p.tokens  = { ...(fac.tokens ?? {support:0,discount:0,forge:0}) };
-    // Боевая колода: 5 начальных карт по 2 экземпляра = 10 карт
-    p.battleDeck = (fac.battleCards || [])
-      .filter(c => c.level === 'initial')
-      .map(c => ({ ...c, count: 2 }));
-    // Купленные улучшения приказов
-    p.purchasedOrderUpgrades = [];
-
     const myHome = TILE_CATALOG.find(t => t.id === fac.homeTileId)
                 || TILE_CATALOG.find(t => t.isHome);
     const myNormal = normalTiles.splice(0, TILES_PP - 1);
@@ -933,14 +798,13 @@ function startGame() {
       isHome:    td.isHome,
       placed:    false,
     }));
-    p.orders      = [null, null, null, null];
   });
 
-  G.firstPlayer = 0;
+  // G.firstPlayer и G.curP уже заданы выше
   showScreen('game-screen');
   updateHeader();
   renderBoard();
-  showHP(G.players[0].name, 'Разместите вашу первую систему', () => setPhase('tile-placement'));
+  showHP(G.players[G.firstPlayer].name, 'Разместите вашу первую систему', () => setPhase('tile-placement'));
 }
 
 // ══════════════════════════════════════════════
@@ -970,11 +834,20 @@ function setPhase(phase) {
   }
   else if (phase === 'troop-on-tile') {
     // tileSnap + unitsPlaced уже заданы в dropTile — НЕ сбрасывать
-    ins.innerHTML = `<strong>ВОЙСКА НА СИСТЕМУ</strong><br>${cp.name}: размещайте войска на только что поставленной системе.<br><small style="color:var(--dim)">▲ наземные → 🪐 · ◈ космические → ✦</small>`;
+    const tile = G.map[G.lastKey];
+    const needObj = tile?.needsObjective && !tile?.objectiveMarker;
+    const objHint = needObj ? `<br><small style="color:var(--gold)">★ Кликните область без выбранного войска чтобы поставить метку цели соперника</small>` : '';
+    ins.innerHTML = `<strong>ВОЙСКА НА СИСТЕМУ</strong><br>${cp.name}: размещайте войска на только что поставленной системе.<br><small style="color:var(--dim)">▲ наземные → 🪐 · ◈ космические → ✦</small>${objHint}`;
     _showTip(`Выберите войско из резерва (левая панель) и кликните область системы. Нажмите «Готово» когда закончите.`);
     show('btn-ut'); show('btn-uu'); show('btn-fl'); show('btn-rccw'); show('btn-rcw'); show('btn-et');
     document.getElementById('btn-et').textContent = 'Готово →';
     renderSide(); renderBoard(G.lastKey);
+  }
+  else if (phase === 'warp-storm') {
+    const wsNum = G.warpStorms.length + 1;
+    ins.innerHTML = `<strong>ВАРП-ШТОРМ ${wsNum}/2</strong><br>${cp.name}: кликните на границу любой системы чтобы поставить варп-шторм`;
+    _showTip(`${cp.name}: кликните на край тайла (граница подсвечивается при наведении).`);
+    renderBoard();
   }
   updateHeader();
 }
@@ -1024,6 +897,9 @@ function dropTile(col, row) {
   const tileDef  = TILE_CATALOG.find(t => t.id === ht.tileDefId) || TILE_CATALOG[0];
   const sideData = tileDef.sides[0];
 
+  ht.placed = true;
+  G.tilesPlaced++;
+
   // Build tile object — areas with capacity, income, tokens, troops
   G.map[key] = {
     key, col, row,
@@ -1034,10 +910,9 @@ function dropTile(col, row) {
     rotation:  0,
     side:      0,
     areas:     tileDefToAreas(sideData).map(a => ({ ...a, structures:[] })),
+    needsObjective: Object.values(G.map).filter(t => t.owner === G.curP).length < 2,  // первые два тайла игрока получают метку цели
+    objectiveMarker: null,               // { owner: playerIdx, realAreaIdx: N }
   };
-
-  ht.placed     = true;
-  G.tilesPlaced++;
   G.lastKey     = key;
 
   // Set undo snapshot BEFORE calling setPhase
@@ -1127,6 +1002,7 @@ function flipTile() {
   const sideData = tileDef.sides[tile.side];
   tile.areas    = tileDefToAreas(sideData).map(a => ({...a, structures: []}));
   tile.rotation = 0;
+  tile.objectiveMarker = null; // сбрасываем метку при перевороте (areas полностью пересоздаются)
   G.selStructIdx = null; G.selUnitIdx = null; G.selUnitType = null;
   addLog(`${G.players[G.curP].name} перевернул тайл [${tile.key}] → сторона ${tile.side===0?'A':'B'}`, G.curP);
   renderBoard();
@@ -1196,6 +1072,18 @@ function areaClick(key, displayIdx) {
   const area = getAreaByDisplay(tile, displayIdx);
   const realIdx = tile.areas.indexOf(area);
 
+  // Разместить / переместить метку цели (если ничего не выбрано)
+  if (tile.needsObjective && G.selUnitIdx === null && G.selStructIdx === null) {
+    const eligibleIdxs = getObjectiveEligibleDisplayIdxs(tile);
+    if (eligibleIdxs.includes(displayIdx)) {
+      if (area.type !== 'planet') return; // только планеты
+      tile.objectiveMarker = { owner: 1 - G.curP, realAreaIdx: realIdx };
+      addLog(`${cp.name} разместил метку цели на [${key}] зона ${displayIdx+1}`, G.curP);
+      setPhase('troop-on-tile'); // обновить подсказку
+      return;
+    }
+  }
+
   // Разместить постройку
   if (G.selStructIdx !== null) {
     const struct = cp.structurePool[G.selStructIdx];
@@ -1250,6 +1138,13 @@ function endTurn() {
     }
   }
 
+  // Метка цели обязательна на первых двух тайлах
+  const tileForObj = G.map[G.lastKey];
+  if (tileForObj?.needsObjective && !tileForObj.objectiveMarker) {
+    showMsg('Разместите метку цели', 'Поставьте метку цели соперника — кликните на область тайла без выбранного войска.');
+    return;
+  }
+
   G.tileSnap = null; G.unitsPlaced = []; G.structsPlaced = [];
   G.selUnitIdx = null; G.selUnitType = null; G.selStructIdx = null;
 
@@ -1257,8 +1152,7 @@ function endTurn() {
     G.curP = 1 - G.curP;
     showHP(G.players[G.curP].name, 'Разместите систему', () => setPhase('tile-placement'));
   } else {
-    renderBoard(); updateHeader();
-    showEndMapDialog();
+    startWarpStormPlacement();
   }
 }
 
@@ -1326,6 +1220,53 @@ function undoLastUnit() {
 function isCompatible(unit, areaType) {
   return (unit.unitType==='ground' && areaType==='planet') ||
          (unit.unitType==='space'  && areaType==='space');
+}
+
+// ══════════════════════════════════════════════
+//  OBJECTIVE MARKER HELPERS
+// ══════════════════════════════════════════════
+// Возвращает displayIdx областей тайла, на которые можно ставить метку цели.
+// Нормальный тайл (2 планеты): обе планеты.
+// Домашний тайл (3 планеты + 1 космос): планеты, соседствующие с космосом по горизонтали/вертикали.
+function getObjectiveEligibleDisplayIdxs(tile) {
+  const areas = getRotatedAreas(tile);
+  const planetIdxs = areas.map((a,i) => ({a,i})).filter(x => x.a.type === 'planet').map(x => x.i);
+  if (planetIdxs.length <= 2) return planetIdxs;
+  // 3 планеты + 1 космос: исключить планету, диагональную к космосу
+  const spaceIdx = areas.findIndex(a => a.type === 'space');
+  const diagonal = { 0:3, 1:2, 2:1, 3:0 };
+  const diagOfSpace = diagonal[spaceIdx];
+  return planetIdxs.filter(i => i !== diagOfSpace);
+}
+
+// ══════════════════════════════════════════════
+//  WARP STORM PLACEMENT
+// ══════════════════════════════════════════════
+function startWarpStormPlacement() {
+  G.warpStorms = [];
+  G.warpStormStep = 0;
+  // Второй игрок (не первый) ставит варп-шторм первым
+  G.curP = 1 - G.firstPlayer;
+  renderBoard(); updateHeader();
+  showHP(G.players[G.curP].name, 'Разместите варп-шторм', () => setPhase('warp-storm'));
+}
+
+function placeWarpStorm(tileKey, side) {
+  if (G.phase !== 'warp-storm') return;
+  // Нельзя ставить туда, где уже стоит варп-шторм
+  if (G.warpStorms.some(ws => ws.tileKey === tileKey && ws.side === side)) return;
+  G.warpStorms.push({ tileKey, side });
+  addLog(`${G.players[G.curP].name} поставил варп-шторм: [${tileKey}] ${side}`, G.curP);
+  if (G.warpStorms.length === 1) {
+    // Теперь первый игрок
+    G.curP = G.firstPlayer;
+    updateHeader();
+    showHP(G.players[G.curP].name, 'Разместите варп-шторм', () => setPhase('warp-storm'));
+  } else {
+    // Оба поставили
+    renderBoard(); updateHeader();
+    showEndMapDialog();
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -1424,6 +1365,7 @@ function renderBoard() {
 
     const rotAreas = getRotatedAreas(tile);
     rotAreas.forEach((area, displayIdx) => {
+      const realIdx = tile.areas.indexOf(area);
       const ae=document.createElement('div');
       ae.className=`tarea a${area.type}`;
 
@@ -1485,7 +1427,27 @@ function renderBoard() {
           if (u) ae.classList.add(isCompatible(u, area.type) && area.troops.length < area.capacity ? 'aok' : 'ano');
         } else if (G.selStructIdx !== null) {
           ae.classList.add(area.type === 'planet' && (!area.structures || area.structures.length === 0) ? 'aok' : 'ano');
+        } else if (tile.needsObjective && !tile.objectiveMarker) {
+          // Подсветить области для метки цели
+          const eligIdxs = getObjectiveEligibleDisplayIdxs(tile);
+          if (eligIdxs.includes(displayIdx) && area.type === 'planet') ae.classList.add('aok-obj');
         }
+      }
+
+      // Метка цели
+      if (tile.objectiveMarker && tile.objectiveMarker.realAreaIdx === realIdx) {
+        const opPlayer = tile.objectiveMarker.owner;
+        const opFac = FACTIONS.find(f => f.id === G.players[opPlayer].faction);
+        const opColor = opFac?.color || (opPlayer === 0 ? '#00c8ff' : '#ff4d6d');
+        const opIcon = opFac?.icon || (opPlayer === 0 ? 'P1' : 'P2');
+        const marker = document.createElement('div');
+        marker.className = 'obj-marker';
+        marker.style.background = hexAlpha(opColor, 0.25);
+        marker.style.borderColor = opColor;
+        marker.style.color = opColor;
+        marker.textContent = opIcon;
+        marker.title = `Цель: ${G.players[opPlayer].name}`;
+        ae.appendChild(marker);
       }
 
       ae.onclick=()=>areaClick(tile.key, displayIdx);
@@ -1493,6 +1455,24 @@ function renderBoard() {
     });
 
     el.appendChild(inner);
+
+    // Варп-штормы: визуализация + кликабельные границы в фазе warp-storm
+    ['top','bottom','left','right'].forEach(side => {
+      const isH = side === 'top' || side === 'bottom';
+      const hasWS = G.warpStorms.some(ws => ws.tileKey === tile.key && ws.side === side);
+      if (hasWS) {
+        const ws = document.createElement('div');
+        ws.className = `warp-storm warp-storm-${side} ${isH ? 'warp-storm-h' : 'warp-storm-v'}`;
+        el.appendChild(ws);
+      }
+      if (G.phase === 'warp-storm' && !hasWS) {
+        const border = document.createElement('div');
+        border.className = `ws-border ws-border-${isH ? 'h' : 'v'} warp-storm-${side}`;
+        border.onclick = (e) => { e.stopPropagation(); placeWarpStorm(tile.key, side); };
+        el.appendChild(border);
+      }
+    });
+
     board.appendChild(el);
   });
 }
