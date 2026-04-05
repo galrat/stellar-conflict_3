@@ -39,8 +39,51 @@ import random
 from units import Unit, UnitCategory, GroundType, SpaceType
 from tiles import SystemTile, TileType, AreaType, AREA_LAYOUTS, TILE_CATALOG
 from board import Board
-from factions import Player, Faction, FACTIONS, UnitConfig, FACTION_CONFIGS
-from combat import BattleResult, resolve_battle, apply_battle, format_battle
+from faction_base import Player, Faction, UnitConfig
+from faction_defs import FACTIONS, FACTION_CONFIGS
+from game_serializer import generate_game_state, save_game_state
+
+
+# ── Stub для боевой системы (combat.py) ────────────────────────────────────
+
+@dataclass
+class BattleResult:
+    """Результат боевого столкновения."""
+    winner_id: int
+    damage_p0: int
+    damage_p1: int
+
+    def to_dict(self) -> dict:
+        return {
+            "winner_id": self.winner_id,
+            "damage_p0": self.damage_p0,
+            "damage_p1": self.damage_p1,
+        }
+
+def resolve_battle(tile_key: str, area_idx: int, area_type: str, p0_units: List[Unit], p1_units: List[Unit]) -> BattleResult:
+    """Разрешить боевое столкновение и вернуть результат."""
+    p0_str = sum(u.combat_strength for u in p0_units)
+    p1_str = sum(u.combat_strength for u in p1_units)
+
+    winner_id = 0 if p0_str >= p1_str else 1
+    damage_p0 = max(1, len(p1_units) // 2)
+    damage_p1 = max(1, len(p0_units) // 2)
+
+    return BattleResult(winner_id, damage_p0, damage_p1)
+
+def apply_battle(area, result: BattleResult) -> None:
+    """Применить результаты боя к зоне."""
+    # Удалить юниты
+    units_to_remove = []
+    for unit in area.units[:result.damage_p0 + result.damage_p1]:
+        units_to_remove.append(unit)
+    for unit in units_to_remove:
+        area.units.remove(unit)
+
+def format_battle(result: BattleResult, p0_name: str, p1_name: str) -> str:
+    """Форматировать результат боя в текст."""
+    winner = p0_name if result.winner_id == 0 else p1_name
+    return f"БОЙ: Победитель {winner} (урон: P0={result.damage_p0}, P1={result.damage_p1})"
 
 
 # ── Фазы игры ──────────────────────────────────────────────────────────────
@@ -678,3 +721,26 @@ class GameState:
 
     def to_json(self, indent: int = 2) -> str:
         return json.dumps(self.to_dict(), ensure_ascii=False, indent=indent)
+
+    def save_game(self, filename: str = None) -> Tuple[bool, str]:
+        """
+        Сохраняет текущее состояние игры в файл.
+
+        Args:
+            filename: имя файла (например "game_001.json").
+                     Если None, генерируется автоматически.
+
+        Returns:
+            (True, filepath) если успешно, (False, error_msg) иначе
+        """
+        if filename is None:
+            # Генерируем имя файла автоматически
+            from datetime import datetime
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"game_{timestamp}.json"
+
+        state = generate_game_state(self)
+        if save_game_state(state, filename):
+            return True, f"Игра сохранена в {filename}"
+        else:
+            return False, f"Ошибка при сохранении игры"

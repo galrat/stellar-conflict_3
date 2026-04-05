@@ -36,9 +36,9 @@ class StructureType(Enum):
 
 class ResourceType(Enum):
     """Тип жетона ресурса — хранится в инвентаре игрока."""
-    SUPPORT  = "support"   # Жетон поддержки в бою - юнит нулевого уровня
-    DISCOUNT = "discount"  # Жетон скидки в 2 материала
-    FORGE    = "forge"     # Жетон кузницы для постройки юнитов и компенсации городов
+    REINFORCEMENT = "reinforcement"  # Жетон подкрепления в бою - юнит нулевого уровня
+    CASH          = "cash"           # Жетон денег/скидки
+    FORGE         = "forge"          # Жетон кузницы для постройки юнитов и компенсации городов
 
 
 STRUCTURE_STATS = {
@@ -48,9 +48,9 @@ STRUCTURE_STATS = {
 }
 
 RESOURCE_STATS = {
-    ResourceType.SUPPORT:  {"symbol": "⊕", "label": "Поддержка"},
-    ResourceType.DISCOUNT: {"symbol": "⊖", "label": "Скидка"},
-    ResourceType.FORGE:    {"symbol": "⊗", "label": "Кузница"},
+    ResourceType.REINFORCEMENT: {"symbol": ">", "label": "Подкрепление"},
+    ResourceType.CASH:          {"symbol": "$", "label": "Деньги"},
+    ResourceType.FORGE:         {"symbol": "T", "label": "Кузница"},
 }
 
 
@@ -131,7 +131,7 @@ class Structure:
 @dataclass
 class ResourceToken:
     """Жетон ресурса — хранится в инвентаре игрока, не размещается на поле."""
-    resource_type: ResourceType = ResourceType.SUPPORT
+    resource_type: ResourceType = ResourceType.FORGE
 
     @property
     def symbol(self) -> str:

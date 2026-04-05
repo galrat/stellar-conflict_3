@@ -17,26 +17,69 @@ sys.path.insert(0, ".")
 from faction_defs import FACTIONS
 
 
+def escape_js_string(s: str) -> str:
+    """Безопасно экранирует строку для JS."""
+    if not s:
+        return ""
+    s = str(s)
+    s = s.replace("\\", "\\\\")  # обратные слэши сначала
+    s = s.replace("'", "\\'")    # одиночные кавычки
+    s = s.replace('"', '\\"')    # двойные кавычки
+    s = s.replace("\n", " ")     # переносы строк
+    s = re.sub(r"\s+", " ", s)  # множественные пробелы
+    return s.strip()
+
 def build_js_factions(factions: dict) -> str:
     """Генерирует JS-массив FACTIONS из Python-данных фракций."""
     lines = ["const FACTIONS = ["]
     for f in factions.values():
         uc = f.unit_config
+
+        # Генерируем unitTiers на основе unit_config
+        ground_tiers = []
+        if uc.infantry > 0:
+            ground_tiers.extend([0] * uc.infantry)     # tier 0
+        if uc.marines > 0:
+            ground_tiers.extend([1] * uc.marines)      # tier 1
+        if uc.mechanized > 0:
+            ground_tiers.extend([2] * uc.mechanized)   # tier 2
+        if uc.elite > 0:
+            ground_tiers.extend([3] * uc.elite)        # tier 3
+
+        space_tiers = []
+        if uc.fighters > 0:
+            space_tiers.extend([0] * uc.fighters)      # tier 0
+        if uc.destroyers > 0:
+            space_tiers.extend([2] * uc.destroyers)    # tier 2
+
         ground = uc.infantry + uc.marines + uc.mechanized + uc.elite
         space  = uc.fighters + uc.destroyers
 
+        # Генерируем структуры на основе unit_config
+        structures = []
+        if uc.factories > 0:
+            structures.extend(['factory'] * uc.factories)
+        if uc.cities > 0:
+            structures.extend(['city'] * uc.cities)
+        if uc.bastions > 0:
+            structures.extend(['bastion'] * uc.bastions)
+
         # Если flavor случайно стал кортежем — склеиваем в строку
         raw_flavor = " ".join(f.flavor) if isinstance(f.flavor, tuple) else f.flavor
-        # Экранируем одиночные кавычки во флаворе (безопасно для JS-строки)
-        flavor = raw_flavor.replace("'", "\\'").replace("\n", " ").strip()
-        # Убираем лишние пробелы
-        flavor = re.sub(r"\s+", " ", flavor)
+        # Убеждаемся что цвет содержит #
+        color = f.color if '#' in f.color else f"#{f.color}"
+
+        # Экранируем все строки
+        flavor = escape_js_string(raw_flavor)
+        name = escape_js_string(f.name)
 
         lines.append(
-            f"  {{ id:'{f.id}', name:'{f.name}', icon:'{f.icon}', color:'{f.color}', "
+            f"  {{ id:'{f.id}', name:'{name}', icon:'{f.icon}', color:'{color}', "
             f"homeTileId:'{f.home_tile_id}', "
             f"flavor:'{flavor}', "
-            f"troops:{{ground:{ground},space:{space}}} }},"
+            f"troops:{{ground:{ground},space:{space}}}, "
+            f"unitTiers:{{ground:{ground_tiers},space:{space_tiers}}}, "
+            f"structures:{structures} }},"
         )
     lines.append("];")
     return "\n".join(lines)

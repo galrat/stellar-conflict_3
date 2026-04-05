@@ -24,12 +24,12 @@ class CardLevel(Enum):
     """
     Уровень боевой карты фракции.
 
-    INITIAL — стартовые карты, выдаются в начале игры бесплатно.
+    INITIAL — стартовые карты, выдаются в начале игры бесплатно (уровень -1).
     ZERO    — нулевого уровня (базовые покупные).
     TWO     — второго уровня.
     THREE   — третьего уровня.
     """
-    INITIAL = "initial"
+    INITIAL = -1
     ZERO    = 0
     TWO     = 2
     THREE   = 3
@@ -47,11 +47,15 @@ class BattleCard:
     level:    CardLevel
     effect_1: str   # первый эффект карты
     effect_2: str   # второй эффект карты
+    tier:     int = 0  # уровень карты для совместимости (дублирует level.value)
+    cost:     int = 0  # стоимость карты в условных единицах (0, 2, 4, 6)
 
     def to_dict(self) -> dict:
         return {
             "name":     self.name,
             "level":    self.level.value,
+            "tier":     self.tier,
+            "cost":     self.cost,
             "effect_1": self.effect_1,
             "effect_2": self.effect_2,
         }
@@ -69,13 +73,39 @@ class OrderUpgrade:
     order_type: str   # "move" | "attack" | "reinforce" | "dominate" | "build"
     effect_1:   str   # первый эффект улучшения
     effect_2:   str   # второй эффект улучшения
+    tier:       int = 0  # уровень улучшения (опционально)
+    cost:       int = 0  # стоимость улучшения (опционально)
 
     def to_dict(self) -> dict:
         return {
             "name":       self.name,
             "order_type": self.order_type,
+            "tier":       self.tier,
+            "cost":       self.cost,
             "effect_1":   self.effect_1,
             "effect_2":   self.effect_2,
+        }
+
+
+# ── Карта событий ──────────────────────────────────────────────────────────
+
+@dataclass
+class EventCard:
+    """
+    Карта события, используемая в расширенной механике игры.
+    Содержит информацию о движении вихря деформации и эффектах карты.
+    """
+    name:             str
+    warp_storm_move:  str   # направление движения вихря деформации
+    card_type:        str   # "Scheme" | "Tactic"
+    effect:           str   # описание эффекта карты
+
+    def to_dict(self) -> dict:
+        return {
+            "name":             self.name,
+            "warp_storm_move":  self.warp_storm_move,
+            "card_type":        self.card_type,
+            "effect":           self.effect,
         }
 
 
@@ -101,6 +131,12 @@ class UnitConfig:
                               (стартовые + докупаемые через приказы). Отображается
                               как пул доступных к покупке единиц (max_count − на поле).
         Если тип не указан — используются значения из UNIT_TYPE_CATALOG (player_hand.py).
+
+    battle_card_deck — стартовая колода боевых карт фракции.
+        Список кортежей (card_name, level, cost), где:
+            card_name — название карты (строка)
+            level     — числовой уровень карты (-1 для INITIAL, 0, 2, 3)
+            cost      — стоимость карты в условных единицах (0 для INITIAL, 2 для уровня 0, 4 для уровня 2, 6 для уровня 3)
     """
     # ── Боевые юниты ─────────────────────────────────────────────────────────
     infantry:   int = 2
@@ -118,11 +154,14 @@ class UnitConfig:
     # ── Стартовые ресурсы ─────────────────────────────────────────────────────
     # Хранятся в инвентаре игрока, не размещаются на поле.
     credits:         int = 6   # Монеты — основная валюта
-    support_tokens:  int = 0   # Жетон поддержки (⊕)
-    discount_tokens: int = 0   # Жетон скидки (⊖)
+    reinforcement_tokens:  int = 0   # Жетон поддержки (⊕)
+    cash_tokens: int = 0   # Жетон скидки (⊖)
     forge_tokens:    int = 0   # Жетон кузницы/молотка (⚒)
     # ── Характеристики юнитов (per-faction) ───────────────────────────────────
     unit_stats:      Dict[str, dict] = field(default_factory=dict)
+    # ── Стартовая колода боевых карт ──────────────────────────────────────────
+    # Список кортежей: (card_name, level, cost)
+    battle_card_deck: List[tuple]    = field(default_factory=list)
 
     @property
     def total_ground(self) -> int:
@@ -138,7 +177,7 @@ class UnitConfig:
 
     @property
     def total_resources(self) -> int:
-        return self.support_tokens + self.discount_tokens + self.forge_tokens
+        return self.reinforcement_tokens + self.cash_tokens + self.forge_tokens
 
     @property
     def total(self) -> int:
@@ -177,9 +216,9 @@ class UnitConfig:
         """Создаёт список ResourceToken согласно конфигурации."""
         resources: List[ResourceToken] = []
         specs = [
-            (ResourceType.SUPPORT,  self.support_tokens),
-            (ResourceType.DISCOUNT, self.discount_tokens),
-            (ResourceType.FORGE,    self.forge_tokens),
+            (ResourceType.REINFORCEMENT, self.reinforcement_tokens),
+            (ResourceType.CASH,          self.cash_tokens),
+            (ResourceType.FORGE,         self.forge_tokens),
         ]
         for resource_type, count in specs:
             for _ in range(count):
@@ -198,10 +237,11 @@ class UnitConfig:
             "cities":          self.cities,
             "bastions":        self.bastions,
             "credits":         self.credits,
-            "support_tokens":  self.support_tokens,
-            "discount_tokens": self.discount_tokens,
+            "reinforcement_tokens":  self.reinforcement_tokens,
+            "cash_tokens": self.cash_tokens,
             "forge_tokens":    self.forge_tokens,
             "unit_stats":      self.unit_stats,
+            "battle_card_deck": self.battle_card_deck,
             "total_ground":    self.total_ground,
             "total_space":     self.total_space,
             "total_structures": self.total_structures,
@@ -241,6 +281,7 @@ class Faction:
     unit_config:           UnitConfig         = field(default_factory=UnitConfig)
     battle_cards:          List[BattleCard]   = field(default_factory=list)
     order_upgrades:        List[OrderUpgrade] = field(default_factory=list)
+    event_cards:           List[EventCard]    = field(default_factory=list)
     extra:                 dict               = field(default_factory=dict)
 
     def cards_by_level(self, level: CardLevel) -> List[BattleCard]:
@@ -267,6 +308,7 @@ class Faction:
             "unit_config":          self.unit_config.to_dict(),
             "battle_cards":         [c.to_dict() for c in self.battle_cards],
             "order_upgrades":       [u.to_dict() for u in self.order_upgrades],
+            "event_cards":          [e.to_dict() for e in self.event_cards],
             "extra":                self.extra,
         }
 

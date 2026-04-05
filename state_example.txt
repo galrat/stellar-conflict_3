@@ -1,0 +1,101 @@
+state = {
+    "turn": 1,                     # номер хода
+    "phase": "place_orders",        # текущая фаза хода
+    "current_player": "p1",         # активный игрок
+
+    "players": {
+        "p1": {
+            "money": 5,
+            "reinforcement": 1,
+            "cash": 0,
+            "forge": 0,
+            "hand_battle_cards": ["card_name", "card_name"],
+            "hand_order_cards": ["card_name", "card_name"],
+            "battle_deck": ["card_name ", " card_name "],
+            "order_deck": ["card_name ", " card_name "],
+        },
+        "p2": {
+            "money": 5,
+            "reinforcement": 1,
+            "cash": 0,
+            "forge": 0,
+            "hand_battle_cards": ["card_name", "card_name"],
+            "hand_order_cards": ["card_name", "card_name"],
+            "battle_deck": ["card_name ", " card_name "],
+            "order_deck": ["card_name ", " card_name "],
+        },
+        # при расширении до 4 игроков просто добавляем p3, p4
+    },
+
+    "tiles": {
+        "t1": {
+            "x": 0,
+            "y": 0,
+            "orientation": 0,
+            "side": "A",
+            "areas": ["a1", "a2", "a3", "a4"],
+            "order_stack": ["o1", "o2"]  # стопка приказов, верх — последний элемент
+        },
+        "t2": {
+            "x": 1,
+            "y": 0,
+            "orientation": 90,
+            "side": "B",
+            "areas": ["a5", "a6", "a7", "a8"],
+            "order_stack": []
+        }
+    },
+
+    "areas": {
+        "a1": {
+            "type": "planet/space",
+            "owner": "p1",
+            "units": ["u_type – u_id", "u_type – u_id"],
+            "buildings": ["city/bastion/factory"],
+
+
+        },
+        "a2": {
+            "type": "planet/space",
+            "owner": "neutral",
+            "units": [""],
+            "buildings": [""],
+        },
+        # остальные области...
+    },
+
+    "units": {
+        "u1": {
+            "type": "tank",
+            "owner": "p1",
+            "area": "a1"
+        },
+        "u2": {
+            "type": "infantry",
+            "owner": "p1",
+            "area": "a1"
+        },
+        "u3": {
+            "type": "infantry",
+            "owner": "p2",
+            "area": "a3"
+        },
+        # остальные юниты
+    },
+
+    "orders": {
+        "o1": {
+            "owner": "p1",
+            "tile": "t1",
+            "type": "move",
+            "revealed": False   # скрытый приказ
+        },
+        "o3": {
+            "owner": "p2",
+            "tile": "t1",
+            "type": "attack",
+            "revealed": True
+        },
+        # остальные приказы
+    }
+}

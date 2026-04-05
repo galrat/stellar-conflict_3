@@ -1,0 +1,1958 @@
+{
+  "chaos": {
+    "id": "chaos",
+    "name": "Хаос",
+    "icon": "⬡",
+    "color": "#FF0000",
+    "home_tile_id": "home_chaos",
+    "flavor": "Особое свойство доминации:вы можете переместить культиста на свободный или дружественный мир соседней системы ",
+    "battleCards": [
+      {
+        "name": "Dark Faith",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [M]. Requires: Cultist / Iconoclast.",
+        "effect_2": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."
+      },
+      {
+        "name": "Foul Worship",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [?]. Requires: Cultist / Iconoclast.",
+        "effect_2": "If enemy has routed unit, gain 1 (s) per unrouted Cultist or Iconoclast."
+      },
+      {
+        "name": "Impure Zeal",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "If more [M] than enemy, rally 1 unit. Requires: Cultist / Iconoclast.",
+        "effect_2": "Enemy routs 1 unit, or you gain 1 (g) per unrouted Cultist or Iconoclast."
+      },
+      {
+        "name": "Khorne's Rage",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Spend 1 [G] to gain 3 (g). Requires: Marine / Iconoclast.",
+        "effect_2": "Enemy spends 1 [S] or routs unit of his choosing."
+      },
+      {
+        "name": "Lure of Chaos",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Enemy may choose a unit to rout to gain 1 [?]. Otherwise place a free Cultist or Iconoclast in the area. Requires: Cultist / Iconoclast.",
+        "effect_2": "Gain 2 (g) or 2 (s)."
+      },
+      {
+        "name": "Mark of Khorne",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Spend 1 [G] or 1 [M] to gain 3 (g). Requires: Marine / Iconoclast.",
+        "effect_2": "Enemy spends 1 [S] or destroys 1 routed unit."
+      },
+      {
+        "name": "Mark of Nurgle",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Spend 1 [S] or 1 [M] to gain 3 (s). Requires: Marine / Iconoclast.",
+        "effect_2": "Enemy destroys 1 routed unit, otherwise gain 2 (s)."
+      },
+      {
+        "name": "Mark of Slaanesh",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice. Requires: Marine.",
+        "effect_2": "If enemy has routed unit, place free Cultist on this world."
+      },
+      {
+        "name": "Mark of Tzeentch",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 1 [M]. If more [M] than enemy, upgrade 1 Cultist / (R) to Marine. Requires: Chaos Marine / Iconoclast.",
+        "effect_2": "Convert up to 2 [M] to [G] and/or [S]."
+      },
+      {
+        "name": "Chaos United",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Enemy may rout 1 of its units. If not, gain a die of your choice. Requires: Cultist / Marine / Helbrute.",
+        "effect_2": "Take 1 unit from any world and place it on this world. Command level cannot exceed number of Cultists in this system."
+      },
+      {
+        "name": "Daemonic Resilience",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Gain 1 [M] or 1 [S]. Requires: Helbrute / Cruiser.",
+        "effect_2": "Gain 4 (s) unless enemy destroys 1 unit of his choice."
+      },
+      {
+        "name": "Inhuman Strength",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Gain 1 [G] or 1 [M]. Requires: Helbrute / Cruiser.",
+        "effect_2": "Destroy 1 unit to gain 4 (g)."
+      },
+      {
+        "name": "Chaos Victorious",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units. Requires: Titan / Cruiser.",
+        "effect_2": "Rout 1 enemy unit."
+      },
+      {
+        "name": "Death and Despair",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit. Requires: Titan / Cruiser.",
+        "effect_2": "If more [M] than enemy, destroy 1 routed unit."
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Fear from Above",
+        "order_type": "advance",
+        "tier": 0,
+        "cost": 1,
+        "effect_1": "Orbital Strike, once per round. Gain [?].",
+        "effect_2": "Spend 1 [M] to force any unit taking damage to rout."
+      },
+      {
+        "name": "Dread Ritual",
+        "order_type": "deploy",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in active system.",
+        "effect_2": "Factory not required."
+      },
+      {
+        "name": "Favour of the Dark Gods",
+        "order_type": "strategize",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "Place 2 order tokens from play area onto top of event deck.",
+        "effect_2": "Once per round."
+      },
+      {
+        "name": "From the Warp",
+        "order_type": "advance",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "Ships can move through Warp Storms.",
+        "effect_2": "Once per round."
+      },
+      {
+        "name": "Complete Destruction",
+        "order_type": "advance",
+        "tier": 2,
+        "cost": 3,
+        "effect_1": "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
+        "effect_2": "Spend 2 [S] to force enemy to choose unit or structure to destroy."
+      }
+    ],
+    "eventCards": [
+      {
+        "name": "Blight of Nurgle",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units."
+      },
+      {
+        "name": "Incantation of Tzeentch",
+        "warp_storm_move": "Across",
+        "card_type": "Tactic",
+        "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move)."
+      },
+      {
+        "name": "Prayer to the Dark Gods",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction."
+      },
+      {
+        "name": "Prophets and Signs",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Tactic",
+        "effect": "Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world."
+      },
+      {
+        "name": "Seduced by Chaos",
+        "warp_storm_move": "Sideways",
+        "card_type": "Scheme",
+        "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat."
+      },
+      {
+        "name": "Spoils of War",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Gain 1 (F) and 1 (R)."
+      },
+      {
+        "name": "Through the Warp",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Scheme",
+        "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start."
+      },
+      {
+        "name": "Touched by the Warp",
+        "warp_storm_move": "Sideways",
+        "card_type": "Tactic",
+        "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
+      }
+    ]
+  },
+  "marine": {
+    "id": "marine",
+    "name": "Space marine",
+    "icon": "◆",
+    "color": "1F4E9E",
+    "home_tile_id": "home_marine",
+    "flavor": "Особое свойство доминации:вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал ",
+    "battleCards": [
+      {
+        "name": "Ambush",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 2 (g). Requires: Scout / Cruiser.",
+        "effect_2": "When enemy is routed this round, must spend [M] or be destroyed."
+      },
+      {
+        "name": "Blessed Power Armour",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 2 (s). Requires: Bastion / Marine / Cruiser.",
+        "effect_2": "Convert up to 2 dice to [S]."
+      },
+      {
+        "name": "Faith in the Emperor",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [?]. Requires: Scout / Marine / Cruiser.",
+        "effect_2": "Rally 1 unit or gain 1 [M]."
+      },
+      {
+        "name": "Fury of the Ultramar",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Enemy rerolls 1 [S]. You may reroll 1 [S]. Requires: Marine / Cruiser.",
+        "effect_2": "Force enemy to lose 1 [S] or 2 (s)."
+      },
+      {
+        "name": "Reconnaissance",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "If attacking, look at enemy card first. Requires: Scout / Cruiser.",
+        "effect_2": "Spend 1 [M] to retreat 1 unit."
+      },
+      {
+        "name": "Drop Pod Assault",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 1 [?]. Requires: Marine.",
+        "effect_2": "Spend 1 [M] to take 1 Scout or 1 Marine from any world to this world."
+      },
+      {
+        "name": "Glory and Death",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 2 (g). If attacking, rally 1 unit. Requires: Marine / Cruiser.",
+        "effect_2": "Force enemy to lose 1 [S] or 1 [M]."
+      },
+      {
+        "name": "Hold the Line",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 2 (s). If defending, rally 1 unit. Requires: Bastion / Marine / Cruiser.",
+        "effect_2": "Gain 1 [S] or 1 [M]."
+      },
+      {
+        "name": "Veteran Scouts",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "For each morale dice, gain 1 (g) or (s). Requires: Scout / Cruiser.",
+        "effect_2": "Spend any [M]; retreat 1 unit per die."
+      },
+      {
+        "name": "Armoured Advance",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Gain 1 [?]. Requires: Land Raider / Battle Barge.",
+        "effect_2": "Resolve 1 additional assess damage step this round (including tokens etc)."
+      },
+      {
+        "name": "Break the Line",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Convert up to 3 [M] to [G] and/or [S]. Requires: Land Raider / Battle Barge.",
+        "effect_2": "Enemy chooses 1 face up combat card to discard."
+      },
+      {
+        "name": "Show No Fear",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Own units cannot become routed this round. Requires: Bastion / Marine / Cruiser.",
+        "effect_2": "Spend 1 [M] to rally all units."
+      },
+      {
+        "name": "Emperor's Glory",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Gain 2 [?]. Requires: Titan / Battle Barge.",
+        "effect_2": "Rally all units. Convert any dice to [M]."
+      },
+      {
+        "name": "Emperor's Might",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Gain 2 [?]. Requires: Titan / Battle Barge.",
+        "effect_2": "Spend any [G]; gain 2 (g) per die."
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Reign of Fire",
+        "order_type": "advance",
+        "tier": 0,
+        "cost": 1,
+        "effect_1": "Orbital Strike, once per round. Gain [?].",
+        "effect_2": "Convert 1 [M] into [G]."
+      },
+      {
+        "name": "Crusade",
+        "order_type": "advance",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "If no friendly worlds in system, gain 1 (R). Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Direct the Faithful",
+        "order_type": "strategize",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "May change 1 structure to a different structure. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Recruitment Worlds",
+        "order_type": "deploy",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Drop Pods",
+        "order_type": "advance",
+        "tier": 2,
+        "cost": 3,
+        "effect_1": "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
+        "effect_2": "Spend 2 [S] to place free Marine (may start combat). Command Level 2."
+      }
+    ],
+    "eventCards": [
+      {
+        "name": "Adeptus Mechanicus",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "At start of assess damage, discard to gain 2 (s), plus 1 (s) per (F) you have."
+      },
+      {
+        "name": "Emperor's Champion",
+        "warp_storm_move": "Sideways",
+        "card_type": "Scheme",
+        "effect": "At start of assess damage, discard to rally 1 unit."
+      },
+      {
+        "name": "Exterminatus",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Scheme",
+        "effect": "Before orbital strike, discard to convert all dice to [G]."
+      },
+      {
+        "name": "Heroic Intervention",
+        "warp_storm_move": "Across",
+        "card_type": "Tactic",
+        "effect": "Place free Marine on friendly structure or free Scout on any friendly world."
+      },
+      {
+        "name": "Rites of Battle",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Purchase 1 order upgrade, reduce by 1 materiel per Bastion."
+      },
+      {
+        "name": "The Emperor Protects",
+        "warp_storm_move": "Sideways",
+        "card_type": "Tactic",
+        "effect": "Place Bastion on friendly world. Free if no other structure there, otherwise cost 2 materiel."
+      },
+      {
+        "name": "Unwavering Resolve",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "Instead of revealing an order, discard to rally all units in a system."
+      },
+      {
+        "name": "Work of the Righteous",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Tactic",
+        "effect": "Gain assets or materiel from a friendly world."
+      }
+    ]
+  },
+  "orks": {
+    "id": "orks",
+    "name": "Orks",
+    "icon": "💀",
+    "color": "#2E7D32",
+    "home_tile_id": "home_orks",
+    "flavor": "Dominate: Purchase 1 unit and place it on a world in the active system",
+    "battleCards": [
+      {
+        "name": "'Ard Boyz",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "You must reroll all of your [G]. Requires: Boyz.",
+        "effect_2": "Enemy must reroll 1 [G] for each unrouted Boyz."
+      },
+      {
+        "name": "Gretchin",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 (g) and 1 (s). Enemy rerolls 1 die of your choice. Requires: Onslaught.",
+        "effect_2": "Destroy 1 Onslaught to force enemy to choose & destroy one of his units."
+      },
+      {
+        "name": "Mek Boyz",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [?]. Requires: Boyz / Onslaught.",
+        "effect_2": "Enemy discards top card of his combat deck. You gain the card's combat icons until end of this execution round."
+      },
+      {
+        "name": "Shoota Boyz",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "You must reroll all of your [S]. Requires: Boyz.",
+        "effect_2": "Enemy must reroll 1 [S] for each unrouted Boyz."
+      },
+      {
+        "name": "Slugga Boyz",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Both sides must reroll all [M]. Requires: Boyz / Onslaught.",
+        "effect_2": "Rally 1 unit."
+      },
+      {
+        "name": "Biker Nobz",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Enemy must reroll all [G]. Requires: Nobz / Onslaught.",
+        "effect_2": "Gain 1 (g)."
+      },
+      {
+        "name": "Mega Nobz",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Enemy must reroll all [S]. Requires: Nobz / Onslaught.",
+        "effect_2": "Gain 1 (s)."
+      },
+      {
+        "name": "Sea of Green",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Place free (R) in this area. If you have more unrouted units, enemy spends 1 [M] or routs 1 unit of his choice.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Waaagh!!!!",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Rally 1 unit. Requires: Boyz / Onslaught.",
+        "effect_2": "Gain 1 (g) per unrouted Boyz / Onslaught."
+      },
+      {
+        "name": "Party Wagon",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Place free (R) in this area. Requires: Wagon / Kroozer.",
+        "effect_2": "If you have more unrouted units, gain 2 (g) and 2 (s)."
+      },
+      {
+        "name": "Rokkit Wagon",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Requires: Wagon / Kroozer.",
+        "effect_2": "Gain 3 (g). Enemy may retreat 1 unit."
+      },
+      {
+        "name": "Weirdboyz",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Both sides must reroll all dice. Requires: Boyz / Onslaught.",
+        "effect_2": "In this combat, each time enemy gets (g) or (s), you gain the same tokens as well."
+      },
+      {
+        "name": "Smasher Gargant",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Requires: Gargant / Kroozer.",
+        "effect_2": "Choose enemy unit. Destroy unit unless enemy spends dice equal to its Tier."
+      },
+      {
+        "name": "Snapper Gargant",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Requires: Gargant / Kroozer.",
+        "effect_2": "Discard 1 of enemy face up combat cards."
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Lootin'",
+        "order_type": "advance",
+        "tier": 0,
+        "cost": 1,
+        "effect_1": "Orbital Strike, once per round. Gain 1 [?].",
+        "effect_2": "Spend 1 die to gain 1 materiel and force enemy to lose 1 materiel."
+      },
+      {
+        "name": "Werk Fasta!",
+        "order_type": "deploy",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "May purchase structure before purchasing units. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "The Green Tide",
+        "order_type": "strategize",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "When revealed, can resolve it as one of the other orders instead. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Ork Roks",
+        "order_type": "advance",
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Can move up to 2 units through 1 uncontrolled void as if it were a friendly area. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Stealin'!",
+        "order_type": "advance",
+        "tier": 2,
+        "cost": 3,
+        "effect_1": "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
+        "effect_2": "Spend 1 [M] to discard an enemy asset token; you gain that token. Command Level 2."
+      }
+    ],
+    "eventCards": [
+      {
+        "name": "Gitz Dem!",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "When an enemy unit routs in combat, discard to destroy that unit."
+      },
+      {
+        "name": "How We Getz Here?",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Tactic",
+        "effect": "Take 1 unit from any world and place on any uncontrolled world."
+      },
+      {
+        "name": "Letz Get Fightin'",
+        "warp_storm_move": "Across",
+        "card_type": "Tactic",
+        "effect": "Either place 2 free Boyz on a world containing a Nob, or 1 free Boyz on a friendly world."
+      },
+      {
+        "name": "Lootin' 'n Stealin'",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Gain 2 materiel. Choose a player to lose 1 asset of your choice."
+      },
+      {
+        "name": "Moar Boyz!",
+        "warp_storm_move": "Sideways",
+        "card_type": "Tactic",
+        "effect": "Gain 2 (R)."
+      },
+      {
+        "name": "Mob Up!",
+        "warp_storm_move": "Sideways",
+        "card_type": "Scheme",
+        "effect": "Instead of revealing Order, discard to resolve an Advance Order in a system with at least 2 of your own units."
+      },
+      {
+        "name": "Teer it Down!",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Scheme",
+        "effect": "End of assess damage step in Ork combat, discard to destroy 1 structure on that world."
+      },
+      {
+        "name": "Warboss",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "When purchasing, reduce cost by 1 per (R) you have."
+      }
+    ]
+  },
+  "eldar": {
+    "id": "eldar",
+    "name": "Eldar",
+    "icon": "◉",
+    "color": "#F2C94C",
+    "home_tile_id": "home_eldar",
+    "flavor": "По доминации вы можете переместить одного юнита из мира активной системы в дружественный мир.",
+    "battleCards": [
+      {
+        "name": "Command of the Autarch",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Either rally 1 unit or gain 1 [M]. Play 1 card from your hand — gain its combat icons but not its abilities.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Hit and Run",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 2 (g). Requires: Aspect / Frigate.",
+        "effect_2": "Spend 1 [M] to move 1 unit to adjacent friendly or uncontrolled area."
+      },
+      {
+        "name": "Howling Banshees",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [?]. Requires: Aspect / Frigate.",
+        "effect_2": "Spend 1 [M] to force enemy to rout a unit of his choice."
+      },
+      {
+        "name": "Ranger Support",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "If attacking, gain 1 (g) and 1 (s). If defending, you may retreat 1 unit.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Striking Scorpions",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [?]. Requires: Aspect / Frigate.",
+        "effect_2": "Enemy loses 1 die of his choice."
+      },
+      {
+        "name": "Fire Dragon's Vengeance",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "If you are attacking, enemy cannot gain (s) this execution round. Requires: Aspect / Frigate.",
+        "effect_2": "Gain 2 (s)."
+      },
+      {
+        "name": "Swooping Hawks",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "If you are defending, enemy loses 3 (g). Requires: Aspect / Frigate.",
+        "effect_2": "Spend 1 [M] to gain 2 (g)."
+      },
+      {
+        "name": "Wraithguard Advance",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 1 [?] or 1 [M]. Convert up to 2 [S] into [G]. Requires: Wraithguard / Frigate / Stalker.",
+        "effect_2": "Enemy spends 1 [M] or routs unit of his choosing."
+      },
+      {
+        "name": "Wraithguard Support",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 1 [?] or 1 [M]. Convert up to 2 [G] into [S]. Requires: Wraithguard / Frigate / Stalker.",
+        "effect_2": "Spend 1 [M] to rally 1 unit."
+      },
+      {
+        "name": "Fire Prism",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Convert any [M] into [G]. Requires: Falcon / Stalker.",
+        "effect_2": "If attacking, gain 2 (g). If defending, force enemy to lose 5 (s)."
+      },
+      {
+        "name": "Spiritseer's Guidance",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Gain 1 [M]. Rout 1 unit; units cannot suffer any damage this execution round.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Wave Serpent",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Gain 1 [?]. Gain 3 (s) unless enemy spends 1 [M]. Requires: Falcon / Stalker.",
+        "effect_2": "Spend 1 [M] to move any number of Tier 0 and Tier 1 units to an adjacent area — may start a new combat."
+      },
+      {
+        "name": "Holofield Emitter",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Gain 1 [?]. Draw 1 combat card. Requires: Titan / Stalker.",
+        "effect_2": "Play 1 card from your hand — gain its combat icons but not its abilities."
+      },
+      {
+        "name": "Psychic Lance",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Gain 1 [?]. Enemy discards 1 random combat card from his hand. Requires: Titan / Stalker.",
+        "effect_2": "Gain 4 (g) unless enemy discards 1 face up card of your choice."
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Tactical Strikes",
+        "order_type": "advance",
+        "tier": 0,
+        "cost": 1,
+        "effect_1": "Orbital Strike, once per round. Gain 1 [?].",
+        "effect_2": "Spend 1 [M] to choose enemy unit on the world — this must suffer damage first."
+      },
+      {
+        "name": "Wraithbone Singers",
+        "order_type": "deploy",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "When purchasing structure, may place it on world containing exactly 1 different structure. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Farseer",
+        "order_type": "strategize",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "This order can be resolved even if there are no units in the active system. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Corsair Raid",
+        "order_type": "advance",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "After resolving a combat with this order, you may perform 1 orbital strike in the active system. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Strafing Run",
+        "order_type": "advance",
+        "tier": 2,
+        "cost": 3,
+        "effect_1": "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
+        "effect_2": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2."
+      }
+    ],
+    "eventCards": [
+      {
+        "name": "Exodite Colony",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Tactic",
+        "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token."
+      },
+      {
+        "name": "Farsight",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "At start of assess damage, discard to take all units in this combat and place on any friendly area."
+      },
+      {
+        "name": "Legacy of Vaul",
+        "warp_storm_move": "Sideways",
+        "card_type": "Tactic",
+        "effect": "Gain 2 (F)."
+      },
+      {
+        "name": "Outcasts Returned",
+        "warp_storm_move": "Across",
+        "card_type": "Tactic",
+        "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
+      },
+      {
+        "name": "Outmanoeuvre",
+        "warp_storm_move": "Sideways",
+        "card_type": "Scheme",
+        "effect": "At end of Planning Phase, discard to look at 1 of your order tokens anywhere in a stack. Then place on top or bottom of the stack."
+      },
+      {
+        "name": "Path of the Warrior",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Purchase 1 combat upgrade, reducing its cost by 1 per friendly world with a city."
+      },
+      {
+        "name": "Vicious Raids",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Scheme",
+        "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
+      },
+      {
+        "name": "Warp Gate",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
+      }
+    ]
+  },
+  "necrons": {
+    "id": "necrons",
+    "name": "Necrons",
+    "icon": "☥",
+    "color": "#00BCD4",
+    "home_tile_id": "home_necrons",
+    "flavor": "Dominate: Take any of your units from 1 world and place them on a friendly world containing a structure in the active system.",
+    "battleCards": [
+      {
+        "name": "Attack Subroutines",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Requires: Warrior / Harvest Ship.",
+        "effect_2": "Gain 1 [M]."
+      },
+      {
+        "name": "Everlasting Conquest",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [M]. Rally 1 of your units. Requires: Warrior / Immortal / Harvest Ship.",
+        "effect_2": "For each [M] you have, gain either 1 [G] or 1 [S]."
+      },
+      {
+        "name": "Flayed Ones",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 2 (g). Requires: Warrior / Harvest Ship.",
+        "effect_2": "If enemy has any [M], gain 1 [M] and force enemy to lose 1 [M]."
+      },
+      {
+        "name": "Foretelling Cryptek",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [G], 1 [S] or 1 [M]. Spend 1 [M] to either take 1 of your units and place it routed on a friendly world containing a structure, or take 1 of your Tier 0 or Tier 1 units from a world containing a structure and place it on this world.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Warrior Phalanx",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Requires: Warrior / Harvest Ship.",
+        "effect_2": "Gain 1 [M]."
+      },
+      {
+        "name": "Canoptek Swarm",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 1 [?]. Place 1 free reinforcement token in this area.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Destroyers",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Spend either 1 [S] or 1 [M] to gain 2 (s). Requires: Immortal / Harvest Ship.",
+        "effect_2": "If your enemy has at least 1 routed unit, gain 2 (g)."
+      },
+      {
+        "name": "Lychguard",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Rout 1 of your units. If you do, your enemy chooses and routs 1 of his units. Requires: Immortal / Harvest Ship.",
+        "effect_2": "If your enemy has at least 1 routed unit, gain 2 (s)."
+      },
+      {
+        "name": "Overlord's Will",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Rally 1 of your units. Reroll up to 2 of your dice.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Doomsday Phalanx",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Force your enemy to lose 1 [S]. Requires: Monolith / Tomb Ship.",
+        "effect_2": "When an enemy unit is routed during the assess damage step of this execution round, it is destroyed unless your enemy spends 1 [S]."
+      },
+      {
+        "name": "Monolith Phalanx",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "If your units or bastions suffer no damage during this execution round, your enemy chooses and retreats 1 of his units. Requires: Monolith / Tomb Ship.",
+        "effect_2": "Gain 3 (s)."
+      },
+      {
+        "name": "Triarch Praetorians",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Either rally 1 of your units or place 1 free reinforcement token in this area. Requires: Warrior / Harvest Ship.",
+        "effect_2": "For each unrouted Warrior or Harvest Ship, spend up to 1 die to gain 1 [G], 1 [S] or 1 [M]."
+      },
+      {
+        "name": "Shard of the Nightbringer",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Either gain 3 (g) or destroy 1 Tier 0 unit. Requires: C'tan Shard / Tomb Ship.",
+        "effect_2": "Destroy 1 Tier 0 or Tier 1 unit."
+      },
+      {
+        "name": "Shard of the Deceiver",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Play the top card from your combat deck. Do not resolve its abilities, but gain its combat icons during this combat. Requires: C'tan Shard / Tomb Ship.",
+        "effect_2": "Take your C'tan Shard and place it on any friendly world."
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Harvest Raid",
+        "order_type": "advance",
+        "tier": 0,
+        "cost": 1,
+        "effect_1": "Orbital Strike, once per round. Gain 1 [?].",
+        "effect_2": "You may choose 1 Tier 0 unit on the world. That unit must suffer damage first during this orbital strike."
+      },
+      {
+        "name": "Eternity Gate",
+        "order_type": "advance",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "After moving your units, you may take any of your Tier 0 or Tier 1 units from 1 friendly world containing a structure and place them on any world in the active system containing an unrouted Monolith. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Reanimation Protocols",
+        "order_type": "strategize",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "When you reveal this order token, rally all of your units in the active system and all of your ground units in every other system. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Tomb Worlds",
+        "order_type": "deploy",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "After you resolve this order, if you purchased at least 1 unit or structure, you may purchase 1 bastion and place it on a friendly or uncontrolled world in either the active system or an adjacent system. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Translocation Crypts",
+        "order_type": "deploy",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "While resolving this order, you may treat all your cities in the active system as factories. Once per round.",
+        "effect_2": "Command Level 1."
+      }
+    ],
+    "eventCards": [
+      {
+        "name": "Chronomancy",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "At start of execution round of combat, you may discard this card to draw up to 2 combat cards and then discard that many combat cards from your hand."
+      },
+      {
+        "name": "Deathmarks",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "At start of execution round of combat, may discard this card to rout 1 enemy Tier 0 or Tier 1 unit."
+      },
+      {
+        "name": "Doom Scythes",
+        "warp_storm_move": "Sideways",
+        "card_type": "Scheme",
+        "effect": "At start of execution round of combat, may discard this card and rout up to 2 of your units. If you do, enemy destroys 1 (R) in this area for each unit you routed."
+      },
+      {
+        "name": "Remorseless Advance",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "At start of execution round of combat, may discard this card to resolve 1 additional assess damage step during execution round."
+      },
+      {
+        "name": "Resurrection Orb",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "When 1 of your Tier 0 or Tier 1 units is routed or destroyed during combat, may discard this card to take it and place it back unrouted in this area at the end of the assess damage step."
+      },
+      {
+        "name": "Tomb World Awakening",
+        "warp_storm_move": "Sideways",
+        "card_type": "Tactic",
+        "effect": "Purchase 1 structure and place it on a friendly world not containing a structure."
+      },
+      {
+        "name": "Tomb World Archives",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Purchase 1 combat upgrade."
+      },
+      {
+        "name": "Wrath of the Void Dragon",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Scheme",
+        "effect": "At start of execution round of combat, may discard this card. If you do, you and your enemy suffer an additional 3 damage during this assess damage step."
+      }
+    ]
+  },
+  "tyranids": {
+    "id": "tyranids",
+    "name": "Tyranids",
+    "icon": "🧬",
+    "color": "#6A1B9A",
+    "home_tile_id": "home_tyranids",
+    "flavor": "Dominate: Gain 1 additional asset token of your choice. You can have up to 4 of each asset token in your play area at any time.",
+    "battleCards": [
+      {
+        "name": "Burrowing Organisms",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "If attacking, gain 2 (g). If defending, either place 1 free (R) in this area or destroy 2 unrouted Gaunts to place 1 free bastion on this world if it does not already contain a structure.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Genestealer Hybrids",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Requires: Gaunt / Devourer.",
+        "effect_2": "Force enemy to lose 1 [G], 1 [S], or 1 [M], whichever he has most of. If tied, you choose. Then gain 1 [G], 1 [S], or 1 [M], whichever your enemy lost."
+      },
+      {
+        "name": "Hive Tyrant",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Play 1 combat card from your hand. Do not resolve its abilities, but gain its combat icons during this combat. Requires: Warrior / Hive Ship.",
+        "effect_2": "Either rally 1 of your units. Spend 1 [M] to gain either 1 [G] or 1 [S]."
+      },
+      {
+        "name": "Hormagaunt Brood",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 (s). Requires: Gaunt / Devourer.",
+        "effect_2": "Destroy 1 unrouted Gaunt or Devourer to gain 3 (g)."
+      },
+      {
+        "name": "Rain of Spores",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Destroy 1 unrouted Devourer in this system to place 1 free Warrior on this world.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Ripper Swarms",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 2 (g). Requires: Gaunt / Devourer.",
+        "effect_2": "At the end of this execution round, gain 1 materiel for each unit destroyed during this execution round, to a maximum of 2."
+      },
+      {
+        "name": "Termagaunt Brood",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Either gain 1 (g) for each unrouted Gaunt or Devourer or place 1 free reinforcement token in this area. For each Gaunt or Devourer destroyed or routed this execution round, reduce damage you suffer in the next execution round by 1.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Warrior Brood",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Destroy 1 of your unrouted units to gain 2 (s) and reduce the damage you suffer in the next execution round by 2. Requires: Warrior / Hive Ship.",
+        "effect_2": "Reroll all of your [G], [S], or [M]."
+      },
+      {
+        "name": "Winged Horror",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Destroy 1 of your unrouted units to gain 3 (g). Requires: Warrior / Devourer.",
+        "effect_2": "Your enemy may allow you to gain 2 (s). If he does not, add 2 to your offence value in the next execution round."
+      },
+      {
+        "name": "Crushing Claws",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Destroy 1 of your unrouted units to gain 3 (g). Requires: Carnifex / Hive Ship.",
+        "effect_2": "Spend either 1 [G] or 1 [M] to force your enemy to lose 2 [S]."
+      },
+      {
+        "name": "Scything Talons",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "During this execution round, if enemy has to assign any damage, he assigns 3 additional damage. Requires: Carnifex / Hive Ship.",
+        "effect_2": "Destroy 1 unrouted Carnifex or Hive Ship to gain 3 (g) and 2 (s)."
+      },
+      {
+        "name": "Synaptic Control",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Gain 1 [?]. Place 1 free (R) in this area. Requires: Warrior / Hive Ship.",
+        "effect_2": "Rally 1 of your units. Gain either 1 (g) or 1 (s) for each of your unrouted units in excess of the number of your enemy's unrouted units."
+      },
+      {
+        "name": "Glory of the Swarm",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Spend any number of [M]. For each [M] you spend, gain either 1 [G] or 1 [S]. Requires: Bio-Titan / Hive Ship.",
+        "effect_2": "Rally all of your units. During this execution round, you assign damage to your enemy's units and bastions."
+      },
+      {
+        "name": "Overwhelming Presence",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Destroy 1 of your unrouted units to gain either 3 (g) or 3 (s). Requires: Bio-Titan / Hive Ship.",
+        "effect_2": "Force your enemy to choose 3 times to either choose and rout 1 of his units or lose 1 die of his choice."
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Genestealer Infiltration",
+        "order_type": "advance",
+        "tier": 0,
+        "cost": 1,
+        "effect_1": "Orbital Strike, once per round. Gain 1 [?].",
+        "effect_2": "May spend up to 2 [G] to gain 1 (R) for each [G] you spend."
+      },
+      {
+        "name": "Breeding Chambers",
+        "order_type": "deploy",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "After you resolve this order, may purchase up to 2 units for each unrouted Hive Ship in the active system and place them on any friendly or unfriendly worlds in the active system. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Capillary Towers",
+        "order_type": "strategize",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "After you resolve this order, may destroy any of your units or structures on a world in the active system to temporarily gain materiel equal to their materiel cost. Use this materiel only to purchase ships in the active system. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Without Number",
+        "order_type": "advance",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "While resolving this order in a system in which you have an unrouted ship, you may place 1 free (R) in the contested area at the start of a reinforce step of combat. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Mycetic Spores",
+        "order_type": "advance",
+        "tier": 2,
+        "cost": 3,
+        "effect_1": "Orbital Strike, once per round. Requires Breeding Chambers. Bastions do not prevent orbital strike.",
+        "effect_2": "Spend up to 2 [G] for each participating Hive Ship. For each [G] you spend, purchase 1 unit Tier 2 or less and place it on the world. Command Level 2."
+      }
+    ],
+    "eventCards": [
+      {
+        "name": "Brood Nests",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "Before revealing an order during the Operations Phase, may discard to place 1 free Gaunt on each of 2 different friendly worlds."
+      },
+      {
+        "name": "Devourer of Worlds",
+        "warp_storm_move": "Across",
+        "card_type": "Tactic",
+        "effect": "Choose a system. Gain materiel equal to the materiel value of friendly worlds in that system."
+      },
+      {
+        "name": "Hive Mind",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Scheme",
+        "effect": "While resolving an order, may discard this card to increase your Tier by 1 for each of your Hive Ships."
+      },
+      {
+        "name": "Infiltration Organisms",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Tactic",
+        "effect": "Purchase 1 combat upgrade, reducing its materiel cost by 1 for each of your Hive Ships."
+      },
+      {
+        "name": "Rapid Mutation",
+        "warp_storm_move": "Sideways",
+        "card_type": "Tactic",
+        "effect": "Gain 2 (F)."
+      },
+      {
+        "name": "Rise of the Faithful",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "Instead of revealing an order during the Operations Phase, may discard this card to place 1 free bastion on a friendly world not containing a structure."
+      },
+      {
+        "name": "Shadow in the Warp",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "May discard this card when you start a combat. If you do, your enemy cannot use reinforcement tokens during the combat."
+      },
+      {
+        "name": "Splinter Fleet",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Place 1 free Devourer on any friendly void."
+      }
+    ]
+  },
+  "tau": {
+    "id": "tau",
+    "name": "Tau",
+    "icon": "⊕",
+    "color": "#00897B",
+    "home_tile_id": "home_tau",
+    "flavor": "Dominate: When you resolve a dominate order in a system containing at least 1 of your units or structures, you may draw 4 cards from the top of your event deck. Resolve the ability of 1 of those cards and discard the others.",
+    "battleCards": [
+      {
+        "name": "Crossfire",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "At the start of the assess damage step of this execution round, your enemy loses 3 (g). Requires: Fire Warrior / Battlesuit / Protector.",
+        "effect_2": "Gain 2 (g)."
+      },
+      {
+        "name": "Kroot Hunting Packs",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "If you have fewer units than your enemy, gain 1 (s) and your enemy loses 1 [G]. Otherwise, gain 1 (g). Requires: Fire Warrior / Protector.",
+        "effect_2": "Gain 1 [?]."
+      },
+      {
+        "name": "Pathfinder Teams",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Requires: Fire Warrior / Protector.",
+        "effect_2": "If you are attacking, look at your enemy's facedown combat card. Play 1 combat card from your hand. Then discard this card."
+      },
+      {
+        "name": "Stealth Teams",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 (s). Requires: Fire Warrior / Protector.",
+        "effect_2": "Your enemy may choose and rout 1 of his units. If he does not, force your enemy to lose 1 [G], 1 [S], or 1 [M]."
+      },
+      {
+        "name": "Tactical Retreat",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Retreat 1 of your units. If you do, you may spend 1 [M] to rally that unit. Requires: Fire Warrior / Protector.",
+        "effect_2": "Gain 2 (s)."
+      },
+      {
+        "name": "Evasion",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 1 [?]. Requires: Fire Warrior / Protector.",
+        "effect_2": "During this execution round, if any of your unrouted Tier 0 units become routed or are destroyed, you may take them and place them back in this area at the end of the assess damage step."
+      },
+      {
+        "name": "Feigned Retreat",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Your enemy must reroll all [S]. You must reroll either 2 [S] or retreat 1 of your units. Requires: Fire Warrior / Battlesuit / Protector.",
+        "effect_2": "If none of your units retreated during this execution round, gain 2 (g)."
+      },
+      {
+        "name": "Kauyon",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 1 (s). At the end of this execution round, if you are defending, you may move 1 of your units from an adjacent area to this area. Gain [?] equal to that unit's combat value.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Mont'ka",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "Gain 2 (g). Choose 1 of your enemy's units or bastions. That unit or bastion suffers damage first during this execution round. Requires: Battlesuit / Protector.",
+        "effect_2": "Spend up to 2 dice. For each dice you spend, gain 2 (g)."
+      },
+      {
+        "name": "Fire and Movement",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Reroll all of your [G], [S], or [M]. Requires: Hammerhead / Custodian.",
+        "effect_2": "During this execution round, when 1 of your units is destroyed during the assess damage step, you may retreat that unit instead."
+      },
+      {
+        "name": "Firefight",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "At the start of the assess damage step of this execution round, enemy loses 3 (g). Requires: Battlesuit / Hammerhead / Custodian.",
+        "effect_2": "Gain 1 (s). Force your enemy to lose either 1 [G] or 1 [M]."
+      },
+      {
+        "name": "Regroup",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Spend any number of dice. For every 2 dice you spend, rally 1 of your units. Requires: Hammerhead / Custodian.",
+        "effect_2": "Gain 2 [?]."
+      },
+      {
+        "name": "For the Greater Good",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Your enemy must reroll all [G]. Requires: Supremacy / Custodian.",
+        "effect_2": "Force your enemy to lose 3 [M]. For each [M] your enemy cannot lose, gain 2 (g)."
+      },
+      {
+        "name": "Supremacy",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Gain 2 (g). Spend up to 2 [M]. For each [M], gain either 1 [G] or 1 [S]. Requires: Supremacy / Custodian.",
+        "effect_2": "During this execution round, the health value of your enemy's units is reduced to 3."
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Precision Strikes",
+        "order_type": "advance",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "Orbital Strike, once per round. Gain 1 [?].",
+        "effect_2": "May spend 1 die of your choice to choose 1 enemy unit on the world. That unit must suffer damage first during this orbital strike."
+      },
+      {
+        "name": "Gue'vesa Allies",
+        "order_type": "deploy",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "When you reveal this order in a system containing 1 of your units or structures and a friendly or uncontrolled world, you may spend 1 materiel to place 1 free Tier 0 unit on a friendly or uncontrolled area in the active system. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Mobilised Hunter Cadres",
+        "order_type": "advance",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "Before you resolve this order, you may resolve an additional Advance Order using only 1 of your Tier 0 or Tier 1 units already in the active system. If combat occurs, resolve 1 execution round only. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Teachings of Tau'va",
+        "order_type": "strategize",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "When you reveal this order token, you may place 3 of your order tokens from your play area onto the top of your event deck. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Targeting Array",
+        "order_type": "advance",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "Orbital Strike, once per round. Enemy bastions do not prevent this orbital strike. Gain 1 [?].",
+        "effect_2": "Command Level 1."
+      }
+    ],
+    "eventCards": [
+      {
+        "name": "Autonomous Drones",
+        "warp_storm_move": "Sideways",
+        "card_type": "Tactic",
+        "effect": "Rout 1 enemy unit of Tier 2 or less that is in a system containing at least 1 of your units."
+      },
+      {
+        "name": "Critical Strike",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Scheme",
+        "effect": "When an enemy unit suffers damage during combat, you may discard this card to destroy that unit."
+      },
+      {
+        "name": "Denial of Supplies",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "You may discard this card at the start of combat. If you do, your enemy cannot place (R) from his play area into the contested area during the reinforce step of combat."
+      },
+      {
+        "name": "Evacuation",
+        "warp_storm_move": "Across",
+        "card_type": "Tactic",
+        "effect": "Destroy 1 of your structures in any system to place 1 free structure on a different friendly world not containing a structure in the same or adjacent system."
+      },
+      {
+        "name": "Philosophy of War",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "You may discard this card at the start of combat. If you do, replace any number of pairs of combat cards from your combat deck with pairs of combat cards of the same or lower Tier from your upgrade deck."
+      },
+      {
+        "name": "Rapid Response",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Choose a system. Move any of your units between friendly or uncontrolled areas in the chosen system."
+      },
+      {
+        "name": "Sabotage",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Destroy 1 of your unrouted units in any system to destroy 1 enemy structure in that system."
+      },
+      {
+        "name": "War Council",
+        "warp_storm_move": "Sideways",
+        "card_type": "Scheme",
+        "effect": "Before revealing an order during the Operations Phase, you may discard this card to rally all of your units in any 1 system."
+      }
+    ]
+  },
+  "imperial_guard": {
+    "id": "imperial_guard",
+    "name": "Imperial Guard",
+    "icon": "⚜",
+    "color": "#795548",
+    "home_tile_id": "home_imperial_guard",
+    "flavor": "Dominate: When you resolve a dominate order, you may resolve a deploy order, only to purchase 2 or more identical units and placing them on either 1 friendly world containing a structure or 1 friendly or uncontrolled void. Reduce the materiel cost of each unit by 1.",
+    "battleCards": [
+      {
+        "name": "Fire Support",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "If you are defending, gain 2 (s). Otherwise, opponent loses 2 (s). Requires: Guardsman / Cruiser.",
+        "effect_2": "Reroll 1 [S]."
+      },
+      {
+        "name": "For the Emperor!",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Reroll 1 of your dice. Requires: Guardsman / Cruiser.",
+        "effect_2": "Gain 1 (g) for each unrouted Guardsman or Cruiser, to a maximum of 3."
+      },
+      {
+        "name": "Incoming!",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [?]. Requires: Guardsman / Cruiser.",
+        "effect_2": "Gain 1 (s) for each unrouted Guardsman or Cruiser, to a maximum of 3."
+      },
+      {
+        "name": "Iron Discipline",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "Gain 1 [?] for each of your unrouted units of a different Tier. Requires: Guardsman / Cruiser.",
+        "effect_2": "Rally 1 of your units."
+      },
+      {
+        "name": "Ratling Marksmen",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "At the start of the assess damage step of this execution round, your enemy loses 2 (g). Requires: Guardsman / Cruiser.",
+        "effect_2": "Your enemy chooses and routs 1 of his units unless he spends 1 die of his choice."
+      },
+      {
+        "name": "Bullgryn Bulwark",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "You must reroll 2 [G] or [M]. Requires: Ogryn / Cruiser.",
+        "effect_2": "Gain 1 (g) for each unrouted Guardsman or Cruiser, to a maximum of 3."
+      },
+      {
+        "name": "Mechanised Combat Group",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "At the start of the assess damage step of this execution round, your enemy loses either 3 (g) or 3 (s) for each pairing of unrouted Guardsmen with Ogryns or Cruisers with Battleships.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Ogryn Shock Troops",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "You must reroll 2 [S] or [M]. Requires: Ogryn / Cruiser.",
+        "effect_2": "Gain 1 (s) for each unrouted Guardsman or Cruiser, to a maximum of 3."
+      },
+      {
+        "name": "Sentinel Reconnaissance",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "If you have more unrouted units than your enemy, your enemy chooses and routs 1 of his units unless he spends 1 [M]. Requires: Ogryn / Cruiser.",
+        "effect_2": "If you are attacking, look at your enemy's facedown combat card. Gain either 2 [G] or 2 [S]."
+      },
+      {
+        "name": "Armoured Spearhead",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "Either destroy up to 2 unrouted Guardsmen to force your enemy to lose 2 dice of his choice for each destroyed Guardsman, or destroy 1 unrouted Cruiser to force your enemy to lose 3 dice of his choice. Requires: Leman Russ / Battleship.",
+        "effect_2": "Choose 1 of your enemy's Tier 2 or Tier 3 units or bastions. That unit or bastion suffers damage first during this execution round."
+      },
+      {
+        "name": "Combined Arms",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "For each of your unrouted ground units of a different Tier, gain either 1 (g) or 1 (s). For each of your unrouted ships of a different Tier, gain either 2 (g) or 2 (s). Gain 1 [?]. Rally 1 of your units.",
+        "effect_2": "—"
+      },
+      {
+        "name": "Wyvern Suppression Fire",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "If you have more unrouted Tier 0 units than your enemy, your enemy chooses and routs 1 of his units. Requires: Leman Russ / Battleship.",
+        "effect_2": "Your enemy chooses and destroys 1 of his routed Tier 0 or Tier 1 units."
+      },
+      {
+        "name": "Hammer of the Emperor",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Force your enemy to lose 1 [S]. Requires: Warhound Titan / Battleship.",
+        "effect_2": "Warhound Titan: Gain 2 (g) for each of your unrouted units of a different Tier, to a maximum of 6. Battleship: Gain 3 (g) for each of your unrouted units of a different Tier."
+      },
+      {
+        "name": "Titan Support",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "Your enemy must reroll 1 [G] for each of your unrouted units of a different Tier. Requires: Warhound Titan / Battleship.",
+        "effect_2": "During this execution round, your units of Tier 2 or less cannot become routed."
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Saturation Bombing",
+        "order_type": "advance",
+        "tier": 0,
+        "cost": 1,
+        "effect_1": "Orbital Strike, once per round. Gain 1 [?].",
+        "effect_2": "You may convert 1 of your [M] into 1 [G]."
+      },
+      {
+        "name": "Adeptus Astronomica",
+        "order_type": "advance",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "While resolving this order, you may move up to 6 units to a world, if at least 1 of those units is a Guardsman. Once per round.",
+        "effect_2": "After you resolve this order, you may retreat any Guardsmen in excess of that world's unit capacity. Command Level 1."
+      },
+      {
+        "name": "Departmento Munitorum",
+        "order_type": "strategize",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "While resolving this order, you may purchase 1 upgrade only. Then resolve a limited Deploy, Advance, or Dominate order in the active system. Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Forced Recruitment",
+        "order_type": "deploy",
+        "tier": 1,
+        "cost": 2,
+        "effect_1": "While resolving this order, you may treat all your cities in the active system as factories capable of deploying Guardsmen only. The unit capacity of friendly worlds containing a city is increased by 2, to a maximum of 4 (Guardsmen only). Once per round.",
+        "effect_2": "Command Level 1."
+      },
+      {
+        "name": "Virus Bombs",
+        "order_type": "advance",
+        "tier": 2,
+        "cost": 3,
+        "effect_1": "Orbital Strike, once per round. Enemy bastions do not prevent orbital strike.",
+        "effect_2": "During this orbital strike, the health value of your enemy's units is reduced to 3. Command Level 2."
+      }
+    ],
+    "eventCards": [
+      {
+        "name": "Call of the Astropaths",
+        "warp_storm_move": "Across",
+        "card_type": "Scheme",
+        "effect": "At the end of a reinforce step of combat, if you are defending, you may discard this card to place 2 free (R) in the contested area."
+      },
+      {
+        "name": "Deathstrike Missile",
+        "warp_storm_move": "Sideways",
+        "card_type": "Scheme",
+        "effect": "You may discard this card at the start of combat on any world. If you do, either destroy 1 Tier 0 or 1 Tier 1 unit on that world or rout 1 Tier 2 unit on that world at the end of the first assess damage step."
+      },
+      {
+        "name": "Order of the High Command",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Purchase 1 combat upgrade, reducing its materiel cost by 1 for each friendly world containing a factory."
+      },
+      {
+        "name": "Imperial Tithe",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Tactic",
+        "effect": "Either place 2 free Guardsmen on 1 friendly world in a system containing at least 1 of your factories or place 1 free Guardsman on any friendly world."
+      },
+      {
+        "name": "Military Production Shift",
+        "warp_storm_move": "Across",
+        "card_type": "Tactic",
+        "effect": "Choose a friendly world. Gain assets from this world and gain materiel equal to its materiel value."
+      },
+      {
+        "name": "Lance Strike",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "Before you perform an orbital strike, you may discard this card to add 2 to the total amount of damage suffered by your enemy's units."
+      },
+      {
+        "name": "Tactical Genius",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Scheme",
+        "effect": "Instead of playing a combat card from your hand, you may discard this card to play any card from either your combat deck or your upgrade deck, other than a card that has already been played."
+      },
+      {
+        "name": "Tempestus Scions",
+        "warp_storm_move": "Sideways",
+        "card_type": "Tactic",
+        "effect": "Rout 1 enemy Tier 0 or Tier 1 unit that is either in a system containing at least 1 of your units or in an adjacent system."
+      }
+    ]
+  },
+  "theocracy": {
+    "id": "theocracy",
+    "name": "Теократия",
+    "icon": "✝",
+    "color": "#F39C12",
+    "home_tile_id": "home_theocracy",
+    "flavor": "Фанатичные крестоносцы, несущие волю Бога-Императора. Сильны в обороне священных миров и массированных атаках.",
+    "battleCards": [
+      {
+        "name": "Праведный гнев",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Мученичество",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Крестовый поход",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Воля Императора",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Священный марш",
+        "order_type": "move",
+        "tier": 0,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Доминирование веры",
+        "order_type": "dominate",
+        "tier": 0,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      }
+    ],
+    "eventCards": []
+  },
+  "machines": {
+    "id": "machines",
+    "name": "Машины",
+    "icon": "⚙",
+    "color": "#7F8C8D",
+    "home_tile_id": "home_machines",
+    "flavor": "Древний искусственный интеллект, пробудившийся спустя тысячелетия. Не знают страха и усталости — каждый юнит заменяем.",
+    "battleCards": [
+      {
+        "name": "Протокол подавления",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Перегрузка систем",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Рой дронов",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Апокалипсис-протокол",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Оптимальный маршрут",
+        "order_type": "move",
+        "tier": 0,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Производственный цикл",
+        "order_type": "build",
+        "tier": 0,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      }
+    ],
+    "eventCards": []
+  },
+  "pirates": {
+    "id": "pirates",
+    "name": "Пираты",
+    "icon": "☠",
+    "color": "#E74C3C",
+    "home_tile_id": "home_pirates",
+    "flavor": "Вольные капитаны звёздного океана. Живут грабежом, умирают в абордажных схватках. Никакой дисциплины — только удача и смелость.",
+    "battleCards": [
+      {
+        "name": "Пиратский натиск",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Грязный трюк",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Флот головорезов",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Чёрная метка",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Пиратский рейд",
+        "order_type": "attack",
+        "tier": 0,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Захват трофеев",
+        "order_type": "dominate",
+        "tier": 0,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      }
+    ],
+    "eventCards": []
+  },
+  "crusaders": {
+    "id": "crusaders",
+    "name": "Крестоносцы",
+    "icon": "⚔",
+    "color": "#2980B9",
+    "home_tile_id": "home_crusaders",
+    "flavor": "Рыцарский орден звёздного фронтира. Предпочитают честный бой и никогда не отступают.",
+    "battleCards": [
+      {
+        "name": "Рыцарская атака",
+        "level": -1,
+        "tier": -1,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Стена щитов",
+        "level": 0,
+        "tier": 0,
+        "cost": 2,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Праведный удар",
+        "level": 2,
+        "tier": 2,
+        "cost": 4,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Последний рыцарь",
+        "level": 3,
+        "tier": 3,
+        "cost": 6,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      }
+    ],
+    "orderUpgrades": [
+      {
+        "name": "Рыцарский марш",
+        "order_type": "move",
+        "tier": 0,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      },
+      {
+        "name": "Осада",
+        "order_type": "attack",
+        "tier": 0,
+        "cost": 0,
+        "effect_1": "TODO: описание эффекта 1",
+        "effect_2": "TODO: описание эффекта 2"
+      }
+    ],
+    "eventCards": []
+  }
+}

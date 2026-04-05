@@ -458,6 +458,9 @@ let nextId = 0;
 let G;
 let isSaving = false;  // флаг для предотвращения одновременных сохранений
 
+// Адрес сервера API
+const API_URL = 'http://localhost:8000';
+
 function makeState() {
   return {
     version: 1,        // для миграции старых сохранений
@@ -524,7 +527,7 @@ function saveGame() {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
   const filename = `game_${timestamp}`;
 
-  fetch('/api/save', {
+  fetch(`${API_URL}/api/save`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename, state: G })
@@ -551,7 +554,7 @@ function saveGame() {
 }
 
 function loadGame() {
-  fetch('/api/list')
+  fetch(`${API_URL}/api/list`)
   .then(r => r.json())
   .then(data => {
     if (!data.success || data.games.length === 0) {
@@ -606,7 +609,7 @@ function validateGameState(state) {
 }
 
 function loadGameFile(filename) {
-  fetch(`/api/load/${filename}`)
+  fetch(`${API_URL}/api/load/${filename}`)
   .then(r => r.json())
   .then(data => {
     if (data.success) {

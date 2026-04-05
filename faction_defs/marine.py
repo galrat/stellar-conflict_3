@@ -4,7 +4,7 @@ faction_defs/marine.py — фракция «marine»
 Тяжёлая бронированная держава. Опирается на механизированные войска
 и эсминцы. Медленная, но сокрушительная в прямом столкновении.
 """
-from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel
+from faction_base import Faction, UnitConfig, BattleCard, OrderUpgrade, CardLevel, EventCard
 
 MARINE = Faction(
     id    = "marine",
@@ -28,7 +28,7 @@ MARINE = Faction(
         # Характеристики построек — см. STRUCTURE_CATALOG в player_hand.py.
         factories=1, cities=0, bastions=0,
         # ── Стартовые ресурсы ───────────────────────────────────────────────
-        credits=6, support_tokens=0, discount_tokens=0, forge_tokens=0,
+        credits=6, reinforcement_tokens=0, cash_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов (cost 2–5 + forge, strength 0–6, health 1–6, morale 0–6) ──
         # Элитные солдаты: высокое здоровье и мораль, умеренная боевая сила.
         unit_stats={
@@ -40,36 +40,54 @@ MARINE = Faction(
             "fighter":    dict(name="Strike Cruiser",     cost=2,               combat_strength=2, health=2, morale=2, max_count=3),
             "destroyer":  dict(name="Battle Barge",       cost=5, cost_forge=1, combat_strength=4, health=5, morale=4, max_count=3),
         },
+        # ── Стартовая колода боевых карт ──────────────────────────────────────
+        battle_card_deck = [
+            "Ambush",
+            "Blessed Power Armour",
+            "Faith in the Emperor",
+            "Fury of the Ultramar",
+            "Reconnaissance",
+        ],
     ),
     battle_cards = [
         # ── Начальные (бесплатные) ──────────────────────────────────────────
         BattleCard(
             name     = "Ambush",
             level    = CardLevel.INITIAL,
+            tier     = -1,
+            cost     = 0,
             effect_1 = "Gain 2 (g). Requires: Scout / Cruiser.",
             effect_2 = "When enemy is routed this round, must spend [M] or be destroyed.",
         ),
         BattleCard(
             name     = "Blessed Power Armour",
             level    = CardLevel.INITIAL,
+            tier     = -1,
+            cost     = 0,
             effect_1 = "Gain 2 (s). Requires: Bastion / Marine / Cruiser.",
             effect_2 = "Convert up to 2 dice to [S].",
         ),
         BattleCard(
             name     = "Faith in the Emperor",
             level    = CardLevel.INITIAL,
+            tier     = -1,
+            cost     = 0,
             effect_1 = "Gain 1 [?]. Requires: Scout / Marine / Cruiser.",
             effect_2 = "Rally 1 unit or gain 1 [M].",
         ),
         BattleCard(
             name     = "Fury of the Ultramar",
             level    = CardLevel.INITIAL,
+            tier     = -1,
+            cost     = 0,
             effect_1 = "Enemy rerolls 1 [S]. You may reroll 1 [S]. Requires: Marine / Cruiser.",
             effect_2 = "Force enemy to lose 1 [S] or 2 (s).",
         ),
         BattleCard(
             name     = "Reconnaissance",
             level    = CardLevel.INITIAL,
+            tier     = -1,
+            cost     = 0,
             effect_1 = "If attacking, look at enemy card first. Requires: Scout / Cruiser.",
             effect_2 = "Spend 1 [M] to retreat 1 unit.",
         ),
@@ -77,24 +95,32 @@ MARINE = Faction(
         BattleCard(
             name     = "Drop Pod Assault",
             level    = CardLevel.ZERO,
+            tier     = 0,
+            cost     = 2,
             effect_1 = "Gain 1 [?]. Requires: Marine.",
             effect_2 = "Spend 1 [M] to take 1 Scout or 1 Marine from any world to this world.",
         ),
         BattleCard(
             name     = "Glory and Death",
             level    = CardLevel.ZERO,
+            tier     = 0,
+            cost     = 2,
             effect_1 = "Gain 2 (g). If attacking, rally 1 unit. Requires: Marine / Cruiser.",
             effect_2 = "Force enemy to lose 1 [S] or 1 [M].",
         ),
         BattleCard(
             name     = "Hold the Line",
             level    = CardLevel.ZERO,
+            tier     = 0,
+            cost     = 2,
             effect_1 = "Gain 2 (s). If defending, rally 1 unit. Requires: Bastion / Marine / Cruiser.",
             effect_2 = "Gain 1 [S] or 1 [M].",
         ),
         BattleCard(
             name     = "Veteran Scouts",
             level    = CardLevel.ZERO,
+            tier     = 0,
+            cost     = 2,
             effect_1 = "For each morale dice, gain 1 (g) or (s). Requires: Scout / Cruiser.",
             effect_2 = "Spend any [M]; retreat 1 unit per die.",
         ),
@@ -102,18 +128,24 @@ MARINE = Faction(
         BattleCard(
             name     = "Armoured Advance",
             level    = CardLevel.TWO,
+            tier     = 2,
+            cost     = 4,
             effect_1 = "Gain 1 [?]. Requires: Land Raider / Battle Barge.",
             effect_2 = "Resolve 1 additional assess damage step this round (including tokens etc).",
         ),
         BattleCard(
             name     = "Break the Line",
             level    = CardLevel.TWO,
+            tier     = 2,
+            cost     = 4,
             effect_1 = "Convert up to 3 [M] to [G] and/or [S]. Requires: Land Raider / Battle Barge.",
             effect_2 = "Enemy chooses 1 face up combat card to discard.",
         ),
         BattleCard(
             name     = "Show No Fear",
             level    = CardLevel.TWO,
+            tier     = 2,
+            cost     = 4,
             effect_1 = "Own units cannot become routed this round. Requires: Bastion / Marine / Cruiser.",
             effect_2 = "Spend 1 [M] to rally all units.",
         ),
@@ -121,12 +153,16 @@ MARINE = Faction(
         BattleCard(
             name     = "Emperor's Glory",
             level    = CardLevel.THREE,
+            tier     = 3,
+            cost     = 6,
             effect_1 = "Gain 2 [?]. Requires: Titan / Battle Barge.",
             effect_2 = "Rally all units. Convert any dice to [M].",
         ),
         BattleCard(
             name     = "Emperor's Might",
             level    = CardLevel.THREE,
+            tier     = 3,
+            cost     = 6,
             effect_1 = "Gain 2 [?]. Requires: Titan / Battle Barge.",
             effect_2 = "Spend any [G]; gain 2 (g) per die.",
         ),
@@ -135,33 +171,53 @@ MARINE = Faction(
         OrderUpgrade(
             name       = "Reign of Fire",
             order_type = "advance",
+            tier       = 0,
+            cost       = 1,
             effect_1   = "Orbital Strike, once per round. Gain [?].",
             effect_2   = "Convert 1 [M] into [G].",
         ),
         OrderUpgrade(
             name       = "Crusade",
             order_type = "advance",
+            tier       = 1,
+            cost       = 2,
             effect_1   = "If no friendly worlds in system, gain 1 (R). Once per round.",
             effect_2   = "Command Level 1.",
         ),
         OrderUpgrade(
             name       = "Direct the Faithful",
             order_type = "strategize",
+            tier       = 1,
+            cost       = 2,
             effect_1   = "May change 1 structure to a different structure. Once per round.",
             effect_2   = "Command Level 1.",
         ),
         OrderUpgrade(
             name       = "Recruitment Worlds",
             order_type = "deploy",
+            tier       = 1,
+            cost       = 2,
             effect_1   = "Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.",
             effect_2   = "Command Level 1.",
         ),
         OrderUpgrade(
             name       = "Drop Pods",
             order_type = "advance",
+            tier       = 2,
+            cost       = 3,
             effect_1   = "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
             effect_2   = "Spend 2 [S] to place free Marine (may start combat). Command Level 2.",
         ),
+    ],
+    event_cards = [
+        EventCard(name="Adeptus Mechanicus",  warp_storm_move="Across",           card_type="Scheme", effect="At start of assess damage, discard to gain 2 (s), plus 1 (s) per (F) you have."),
+        EventCard(name="Emperor's Champion",  warp_storm_move="Sideways",         card_type="Scheme", effect="At start of assess damage, discard to rally 1 unit."),
+        EventCard(name="Exterminatus",        warp_storm_move="Top Left/Bot Rgt", card_type="Scheme", effect="Before orbital strike, discard to convert all dice to [G]."),
+        EventCard(name="Heroic Intervention", warp_storm_move="Across",           card_type="Tactic", effect="Place free Marine on friendly structure or free Scout on any friendly world."),
+        EventCard(name="Rites of Battle",     warp_storm_move="Top Left/Bot Rgt", card_type="Tactic", effect="Purchase 1 order upgrade, reduce by 1 materiel per Bastion."),
+        EventCard(name="The Emperor Protects",warp_storm_move="Sideways",         card_type="Tactic", effect="Place Bastion on friendly world. Free if no other structure there, otherwise cost 2 materiel."),
+        EventCard(name="Unwavering Resolve",  warp_storm_move="Top Rgt/Bot Left", card_type="Scheme", effect="Instead of revealing an order, discard to rally all units in a system."),
+        EventCard(name="Work of the Righteous",warp_storm_move="Top Rgt/Bot Left",card_type="Tactic", effect="Gain assets or materiel from a friendly world."),
     ],
     extra = {
         "homeworld":    "Трон-Прайм",
