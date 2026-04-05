@@ -160,8 +160,25 @@ input[type=text]:focus{border-color:var(--p1);}
 /* Подсветка тайла при выборе тайла для приказа */
 .stile.tok{box-shadow:0 0 0 3px rgba(0,200,255,.9),inset 0 0 16px rgba(0,200,255,.18);animation:adp .8s ease-in-out infinite;cursor:pointer;}
 .stile.tno{opacity:.25;}
-/* Жетон приказа рубашкой вниз / раскрытый — в центре тайла */
-.order-fd{position:absolute;width:46px;height:46px;border-radius:8px;border:2px solid;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;font-family:'Orbitron',monospace;pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 2px 10px rgba(0,0,0,.85);}
+/* Жетон приказа (шестиугольник) */
+.order-fd{
+  position:absolute;
+  width:50px;
+  height:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:2px;
+  font-family:'Orbitron',monospace;
+  pointer-events:none;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  box-shadow:0 2px 10px rgba(0,0,0,.85);
+  border:2px solid;
+  clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
 .order-fd.op1{background:rgba(0,30,55,.92);border-color:var(--p1);color:var(--p1);}
 .order-fd.op2{background:rgba(55,0,18,.92);border-color:var(--p2);color:var(--p2);}
 .order-fd.clickable{pointer-events:auto;cursor:pointer;animation:adp .8s ease-in-out infinite;border-width:3px;}
@@ -505,6 +522,7 @@ function makeState() {
     orders: [],        // [{ id, type, owner, tile, position }]
     ordersPlaced: [0, 0],  // сколько приказов выставил каждый игрок
     selOrderForPlacement: null,  // выбранный приказ для размещения: { idx, id, type, owner }
+    orderPlacedThisTurn: false,  // приказ уже выставлен в этот ход
   };
 }
 
@@ -1285,6 +1303,11 @@ function endTurn() {
 // ══════════════════════════════════════════════
 function selectOrder(idx) {
   if (G.phase !== 'order-placement') return;
+  if (G.orderPlacedThisTurn) {
+    _showTip('Приказ уже выставлен. Нажмите «Передать ход» для передачи хода.');
+    return;
+  }
+
   const cp = G.players[G.curP];
   if (!cp.hand_orders[idx]) return;
 
@@ -1352,6 +1375,9 @@ function placeOrder(tileKey) {
   // Обновляем счётчик
   G.ordersPlaced[G.curP]++;
 
+  // Блокируем выбор нового приказа в этот ход
+  G.orderPlacedThisTurn = true;
+
   G.selOrderForPlacement = null;
   G.selOrderIdx = null;
 
@@ -1359,7 +1385,7 @@ function placeOrder(tileKey) {
   renderBoard();
   renderOrdersInfo();
 
-  _showTip(`Приказ размещён. Выставлено: ${G.ordersPlaced[G.curP]}/4`);
+  _showTip(`✅ Приказ размещён (${G.ordersPlaced[G.curP]}/4). Нажмите «Передать ход».`);
 }
 
 function passOrderTurn() {
@@ -1367,6 +1393,7 @@ function passOrderTurn() {
 
   // Переходим на следующего игрока
   G.curP = 1 - G.curP;
+  G.orderPlacedThisTurn = false;  // Сбрасываем флаг для нового игрока
   G.selOrderForPlacement = null;
   G.selOrderIdx = null;
 
@@ -1714,24 +1741,22 @@ function renderBoard() {
     };
     el.appendChild(centerZone);
 
-    // Отрисовка приказов на тайле (стопка в центре)
+    // Отрисовка приказов на тайле (стопка в центре, смещение вверх-вправо)
     const tilesOrders = G.orders.filter(o => o.tile === tile.key);
     tilesOrders.forEach((order, idx) => {
       const orderEl = document.createElement('div');
       const fac = FACTIONS.find(f => f.id === G.players[order.owner].faction);
       const facIcon = fac?.icon || (order.owner === 0 ? 'P1' : 'P2');
 
-      // Смещение для стопки (каждый выше предыдущего на 3-4px)
-      const offsetY = -idx * 4;
-      const offsetX = -idx * 2;
+      // Смещение для стопки: каждый выше и правее (вверх-вправо)
+      const offsetY = -idx * 5;  // вверх
+      const offsetX = idx * 5;   // вправо
 
       orderEl.className = `order-fd op${order.owner + 1}`;
       orderEl.style.cssText = `
         position: absolute;
-        width: 46px;
-        height: 46px;
-        border-radius: 8px;
-        border: 2px solid;
+        width: 50px;
+        height: 50px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1745,8 +1770,9 @@ function renderBoard() {
         box-shadow: 0 2px 10px rgba(0,0,0,.85);
         z-index: ${10 + idx};
         background: ${order.owner === 0 ? 'rgba(0,30,55,.92)' : 'rgba(55,0,18,.92)'};
-        border-color: ${order.owner === 0 ? 'var(--p1)' : 'var(--p2)'};
+        border: 2px solid ${order.owner === 0 ? 'var(--p1)' : 'var(--p2)'};
         color: ${order.owner === 0 ? 'var(--p1)' : 'var(--p2)'};
+        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
       `;
       orderEl.innerHTML = `
         <div style="font-size: 1.2rem;">${facIcon}</div>
