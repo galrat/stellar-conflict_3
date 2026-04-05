@@ -1714,6 +1714,48 @@ function renderBoard() {
     };
     el.appendChild(centerZone);
 
+    // Отрисовка приказов на тайле (стопка в центре)
+    const tilesOrders = G.orders.filter(o => o.tile === tile.key);
+    tilesOrders.forEach((order, idx) => {
+      const orderEl = document.createElement('div');
+      const fac = FACTIONS.find(f => f.id === G.players[order.owner].faction);
+      const facIcon = fac?.icon || (order.owner === 0 ? 'P1' : 'P2');
+
+      // Смещение для стопки (каждый выше предыдущего на 3-4px)
+      const offsetY = -idx * 4;
+      const offsetX = -idx * 2;
+
+      orderEl.className = `order-fd op${order.owner + 1}`;
+      orderEl.style.cssText = `
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        border-radius: 8px;
+        border: 2px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 2px;
+        font-family: 'Orbitron', monospace;
+        pointer-events: none;
+        top: calc(50% + ${offsetY}px);
+        left: calc(50% + ${offsetX}px);
+        transform: translate(-50%, -50%);
+        box-shadow: 0 2px 10px rgba(0,0,0,.85);
+        z-index: ${10 + idx};
+        background: ${order.owner === 0 ? 'rgba(0,30,55,.92)' : 'rgba(55,0,18,.92)'};
+        border-color: ${order.owner === 0 ? 'var(--p1)' : 'var(--p2)'};
+        color: ${order.owner === 0 ? 'var(--p1)' : 'var(--p2)'};
+      `;
+      orderEl.innerHTML = `
+        <div style="font-size: 1.2rem;">${facIcon}</div>
+        <div style="font-size: 0.5rem; opacity: 0.7;">●</div>
+      `;
+      orderEl.title = `${ORDER_TYPES[order.type].name} (${G.players[order.owner].name})`;
+      el.appendChild(orderEl);
+    });
+
     // Варп-штормы: визуализация + кликабельные границы в фазе warp-storm
     ['top','bottom','left','right'].forEach(side => {
       const isH = side === 'top' || side === 'bottom';
