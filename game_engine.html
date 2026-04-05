@@ -296,9 +296,15 @@ input[type=text]:focus{border-color:var(--p1);}
       <div class="phase-lbl">Фаза</div>
       <div class="phase-name" id="h-phase">—</div>
       <div class="turn-ind ti1" id="h-turn" style="margin-top:4px;">—</div>
-      <div style="display:flex;gap:6px;margin-top:6px;justify-content:center;">
+      <div style="display:flex;gap:4px;margin-top:6px;justify-content:center;flex-wrap:wrap;">
         <button class="abtn bp" style="font-size:.6rem;padding:3px 10px;" onclick="saveGame()">💾 Сохранить</button>
         <button class="abtn bw" style="font-size:.6rem;padding:3px 10px;" onclick="loadGame()">📂 Загрузить</button>
+        <button class="abtn bp" style="font-size:.6rem;padding:3px 10px;" onclick="showBattleCards(0)">🎴 BattleCards P1</button>
+        <button class="abtn bp" style="font-size:.6rem;padding:3px 10px;" onclick="showBattleCards(1)">🎴 BattleCards P2</button>
+        <button class="abtn bp" style="font-size:.6rem;padding:3px 10px;" onclick="showOrderUpgrades(0)">⚔ Orders P1</button>
+        <button class="abtn bp" style="font-size:.6rem;padding:3px 10px;" onclick="showOrderUpgrades(1)">⚔ Orders P2</button>
+        <button class="abtn bp" style="font-size:.6rem;padding:3px 10px;" onclick="showEventCards(0)">🃏 Events P1</button>
+        <button class="abtn bp" style="font-size:.6rem;padding:3px 10px;" onclick="showEventCards(1)">🃏 Events P2</button>
       </div>
     </div>
     <div class="pinfo r s2">
@@ -379,158 +385,20 @@ input[type=text]:focus{border-color:var(--p1);}
 //  CONSTANTS  (declared at module scope — never inside functions)
 // ══════════════════════════════════════════════
 const FACTIONS = [
-  { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos',
-    flavor:'Особое свойство доминации: вы можете переместить культиста на свободный или дружественный мир соседней системы',
-    specialAbilityName:'Особое свойство',
-    specialAbilityDesc:'Вы можете переместить культиста на свободный или дружественный мир соседней системы',
-    // Стартовый пул: infantry×2(T0) marines×2(T1) fighter×1(T0)  — из chaos.py
-    unitTiers:{ground:[0,0,1,1], space:[0]},
-    // Максимальный резерв из max_count в chaos.py
-    maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Cultists', ground_1:'Chaos Space Marines', ground_2:'Helbrute', ground_3:'Chaos Reaver Titan', space_0:'Iconoclast Raider', space_2:'Repulsive Grand Cruiser'},
-    unitCosts:{ground_0:{c:2,f:0},ground_1:{c:3,f:0},ground_2:{c:4,f:0},ground_3:{c:5,f:1},space_0:{c:2,f:0},space_2:{c:5,f:1}},
-    structures:['factory'],
-    credits:6, tokens:{support:0,discount:0,forge:0},
-    battleCards:[
-      {name:'Dark Faith',          level:'initial', e1:'Gain 1 [M]. Requires: Cultist / Iconoclast.',                                                         e2:'If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system.'},
-      {name:'Foul Worship',        level:'initial', e1:'Gain 1 [?]. Requires: Cultist / Iconoclast.',                                                         e2:'If enemy has routed unit, gain 1 ⊕ per unrouted Cultist or Iconoclast.'},
-      {name:'Impure Zeal',         level:'initial', e1:'If more [M] than enemy, rally 1 unit. Requires: Cultist / Iconoclast.',                               e2:'Enemy routs 1 unit, or you gain 1 ⚒ per unrouted Cultist or Iconoclast.'},
-      {name:"Khorne's Rage",       level:'initial', e1:'Spend 1 [G] to gain 3 (g). Requires: Marine / Iconoclast.',                                           e2:'Enemy spends 1 [S] or routs unit of his choosing.'},
-      {name:'Lure of Chaos',       level:'initial', e1:'Enemy may choose a unit to rout to gain 1 [?]. Otherwise place a free Cultist or Iconoclast in the area. Requires: Cultist / Iconoclast.', e2:'Gain 2 (g) or 2 (s).'},
-      {name:'Mark of Khorne',      level:'zero',    e1:'Spend 1 [G] or 1 [M] to gain 3 (g). Requires: Marine / Iconoclast.',                                 e2:'Enemy spends 1 [S] or destroys 1 routed unit.'},
-      {name:'Mark of Nurgle',      level:'zero',    e1:'Spend 1 [S] or 1 [M] to gain 3 (s). Requires: Marine / Iconoclast.',                                 e2:'Enemy destroys 1 routed unit, otherwise gain 2 (s).'},
-      {name:'Mark of Slaanesh',    level:'zero',    e1:'Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice. Requires: Marine.',               e2:'If enemy has routed unit, place free Cultist on this world.'},
-      {name:'Mark of Tzeentch',    level:'zero',    e1:'Gain 1 [M]. If more [M] than enemy, upgrade 1 Cultist to Marine. Requires: Chaos Marine / Iconoclast.', e2:'Convert up to 2 [M] to [G] and/or [S].'},
-      {name:'Chaos United',        level:'two',     e1:'Enemy may rout 1 of its units. If not, gain a die of your choice. Requires: Cultist / Marine / Helbrute.', e2:'Take 1 unit from any world and place it on this world.'},
-      {name:'Daemonic Resilience', level:'two',     e1:'Gain 1 [M] or 1 [S]. Requires: Helbrute / Cruiser.',                                                 e2:'Gain 4 (s) unless enemy destroys 1 unit of his choice.'},
-      {name:'Inhuman Strength',    level:'two',     e1:'Gain 1 [G] or 1 [M]. Requires: Helbrute / Cruiser.',                                                 e2:'Destroy 1 unit to gain 4 (g).'},
-      {name:'Chaos Victorious',    level:'three',   e1:'Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units. Requires: Titan / Cruiser.',           e2:'Rout 1 enemy unit.'},
-      {name:'Death and Despair',   level:'three',   e1:'Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit. Requires: Titan / Cruiser.',        e2:'If more [M] than enemy, destroy 1 routed unit.'},
-    ],
-  },
-  { id:'marine', name:'Space marine', icon:'◆', color:'#1F4E9E', homeTileId:'home_marine',
-    flavor:'Особое свойство доминации: вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал',
-    specialAbilityName:'Тренировка',
-    specialAbilityDesc:'Вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал',
-    unitTiers:{ground:[0,0,0,0,1], space:[0]},
-    maxTiers:{ground:[0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2,2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Scout', ground_1:'Space Marine', ground_2:'Land Raider', ground_3:'Warlord Titan', space_0:'Strike Cruiser', space_2:'Battle Barge'},
-    unitCosts:{ground_0:{c:2,f:0},ground_1:{c:3,f:0},ground_2:{c:4,f:0},ground_3:{c:5,f:1},space_0:{c:2,f:0},space_2:{c:5,f:1}},
-    structures:['factory'],
-    credits:6, tokens:{support:0,discount:0,forge:0},
-    battleCards:[
-      {name:'Ambush',              level:'initial', e1:'Gain 2 (g). Requires: Scout / Cruiser.',                                                          e2:'When enemy is routed this round, must spend [M] or be destroyed.'},
-      {name:'Blessed Power Armour',level:'initial', e1:'Gain 2 (s). Requires: Bastion / Marine / Cruiser.',                                               e2:'Convert up to 2 dice to [S].'},
-      {name:'Faith in the Emperor',level:'initial', e1:'Gain 1 [?]. Requires: Scout / Marine / Cruiser.',                                                 e2:'Rally 1 unit or gain 1 [M].'},
-      {name:'Fury of the Ultramar',level:'initial', e1:'Enemy rerolls 1 [S]. You may reroll 1 [S]. Requires: Marine / Cruiser.',                          e2:'Force enemy to lose 1 [S] or 2 (s).'},
-      {name:'Reconnaissance',      level:'initial', e1:'If attacking, look at enemy card first. Requires: Scout / Cruiser.',                              e2:'Spend 1 [M] to retreat 1 unit.'},
-      {name:'Drop Pod Assault',    level:'zero',    e1:'Gain 1 [?]. Requires: Marine.',                                                                   e2:'Spend 1 [M] to take 1 Scout or 1 Marine from any world to this world.'},
-      {name:'Glory and Death',     level:'zero',    e1:'Gain 2 (g). If attacking, rally 1 unit. Requires: Marine / Cruiser.',                             e2:'Force enemy to lose 1 [S] or 1 [M].'},
-      {name:'Hold the Line',       level:'zero',    e1:'Gain 2 (s). If defending, rally 1 unit. Requires: Bastion / Marine / Cruiser.',                   e2:'Gain 1 [S] or 1 [M].'},
-      {name:'Veteran Scouts',      level:'zero',    e1:'For each morale dice, gain 1 (g) or (s). Requires: Scout / Cruiser.',                             e2:'Spend any [M]; retreat 1 unit per die.'},
-      {name:'Armoured Advance',    level:'two',     e1:'Gain 1 [?]. Requires: Land Raider / Battle Barge.',                                               e2:'Resolve 1 additional assess damage step this round.'},
-      {name:'Break the Line',      level:'two',     e1:'Convert up to 3 [M] to [G] and/or [S]. Requires: Land Raider / Battle Barge.',                    e2:'Enemy chooses 1 face up combat card to discard.'},
-      {name:'Show No Fear',        level:'two',     e1:'Own units cannot become routed this round. Requires: Bastion / Marine / Cruiser.',                 e2:'Spend 1 [M] to rally all units.'},
-      {name:"Emperor's Glory",     level:'three',   e1:'Gain 2 [?]. Requires: Titan / Battle Barge.',                                                     e2:'Rally all units. Convert any dice to [M].'},
-      {name:"Emperor's Might",     level:'three',   e1:'Gain 2 [?]. Requires: Titan / Battle Barge.',                                                     e2:'Spend any [G]; gain 2 (g) per die.'},
-    ],
-  },
-  { id:'orks', name:'Орки', icon:'💀', color:'#2E7D32', homeTileId:'home_orks',
-    flavor:'Особое свойство фракции: вы можете купить один отряд и поместить его в дружественный мир активной системы',
-    specialAbilityName:'Dominate',
-    specialAbilityDesc:'Purchase 1 unit and place it on a friendly world in the active system',
-    unitTiers:{ground:[0,0,0,0,1], space:[]},
-    maxTiers:{ground:[0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Ork Boyz', ground_1:'Nobz', ground_2:'Battlewagons', ground_3:'Gargants', space_0:'Onslaught Attack Ships', space_2:'Kill Kroozers'},
-    unitCosts:{ground_0:{c:2,f:0},ground_1:{c:3,f:0},ground_2:{c:4,f:0},ground_3:{c:5,f:1},space_0:{c:2,f:0},space_2:{c:4,f:1}},
-    structures:['factory'],
-    credits:6, tokens:{support:1,discount:0,forge:0},
-    battleCards:[
-      {name:"'Ard Boyz",    level:'initial', e1:'You must reroll all of your [G]. Requires: Boyz.',                                                  e2:'Enemy must reroll 1 [G] for each unrouted Boyz.'},
-      {name:'Gretchin',     level:'initial', e1:'Gain 1 (g) and 1 (s). Enemy rerolls 1 die of your choice. Requires: Onslaught.',                   e2:'Destroy 1 Onslaught to force enemy to choose & destroy one of his units.'},
-      {name:'Mek Boyz',     level:'initial', e1:'Gain 1 [?]. Requires: Boyz / Onslaught.',                                                          e2:'Enemy discards top card of his combat deck. You gain the card\'s combat icons.'},
-      {name:'Shoota Boyz',  level:'initial', e1:'You must reroll all of your [S]. Requires: Boyz.',                                                  e2:'Enemy must reroll 1 [S] for each unrouted Boyz.'},
-      {name:'Slugga Boyz',  level:'initial', e1:'Both sides must reroll all [M]. Requires: Boyz / Onslaught.',                                       e2:'Rally 1 unit.'},
-      {name:'Biker Nobz',   level:'zero',    e1:'Enemy must reroll all [G]. Requires: Nobz / Onslaught.',                                            e2:'Gain 1 (g).'},
-      {name:'Mega Nobz',    level:'zero',    e1:'Enemy must reroll all [S]. Requires: Nobz / Onslaught.',                                            e2:'Gain 1 (s).'},
-      {name:'Sea of Green', level:'zero',    e1:'Place free (R) in this area. If you have more unrouted units, enemy spends 1 [M] or routs 1 unit.', e2:'—'},
-      {name:'Waaagh!!!!',   level:'zero',    e1:'Rally 1 unit. Requires: Boyz / Onslaught.',                                                         e2:'Gain 1 (g) per unrouted Boyz / Onslaught.'},
-      {name:'Party Wagon',  level:'two',     e1:'Place free (R) in this area. Requires: Wagon / Kroozer.',                                           e2:'If you have more unrouted units, gain 2 (g) and 2 (s).'},
-      {name:'Rokkit Wagon', level:'two',     e1:'Requires: Wagon / Kroozer.',                                                                        e2:'Gain 3 (g). Enemy may retreat 1 unit.'},
-      {name:'Weirdboyz',    level:'two',     e1:'Both sides must reroll all dice. Requires: Boyz / Onslaught.',                                       e2:'In this combat, each time enemy gets (g) or (s), you gain the same tokens as well.'},
-      {name:'Smasher Gargant', level:'three', e1:'Requires: Gargant / Kroozer.',                                                                     e2:'Choose enemy unit. Destroy unit unless enemy spends dice equal to its Tier.'},
-      {name:'Snapper Gargant', level:'three', e1:'Requires: Gargant / Kroozer.',                                                                     e2:'Discard 1 of enemy face up combat cards.'},
-    ],
-  },
-  { id:'eldar', name:'Eldar', icon:'◉', color:'#F2C94C', homeTileId:'home_eldar',
-    flavor:'По доминации вы можете переместить одного юнита из мира активной системы в дружественный мир.',
-    specialAbilityName:'Телепорт',
-    specialAbilityDesc:'Вы можете переместить одного юнита из мира активной системы в дружественный мир',
-    unitTiers:{ground:[0,0,0,1], space:[0,0]},
-    maxTiers:{ground:[0,0,0,0,0,0, 1,1,1, 2,2,2, 3,3,3], space:[0,0,0,0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Aspect Warriors', ground_1:'Wraithguard', ground_2:'Falcons', ground_3:'Warlock Titans', space_0:'Hellebore Frigates', space_2:'Void Stalkers'},
-    unitCosts:{ground_0:{c:2,f:0},ground_1:{c:3,f:0},ground_2:{c:4,f:0},ground_3:{c:5,f:1},space_0:{c:2,f:0},space_2:{c:4,f:1}},
-    structures:['factory'],
-    credits:6, tokens:{support:0,discount:0,forge:1},
-    battleCards:[
-      {name:'Command of the Autarch', level:'initial', e1:'Either rally 1 unit or gain 1 [M]. Play 1 card from your hand — gain its combat icons but not its abilities.', e2:'—'},
-      {name:'Hit and Run',            level:'initial', e1:'Gain 2 (g). Requires: Aspect / Frigate.',                                                             e2:'Spend 1 [M] to move 1 unit to adjacent friendly or uncontrolled area.'},
-      {name:'Howling Banshees',       level:'initial', e1:'Gain 1 [?]. Requires: Aspect / Frigate.',                                                             e2:'Spend 1 [M] to force enemy to rout a unit of his choice.'},
-      {name:'Ranger Support',         level:'initial', e1:'If attacking, gain 1 (g) and 1 (s). If defending, you may retreat 1 unit.',                           e2:'—'},
-      {name:'Striking Scorpions',     level:'initial', e1:'Gain 1 [?]. Requires: Aspect / Frigate.',                                                             e2:'Enemy loses 1 die of his choice.'},
-      {name:"Fire Dragon's Vengeance",level:'zero',    e1:'If attacking, enemy cannot gain (s) this round. Requires: Aspect / Frigate.',                          e2:'Gain 2 (s).'},
-      {name:'Swooping Hawks',         level:'zero',    e1:'If defending, enemy loses 3 (g). Requires: Aspect / Frigate.',                                         e2:'Spend 1 [M] to gain 2 (g).'},
-      {name:'Wraithguard Advance',    level:'zero',    e1:'Gain 1 [?] or 1 [M]. Convert up to 2 [S] into [G]. Requires: Wraithguard / Frigate / Stalker.',       e2:'Enemy spends 1 [M] or routs unit of his choosing.'},
-      {name:'Wraithguard Support',    level:'zero',    e1:'Gain 1 [?] or 1 [M]. Convert up to 2 [G] into [S]. Requires: Wraithguard / Frigate / Stalker.',       e2:'Spend 1 [M] to rally 1 unit.'},
-      {name:'Fire Prism',             level:'two',     e1:'Convert any [M] into [G]. Requires: Falcon / Stalker.',                                                e2:'If attacking, gain 2 (g). If defending, force enemy to lose 5 (s).'},
-      {name:"Spiritseer's Guidance",  level:'two',     e1:'Gain 1 [M]. Rout 1 unit; units cannot suffer any damage this round.',                                  e2:'—'},
-      {name:'Wave Serpent',           level:'two',     e1:'Gain 1 [?]. Gain 3 (s) unless enemy spends 1 [M]. Requires: Falcon / Stalker.',                        e2:'Spend 1 [M] to move Tier 0–1 units to adjacent area — may start new combat.'},
-      {name:'Holofield Emitter',      level:'three',   e1:'Gain 1 [?]. Draw 1 combat card. Requires: Titan / Stalker.',                                           e2:'Play 1 card from your hand — gain its combat icons but not its abilities.'},
-      {name:'Psychic Lance',          level:'three',   e1:'Gain 1 [?]. Enemy discards 1 random combat card. Requires: Titan / Stalker.',                          e2:'Gain 4 (g) unless enemy discards 1 face up card of your choice.'},
-    ],
-  },
-  { id:'necrons', name:'Necrons', icon:'☥', color:'#00BCD4', homeTileId:'home_necrons',
-    flavor:'Dominate: Take any of your units from 1 world and place them on a friendly world containing a structure in the active system.',
-    // Warriors×4(T0) Immortals×1(T1)  — из necrons.py
-    unitTiers:{ground:[0,0,0,0,1], space:[]},
-    // max: Warriors=4, Immortals=3, Monoliths=2, C'tan=1, HarvestShips=2, TombShips=2
-    maxTiers:{ground:[0,0,0,0, 1,1,1, 2,2, 3], space:[0,0, 2,2]},
-    unitNames:{ground_0:'Warriors', ground_1:'Immortals', ground_2:'Monoliths', ground_3:"C'tan Star God Shard", space_0:'Scythe-Class Harvest Ships', space_2:'Cairn-Class Tomb Ships'},
-    structures:['factory'],
-    credits:6, tokens:{support:0,discount:0,forge:0} },
-  { id:'tyranids', name:'Tyranids', icon:'🧬', color:'#6A1B9A', homeTileId:'home_tyranids',
-    flavor:'Dominate: Gain 1 additional asset token of your choice (up to 4 of each type).',
-    // Gaunts×3(T0) Devourers×1(T0 space) HiveShips×1(T2 space)  — из tyranids.py
-    unitTiers:{ground:[0,0,0], space:[0,2]},
-    // max: Gaunts=6, Warriors=6, Carnifexes=3, Bio-Titans=3, Devourers=6, HiveShips=3
-    maxTiers:{ground:[0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0,0,0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Gaunts', ground_1:'Warriors', ground_2:'Carnifexes', ground_3:'Hierophant Bio-Titans', space_0:'Devourer Bio-Ships', space_2:'Leviathan Hive Ships'},
-    structures:['factory','bastion'],
-    credits:6, tokens:{support:1,discount:0,forge:0} },
-  { id:'tau', name:'Tau', icon:'⊕', color:'#00897B', homeTileId:'home_tau',
-    flavor:'Dominate: Draw 4 event cards, resolve 1 ability, discard the rest.',
-    // FireWarriors×3(T0) CrisisBattlesuits×2(T1)  — из tau.py
-    unitTiers:{ground:[0,0,0,1,1], space:[]},
-    // max: FireWarriors=6, CrisisBattlesuits=6, Hammerheads=3, Supremacy=3, Protectors=2, Custodians=2
-    maxTiers:{ground:[0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2, 3,3,3], space:[0,0, 2,2]},
-    unitNames:{ground_0:'Fire Warriors', ground_1:'XV8 Crisis Battlesuits', ground_2:'TX7 Hammerhead Gunships', ground_3:'KX139 Supremacy Armour', space_0:'Protector Cruisers', space_2:'Custodian Carriers'},
-    structures:['factory'],
-    credits:6, tokens:{support:0,discount:0,forge:0} },
-  { id:'imperial_guard', name:'Imperial Guard', icon:'⚜', color:'#795548', homeTileId:'home_imperial_guard',
-    flavor:'Dominate: Deploy order — purchase 2+ identical units with 1 materiel discount each.',
-    // Guardsmen×3(T0) Ogryns×2(T1) Cruisers×1(T0 space)  — из imperial_guard.py
-    unitTiers:{ground:[0,0,0,1,1], space:[0]},
-    // max: Guardsmen=12, Ogryns=6, LemanRuss=6, Warhounds=3, Cruisers=3, Battleships=3
-    maxTiers:{ground:[0,0,0,0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1, 2,2,2,2,2,2, 3,3,3], space:[0,0,0, 2,2,2]},
-    unitNames:{ground_0:'Guardsmen', ground_1:'Ogryns', ground_2:'Leman Russ Battle Tanks', ground_3:'Warhound Titans', space_0:'Lunar-Class Cruisers', space_2:'Emperor-Class Battleships'},
-    structures:['factory'],
-    credits:6, tokens:{support:0,discount:0,forge:0} },
-  // ── Заготовки ──────────────────────────────────────────────────────────────
-  { id:'theocracy', name:'Теократия', icon:'✝', color:'#F39C12', homeTileId:'home_theocracy', flavor:'Фанатичные крестоносцы, несущие волю Бога-Императора.', troops:{ground:6,space:2} },
-  { id:'machines', name:'Машины', icon:'⚙', color:'#7F8C8D', homeTileId:'home_machines', flavor:'Древний искусственный интеллект, пробудившийся спустя тысячелетия.', troops:{ground:6,space:2} },
-  { id:'pirates', name:'Пираты', icon:'☠', color:'#E74C3C', homeTileId:'home_pirates', flavor:'Вольные капитаны звёздного океана.', troops:{ground:4,space:4} },
-  { id:'crusaders', name:'Крестоносцы', icon:'⚔', color:'#2980B9', homeTileId:'home_crusaders', flavor:'Рыцарский орден звёздного фронтира.', troops:{ground:6,space:2} },
+  { id:'chaos', name:'Хаос', icon:'⬡', color:'#FF0000', homeTileId:'home_chaos', flavor:'Особое свойство доминации:вы можете переместить культиста на свободный или дружественный мир соседней системы', troops:{ground:4,space:1}, unitTiers:{ground:[0, 0, 1, 1],space:[0]}, structures:['factory'] },
+  { id:'marine', name:'Space marine', icon:'◆', color:'#1F4E9E', homeTileId:'home_marine', flavor:'Особое свойство доминации:вы можете заменить Т0 на Т1 или Т1 на Т2 за 1 материал', troops:{ground:5,space:1}, unitTiers:{ground:[0, 0, 0, 0, 1],space:[0]}, structures:['factory'] },
+  { id:'orks', name:'Orks', icon:'💀', color:'#2E7D32', homeTileId:'home_orks', flavor:'Dominate: Purchase 1 unit and place it on a world in the active system', troops:{ground:5,space:0}, unitTiers:{ground:[0, 0, 0, 0, 1],space:[]}, structures:['factory'] },
+  { id:'eldar', name:'Eldar', icon:'◉', color:'#F2C94C', homeTileId:'home_eldar', flavor:'По доминации вы можете переместить одного юнита из мира активной системы в дружественный мир.', troops:{ground:4,space:2}, unitTiers:{ground:[0, 0, 0, 1],space:[0, 0]}, structures:['factory'] },
+  { id:'necrons', name:'Necrons', icon:'☥', color:'#00BCD4', homeTileId:'home_necrons', flavor:'Dominate: Take any of your units from 1 world and place them on a friendly world containing a structure in the active system.', troops:{ground:5,space:0}, unitTiers:{ground:[0, 0, 0, 0, 1],space:[]}, structures:['factory'] },
+  { id:'tyranids', name:'Tyranids', icon:'🧬', color:'#6A1B9A', homeTileId:'home_tyranids', flavor:'Dominate: Gain 1 additional asset token of your choice. You can have up to 4 of each asset token in your play area at any time.', troops:{ground:3,space:2}, unitTiers:{ground:[0, 0, 0],space:[0, 2]}, structures:['factory', 'bastion'] },
+  { id:'tau', name:'Tau', icon:'⊕', color:'#00897B', homeTileId:'home_tau', flavor:'Dominate: When you resolve a dominate order in a system containing at least 1 of your units or structures, you may draw 4 cards from the top of your event deck. Resolve the ability of 1 of those cards and discard the others.', troops:{ground:5,space:0}, unitTiers:{ground:[0, 0, 0, 1, 1],space:[]}, structures:['factory'] },
+  { id:'imperial_guard', name:'Imperial Guard', icon:'⚜', color:'#795548', homeTileId:'home_imperial_guard', flavor:'Dominate: When you resolve a dominate order, you may resolve a deploy order, only to purchase 2 or more identical units and placing them on either 1 friendly world containing a structure or 1 friendly or uncontrolled void. Reduce the materiel cost of each unit by 1.', troops:{ground:5,space:1}, unitTiers:{ground:[0, 0, 0, 1, 1],space:[0]}, structures:['factory'] },
+  { id:'theocracy', name:'Теократия', icon:'✝', color:'#F39C12', homeTileId:'home_theocracy', flavor:'Фанатичные крестоносцы, несущие волю Бога-Императора. Сильны в обороне священных миров и массированных атаках.', troops:{ground:6,space:2}, unitTiers:{ground:[0, 0, 0, 0, 1, 3],space:[0, 2]}, structures:[] },
+  { id:'machines', name:'Машины', icon:'⚙', color:'#7F8C8D', homeTileId:'home_machines', flavor:'Древний искусственный интеллект, пробудившийся спустя тысячелетия. Не знают страха и усталости — каждый юнит заменяем.', troops:{ground:6,space:2}, unitTiers:{ground:[0, 0, 2, 2, 2, 3],space:[0, 0]}, structures:[] },
+  { id:'pirates', name:'Пираты', icon:'☠', color:'#E74C3C', homeTileId:'home_pirates', flavor:'Вольные капитаны звёздного океана. Живут грабежом, умирают в абордажных схватках. Никакой дисциплины — только удача и смелость.', troops:{ground:4,space:4}, unitTiers:{ground:[0, 1, 1, 1],space:[0, 0, 0, 0]}, structures:[] },
+  { id:'crusaders', name:'Крестоносцы', icon:'⚔', color:'#2980B9', homeTileId:'home_crusaders', flavor:'Рыцарский орден звёздного фронтира. Предпочитают честный бой и никогда не отступают.', troops:{ground:6,space:2}, unitTiers:{ground:[0, 1, 1, 2, 2, 3],space:[0, 2]}, structures:[] },
 ];
+
 
 // Название юнита берётся из fac.unitNames['{ground|space}_{tier}'].
 // Fallback: 'T{tier}' если фракция не определена или названия нет.
@@ -588,9 +456,11 @@ function getRealIdx(tile, displayIdx) {
 // ══════════════════════════════════════════════
 let nextId = 0;
 let G;
+let isSaving = false;  // флаг для предотвращения одновременных сохранений
 
 function makeState() {
   return {
+    version: 1,        // для миграции старых сохранений
     players: [
       { name:'Alpha', faction:null, color:'c1', pool:[], hand:[] },
       { name:'Omega', faction:null, color:'c2', pool:[], hand:[] },
@@ -615,8 +485,10 @@ function makeState() {
     selStructIdx: null,    // index in cp.structurePool
     selOrderSlot: null,
     // ── warp storms ──────────────────────────
-    warpStorms: [],    // [{ tileKey, side:'top'|'bottom'|'left'|'right' }]
+    warpStorms: [],    // [{ tile: 'col,row', side: 'top'|'bottom'|'left'|'right', owner: 0|1 }]
     warpStormStep: 0,  // 0 = second player places, 1 = first player places
+    // ── target markers ──────────────────────
+    targetMarkers: [], // [{ tile: 'col,row', areaIdx: int, owner: 0|1 }]
   };
 }
 
@@ -643,30 +515,237 @@ function hexAlpha(hex, a) {
 const SAVE_KEY = 'stellar_conflict_map';
 
 function saveGame() {
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(G));
-    showMsg('Сохранено', 'Состояние карты сохранено.');
-  } catch(e) {
-    showMsg('Ошибка', 'Не удалось сохранить: ' + e.message);
+  if (isSaving) {
+    console.warn('Сохранение уже в процессе, игнорируем дублирующийся запрос');
+    return;
   }
+
+  isSaving = true;
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+  const filename = `game_${timestamp}`;
+
+  fetch('/api/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ filename, state: G })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      console.log(`✅ Игра сохранена: ${data.filename}`);
+      showMsg('💾 Сохранено', `Игра сохранена в файл:<br><strong>${data.filename}</strong><br><br>📁 Папка: Загрузки/Stellar_Conflict_Saves/`);
+    } else {
+      console.error('Ошибка сохранения на сервере:', data.error);
+      showMsg('Ошибка сохранения', data.error || 'Неизвестная ошибка');
+    }
+  })
+  .catch(e => {
+    console.error('Сервер недоступен, используем localStorage:', e);
+    // Fallback на localStorage если сервер недоступен
+    localStorage.setItem('game_' + filename, JSON.stringify(G));
+    showMsg('💾 Сохранено (локально)', `Игра сохранена в браузер.<br><strong>${filename}</strong><br><br>⚠ Сервер недоступен.<br>Для сохранения в Загрузки запустите:<br><code>python game_server.py</code>`);
+  })
+  .finally(() => {
+    isSaving = false;
+  });
 }
 
 function loadGame() {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) { showMsg('Нет сохранения', 'Сохранённая игра не найдена.'); return; }
-    const saved = JSON.parse(raw);
-    Object.keys(G).forEach(k => delete G[k]);
-    Object.assign(G, saved);
-    showScreen('game-screen');
-    setPhase(G.phase);
-    updateHeader();
-    renderBoard();
-    renderSide();
-    addLog('Игра загружена', -1);
-  } catch(e) {
-    showMsg('Ошибка', 'Не удалось загрузить: ' + e.message);
+  fetch('/api/list')
+  .then(r => r.json())
+  .then(data => {
+    if (!data.success || data.games.length === 0) {
+      console.warn('⚠️  Нет сохранённых игр на сервере');
+      showMsg('Нет сохранений', 'Сохранённые игры находятся в:<br>Загрузки/Stellar_Conflict_Saves/<br><br>Запустите сервер: python game_server.py');
+      return;
+    }
+
+    let html = '<div style="max-height:500px;overflow-y:auto;">';
+    data.games.forEach(g => {
+      const date = new Date(g.modified * 1000).toLocaleString();
+      html += `<div style="padding:8px;background:rgba(0,200,255,.1);margin-bottom:6px;border-radius:4px;cursor:pointer;" onclick="loadGameFile('${g.filename}')">
+        <div style="font-weight:bold;">${g.filename}</div>
+        <div style="font-size:.75rem;color:#aaa;">${date} · ${g.size} B</div>
+      </div>`;
+    });
+    html += '</div>';
+
+    console.log(`✅ Получено ${data.games.length} сохранённых игр`);
+    showMsg('📂 Загрузить игру', html);
+  })
+  .catch(e => {
+    console.error('❌ Ошибка при загрузке списка игр:', e);
+    showMsg('Ошибка', '⚠ Сервер недоступен.<br><br>Для загрузки из Загрузок запустите:<br><code>python game_server.py</code>');
+  });
+}
+
+function validateGameState(state) {
+  // Проверка обязательных полей
+  const requiredFields = ['version', 'players', 'phase', 'map', 'curP'];
+  for (const field of requiredFields) {
+    if (!(field in state)) {
+      return { valid: false, error: `Отсутствует поле: ${field}` };
+    }
   }
+
+  // Проверка версии
+  if (state.version !== 1) {
+    console.warn(`⚠️  Версия сохранения: ${state.version}. Текущая версия: 1. Попытаемся загрузить...`);
+  }
+
+  // Проверка типов
+  if (!Array.isArray(state.players) || state.players.length !== 2) {
+    return { valid: false, error: 'Некорректное количество игроков' };
+  }
+
+  if (typeof state.phase !== 'string') {
+    return { valid: false, error: 'Некорректная фаза игры' };
+  }
+
+  return { valid: true };
+}
+
+function loadGameFile(filename) {
+  fetch(`/api/load/${filename}`)
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      const validation = validateGameState(data.state);
+      if (!validation.valid) {
+        console.error('❌ Ошибка валидации:', validation.error);
+        showMsg('Ошибка загрузки', `Файл повреждён или устарел:<br><strong>${validation.error}</strong>`);
+        return;
+      }
+
+      Object.keys(G).forEach(k => delete G[k]);
+      Object.assign(G, data.state);
+      console.log(`✅ Игра загружена: ${filename}`);
+      showScreen('game-screen');
+      setPhase(G.phase);
+      updateHeader();
+      renderBoard();
+      renderSide();
+      addLog('Игра загружена', -1);
+      closeMsgModal();
+    } else {
+      console.error('❌ Ошибка загрузки файла:', data.error);
+      showMsg('Ошибка загрузки', data.error);
+    }
+  })
+  .catch(e => {
+    console.error('❌ Ошибка при загрузке:', e);
+    showMsg('Ошибка', 'Не удалось загрузить: ' + e.message);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  VIEW CARD DECKS
+// ══════════════════════════════════════════════
+
+let FACTIONS_DATA = {};
+
+// Загружаем полные данные фракций (с картами) из JSON
+async function loadFactionsData() {
+  try {
+    const response = await fetch('factions_data.json');
+    if (response.ok) {
+      FACTIONS_DATA = await response.json();
+      console.log('[OK] Loaded factions data with cards');
+    }
+  } catch(e) {
+    console.warn('Could not load factions_data.json:', e.message);
+  }
+}
+
+// Загрузить данные при загрузке страницы
+document.addEventListener('DOMContentLoaded', loadFactionsData);
+
+function showBattleCards(playerIdx) {
+  const factionId = G.players[playerIdx].faction;
+  const faction = FACTIONS_DATA[factionId];
+
+  if (!faction || !faction.battleCards || faction.battleCards.length === 0) {
+    showMsg('Ошибка', 'Боевые карты не найдены');
+    return;
+  }
+
+  let html = `<div style="max-height:600px;overflow-y:auto;font-size:.85rem;">`;
+  const cardsByLevel = {};
+  faction.battleCards.forEach(c => {
+    const level = c.level;
+    if (!cardsByLevel[level]) cardsByLevel[level] = [];
+    cardsByLevel[level].push(c);
+  });
+
+  const levels = [-1, 0, 2, 3];
+  const levelNames = {'-1':'Начальные', '0':'Уровень 0', '2':'Уровень 2', '3':'Уровень 3'};
+
+  levels.forEach(lvl => {
+    if (cardsByLevel[lvl]) {
+      html += `<div style="margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:8px;">`;
+      html += `<div style="font-weight:bold;color:var(--p${playerIdx+1});margin-bottom:6px;">${levelNames[lvl]}</div>`;
+      cardsByLevel[lvl].forEach(c => {
+        const eff1 = c.effect_1 || c.e1 || '—';
+        const eff2 = c.effect_2 || c.e2 || '—';
+        html += `<div style="margin-bottom:8px;padding:6px;background:rgba(0,0,0,.3);border-radius:4px;">
+          <div style="font-weight:bold;">${c.name}</div>
+          <div style="font-size:.75rem;color:#aaa;">Эффект 1</div>
+          <div style="font-size:.8rem;margin-top:2px;color:#ddd;">${eff1}</div>
+          <div style="font-size:.75rem;color:#aaa;margin-top:4px;">Эффект 2</div>
+          <div style="font-size:.8rem;color:#ddd;">${eff2}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+  });
+  html += `</div>`;
+
+  showMsg(`🎴 Боевые карты ${G.players[playerIdx].name}`, html, true);
+}
+
+function showOrderUpgrades(playerIdx) {
+  const factionId = G.players[playerIdx].faction;
+  const faction = FACTIONS_DATA[factionId];
+
+  if (!faction || !faction.orderUpgrades || faction.orderUpgrades.length === 0) {
+    showMsg('⚔ Информация', 'Улучшения приказов для этой фракции ещё не реализованы');
+    return;
+  }
+
+  let html = `<div style="max-height:600px;overflow-y:auto;font-size:.85rem;">`;
+  faction.orderUpgrades.forEach(u => {
+    html += `<div style="margin-bottom:8px;padding:6px;background:rgba(0,0,0,.3);border-radius:4px;">
+      <div style="font-weight:bold;">${u.name}</div>
+      <div style="font-size:.75rem;color:#aaa;">Тип: ${u.order_type || '?'}</div>
+      <div style="font-size:.8rem;margin-top:4px;color:#ddd;"><strong>Эффект 1:</strong> ${u.effect_1 || u.e1 || '—'}</div>
+      <div style="font-size:.8rem;color:#ddd;"><strong>Эффект 2:</strong> ${u.effect_2 || u.e2 || '—'}</div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  showMsg(`⚔ Улучшения приказов ${G.players[playerIdx].name}`, html, true);
+}
+
+function showEventCards(playerIdx) {
+  const factionId = G.players[playerIdx].faction;
+  const faction = FACTIONS_DATA[factionId];
+
+  if (!faction || !faction.eventCards || faction.eventCards.length === 0) {
+    showMsg('🃏 Информация', 'Карты событий для этой фракции ещё не реализованы');
+    return;
+  }
+
+  let html = `<div style="max-height:600px;overflow-y:auto;font-size:.85rem;">`;
+  faction.eventCards.forEach(c => {
+    html += `<div style="margin-bottom:8px;padding:6px;background:rgba(0,0,0,.3);border-radius:4px;">
+      <div style="font-weight:bold;">${c.name}</div>
+      <div style="font-size:.75rem;color:#aaa;">Тип: ${c.card_type || '?'} | Вихрь: ${c.warp_storm_move || '?'}</div>
+      <div style="font-size:.8rem;margin-top:4px;color:#ddd;">${c.effect || '—'}</div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  showMsg(`🃏 Карты событий ${G.players[playerIdx].name}`, html, true);
 }
 
 // ══════════════════════════════════════════════
@@ -677,9 +756,9 @@ function loadGame() {
 function _facResHtml(f) {
   const parts = [];
   if (f.credits)  parts.push(`💰${f.credits}`);
-  if (f.tokens?.support)  parts.push(`⊕${f.tokens.support}`);
-  if (f.tokens?.discount) parts.push(`⊖${f.tokens.discount}`);
-  if (f.tokens?.forge)    parts.push(`⚒${f.tokens.forge}`);
+  if (f.tokens?.reinforcement) parts.push(`>${f.tokens.reinforcement}`);
+  if (f.tokens?.cash)          parts.push(`$${f.tokens.cash}`);
+  if (f.tokens?.forge)         parts.push(`T${f.tokens.forge}`);
   if (f.structures?.length) {
     const counts = {};
     f.structures.forEach(s => { counts[s] = (counts[s] || 0) + 1; });
@@ -778,16 +857,20 @@ function startGame() {
   G.players.forEach((p, pi) => {
     const fac = FACTIONS.find(f => f.id === p.faction);
     p.pool = [];
-    if (fac.unitTiers) {
+    // Добавляем юниты с правильными уровнями из unitTiers
+    if (fac.unitTiers?.ground && Array.isArray(fac.unitTiers.ground)) {
       fac.unitTiers.ground.forEach(tier => p.pool.push({ id:nextId++, player:pi, unitType:'ground', tier }));
-      fac.unitTiers.space.forEach(tier  => p.pool.push({ id:nextId++, player:pi, unitType:'space',  tier }));
-    } else {
-      for (let i=0; i<(fac.troops?.ground||0); i++) p.pool.push({ id:nextId++, player:pi, unitType:'ground', tier:0 });
-      for (let i=0; i<(fac.troops?.space||0);  i++) p.pool.push({ id:nextId++, player:pi, unitType:'space',  tier:0 });
     }
-    p.structurePool = (fac.structures || []).map(type => ({ id:nextId++, player:pi, type }));
+    if (fac.unitTiers?.space && Array.isArray(fac.unitTiers.space)) {
+      fac.unitTiers.space.forEach(tier => p.pool.push({ id:nextId++, player:pi, unitType:'space', tier }));
+    }
+    // Добавляем структуры (фабрики из structures массива)
+    p.structurePool = [];
+    if (Array.isArray(fac.structures)) {
+      fac.structures.forEach(type => p.structurePool.push({ id:nextId++, player:pi, type }));
+    }
     p.credits = fac.credits ?? 6;
-    p.tokens  = { ...(fac.tokens ?? {support:0,discount:0,forge:0}) };
+    p.tokens  = { ...(fac.tokens ?? {reinforcement:0,cash:0,forge:0}) };
     const myHome = TILE_CATALOG.find(t => t.id === fac.homeTileId)
                 || TILE_CATALOG.find(t => t.isHome);
     const myNormal = normalTiles.splice(0, TILES_PP - 1);
@@ -1033,8 +1116,8 @@ function exportMap() {
         capacity: a.capacity,
         income:   a.income,
         valuable: a.valuable,
-        support:  a.support,
-        discount: a.discount,
+        reinforcement:  a.support,
+        cash:           a.discount,
         forge:    a.forge,
         joker:    a.joker,
         troops:   a.troops.map(u => ({ player:u.player, unitType:u.unitType })),
