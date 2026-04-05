@@ -365,6 +365,7 @@ input[type=text]:focus{border-color:var(--p1);}
     <button class="abtn bp" id="btn-rccw" onclick="rotateTile(false)" style="display:none">↺ Повернуть</button>
     <button class="abtn bp" id="btn-rcw"  onclick="rotateTile(true)"  style="display:none">↻ Повернуть</button>
     <button class="abtn bp" id="btn-et"   onclick="endTurn()"           style="display:none">Готово →</button>
+    <button class="abtn bw" id="btn-undo-order" onclick="undoLastOrder()" style="display:none">↩ Вернуть приказ</button>
     <button class="abtn bp" id="btn-pass" onclick="passOrderTurn()"     style="display:none">Передать ход →</button>
     <button class="abtn bp" id="btn-start-game" onclick="startGamePlay()" style="display:none">🎮 Начать розыгрыш</button>
   </div>
@@ -946,7 +947,7 @@ function setPhase(phase) {
   G.selUnitType = null;
 
   // Hide all action buttons
-  ['btn-ut','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-start-game'].forEach(id => {
+  ['btn-ut','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-start-game','btn-undo-order'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
 
@@ -980,8 +981,16 @@ function setPhase(phase) {
   }
   else if (phase === 'order-placement') {
     ins.innerHTML = `<strong>РАССТАНОВКА ПРИКАЗОВ</strong><br>${cp.name}: выберите приказ слева, затем кликните центр системы. Выставлено: ${G.ordersPlaced[G.curP]}/4`;
-    _showTip(`Выберите приказ и кликните центр системы. После размещения нажмите «Передать ход».`);
-    show('btn-pass');
+
+    if (G.orderPlacedThisTurn) {
+      _showTip(`Приказ размещён. Нажмите «Передать ход» или «Вернуть приказ».`);
+      show('btn-pass');
+      show('btn-undo-order');
+    } else {
+      _showTip(`Выберите приказ и кликните центр системы.`);
+      show('btn-pass');
+    }
+
     document.getElementById('btn-pass').textContent = 'Передать ход →';
     renderSide(); renderBoard(); renderOrdersInfo();
   }
@@ -1322,7 +1331,11 @@ function selectOrder(idx) {
 function placeOrder(tileKey) {
   if (G.phase !== 'order-placement') return;
   if (!G.selOrderForPlacement) {
-    showMsg('Выберите приказ', 'Сначала выберите приказ слева');
+    if (G.orderPlacedThisTurn) {
+      showMsg('Приказ уже выставлен', 'Нажмите «Передать ход» или «Вернуть приказ»');
+    } else {
+      showMsg('Выберите приказ', 'Сначала выберите приказ слева');
+    }
     return;
   }
 
@@ -1386,6 +1399,52 @@ function placeOrder(tileKey) {
   renderOrdersInfo();
 
   _showTip(`✅ Приказ размещён (${G.ordersPlaced[G.curP]}/4). Нажмите «Передать ход».`);
+}
+
+function undoLastOrder() {
+  if (G.phase !== 'order-placement') return;
+  if (!G.orderPlacedThisTurn) {
+    showMsg('Нет приказов', 'В этом ходу приказ не выставлялся');
+    return;
+  }
+
+  const cp = G.players[G.curP];
+
+  // Находим последний приказ текущего игрока в G.orders
+  const lastOrderIdx = G.orders.length - 1;
+  if (lastOrderIdx < 0) return;
+
+  const lastOrder = G.orders[lastOrderIdx];
+  if (lastOrder.owner !== G.curP) {
+    showMsg('Ошибка', 'Можно вернуть только свой приказ');
+    return;
+  }
+
+  // Удаляем приказ с поля
+  G.orders.pop();
+
+  // Возвращаем приказ в руку
+  const orderToReturn = {
+    id: lastOrder.id,
+    type: lastOrder.type,
+    owner: lastOrder.owner
+  };
+  cp.hand_orders.push(orderToReturn);
+
+  // Уменьшаем счётчик
+  G.ordersPlaced[G.curP]--;
+
+  // Сбрасываем флаг
+  G.orderPlacedThisTurn = false;
+  G.selOrderForPlacement = null;
+  G.selOrderIdx = null;
+
+  addLog(`${cp.name} вернул приказ ${ORDER_TYPES[lastOrder.type].name}`, G.curP);
+  renderSide();
+  renderBoard();
+  renderOrdersInfo();
+
+  _showTip(`Приказ возвращён в руку. Выставлено: ${G.ordersPlaced[G.curP]}/4`);
 }
 
 function passOrderTurn() {
