@@ -464,10 +464,10 @@ let isSaving = false;  // флаг для предотвращения одно�
 const API_URL = 'http://localhost:8000';
 
 const ORDER_TYPES = {
-  dominate: { icon: '🎯', name: 'Доминация' },
-  deploy: { icon: '🚀', name: 'Развёртывание' },
-  advance: { icon: '⚔️', name: 'Наступление' },
-  strategize: { icon: '🧠', name: 'Стратегия' },
+  dominate: { icon: '🎯', name: 'Dominate' },
+  deploy: { icon: '🚀', name: 'Deploy' },
+  advance: { icon: '⚔️', name: 'Advance' },
+  strategize: { icon: '🧠', name: 'Strategize' },
 };
 
 function makeState() {
@@ -1306,8 +1306,11 @@ function placeOrder(tileKey) {
   const tile = G.map[tileKey];
   if (!tile) return;
 
-  // Валидация: есть ли в системе дружественная область или соседняя система с дружественной?
-  const hasOwnArea = tile.areas.some(a => a.owner === G.curP);
+  // Валидация: есть ли в системе войска/постройки игрока или соседняя система с ними?
+  const hasOwnArea = tile.areas.some(a =>
+    a.troops.some(t => t.player === G.curP) ||
+    a.structures.some(s => s.player === G.curP)
+  );
   if (!hasOwnArea) {
     // Проверяем соседние системы
     const [col, row] = tileKey.split(',').map(Number);
@@ -1317,11 +1320,14 @@ function placeOrder(tileKey) {
     ];
     const hasAdjacent = adjacent.some(key => {
       const adjTile = G.map[key];
-      return adjTile && adjTile.areas.some(a => a.owner === G.curP);
+      return adjTile && adjTile.areas.some(a =>
+        a.troops.some(t => t.player === G.curP) ||
+        a.structures.some(s => s.player === G.curP)
+      );
     });
 
     if (!hasAdjacent) {
-      showMsg('Невозможно разместить', 'Приказ можно ставить только в систему с дружественной областью или рядом с ней');
+      showMsg('Невозможно разместить', 'Приказ можно ставить только в систему с вашими войсками/постройками или соседнюю');
       return;
     }
   }
