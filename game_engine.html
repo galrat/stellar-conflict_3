@@ -301,10 +301,7 @@ input[type=text]:focus{border-color:var(--p1);}
       </div>
     </div>
     <div class="phase-info">
-      <div class="phase-lbl">Фаза</div>
-      <div class="phase-name" id="h-phase">—</div>
-      <div class="turn-ind ti1" id="h-turn" style="margin-top:4px;">—</div>
-      <div style="display:flex;gap:4px;margin-top:6px;justify-content:center;flex-wrap:wrap;">
+      <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">
         <button class="abtn bp" style="font-size:.6rem;padding:3px 10px;" onclick="saveGame()">💾 Сохранить</button>
         <button class="abtn bw" style="font-size:.6rem;padding:3px 10px;" onclick="loadGame()">📂 Загрузить</button>
       </div>
@@ -1944,12 +1941,7 @@ function updateHeader() {
       resEl.textContent = parts.join('  ') || '';
     }
   });
-  const phaseLabels = {'tile-placement':'\u0420\u0430\u0437\u043c\u0435\u0449\u0435\u043d\u0438\u0435 \u0441\u0438\u0441\u0442\u0435\u043c'};
-  document.getElementById('h-phase').textContent=phaseLabels[G.phase]||G.phase;
   const hRound = document.getElementById('h-round'); if (hRound) hRound.textContent='';
-  const ind=document.getElementById('h-turn');
-  ind.textContent=`${cp.name} \u0445\u043e\u0434`;
-  ind.className=`turn-ind ${G.curP===0?'ti1':'ti2'}`;
   const edsp = document.getElementById('event-stack-disp');
   if (edsp) edsp.style.display='none';
 }
