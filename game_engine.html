@@ -875,7 +875,7 @@ function startGame() {
     p.credits = fac.credits ?? 6;
     p.tokens  = { ...(fac.tokens ?? {reinforcement:0,cash:0,forge:0}) };
 
-    // Инициализируем поля карт (будут заполнены сервером при Stage 2)
+    // Карты загрузятся с сервера асинхронно
     p.hand_battle_cards = [];
     p.available_battle_cards = [];
     p.hand_order_upgrades = [];
@@ -883,6 +883,21 @@ function startGame() {
     p.hand_event_cards = [];
     p.available_event_cards = [];
     p.boughtUpgrades = [];
+
+    // Загрузить карты фракции с сервера
+    fetch(`${API_URL}/api/faction-cards/${p.faction}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          p.hand_battle_cards = data.hand_battle_cards;
+          p.available_battle_cards = data.available_battle_cards;
+          p.hand_order_upgrades = data.hand_order_upgrades;
+          p.available_order_upgrades = data.available_order_upgrades;
+          p.hand_event_cards = data.hand_event_cards;
+          p.available_event_cards = data.available_event_cards;
+        }
+      })
+      .catch(() => {});
 
     // Инициализируем приказы (2 dominate, 2 deploy, 2 advance, 2 strategize)
     p.hand_orders = [

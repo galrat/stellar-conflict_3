@@ -469,6 +469,23 @@ async def undo_endpoint(request: UndoRequest) -> GameStateResponse:
             return GameStateResponse(success=False, error="Ошибка загрузки snapshot")
 
 
+@app.get('/api/faction-cards/{faction_id}')
+async def get_faction_cards(faction_id: str):
+    """Получить все карты фракции по ID"""
+    if faction_id not in FACTIONS:
+        return {"success": False, "error": f"Фракция '{faction_id}' не найдена"}
+    fac = FACTIONS[faction_id]
+    return {
+        "success": True,
+        "hand_battle_cards": [c.to_dict() for c in fac.battle_cards if c.level.value == -1],
+        "available_battle_cards": [c.to_dict() for c in fac.battle_cards if c.level.value != -1],
+        "hand_order_upgrades": [],
+        "available_order_upgrades": [u.to_dict() for u in fac.order_upgrades],
+        "hand_event_cards": [],
+        "available_event_cards": [e.to_dict() for e in fac.event_cards],
+    }
+
+
 @app.post('/api/game/pass-turn')
 async def pass_turn_endpoint(request: PassTurnRequest) -> GameStateResponse:
     """Передать ход"""
