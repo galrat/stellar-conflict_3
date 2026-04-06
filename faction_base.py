@@ -73,11 +73,13 @@ class OrderUpgrade:
     order_type: str   # "move" | "attack" | "reinforce" | "dominate" | "build"
     effect_1:   str   # первый эффект улучшения
     effect_2:   str   # второй эффект улучшения
-    tier:       int = 0  # уровень улучшения (опционально)
-    cost:       int = 0  # стоимость улучшения (опционально)
+    id:         str = ""  # уникальный идентификатор улучшения (опционально)
+    tier:       int = 0   # уровень улучшения (опционально)
+    cost:       int = 0   # стоимость улучшения (опционально)
 
     def to_dict(self) -> dict:
         return {
+            "id":         self.id,
             "name":       self.name,
             "order_type": self.order_type,
             "tier":       self.tier,
@@ -329,6 +331,8 @@ class Player:
     credits:    int                 = 0                            # монеты
     hand:       List[SystemTile]    = field(default_factory=list)  # тайлы в руке
     orders:     List                = field(default_factory=list)  # список Order-объектов
+    boughtUpgrades: List[str]       = field(default_factory=list)  # ID купленных улучшений приказов
+    object_tokens: int              = 0                            # количество жетонов объектов
 
     @property
     def faction_id(self) -> str:
@@ -353,4 +357,5 @@ class Player:
                 o.to_dict() if hasattr(o, "to_dict") else o
                 for o in self.orders
             ],
+            "boughtUpgrades":   self.boughtUpgrades,
         }

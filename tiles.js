@@ -235,90 +235,6 @@ const TILE_CATALOG = [
   },
 
   {
-    id: 'home_theocracy', tileNum: 'H-Теократия', isHome: true,
-    sides: [
-      {
-        side: 'a', image: 'tiles/home_theocracy_a.png',
-        layout:   [[1, 1], [1, 0]],
-        capacity: [[2, 1], [1, 3]],
-        income:   [[3, 2], [1, 0]],
-        valuable: [[0, 0], [0, 0]],
-        support:  [[1, 0], [0, 0]],
-        discount: [[0, 0], [0, 0]],
-        forge:    [[0, 0], [0, 0]],
-        joker:    [[0, 0], [0, 0]],
-      },
-      {
-        side: 'b', image: 'tiles/home_theocracy_b.png',
-        layout:   [[1, 1], [0, 1]],
-        capacity: [[1, 2], [3, 1]],
-        income:   [[2, 3], [0, 1]],
-        valuable: [[0, 0], [0, 0]],
-        support:  [[0, 1], [0, 0]],
-        discount: [[1, 0], [0, 0]],
-        forge:    [[0, 0], [0, 0]],
-        joker:    [[0, 0], [0, 0]],
-      },
-    ],
-  },
-
-  {
-    id: 'home_machines', tileNum: 'H-Машины', isHome: true,
-    sides: [
-      {
-        side: 'a', image: 'tiles/home_machines_a.png',
-        layout:   [[1, 1], [1, 0]],
-        capacity: [[2, 2], [2, 3]],
-        income:   [[1, 1], [2, 0]],
-        valuable: [[0, 0], [0, 0]],
-        support:  [[0, 0], [0, 0]],
-        discount: [[0, 0], [0, 0]],
-        forge:    [[1, 1], [1, 0]],
-        joker:    [[0, 0], [0, 0]],
-      },
-      {
-        side: 'b', image: 'tiles/home_machines_b.png',
-        layout:   [[1, 1], [1, 0]],
-        capacity: [[3, 2], [1, 3]],
-        income:   [[2, 1], [1, 0]],
-        valuable: [[0, 0], [0, 0]],
-        support:  [[0, 0], [0, 0]],
-        discount: [[0, 0], [0, 0]],
-        forge:    [[1, 0], [1, 0]],
-        joker:    [[0, 0], [0, 0]],
-      },
-    ],
-  },
-
-  {
-    id: 'home_pirates', tileNum: 'H-Пираты', isHome: true,
-    sides: [
-      {
-        side: 'a', image: 'tiles/home_pirates_a.png',
-        layout:   [[1, 1], [0, 1]],
-        capacity: [[1, 2], [3, 1]],
-        income:   [[1, 1], [0, 2]],
-        valuable: [[0, 0], [0, 0]],
-        support:  [[1, 0], [0, 1]],
-        discount: [[0, 1], [0, 0]],
-        forge:    [[0, 0], [0, 0]],
-        joker:    [[0, 0], [0, 0]],
-      },
-      {
-        side: 'b', image: 'tiles/home_pirates_b.png',
-        layout:   [[1, 0], [1, 1]],
-        capacity: [[2, 3], [1, 1]],
-        income:   [[2, 0], [1, 1]],
-        valuable: [[0, 0], [0, 0]],
-        support:  [[0, 0], [1, 0]],
-        discount: [[1, 0], [0, 1]],
-        forge:    [[0, 0], [0, 0]],
-        joker:    [[0, 0], [0, 0]],
-      },
-    ],
-  },
-
-  {
     id: 'home_elders', tileNum: 'H-Предтечи', isHome: true,
     sides: [
       {
@@ -397,34 +313,6 @@ const TILE_CATALOG = [
         support:  [[0, 0], [0, 1]],
         discount: [[0, 0], [0, 0]],
         forge:    [[0, 0], [1, 0]],
-        joker:    [[0, 0], [0, 0]],
-      },
-    ],
-  },
-
-  {
-    id: 'home_crusaders', tileNum: 'H-Крестоносцы', isHome: true,
-    sides: [
-      {
-        side: 'a', image: 'tiles/home_crusaders_a.png',
-        layout:   [[1, 1], [1, 0]],
-        capacity: [[3, 2], [3, 3]],
-        income:   [[1, 2], [1, 0]],
-        valuable: [[0, 0], [0, 0]],
-        support:  [[1, 0], [0, 0]],
-        discount: [[0, 0], [0, 0]],
-        forge:    [[0, 1], [0, 0]],
-        joker:    [[0, 0], [0, 0]],
-      },
-      {
-        side: 'b', image: 'tiles/home_crusaders_b.png',
-        layout:   [[1, 1], [1, 0]],
-        capacity: [[2, 3], [2, 3]],
-        income:   [[2, 1], [1, 0]],
-        valuable: [[0, 0], [0, 0]],
-        support:  [[0, 1], [0, 0]],
-        discount: [[0, 0], [0, 0]],
-        forge:    [[1, 0], [0, 0]],
         joker:    [[0, 0], [0, 0]],
       },
     ],

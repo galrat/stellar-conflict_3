@@ -20,11 +20,6 @@ from faction_defs.necrons        import NECRONS
 from faction_defs.tyranids       import TYRANIDS
 from faction_defs.tau            import TAU
 from faction_defs.imperial_guard import IMPERIAL_GUARD
-# ── Заготовки (TODO: заполнить данные в каждом файле) ─────────────────────────
-from faction_defs.theocracy import THEOCRACY
-from faction_defs.machines  import MACHINES
-from faction_defs.pirates   import PIRATES
-from faction_defs.crusaders import CRUSADERS
 
 # ── Список всех зарегистрированных фракций ───────────────────────────────────
 _ALL_FACTIONS: list[Faction] = [
@@ -36,11 +31,6 @@ _ALL_FACTIONS: list[Faction] = [
     TYRANIDS,
     TAU,
     IMPERIAL_GUARD,
-    # заготовки:
-    THEOCRACY,
-    MACHINES,
-    PIRATES,
-    CRUSADERS,
 ]
 
 # ── Публичные реестры ─────────────────────────────────────────────────────────

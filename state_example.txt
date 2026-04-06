@@ -11,8 +11,10 @@ state = {
             "forge": 0,
             "hand_battle_cards": ["card_name", "card_name"],
             "hand_order_cards": ["card_name", "card_name"],
+            "hand_event_cards": ["card_name", "card_name"],
             "battle_deck": ["card_name ", " card_name "],
             "order_deck": ["card_name ", " card_name "],
+            "event_deck": ["card_name", "card_name"],
         },
         "p2": {
             "money": 5,
