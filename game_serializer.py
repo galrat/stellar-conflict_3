@@ -139,10 +139,10 @@ def generate_game_state(game_state) -> dict:
 
         # ── Информация о картах из фракции ──────────────────────────────────
         faction = player.faction
-        hand_battle_cards = [c.name for c in faction.battle_cards if c.level.value == -1]
-        available_battle_cards = [c.name for c in faction.battle_cards if c.level.value != -1]
-        available_order_upgrades = [u.name for u in faction.order_upgrades]
-        available_event_cards = [e.name for e in faction.event_cards]
+        hand_battle_cards = [c.to_dict() for c in faction.battle_cards if c.level.value == -1]
+        available_battle_cards = [c.to_dict() for c in faction.battle_cards if c.level.value != -1]
+        available_order_upgrades = [u.to_dict() for u in faction.order_upgrades]
+        available_event_cards = [e.to_dict() for e in faction.event_cards]
 
         state["players"][player_key] = {
             "name": player.name,
@@ -151,12 +151,12 @@ def generate_game_state(game_state) -> dict:
             "reinforcement": resource_counts.get("reinforcement", 0),
             "cash": resource_counts.get("cash", 0),
             "forge": resource_counts.get("forge", 0),
-            "hand_battle_cards": hand_battle_cards,  # начальные карты (уровень -1)
-            "available_battle_cards": available_battle_cards,  # карты для покупки (уровни 0, 2, 3)
-            "hand_order_upgrades": [],  # улучшения на руке (пусто в начале)
-            "available_order_upgrades": available_order_upgrades,  # все доступные улучшения
-            "hand_event_cards": [],  # события на руке (пусто в начале)
-            "available_event_cards": available_event_cards,  # все доступные события
+            "hand_battle_cards": hand_battle_cards,
+            "available_battle_cards": available_battle_cards,
+            "hand_order_upgrades": [],
+            "available_order_upgrades": available_order_upgrades,
+            "hand_event_cards": [],
+            "available_event_cards": available_event_cards,
             "boughtUpgrades": player.boughtUpgrades,  # купленные улучшения (пусто в начале)
             "object_tokens": player.object_tokens,  # жетоны объектов
             "battle_deck": [],

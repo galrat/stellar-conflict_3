@@ -190,7 +190,7 @@ input[type=text]:focus{border-color:var(--p1);}
 /* ── MODALS ── */
 .moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:100;align-items:center;justify-content:center;}
 .moverlay.active{display:flex;}
-.modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px;max-width:460px;width:90%;text-align:center;}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px;max-width:800px;width:90%;text-align:center;}
 .modal h2{font-size:1rem;letter-spacing:.2em;margin-bottom:12px;color:var(--gold);}
 .modal p{font-size:.86rem;line-height:1.6;color:var(--text);margin-bottom:7px;}
 .droll{font-size:2.6rem;margin:13px 0;}
@@ -674,108 +674,81 @@ function loadGameFile(filename) {
 //  VIEW CARD DECKS
 // ══════════════════════════════════════════════
 
-// Данные о картах теперь загружаются из состояния игры (G.players[idx].hand_*_cards, G.players[idx].available_*_cards)
+function _renderCardColumn(cards, title, color, renderFn) {
+  let html = `<div style="flex:1;min-width:280px;max-height:600px;overflow-y:auto;padding-right:4px;">`;
+  html += `<div style="font-weight:bold;color:${color};margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid ${color};">${title} (${cards.length})</div>`;
+  if (cards.length === 0) {
+    html += `<div style="color:var(--dim);font-style:italic;text-align:center;padding:20px 0;">Пусто</div>`;
+  } else {
+    cards.forEach(c => { html += renderFn(c); });
+  }
+  html += `</div>`;
+  return html;
+}
+
+function _renderBattleCard(c) {
+  const name = typeof c === 'string' ? c : c.name;
+  const cost = c.cost ? `<span style="color:#ff8c00;margin-left:6px;">Стоимость: ${c.cost}</span>` : '';
+  const tier = c.tier != null && c.tier >= 0 ? `<span style="color:var(--dim);margin-left:6px;">Tier ${c.tier}</span>` : '';
+  const e1 = c.effect_1 ? `<div style="color:#aaa;font-size:.78rem;margin-top:4px;">${c.effect_1}</div>` : '';
+  const e2 = c.effect_2 ? `<div style="color:#888;font-size:.78rem;margin-top:2px;">${c.effect_2}</div>` : '';
+  return `<div style="margin-bottom:8px;padding:8px;background:rgba(0,0,0,.4);border-left:3px solid rgba(255,215,0,.4);border-radius:4px;">
+    <div style="font-weight:bold;font-size:.9rem;">${name}${cost}${tier}</div>${e1}${e2}
+  </div>`;
+}
+
+function _renderOrderUpgrade(c) {
+  const name = typeof c === 'string' ? c : c.name;
+  const type = c.order_type ? `<span style="color:#00bcd4;margin-left:6px;">[${c.order_type}]</span>` : '';
+  const cost = c.cost ? `<span style="color:#ff8c00;margin-left:6px;">Стоимость: ${c.cost}</span>` : '';
+  const e1 = c.effect_1 ? `<div style="color:#aaa;font-size:.78rem;margin-top:4px;">${c.effect_1}</div>` : '';
+  const e2 = c.effect_2 ? `<div style="color:#888;font-size:.78rem;margin-top:2px;">${c.effect_2}</div>` : '';
+  return `<div style="margin-bottom:8px;padding:8px;background:rgba(0,0,0,.4);border-left:3px solid rgba(0,188,212,.4);border-radius:4px;">
+    <div style="font-weight:bold;font-size:.9rem;">${name}${type}${cost}</div>${e1}${e2}
+  </div>`;
+}
+
+function _renderEventCard(c) {
+  const name = typeof c === 'string' ? c : c.name;
+  const ctype = c.card_type ? `<span style="color:#ab47bc;margin-left:6px;">[${c.card_type}]</span>` : '';
+  const warp = c.warp_storm_move ? `<div style="color:#ff8c00;font-size:.78rem;margin-top:4px;">Warp: ${c.warp_storm_move}</div>` : '';
+  const eff = c.effect ? `<div style="color:#aaa;font-size:.78rem;margin-top:2px;">${c.effect}</div>` : '';
+  return `<div style="margin-bottom:8px;padding:8px;background:rgba(0,0,0,.4);border-left:3px solid rgba(171,71,188,.4);border-radius:4px;">
+    <div style="font-weight:bold;font-size:.9rem;">${name}${ctype}</div>${warp}${eff}
+  </div>`;
+}
 
 function showBattleCards(playerIdx) {
-  const player = G.players[playerIdx];
-  const handBattle = player.hand_battle_cards || [];
-  const availBattle = player.available_battle_cards || [];
-
-  if (handBattle.length === 0 && availBattle.length === 0) {
-    showMsg('Ошибка', 'Боевые карты не найдены');
-    return;
-  }
-
-  const renderCards = (cardNames, title) => {
-    let html = `<div style="flex:1;min-width:280px;">`;
-    html += `<div style="font-weight:bold;color:var(--gold);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,215,0,.3);">${title}</div>`;
-    if (cardNames.length === 0) {
-      html += `<div style="color:var(--dim);font-style:italic;text-align:center;padding:20px 0;">—</div>`;
-    } else {
-      cardNames.forEach(name => {
-        html += `<div style="margin-bottom:8px;padding:8px;background:rgba(0,0,0,.4);border-left:3px solid rgba(255,215,0,.4);border-radius:4px;">
-          <div style="font-weight:bold;font-size:.95rem;">${name}</div>
-        </div>`;
-      });
-    }
-    html += `</div>`;
-    return html;
-  };
-
-  const html = `<div style="display:flex;gap:12px;max-height:650px;overflow-y:auto;font-size:.85rem;">
-    ${renderCards(handBattle, '🎴 Начальные карты')}
-    ${renderCards(availBattle, '⬆ Карты для улучшения')}
+  const p = G.players[playerIdx];
+  const hand = p.hand_battle_cards || [];
+  const avail = p.available_battle_cards || [];
+  const html = `<div style="display:flex;gap:16px;font-size:.85rem;">
+    ${_renderCardColumn(hand, 'На руке', 'rgba(76,175,80,.9)', _renderBattleCard)}
+    ${_renderCardColumn(avail, 'Доступные для получения', 'rgba(255,215,0,.8)', _renderBattleCard)}
   </div>`;
-
-  showMsg(`🎴 Боевые карты ${player.name}`, html, true);
+  showMsg(`Боевые карты: ${p.name}`, html, true);
 }
 
 function showOrderUpgrades(playerIdx) {
-  const player = G.players[playerIdx];
-  const handUpgrades = player.hand_order_upgrades || [];
-  const availUpgrades = player.available_order_upgrades || [];
-
-  if (handUpgrades.length === 0 && availUpgrades.length === 0) {
-    showMsg('⚔ Информация', 'Улучшения приказов для этой фракции ещё не реализованы');
-    return;
-  }
-
-  const renderUpgrades = (upgradeNames, title, color) => {
-    let html = `<div style="flex:1;min-width:280px;">`;
-    html += `<div style="font-weight:bold;color:${color};margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,215,0,.3);">${title}</div>`;
-    if (upgradeNames.length === 0) {
-      html += `<div style="color:var(--dim);font-style:italic;text-align:center;padding:20px 0;">—</div>`;
-    } else {
-      upgradeNames.forEach(name => {
-        html += `<div style="margin-bottom:8px;padding:8px;background:rgba(0,0,0,.4);border-left:3px solid rgba(255,215,0,.4);border-radius:4px;">
-          <div style="font-weight:bold;font-size:.95rem;">${name}</div>
-        </div>`;
-      });
-    }
-    html += `</div>`;
-    return html;
-  };
-
-  const html = `<div style="display:flex;gap:12px;max-height:650px;overflow-y:auto;font-size:.85rem;">
-    ${renderUpgrades(handUpgrades, '✓ На руке', 'rgba(76,175,80,.9)')}
-    ${renderUpgrades(availUpgrades, '⬆ Доступные', 'rgba(255,215,0,.8)')}
+  const p = G.players[playerIdx];
+  const hand = p.hand_order_upgrades || [];
+  const avail = p.available_order_upgrades || [];
+  const html = `<div style="display:flex;gap:16px;font-size:.85rem;">
+    ${_renderCardColumn(hand, 'На руке', 'rgba(76,175,80,.9)', _renderOrderUpgrade)}
+    ${_renderCardColumn(avail, 'Доступные для получения', 'rgba(0,188,212,.8)', _renderOrderUpgrade)}
   </div>`;
-
-  showMsg(`⚔ Улучшения приказов ${player.name}`, html, true);
+  showMsg(`Улучшения приказов: ${p.name}`, html, true);
 }
 
 function showEventCards(playerIdx) {
-  const player = G.players[playerIdx];
-  const handEvents = player.hand_event_cards || [];
-  const availEvents = player.available_event_cards || [];
-
-  if (handEvents.length === 0 && availEvents.length === 0) {
-    showMsg('🃏 Информация', 'Карты событий для этой фракции ещё не реализованы');
-    return;
-  }
-
-  const renderEvents = (eventNames, title, color) => {
-    let html = `<div style="flex:1;min-width:280px;">`;
-    html += `<div style="font-weight:bold;color:${color};margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,215,0,.3);">${title}</div>`;
-    if (eventNames.length === 0) {
-      html += `<div style="color:var(--dim);font-style:italic;text-align:center;padding:20px 0;">—</div>`;
-    } else {
-      eventNames.forEach(name => {
-        html += `<div style="margin-bottom:8px;padding:8px;background:rgba(0,0,0,.4);border-left:3px solid rgba(255,215,0,.4);border-radius:4px;">
-          <div style="font-weight:bold;font-size:.95rem;">${name}</div>
-        </div>`;
-      });
-    }
-    html += `</div>`;
-    return html;
-  };
-
-  const html = `<div style="display:flex;gap:12px;max-height:650px;overflow-y:auto;font-size:.85rem;">
-    ${renderEvents(handEvents, '🃏 На руке', 'rgba(76,175,80,.9)')}
-    ${renderEvents(availEvents, '⬆ Доступные', 'rgba(255,215,0,.8)')}
+  const p = G.players[playerIdx];
+  const hand = p.hand_event_cards || [];
+  const avail = p.available_event_cards || [];
+  const html = `<div style="display:flex;gap:16px;font-size:.85rem;">
+    ${_renderCardColumn(hand, 'На руке', 'rgba(76,175,80,.9)', _renderEventCard)}
+    ${_renderCardColumn(avail, 'Доступные для получения', 'rgba(171,71,188,.8)', _renderEventCard)}
   </div>`;
-
-  showMsg(`🃏 Карты событий ${player.name}`, html, true);
+  showMsg(`Карты событий: ${p.name}`, html, true);
 }
 
 // ══════════════════════════════════════════════
