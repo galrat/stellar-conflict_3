@@ -951,7 +951,7 @@ function setPhase(phase) {
   G.selUnitType = null;
 
   // Hide all action buttons
-  ['btn-ut','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-undo-order','btn-undo-ws','btn-confirm-ws'].forEach(id => {
+  ['btn-ut','btn-uu','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-undo-order','btn-undo-ws','btn-confirm-ws'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
 
@@ -2195,6 +2195,7 @@ async function startStage2() {
   addLog('Карта готова. Инициализация Stage 2...', -1);
   try {
     _orderPlacedThisTurn = false;  // Сбросить флаг
+    G.phase = 'order-placement';  // Установить фазу ДО отправки на сервер
     // Очистить старые snapshots перед новой игрой
     await apiCall('/api/game/clear-temp', {});
     const data = await apiCall('/api/game/init', { state: G });
