@@ -211,12 +211,6 @@ input[type=text]:focus{border-color:var(--p1);}
 .scard.winner{border-color:var(--gold);box-shadow:0 0 16px rgba(255,215,0,.18);}
 .sval{font-size:2.6rem;font-family:'Orbitron',monospace;font-weight:900;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-/* Hint tooltip */
-#phase-tip{display:none;position:fixed;top:120px;left:50%;transform:translateX(-50%);z-index:90;
-  background:rgba(0,20,40,.95);border:1px solid var(--gold);border-radius:10px;
-  padding:8px 18px;font-size:.8rem;color:var(--gold);text-align:center;
-  box-shadow:0 0 18px rgba(255,215,0,.25);pointer-events:none;max-width:480px;line-height:1.5;}
-#phase-tip::before{content:'💡 ';font-size:1rem;}
 /* Corner button panels */
 .corner-panel{position:fixed;z-index:85;display:flex;gap:4px;padding:6px 10px;background:rgba(5,10,20,.8);border:1px solid var(--border);border-radius:8px;}
 .corner-p1{top:70px;left:25%;transform:translateX(-50%);}
@@ -324,8 +318,6 @@ input[type=text]:focus{border-color:var(--p1);}
       <div class="pavatar av2" id="h-p2-init">P2</div>
     </div>
   </div>
-
-  <div id="phase-tip"></div>
 
   <!-- Corner card panels -->
   <div class="corner-panel corner-p1" id="corner-p1">
@@ -971,7 +963,6 @@ function setPhase(phase) {
     G.unitsPlaced = [];
     const rem = cp.hand.filter(h => !h.placed).length;
     ins.innerHTML = `<strong>РАЗМЕЩЕНИЕ СИСТЕМ</strong><br>${cp.name}: выберите систему из руки, затем кликните ячейку. Осталось: ${rem}`;
-    _showTip(`${cp.name}: выберите любую систему из левой панели и кликните ячейку на поле.`);
     renderSide(); renderBoard();
   }
   else if (phase === 'troop-on-tile') {
@@ -980,7 +971,6 @@ function setPhase(phase) {
     const needObj = tile?.needsObjective && !tile?.objectiveMarker;
     const objHint = needObj ? `<br><small style="color:var(--gold)">★ Кликните область без выбранного войска чтобы поставить метку цели соперника</small>` : '';
     ins.innerHTML = `<strong>ВОЙСКА НА СИСТЕМУ</strong><br>${cp.name}: размещайте войска на только что поставленной системе.<br><small style="color:var(--dim)">▲ наземные → 🪐 · ◈ космические → ✦</small>${objHint}`;
-    _showTip(`Выберите войско из резерва (левая панель) и кликните область системы. Нажмите «Готово» когда закончите.`);
     show('btn-ut'); show('btn-uu'); show('btn-fl'); show('btn-rccw'); show('btn-rcw'); show('btn-et');
     document.getElementById('btn-et').textContent = 'Готово →';
     renderSide(); renderBoard(G.lastKey);
@@ -988,12 +978,10 @@ function setPhase(phase) {
   else if (phase === 'warp-storm') {
     const wsNum = G.warpStorms.length + 1;
     ins.innerHTML = `<strong>ВАРП-ШТОРМ ${wsNum}/2</strong><br>${cp.name}: кликните на границу любой системы чтобы поставить варп-шторм`;
-    _showTip(`${cp.name}: кликните на край тайла (граница подсвечивается при наведении).`);
     renderBoard();
   }
   else if (phase === 'order-placement') {
     ins.innerHTML = `<strong>РАССТАНОВКА ПРИКАЗОВ</strong><br>${cp.name}: выберите приказ, кликните центр системы. Выставлено: ${G.ordersPlaced[G.curP]}/4`;
-    _showTip('Выберите приказ слева и кликните центр системы. Нажмите «Передать ход» когда закончите.');
     show('btn-pass');
     if (_orderPlacedThisTurn) {
       show('btn-undo-order');
@@ -1938,17 +1926,6 @@ function renderSide() {
 // ══════════════════════════════════════════════
 //  HEADER
 // ══════════════════════════════════════════════
-function _showTip(text) {
-  const el = document.getElementById('phase-tip');
-  if (!el) return;
-  el.style.display = 'block';
-  el.textContent = '\u{1F4A1} ' + text;
-}
-function _hideTip() {
-  const el = document.getElementById('phase-tip');
-  if (el) el.style.display = 'none';
-}
-
 function updateHeader() {
   const cp=G.players[G.curP];
   [0,1].forEach(pi=>{
@@ -2042,7 +2019,6 @@ async function undoLastOrderViaAPI() {
       _selectedOrderForPlacement = null;
 
       addLog(`${G.players[G.curP].name} вернул приказ`, G.curP);
-      _showTip(`Приказ возвращён. Выставлено: ${G.ordersPlaced[G.curP]}/4`);
 
       // Скрыть кнопку undo когда больше нечего отменять
       document.getElementById('btn-undo-order').style.display = 'none';
@@ -2084,11 +2060,9 @@ async function passOrderTurnViaAPI() {
 function selectOrderForPlacement(idx, order) {
   if (G.phase !== 'order-placement') return;
   if (_orderPlacedThisTurn) {
-    _showTip('Приказ уже выставлен. Нажмите «Передать ход» или «Вернуть приказ».');
     return;
   }
   _selectedOrderForPlacement = { idx, id: order.id, type: order.type, owner: G.curP };
-  _showTip(`Выбран ${ORDER_TYPES[order.type]?.name || order.type}. Кликните центр системы.`);
   renderSide();
 }
 
@@ -2140,7 +2114,6 @@ async function placeOrderViaAPI(tileKey) {
       _selectedOrderForPlacement = null;
 
       addLog(`${G.players[G.curP].name} выставил ${ORDER_TYPES[orderData.type]?.name || 'приказ'}`, G.curP);
-      _showTip(`✅ Приказ размещён (${G.ordersPlaced[G.curP]}/4). Нажмите «Передать ход» или «Вернуть приказ».`);
       // Показать кнопки
       document.getElementById('btn-pass').style.display = 'block';
       document.getElementById('btn-undo-order').style.display = 'block';
