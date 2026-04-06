@@ -358,6 +358,8 @@ input[type=text]:focus{border-color:var(--p1);}
     <button class="abtn bp" id="btn-rccw" onclick="rotateTile(false)" style="display:none">↺ Повернуть</button>
     <button class="abtn bp" id="btn-rcw"  onclick="rotateTile(true)"  style="display:none">↻ Повернуть</button>
     <button class="abtn bp" id="btn-et"   onclick="endTurn()"           style="display:none">Готово →</button>
+    <button class="abtn bw" id="btn-undo-ws" onclick="undoWarpStorm()" style="display:none">↩ Отменить варп-шторм</button>
+    <button class="abtn bp" id="btn-confirm-ws" onclick="confirmWarpStorm()" style="display:none">Подтвердить ✓</button>
     <button class="abtn bw" id="btn-undo-order" onclick="undoLastOrderViaAPI()" style="display:none">↩ Вернуть приказ</button>
     <button class="abtn bp" id="btn-pass" onclick="passOrderTurnViaAPI()" style="display:none">Передать ход →</button>
   </div>
@@ -502,8 +504,9 @@ function makeState() {
     selUnitType: null,
     selStructIdx: null,    // index in cp.structurePool
     // ── warp storms ──────────────────────────
-    warpStorms: [],    // [{ tile: 'col,row', side: 'top'|'bottom'|'left'|'right', owner: 0|1 }]
+    warpStorms: [],    // [{ tileKey: 'col,row', side: 'top'|'bottom'|'left'|'right', owner: 0|1 }]
     warpStormStep: 0,  // 0 = second player places, 1 = first player places
+    warpConfirmed: [false, false],  // подтверждение варп-штормов каждым игроком
     // ── target markers ──────────────────────
     targetMarkers: [], // [{ tile: 'col,row', areaIdx: int, owner: 0|1 }]
     // ── orders (управляются Python Stage 2) ──
@@ -948,7 +951,7 @@ function setPhase(phase) {
   G.selUnitType = null;
 
   // Hide all action buttons
-  ['btn-ut','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-undo-order'].forEach(id => {
+  ['btn-ut','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-undo-order','btn-undo-ws','btn-confirm-ws'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
 
@@ -973,8 +976,16 @@ function setPhase(phase) {
     renderSide(); renderBoard(G.lastKey);
   }
   else if (phase === 'warp-storm') {
-    const wsNum = G.warpStorms.length + 1;
-    ins.innerHTML = `<strong>ВАРП-ШТОРМ ${wsNum}/2</strong><br>${cp.name}: кликните на границу любой системы чтобы поставить варп-шторм`;
+    const myStorm = G.warpStorms.find(ws => ws.owner === G.curP);
+    if (myStorm && !G.warpConfirmed[G.curP]) {
+      ins.innerHTML = `<strong>ВАРП-ШТОРМ</strong><br>${cp.name}: варп-шторм размещён на [${myStorm.tileKey}] ${myStorm.side}. Подтвердите или отмените.`;
+      show('btn-undo-ws');
+      show('btn-confirm-ws');
+    } else if (G.warpConfirmed[G.curP]) {
+      ins.innerHTML = `<strong>ВАРП-ШТОРМ</strong><br>${cp.name}: размещение подтверждено. Ожидание второго игрока...`;
+    } else {
+      ins.innerHTML = `<strong>ВАРП-ШТОРМ</strong><br>${cp.name}: кликните на границу любой системы чтобы поставить варп-шторм`;
+    }
     renderBoard();
   }
   else if (phase === 'order-placement') {
@@ -1384,6 +1395,7 @@ function getObjectiveEligibleDisplayIdxs(tile) {
 function startWarpStormPlacement() {
   G.warpStorms = [];
   G.warpStormStep = 0;
+  G.warpConfirmed = [false, false];
   // Второй игрок (не первый) ставит варп-шторм первым
   G.curP = 1 - G.firstPlayer;
   renderBoard(); updateHeader();
@@ -1394,21 +1406,55 @@ function placeWarpStorm(tileKey, side) {
   if (G.phase !== 'warp-storm') return;
   // Нельзя ставить туда, где уже стоит варп-шторм
   if (G.warpStorms.some(ws => ws.tileKey === tileKey && ws.side === side)) return;
-  G.warpStorms.push({ tileKey, side });
+  // Нельзя ставить если уже разместил свой
+  if (G.warpStorms.some(ws => ws.owner === G.curP)) return;
+  // Нельзя ставить если уже подтвердил
+  if (G.warpConfirmed[G.curP]) return;
+
+  G.warpStorms.push({ tileKey, side, owner: G.curP });
   addLog(`${G.players[G.curP].name} поставил варп-шторм: [${tileKey}] ${side}`, G.curP);
-  if (G.warpStorms.length === 1) {
-    // Теперь первый игрок
-    G.curP = G.firstPlayer;
-    updateHeader();
-    showHP(G.players[G.curP].name, 'Разместите варп-шторм', () => setPhase('warp-storm'));
-  } else {
-    // Оба поставили — передаём управление Python (Stage 2)
+  setPhase('warp-storm');
+}
+
+function undoWarpStorm() {
+  if (G.phase !== 'warp-storm') return;
+  const idx = G.warpStorms.findIndex(ws => ws.owner === G.curP);
+  if (idx === -1) return;
+  G.warpStorms.splice(idx, 1);
+  G.warpConfirmed[G.curP] = false;
+  addLog(`${G.players[G.curP].name} отменил варп-шторм`, G.curP);
+  setPhase('warp-storm');
+}
+
+function confirmWarpStorm() {
+  if (G.phase !== 'warp-storm') return;
+  if (!G.warpStorms.some(ws => ws.owner === G.curP)) return;
+  G.warpConfirmed[G.curP] = true;
+  addLog(`${G.players[G.curP].name} подтвердил варп-шторм`, G.curP);
+
+  // Проверяем: оба подтвердили?
+  if (G.warpConfirmed[0] && G.warpConfirmed[1]) {
+    // Оба подтвердили — переход к приказам
     addLog('Варп-штормы установлены. Начинается расстановка приказов.', -1);
     G.curP = G.firstPlayer;
     G.ordersPlaced = [0, 0];
     G.orders = [];
     renderBoard(); updateHeader();
     startStage2();
+  } else {
+    // Передаём ход второму игроку
+    G.curP = 1 - G.curP;
+    updateHeader();
+    const myStorm = G.warpStorms.find(ws => ws.owner === G.curP);
+    if (myStorm && G.warpConfirmed[G.curP]) {
+      // Второй уже подтвердил (не должно случиться, но на всякий)
+    } else if (myStorm) {
+      // Уже разместил, но не подтвердил
+      showHP(G.players[G.curP].name, 'Подтвердите варп-шторм', () => setPhase('warp-storm'));
+    } else {
+      // Ещё не разместил
+      showHP(G.players[G.curP].name, 'Разместите варп-шторм', () => setPhase('warp-storm'));
+    }
   }
 }
 
@@ -1676,7 +1722,8 @@ function renderBoard() {
         ws.className = `warp-storm warp-storm-${side} ${isH ? 'warp-storm-h' : 'warp-storm-v'}`;
         el.appendChild(ws);
       }
-      if (G.phase === 'warp-storm' && !hasWS) {
+      const canPlaceWS = G.phase === 'warp-storm' && !hasWS && !G.warpStorms.some(ws => ws.owner === G.curP) && !G.warpConfirmed[G.curP];
+      if (canPlaceWS) {
         const border = document.createElement('div');
         border.className = `ws-border ws-border-${isH ? 'h' : 'v'} warp-storm-${side}`;
         border.onclick = (e) => { e.stopPropagation(); placeWarpStorm(tile.key, side); };
