@@ -16,6 +16,7 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Any, Optional, List
+from faction_defs import FACTIONS
 
 app = FastAPI(title="Stellar Conflict Game Server")
 
@@ -344,6 +345,21 @@ async def init_game(request: InitGameRequest) -> GameStateResponse:
     try:
         async with _game_lock:
             _active_game = request.state.copy()
+
+            # Обогатить state данными о картах из faction_defs
+            for p in _active_game.get('players', []):
+                fid = p.get('faction')
+                if fid and fid in FACTIONS:
+                    fac = FACTIONS[fid]
+                    p['hand_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value == -1]
+                    p['available_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value != -1]
+                    p['available_order_upgrades'] = [u.to_dict() for u in fac.order_upgrades]
+                    p['available_event_cards'] = [e.to_dict() for e in fac.event_cards]
+                    if 'hand_order_upgrades' not in p:
+                        p['hand_order_upgrades'] = []
+                    if 'hand_event_cards' not in p:
+                        p['hand_event_cards'] = []
+
             print(f"✅ Stage 2 инициализирована. Игроки: {[p.get('name') for p in _active_game.get('players', [])]}")
         return GameStateResponse(success=True, state=_active_game)
     except Exception as e:
