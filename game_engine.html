@@ -1672,6 +1672,7 @@ function renderBoard() {
       const offsetX = idx * 5;   // вправо
 
       orderEl.className = `order-fd`;
+      const factionColor = G.players[order.owner].faction_color || (order.owner === 0 ? '#00c8ff' : '#ff4d6d');
       orderEl.style.cssText = `
         position: absolute;
         width: 50px;
@@ -1690,7 +1691,7 @@ function renderBoard() {
         z-index: ${10 + idx};
         background: #1a1a1a;
         border: 2px solid #333;
-        color: ${fac?.color || (order.owner === 0 ? '#00c8ff' : '#ff4d6d')};
+        color: ${factionColor};
         clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
       `;
       // Рубашка вверх - иконка фракции ЦВЕТОМ ФРАКЦИИ

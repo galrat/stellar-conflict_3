@@ -17,6 +17,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Any, Optional, List
 from faction_defs import FACTIONS
+from python_engine.orders_placement import (
+    get_available_tiles,
+    validate_order_placement,
+    place_order_impl,
+    next_phase_or_player,
+)
 
 app = FastAPI(title="Stellar Conflict Game Server")
 
@@ -41,6 +47,10 @@ MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
 # Папка Загрузки (работает на Windows, Mac, Linux)
 SAVES_DIR = Path.home() / "Downloads" / "Stellar_Conflict_Saves"
 SAVES_DIR.mkdir(parents=True, exist_ok=True)
+
+# Папка проекта
+PROJECT_DIR = Path(__file__).parent
+CURRENT_STATE_FILE = PROJECT_DIR / "current_state.txt"
 
 # ── Stage 2 — активная игра ──────────────────────────────────────────────────
 _active_game: Optional[dict] = None
@@ -97,6 +107,16 @@ def _clear_temp_snapshots():
     snapshots = _get_temp_snapshots()
     for f in snapshots:
         Path(f).unlink()
+
+def _save_current_state():
+    """Сохранить текущий state в current_state.txt в папке проекта"""
+    if _active_game is None:
+        return
+    try:
+        with open(CURRENT_STATE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(_active_game, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"⚠️  Ошибка при сохранении current_state.txt: {e}")
 
 
 # ── Models ──────────────────────────────────────────────────────────────────
@@ -346,21 +366,47 @@ async def init_game(request: InitGameRequest) -> GameStateResponse:
         async with _game_lock:
             _active_game = request.state.copy()
 
-            # Обогатить state данными о картах из faction_defs
+            # Обогатить state данными о картах и цветом фракции
             for p in _active_game.get('players', []):
                 fid = p.get('faction')
                 if fid and fid in FACTIONS:
                     fac = FACTIONS[fid]
+                    # Добавить цвет фракции
+                    faction_color = fac.color
+                    if faction_color and not faction_color.startswith('#'):
+                        faction_color = f'#{faction_color}'
+                    p['faction_color'] = faction_color
+
                     p['hand_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value == -1]
                     p['available_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value != -1]
                     p['available_order_upgrades'] = [u.to_dict() for u in fac.order_upgrades]
                     p['available_event_cards'] = [e.to_dict() for e in fac.event_cards]
                     if 'hand_order_upgrades' not in p:
                         p['hand_order_upgrades'] = []
+                    else:
+                        # Если уже есть hand_order_upgrades, добавить status если его нет
+                        for upgrade in p['hand_order_upgrades']:
+                            if 'order_upgrade_status' not in upgrade:
+                                upgrade['order_upgrade_status'] = 'active'
                     if 'hand_event_cards' not in p:
                         p['hand_event_cards'] = []
 
+            # Добавить dropped_orders если его нет
+            if 'dropped_orders' not in _active_game:
+                _active_game['dropped_orders'] = []
+
+            # Добавить флаг для проверки размещения приказа в этом ходу
+            if 'order_placed_this_turn' not in _active_game:
+                _active_game['order_placed_this_turn'] = [False, False]
+
+            # Добавить status для варп-штормов если нет
+            if 'warpStorms' in _active_game:
+                for storm in _active_game['warpStorms']:
+                    if 'status' not in storm:
+                        storm['status'] = 'active'
+
             print(f"✅ Stage 2 инициализирована. Игроки: {[p.get('name') for p in _active_game.get('players', [])]}")
+            _save_current_state()
         return GameStateResponse(success=True, state=_active_game)
     except Exception as e:
         print(f"❌ Ошибка инициализации Stage 2: {e}")
@@ -384,46 +430,52 @@ async def place_order_endpoint(request: PlaceOrderRequest) -> GameStateResponse:
             return GameStateResponse(success=False, error="Игра не инициализирована")
 
         try:
-            # СОХРАНИТЬ SNAPSHOT перед изменениями
+            # 1. Валидировать размещение
+            success, message = validate_order_placement(
+                _active_game, request.player_id, request.order_id, request.tile_key
+            )
+
+            if not success:
+                return GameStateResponse(success=False, error=message)
+
+            # 2. СОХРАНИТЬ SNAPSHOT перед изменениями
             _save_temp_snapshot()
 
-            # Проверка: есть ли такой приказ в руке игрока
-            player = _active_game['players'][request.player_id]
-            order_idx = -1
-            for i, o in enumerate(player.get('hand_orders', [])):
-                if o.get('id') == request.order_id:
-                    order_idx = i
-                    break
+            # 3. Разместить приказ
+            place_order_impl(_active_game, request.player_id, request.order_id, request.tile_key)
 
-            if order_idx < 0:
-                return GameStateResponse(success=False, error="Приказ не найден в руке")
-
-            # Удалить из руки
-            order = player['hand_orders'].pop(order_idx)
-
-            # Добавить на поле
-            if 'orders' not in _active_game:
-                _active_game['orders'] = []
-
-            position = len([o for o in _active_game['orders'] if o.get('tile') == request.tile_key])
-            _active_game['orders'].append({
-                'id': order['id'],
-                'type': order['type'],
-                'owner': request.player_id,
-                'tile': request.tile_key,
-                'position': position,
-                'revealed': False
-            })
-
-            # Обновить счётчик
-            _active_game['ordersPlaced'][request.player_id] += 1
+            # 4. Установить флаг что приказ размещен в этом ходу
+            _active_game['order_placed_this_turn'][request.player_id] = True
 
             print(f"📝 Приказ {request.order_id} размещён на [{request.tile_key}]")
+            _save_current_state()
             return GameStateResponse(success=True, state=_active_game.copy())
 
         except Exception as e:
+            import traceback
             print(f"❌ Ошибка размещения приказа: {e}")
+            print(f"Полный traceback:")
+            traceback.print_exc()
             return GameStateResponse(success=False, error=str(e))
+
+
+@app.get('/api/game/available-tiles/{player_id}')
+async def get_available_tiles_endpoint(player_id: int):
+    """Получить доступные плитки для размещения приказа"""
+    async with _game_lock:
+        if _active_game is None:
+            return {"success": False, "error": "Игра не инициализирована"}
+
+        try:
+            tiles = get_available_tiles(_active_game, player_id)
+            return {
+                "success": True,
+                "available_tiles": tiles,
+                "player_id": player_id,
+            }
+        except Exception as e:
+            print(f"❌ Ошибка получения доступных плиток: {e}")
+            return {"success": False, "error": str(e)}
 
 
 @app.post('/api/game/cancel-order')
@@ -434,6 +486,7 @@ async def cancel_order_endpoint(request: CancelOrderRequest) -> GameStateRespons
             return GameStateResponse(success=False, error="Игра не инициализирована")
 
         print(f"↩️ Отмена приказа {request.order_id} (заглушка)")
+        _save_current_state()
         return GameStateResponse(success=True, state=_active_game.copy())
 
 
@@ -464,6 +517,7 @@ async def undo_endpoint(request: UndoRequest) -> GameStateResponse:
             # Удалить использованный snapshot
             Path(snapshots[-1]).unlink()
             print(f"↩️  Отмена выполнена")
+            _save_current_state()
             return GameStateResponse(success=True, state=_active_game.copy())
         else:
             return GameStateResponse(success=False, error="Ошибка загрузки snapshot")
@@ -488,17 +542,52 @@ async def get_faction_cards(faction_id: str):
 
 @app.post('/api/game/pass-turn')
 async def pass_turn_endpoint(request: PassTurnRequest) -> GameStateResponse:
-    """Передать ход"""
+    """Передать ход (переход на следующего игрока или фазу)"""
     async with _game_lock:
         if _active_game is None:
             return GameStateResponse(success=False, error="Игра не инициализирована")
 
-        # Переход на следующего игрока
-        current = _active_game.get('curP', 0)
-        next_p = 1 - current
-        _active_game['curP'] = next_p
-        print(f"➜ Ход передан игроку {next_p}")
-        return GameStateResponse(success=True, state=_active_game.copy())
+        try:
+            current_player = _active_game.get('curP', 0)
+            phase = _active_game.get('phase', 'unknown')
+
+            # На этапе order-placement требуется проверка что приказ был размещен
+            if phase == 'order-placement':
+                order_placed_list = _active_game.get('order_placed_this_turn', [False, False])
+                order_placed = order_placed_list[current_player] if len(order_placed_list) > current_player else False
+
+                if not order_placed:
+                    print(f"❌ Ход отклонен: player={current_player} не разместил приказ")
+                    return GameStateResponse(
+                        success=False,
+                        error="Вы должны разместить приказ перед передачей хода"
+                    )
+
+            # СОХРАНИТЬ SNAPSHOT перед изменениями
+            _save_temp_snapshot()
+
+            # Применить логику следующей фазы или игрока
+            next_phase_or_player(_active_game)
+
+            # Сбросить флаг для нового игрока если остаемся в order-placement
+            if _active_game.get('phase', 'unknown') == 'order-placement':
+                next_player = _active_game.get('curP', 0)
+                _active_game['order_placed_this_turn'][next_player] = False
+
+            current_phase = _active_game.get('phase', 'unknown')
+            next_player = _active_game.get('curP', 0)
+
+            if current_phase == 'play-orders':
+                print(f"✅ Переход в фазу play-orders. Начинаем с игрока {next_player}")
+            else:
+                print(f"➜ Ход передан игроку {next_player}")
+
+            _save_current_state()
+            return GameStateResponse(success=True, state=_active_game.copy())
+
+        except Exception as e:
+            print(f"❌ Ошибка при передаче хода: {e}")
+            return GameStateResponse(success=False, error=str(e))
 
 
 @app.get('/')
@@ -518,9 +607,12 @@ async def root():
             'stage2': {
                 'init': 'POST /api/game/init',
                 'state': 'GET /api/game/state',
+                'available-tiles': 'GET /api/game/available-tiles/{player_id}',
                 'place-order': 'POST /api/game/place-order',
                 'cancel-order': 'POST /api/game/cancel-order',
                 'pass-turn': 'POST /api/game/pass-turn',
+                'undo': 'POST /api/game/undo',
+                'clear-temp': 'POST /api/game/clear-temp',
             }
         }
     }

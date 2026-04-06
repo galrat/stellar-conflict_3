@@ -33,7 +33,13 @@ def generate_game_state(game_state) -> dict:
                 "forge": int,
                 "hand_battle_cards": [str],              # начальные боевые карты (уровень -1)
                 "available_battle_cards": [str],        # доступные боевые карты (уровни 0, 2, 3)
-                "hand_order_upgrades": [str],           # улучшения приказов на руке
+                "hand_order_upgrades": [
+                    {
+                        "name": str,
+                        "order_upgrade_status": "active" or "used",  # статус улучшения приказа
+                        ...
+                    }
+                ],                                      # улучшения приказов на руке
                 "available_order_upgrades": [str],      # доступные улучшения приказов
                 "hand_event_cards": [str],              # карты событий на руке
                 "available_event_cards": [str],         # доступные карты событий
@@ -98,7 +104,17 @@ def generate_game_state(game_state) -> dict:
             {
                 "tile": "t_key",
                 "side": "top|bottom|left|right",
-                "owner": "p1" or "p2"  # кто разместил этот вихрь
+                "owner": "p1" or "p2",  # кто разместил этот вихрь
+                "status": "active" or "used"
+            },
+            ...
+        ],
+
+        "dropped_orders": [
+            {
+                "id": str,
+                "type": str,
+                "owner": "p1" or "p2"
             },
             ...
         ],
@@ -125,6 +141,8 @@ def generate_game_state(game_state) -> dict:
         "units": {},
         "buildings": {},
         "orders": {},
+        "dropped_orders": [],
+        "warpStorms": [],
     }
 
     # ── Игроки ──────────────────────────────────────────────────────────────
@@ -155,7 +173,7 @@ def generate_game_state(game_state) -> dict:
             "available_battle_cards": available_battle_cards,
             "hand_order_upgrades": [],
             "available_order_upgrades": available_order_upgrades,
-            "hand_event_cards": [],
+            "hand_event_cards": [],  # карты событий на руке (инициально пусто)
             "available_event_cards": available_event_cards,
             "boughtUpgrades": player.boughtUpgrades,  # купленные улучшения (пусто в начале)
             "object_tokens": player.object_tokens,  # жетоны объектов

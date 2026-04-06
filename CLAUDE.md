@@ -44,13 +44,16 @@
 - ✅ Управляет snapshots для отмены
 - ✅ Отправляет обновленный state в JS
 
-**Endpoints:**
+**Endpoints (Stage 2):**
 ```
-POST /api/game/init          — инициализация Stage 2
-POST /api/game/place-order   — разместить приказ
-POST /api/game/undo          — отмена действия
-POST /api/game/pass-turn     — передать ход
-GET  /api/game/state         — получить текущий state
+POST /api/game/init                    — инициализация Stage 2
+GET  /api/game/state                   — получить текущий state
+GET  /api/game/available-tiles/{id}    — получить доступные плитки для игрока
+POST /api/game/place-order             — разместить приказ
+POST /api/game/cancel-order            — отмена приказа (заглушка)
+POST /api/game/pass-turn               — передать ход
+POST /api/game/undo                    — отмена последнего действия
+POST /api/game/clear-temp              — очистить все snapshots
 ```
 
 ---
@@ -70,7 +73,11 @@ State (G) — словарь со всем состоянием игры. Хра
   ordersPlaced: [0, 4],          // сколько приказов выставлено
   
   players: [
-    { name, faction, pool, hand_orders, ... },
+    { 
+      name, faction, pool, hand_orders, 
+      hand_order_upgrades: [{ name, order_upgrade_status, ... }],  // order_upgrade_status: "active" или "used"
+      ... 
+    },
     { ... }
   ],
   
@@ -81,6 +88,20 @@ State (G) — словарь со всем состоянием игры. Хра
   
   orders: [
     { id, type, owner, tile, position, revealed },
+    ...
+  ],
+  
+  dropped_orders: [
+    { id, type, owner },
+    ...
+  ],
+  
+  ordersPlaced: [orders_p0, orders_p1],  // количество размещенных приказов
+  
+  order_placed_this_turn: [p0_placed, p1_placed],  // флаг для проверки размещения приказа в этом ходу
+  
+  warpStorms: [
+    { tileKey, side, owner, status },  // status: "active" или "used"
     ...
   ],
   
@@ -109,7 +130,11 @@ C:\Users\[User]\Downloads\Stellar_Conflict_Temp\
   ... (максимум 10)
 ```
 
-При undo: Python загружает snapshot, восстанавливает state, удаляет файл.
+Логика:
+- **Перед** любым изменением state сохраняется snapshot
+- Максимум 10 файлов; при достижении лимита удаляется самый старый
+- При undo: Python загружает последний snapshot и восстанавливает state
+- Используемый snapshot удаляется
 
 ---
 
@@ -151,11 +176,19 @@ C:\Users\[User]\Downloads\Stellar_Conflict_Temp\
 
 ### Python (game_server.py)
 - `init_game()` — инициализирует Stage 2
-- `place_order_endpoint()` — обрабатывает приказ
+- `place_order_endpoint()` — обрабатывает приказ (использует orders_placement.py)
 - `undo_endpoint()` — восстанавливает snapshot
-- `pass_turn_endpoint()` — передает ход
-- `_save_temp_snapshot()` — сохраняет state
+- `pass_turn_endpoint()` — передает ход (использует orders_placement.py)
+- `get_available_tiles_endpoint()` — возвращает доступные плитки
+- `_save_temp_snapshot()` — сохраняет state (макс 10 файлов)
 - `_load_temp_snapshot()` — загружает state
+
+### Python (python_engine/orders_placement.py)
+- `get_available_tiles()` — получить дружественные и соседние плитки
+- `validate_order_placement()` — валидировать размещение приказа
+- `place_order_impl()` — реализовать размещение приказа
+- `check_orders_complete()` — проверить все ли 8 приказов разместены
+- `next_phase_or_player()` — переход на следующего игрока или фазу
 
 ---
 
