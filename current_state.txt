@@ -3,28 +3,27 @@
   "players": [
     {
       "name": "Alpha",
-      "faction": "eldar",
-      "color": "c1",
+      "faction": "chaos",
       "pool": [],
       "hand": [
         {
           "handIdx": 0,
-          "tileDefId": "home_eldar",
-          "tileId": 7,
+          "tileDefId": "home_chaos",
+          "tileId": 6,
           "isHome": true,
           "placed": true
         },
         {
           "handIdx": 1,
-          "tileDefId": "normal_08",
-          "tileId": 8,
+          "tileDefId": "normal_07",
+          "tileId": 7,
           "isHome": false,
           "placed": true
         },
         {
           "handIdx": 2,
-          "tileDefId": "normal_06",
-          "tileId": 9,
+          "tileDefId": "normal_08",
+          "tileId": 8,
           "isHome": false,
           "placed": true
         }
@@ -73,296 +72,6 @@
         "cash": 0,
         "forge": 0
       },
-      "faction_color": "#F2C94C",
-      "hand_battle_cards": [
-        {
-          "name": "Command of the Autarch",
-          "level": -1,
-          "tier": -1,
-          "cost": 0,
-          "effect_1": "Either rally 1 unit or gain 1 [M]. Play 1 card from your hand — gain its combat icons but not its abilities.",
-          "effect_2": "—"
-        },
-        {
-          "name": "Hit and Run",
-          "level": -1,
-          "tier": -1,
-          "cost": 0,
-          "effect_1": "Gain 2 (g). Requires: Aspect / Frigate.",
-          "effect_2": "Spend 1 [M] to move 1 unit to adjacent friendly or uncontrolled area."
-        },
-        {
-          "name": "Howling Banshees",
-          "level": -1,
-          "tier": -1,
-          "cost": 0,
-          "effect_1": "Gain 1 [?]. Requires: Aspect / Frigate.",
-          "effect_2": "Spend 1 [M] to force enemy to rout a unit of his choice."
-        },
-        {
-          "name": "Ranger Support",
-          "level": -1,
-          "tier": -1,
-          "cost": 0,
-          "effect_1": "If attacking, gain 1 (g) and 1 (s). If defending, you may retreat 1 unit.",
-          "effect_2": "—"
-        },
-        {
-          "name": "Striking Scorpions",
-          "level": -1,
-          "tier": -1,
-          "cost": 0,
-          "effect_1": "Gain 1 [?]. Requires: Aspect / Frigate.",
-          "effect_2": "Enemy loses 1 die of his choice."
-        }
-      ],
-      "available_battle_cards": [
-        {
-          "name": "Fire Dragon's Vengeance",
-          "level": 0,
-          "tier": 0,
-          "cost": 2,
-          "effect_1": "If you are attacking, enemy cannot gain (s) this execution round. Requires: Aspect / Frigate.",
-          "effect_2": "Gain 2 (s)."
-        },
-        {
-          "name": "Swooping Hawks",
-          "level": 0,
-          "tier": 0,
-          "cost": 2,
-          "effect_1": "If you are defending, enemy loses 3 (g). Requires: Aspect / Frigate.",
-          "effect_2": "Spend 1 [M] to gain 2 (g)."
-        },
-        {
-          "name": "Wraithguard Advance",
-          "level": 0,
-          "tier": 0,
-          "cost": 2,
-          "effect_1": "Gain 1 [?] or 1 [M]. Convert up to 2 [S] into [G]. Requires: Wraithguard / Frigate / Stalker.",
-          "effect_2": "Enemy spends 1 [M] or routs unit of his choosing."
-        },
-        {
-          "name": "Wraithguard Support",
-          "level": 0,
-          "tier": 0,
-          "cost": 2,
-          "effect_1": "Gain 1 [?] or 1 [M]. Convert up to 2 [G] into [S]. Requires: Wraithguard / Frigate / Stalker.",
-          "effect_2": "Spend 1 [M] to rally 1 unit."
-        },
-        {
-          "name": "Fire Prism",
-          "level": 2,
-          "tier": 2,
-          "cost": 4,
-          "effect_1": "Convert any [M] into [G]. Requires: Falcon / Stalker.",
-          "effect_2": "If attacking, gain 2 (g). If defending, force enemy to lose 5 (s)."
-        },
-        {
-          "name": "Spiritseer's Guidance",
-          "level": 2,
-          "tier": 2,
-          "cost": 4,
-          "effect_1": "Gain 1 [M]. Rout 1 unit; units cannot suffer any damage this execution round.",
-          "effect_2": "—"
-        },
-        {
-          "name": "Wave Serpent",
-          "level": 2,
-          "tier": 2,
-          "cost": 4,
-          "effect_1": "Gain 1 [?]. Gain 3 (s) unless enemy spends 1 [M]. Requires: Falcon / Stalker.",
-          "effect_2": "Spend 1 [M] to move any number of Tier 0 and Tier 1 units to an adjacent area — may start a new combat."
-        },
-        {
-          "name": "Holofield Emitter",
-          "level": 3,
-          "tier": 3,
-          "cost": 6,
-          "effect_1": "Gain 1 [?]. Draw 1 combat card. Requires: Titan / Stalker.",
-          "effect_2": "Play 1 card from your hand — gain its combat icons but not its abilities."
-        },
-        {
-          "name": "Psychic Lance",
-          "level": 3,
-          "tier": 3,
-          "cost": 6,
-          "effect_1": "Gain 1 [?]. Enemy discards 1 random combat card from his hand. Requires: Titan / Stalker.",
-          "effect_2": "Gain 4 (g) unless enemy discards 1 face up card of your choice."
-        }
-      ],
-      "available_order_upgrades": [
-        {
-          "id": "",
-          "name": "Tactical Strikes",
-          "order_type": "advance",
-          "tier": 0,
-          "cost": 1,
-          "effect_1": "Orbital Strike, once per round. Gain 1 [?].",
-          "effect_2": "Spend 1 [M] to choose enemy unit on the world — this must suffer damage first."
-        },
-        {
-          "id": "",
-          "name": "Wraithbone Singers",
-          "order_type": "deploy",
-          "tier": 1,
-          "cost": 2,
-          "effect_1": "When purchasing structure, may place it on world containing exactly 1 different structure. Once per round.",
-          "effect_2": "Command Level 1."
-        },
-        {
-          "id": "",
-          "name": "Farseer",
-          "order_type": "strategize",
-          "tier": 1,
-          "cost": 2,
-          "effect_1": "This order can be resolved even if there are no units in the active system. Once per round.",
-          "effect_2": "Command Level 1."
-        },
-        {
-          "id": "",
-          "name": "Corsair Raid",
-          "order_type": "advance",
-          "tier": 1,
-          "cost": 2,
-          "effect_1": "After resolving a combat with this order, you may perform 1 orbital strike in the active system. Once per round.",
-          "effect_2": "Command Level 1."
-        },
-        {
-          "id": "",
-          "name": "Strafing Run",
-          "order_type": "advance",
-          "tier": 2,
-          "cost": 3,
-          "effect_1": "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
-          "effect_2": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2."
-        }
-      ],
-      "available_event_cards": [
-        {
-          "name": "Exodite Colony",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Tactic",
-          "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token."
-        },
-        {
-          "name": "Farsight",
-          "warp_storm_move": "Across",
-          "card_type": "Scheme",
-          "effect": "At start of assess damage, discard to take all units in this combat and place on any friendly area."
-        },
-        {
-          "name": "Legacy of Vaul",
-          "warp_storm_move": "Sideways",
-          "card_type": "Tactic",
-          "effect": "Gain 2 (F)."
-        },
-        {
-          "name": "Outcasts Returned",
-          "warp_storm_move": "Across",
-          "card_type": "Tactic",
-          "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
-        },
-        {
-          "name": "Outmanoeuvre",
-          "warp_storm_move": "Sideways",
-          "card_type": "Scheme",
-          "effect": "At end of Planning Phase, discard to look at 1 of your order tokens anywhere in a stack. Then place on top or bottom of the stack."
-        },
-        {
-          "name": "Path of the Warrior",
-          "warp_storm_move": "Top Left/Bot Rgt",
-          "card_type": "Tactic",
-          "effect": "Purchase 1 combat upgrade, reducing its cost by 1 per friendly world with a city."
-        },
-        {
-          "name": "Vicious Raids",
-          "warp_storm_move": "Top Left/Bot Rgt",
-          "card_type": "Scheme",
-          "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
-        },
-        {
-          "name": "Warp Gate",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Scheme",
-          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
-        }
-      ],
-      "hand_order_upgrades": [],
-      "hand_event_cards": []
-    },
-    {
-      "name": "Omega",
-      "faction": "chaos",
-      "color": "c2",
-      "pool": [],
-      "hand": [
-        {
-          "handIdx": 0,
-          "tileDefId": "home_chaos",
-          "tileId": 16,
-          "isHome": true,
-          "placed": true
-        },
-        {
-          "handIdx": 1,
-          "tileDefId": "normal_01",
-          "tileId": 17,
-          "isHome": false,
-          "placed": true
-        },
-        {
-          "handIdx": 2,
-          "tileDefId": "normal_07",
-          "tileId": 18,
-          "isHome": false,
-          "placed": true
-        }
-      ],
-      "structurePool": [],
-      "hand_orders": [
-        {
-          "id": "p2_dominate_1",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "p2_dominate_2",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "p2_deploy_1",
-          "type": "deploy",
-          "owner": 1
-        },
-        {
-          "id": "p2_advance_1",
-          "type": "advance",
-          "owner": 1
-        },
-        {
-          "id": "p2_advance_2",
-          "type": "advance",
-          "owner": 1
-        },
-        {
-          "id": "p2_strategize_1",
-          "type": "strategize",
-          "owner": 1
-        },
-        {
-          "id": "p2_strategize_2",
-          "type": "strategize",
-          "owner": 1
-        }
-      ],
-      "credits": 6,
-      "tokens": {
-        "reinforcement": 0,
-        "cash": 0,
-        "forge": 0
-      },
-      "faction_color": "#FF0000",
       "hand_battle_cards": [
         {
           "name": "Dark Faith",
@@ -479,6 +188,7 @@
           "effect_2": "If more [M] than enemy, destroy 1 routed unit."
         }
       ],
+      "hand_order_upgrades": [],
       "available_order_upgrades": [
         {
           "id": "",
@@ -526,6 +236,7 @@
           "effect_2": "Spend 2 [S] to force enemy to choose unit or structure to destroy."
         }
       ],
+      "hand_event_cards": [],
       "available_event_cards": [
         {
           "name": "Blight of Nurgle",
@@ -576,8 +287,297 @@
           "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
         }
       ],
+      "boughtUpgrades": [],
+      "faction_color": "#FF0000"
+    },
+    {
+      "name": "Omega",
+      "faction": "eldar",
+      "pool": [],
+      "hand": [
+        {
+          "handIdx": 0,
+          "tileDefId": "home_eldar",
+          "tileId": 16,
+          "isHome": true,
+          "placed": true
+        },
+        {
+          "handIdx": 1,
+          "tileDefId": "normal_03",
+          "tileId": 17,
+          "isHome": false,
+          "placed": true
+        },
+        {
+          "handIdx": 2,
+          "tileDefId": "normal_05",
+          "tileId": 18,
+          "isHome": false,
+          "placed": true
+        }
+      ],
+      "structurePool": [],
+      "hand_orders": [
+        {
+          "id": "p2_dominate_1",
+          "type": "dominate",
+          "owner": 1
+        },
+        {
+          "id": "p2_dominate_2",
+          "type": "dominate",
+          "owner": 1
+        },
+        {
+          "id": "p2_deploy_2",
+          "type": "deploy",
+          "owner": 1
+        },
+        {
+          "id": "p2_advance_1",
+          "type": "advance",
+          "owner": 1
+        },
+        {
+          "id": "p2_advance_2",
+          "type": "advance",
+          "owner": 1
+        },
+        {
+          "id": "p2_strategize_1",
+          "type": "strategize",
+          "owner": 1
+        },
+        {
+          "id": "p2_strategize_2",
+          "type": "strategize",
+          "owner": 1
+        }
+      ],
+      "credits": 6,
+      "tokens": {
+        "reinforcement": 0,
+        "cash": 0,
+        "forge": 0
+      },
+      "hand_battle_cards": [
+        {
+          "name": "Command of the Autarch",
+          "level": -1,
+          "tier": -1,
+          "cost": 0,
+          "effect_1": "Either rally 1 unit or gain 1 [M]. Play 1 card from your hand — gain its combat icons but not its abilities.",
+          "effect_2": "—"
+        },
+        {
+          "name": "Hit and Run",
+          "level": -1,
+          "tier": -1,
+          "cost": 0,
+          "effect_1": "Gain 2 (g). Requires: Aspect / Frigate.",
+          "effect_2": "Spend 1 [M] to move 1 unit to adjacent friendly or uncontrolled area."
+        },
+        {
+          "name": "Howling Banshees",
+          "level": -1,
+          "tier": -1,
+          "cost": 0,
+          "effect_1": "Gain 1 [?]. Requires: Aspect / Frigate.",
+          "effect_2": "Spend 1 [M] to force enemy to rout a unit of his choice."
+        },
+        {
+          "name": "Ranger Support",
+          "level": -1,
+          "tier": -1,
+          "cost": 0,
+          "effect_1": "If attacking, gain 1 (g) and 1 (s). If defending, you may retreat 1 unit.",
+          "effect_2": "—"
+        },
+        {
+          "name": "Striking Scorpions",
+          "level": -1,
+          "tier": -1,
+          "cost": 0,
+          "effect_1": "Gain 1 [?]. Requires: Aspect / Frigate.",
+          "effect_2": "Enemy loses 1 die of his choice."
+        }
+      ],
+      "available_battle_cards": [
+        {
+          "name": "Fire Dragon's Vengeance",
+          "level": 0,
+          "tier": 0,
+          "cost": 2,
+          "effect_1": "If you are attacking, enemy cannot gain (s) this execution round. Requires: Aspect / Frigate.",
+          "effect_2": "Gain 2 (s)."
+        },
+        {
+          "name": "Swooping Hawks",
+          "level": 0,
+          "tier": 0,
+          "cost": 2,
+          "effect_1": "If you are defending, enemy loses 3 (g). Requires: Aspect / Frigate.",
+          "effect_2": "Spend 1 [M] to gain 2 (g)."
+        },
+        {
+          "name": "Wraithguard Advance",
+          "level": 0,
+          "tier": 0,
+          "cost": 2,
+          "effect_1": "Gain 1 [?] or 1 [M]. Convert up to 2 [S] into [G]. Requires: Wraithguard / Frigate / Stalker.",
+          "effect_2": "Enemy spends 1 [M] or routs unit of his choosing."
+        },
+        {
+          "name": "Wraithguard Support",
+          "level": 0,
+          "tier": 0,
+          "cost": 2,
+          "effect_1": "Gain 1 [?] or 1 [M]. Convert up to 2 [G] into [S]. Requires: Wraithguard / Frigate / Stalker.",
+          "effect_2": "Spend 1 [M] to rally 1 unit."
+        },
+        {
+          "name": "Fire Prism",
+          "level": 2,
+          "tier": 2,
+          "cost": 4,
+          "effect_1": "Convert any [M] into [G]. Requires: Falcon / Stalker.",
+          "effect_2": "If attacking, gain 2 (g). If defending, force enemy to lose 5 (s)."
+        },
+        {
+          "name": "Spiritseer's Guidance",
+          "level": 2,
+          "tier": 2,
+          "cost": 4,
+          "effect_1": "Gain 1 [M]. Rout 1 unit; units cannot suffer any damage this execution round.",
+          "effect_2": "—"
+        },
+        {
+          "name": "Wave Serpent",
+          "level": 2,
+          "tier": 2,
+          "cost": 4,
+          "effect_1": "Gain 1 [?]. Gain 3 (s) unless enemy spends 1 [M]. Requires: Falcon / Stalker.",
+          "effect_2": "Spend 1 [M] to move any number of Tier 0 and Tier 1 units to an adjacent area — may start a new combat."
+        },
+        {
+          "name": "Holofield Emitter",
+          "level": 3,
+          "tier": 3,
+          "cost": 6,
+          "effect_1": "Gain 1 [?]. Draw 1 combat card. Requires: Titan / Stalker.",
+          "effect_2": "Play 1 card from your hand — gain its combat icons but not its abilities."
+        },
+        {
+          "name": "Psychic Lance",
+          "level": 3,
+          "tier": 3,
+          "cost": 6,
+          "effect_1": "Gain 1 [?]. Enemy discards 1 random combat card from his hand. Requires: Titan / Stalker.",
+          "effect_2": "Gain 4 (g) unless enemy discards 1 face up card of your choice."
+        }
+      ],
       "hand_order_upgrades": [],
-      "hand_event_cards": []
+      "available_order_upgrades": [
+        {
+          "id": "",
+          "name": "Tactical Strikes",
+          "order_type": "advance",
+          "tier": 0,
+          "cost": 1,
+          "effect_1": "Orbital Strike, once per round. Gain 1 [?].",
+          "effect_2": "Spend 1 [M] to choose enemy unit on the world — this must suffer damage first."
+        },
+        {
+          "id": "",
+          "name": "Wraithbone Singers",
+          "order_type": "deploy",
+          "tier": 1,
+          "cost": 2,
+          "effect_1": "When purchasing structure, may place it on world containing exactly 1 different structure. Once per round.",
+          "effect_2": "Command Level 1."
+        },
+        {
+          "id": "",
+          "name": "Farseer",
+          "order_type": "strategize",
+          "tier": 1,
+          "cost": 2,
+          "effect_1": "This order can be resolved even if there are no units in the active system. Once per round.",
+          "effect_2": "Command Level 1."
+        },
+        {
+          "id": "",
+          "name": "Corsair Raid",
+          "order_type": "advance",
+          "tier": 1,
+          "cost": 2,
+          "effect_1": "After resolving a combat with this order, you may perform 1 orbital strike in the active system. Once per round.",
+          "effect_2": "Command Level 1."
+        },
+        {
+          "id": "",
+          "name": "Strafing Run",
+          "order_type": "advance",
+          "tier": 2,
+          "cost": 3,
+          "effect_1": "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
+          "effect_2": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2."
+        }
+      ],
+      "hand_event_cards": [],
+      "available_event_cards": [
+        {
+          "name": "Exodite Colony",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Tactic",
+          "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token."
+        },
+        {
+          "name": "Farsight",
+          "warp_storm_move": "Across",
+          "card_type": "Scheme",
+          "effect": "At start of assess damage, discard to take all units in this combat and place on any friendly area."
+        },
+        {
+          "name": "Legacy of Vaul",
+          "warp_storm_move": "Sideways",
+          "card_type": "Tactic",
+          "effect": "Gain 2 (F)."
+        },
+        {
+          "name": "Outcasts Returned",
+          "warp_storm_move": "Across",
+          "card_type": "Tactic",
+          "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
+        },
+        {
+          "name": "Outmanoeuvre",
+          "warp_storm_move": "Sideways",
+          "card_type": "Scheme",
+          "effect": "At end of Planning Phase, discard to look at 1 of your order tokens anywhere in a stack. Then place on top or bottom of the stack."
+        },
+        {
+          "name": "Path of the Warrior",
+          "warp_storm_move": "Top Left/Bot Rgt",
+          "card_type": "Tactic",
+          "effect": "Purchase 1 combat upgrade, reducing its cost by 1 per friendly world with a city."
+        },
+        {
+          "name": "Vicious Raids",
+          "warp_storm_move": "Top Left/Bot Rgt",
+          "card_type": "Scheme",
+          "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
+        },
+        {
+          "name": "Warp Gate",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Scheme",
+          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
+        }
+      ],
+      "boughtUpgrades": [],
+      "faction_color": "#F2C94C"
     }
   ],
   "phase": "order-placement",
@@ -592,58 +592,21 @@
       "row": 0,
       "owner": 0,
       "isHome": true,
-      "tileId": 7,
-      "tileDefId": "home_eldar",
+      "tileId": 6,
+      "tileDefId": "home_chaos",
       "rotation": 0,
       "side": 0,
       "areas": [
         {
           "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 2,
-          "support": 0,
-          "discount": 1,
-          "forge": 0,
-          "joker": 1,
-          "troops": [
-            {
-              "id": 0,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 0
-            }
-          ],
-          "structures": [
-            {
-              "id": 6,
-              "player": 0,
-              "type": "factory"
-            }
-          ]
-        },
-        {
-          "type": "planet",
           "capacity": 4,
-          "income": 2,
+          "income": 1,
           "valuable": 0,
           "support": 0,
           "discount": 0,
           "forge": 0,
           "joker": 0,
           "troops": [
-            {
-              "id": 2,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 0
-            },
-            {
-              "id": 3,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 1
-            },
             {
               "id": 1,
               "player": 0,
@@ -652,6 +615,24 @@
             }
           ],
           "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 3,
+          "income": 1,
+          "valuable": 1,
+          "support": 1,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": [
+            {
+              "id": 5,
+              "player": 0,
+              "type": "factory"
+            }
+          ]
         },
         {
           "type": "space",
@@ -673,20 +654,20 @@
           "structures": []
         },
         {
-          "type": "space",
+          "type": "planet",
           "capacity": 3,
-          "income": 0,
-          "valuable": 0,
+          "income": 1,
+          "valuable": 1,
           "support": 0,
           "discount": 1,
           "forge": 0,
           "joker": 0,
           "troops": [
             {
-              "id": 5,
+              "id": 3,
               "player": 0,
-              "unitType": "space",
-              "tier": 0
+              "unitType": "ground",
+              "tier": 1
             }
           ],
           "structures": []
@@ -705,53 +686,17 @@
       "owner": 1,
       "isHome": false,
       "tileId": 17,
-      "tileDefId": "normal_01",
+      "tileDefId": "normal_03",
       "rotation": 0,
       "side": 0,
       "areas": [
         {
           "type": "planet",
-          "capacity": 3,
-          "income": 1,
+          "capacity": 2,
+          "income": 2,
           "valuable": 1,
           "support": 0,
-          "discount": 0,
-          "forge": 1,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 2,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
+          "discount": 1,
           "forge": 0,
           "joker": 0,
           "troops": [
@@ -760,6 +705,56 @@
               "player": 1,
               "unitType": "ground",
               "tier": 0
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 14,
+              "player": 1,
+              "unitType": "space",
+              "tier": 0
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 4,
+          "income": 1,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 12,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 1
             }
           ],
           "structures": []
@@ -827,7 +822,14 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 0,
+              "player": 0,
+              "unitType": "ground",
+              "tier": 0
+            }
+          ],
           "structures": []
         }
       ],
@@ -844,35 +846,35 @@
       "owner": 1,
       "isHome": true,
       "tileId": 16,
-      "tileDefId": "home_chaos",
+      "tileDefId": "home_eldar",
       "rotation": 0,
       "side": 0,
       "areas": [
         {
           "type": "planet",
-          "capacity": 4,
+          "capacity": 3,
           "income": 1,
-          "valuable": 0,
+          "valuable": 2,
           "support": 0,
-          "discount": 0,
+          "discount": 1,
           "forge": 0,
-          "joker": 0,
+          "joker": 1,
           "troops": [
             {
-              "id": 13,
+              "id": 10,
               "player": 1,
               "unitType": "ground",
-              "tier": 1
+              "tier": 0
             }
           ],
           "structures": []
         },
         {
           "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 1,
+          "capacity": 4,
+          "income": 2,
+          "valuable": 0,
+          "support": 0,
           "discount": 0,
           "forge": 0,
           "joker": 0,
@@ -896,7 +898,7 @@
           "joker": 0,
           "troops": [
             {
-              "id": 14,
+              "id": 13,
               "player": 1,
               "unitType": "space",
               "tier": 0
@@ -905,29 +907,22 @@
           "structures": []
         },
         {
-          "type": "planet",
+          "type": "space",
           "capacity": 3,
-          "income": 1,
-          "valuable": 1,
+          "income": 0,
+          "valuable": 0,
           "support": 0,
           "discount": 1,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 12,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 1
-            }
-          ],
+          "troops": [],
           "structures": []
         }
       ],
       "needsObjective": true,
       "objectiveMarker": {
         "owner": 0,
-        "realAreaIdx": 3
+        "realAreaIdx": 1
       }
     },
     "1,-1": {
@@ -936,72 +931,9 @@
       "row": -1,
       "owner": 0,
       "isHome": false,
-      "tileId": 9,
-      "tileDefId": "normal_06",
-      "rotation": 0,
-      "side": 0,
-      "areas": [
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 1,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 1,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        }
-      ],
-      "needsObjective": false,
-      "objectiveMarker": null
-    },
-    "2,-1": {
-      "key": "2,-1",
-      "col": 2,
-      "row": -1,
-      "owner": 1,
-      "isHome": false,
-      "tileId": 18,
+      "tileId": 7,
       "tileDefId": "normal_07",
-      "rotation": 0,
+      "rotation": 270,
       "side": 0,
       "areas": [
         {
@@ -1015,10 +947,10 @@
           "joker": 0,
           "troops": [
             {
-              "id": 10,
-              "player": 1,
+              "id": 2,
+              "player": 0,
               "unitType": "ground",
-              "tier": 0
+              "tier": 1
             }
           ],
           "structures": []
@@ -1062,6 +994,76 @@
       ],
       "needsObjective": false,
       "objectiveMarker": null
+    },
+    "2,-1": {
+      "key": "2,-1",
+      "col": 2,
+      "row": -1,
+      "owner": 1,
+      "isHome": false,
+      "tileId": 18,
+      "tileDefId": "normal_05",
+      "rotation": 0,
+      "side": 0,
+      "areas": [
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 1,
+          "support": 1,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 2,
+          "income": 2,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 9,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 0
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 4,
+          "income": 1,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        }
+      ],
+      "needsObjective": false,
+      "objectiveMarker": null
     }
   },
   "tilesPlaced": 6,
@@ -1078,15 +1080,21 @@
     {
       "tileKey": "1,-1",
       "side": "top",
+      "owner": 1,
       "status": "active"
     },
     {
-      "tileKey": "1,-1",
-      "side": "bottom",
+      "tileKey": "0,-1",
+      "side": "left",
+      "owner": 0,
       "status": "active"
     }
   ],
   "warpStormStep": 0,
+  "warpConfirmed": [
+    true,
+    true
+  ],
   "targetMarkers": [],
   "orders": [
     {
@@ -1098,7 +1106,7 @@
       "revealed": false
     },
     {
-      "id": "p2_deploy_2",
+      "id": "p2_deploy_1",
       "type": "deploy",
       "owner": 1,
       "tile": "2,0",

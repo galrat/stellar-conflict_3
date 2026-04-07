@@ -391,11 +391,17 @@ async def init_game(request: InitGameRequest) -> GameStateResponse:
                     if 'hand_event_cards' not in p:
                         p['hand_event_cards'] = []
 
-            # Добавить dropped_orders если его нет
+            # Удалить старое поле color, заменено на faction_color
+            for p in _active_game.get('players', []):
+                p.pop('color', None)
+
+            # Инициализация обязательных полей
             if 'dropped_orders' not in _active_game:
                 _active_game['dropped_orders'] = []
-
-            # Добавить флаг для проверки размещения приказа в этом ходу
+            if 'ordersPlaced' not in _active_game:
+                _active_game['ordersPlaced'] = [0, 0]
+            if 'orders' not in _active_game:
+                _active_game['orders'] = []
             if 'order_placed_this_turn' not in _active_game:
                 _active_game['order_placed_this_turn'] = [False, False]
 

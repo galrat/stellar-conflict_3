@@ -78,18 +78,15 @@ def get_available_tiles(current_state, player_id):
             friendly_tiles.add(tile_key)
             available_tiles.add(tile_key)
 
-    # 2. Добавить соседние плитки
+    # 2. Добавить соседние плитки (квадратная сетка, 4 соседа — как в board.py)
     for tile_key in friendly_tiles.copy():
         col, row = map(int, tile_key.split(','))
 
-        # 6 соседей в шестиугольной сетке (горизонтально/вертикально)
         neighbors = [
             (col + 1, row),      # вправо
             (col - 1, row),      # влево
             (col, row + 1),      # вниз
             (col, row - 1),      # вверх
-            (col + 1, row - 1),
-            (col - 1, row + 1),
         ]
 
         for nc, nr in neighbors:
@@ -113,7 +110,20 @@ def validate_order_placement(current_state, player_id, order_id, tile_key):
     Returns:
         tuple: (success: bool, message: str)
     """
-    # 1. Проверить приказ в руке
+    # 0. Проверить границы player_id
+    if player_id not in (0, 1):
+        return False, "Некорректный ID игрока"
+
+    # 0b. Проверить что это ход текущего игрока
+    if player_id != current_state.get('curP', -1):
+        return False, "Сейчас не ваш ход"
+
+    # 1. Проверить лимит приказов (максимум 8)
+    orders_placed = current_state.get('ordersPlaced', [0, 0])[player_id]
+    if orders_placed >= 8:
+        return False, "Все приказы уже размещены"
+
+    # 2. Проверить приказ в руке
     player = current_state['players'][player_id]
     order_found = False
 
@@ -125,11 +135,11 @@ def validate_order_placement(current_state, player_id, order_id, tile_key):
     if not order_found:
         return False, "Приказ не найден в руке"
 
-    # 2. Проверить плитку на карте
+    # 3. Проверить плитку на карте
     if tile_key not in current_state.get('map', {}):
         return False, "Плитка не найдена на карте"
 
-    # 3. Проверить, доступна ли плитка
+    # 4. Проверить, доступна ли плитка
     available_tiles = get_available_tiles(current_state, player_id)
 
     if tile_key not in available_tiles:
