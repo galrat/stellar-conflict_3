@@ -43,9 +43,10 @@ class Phase(Enum):
 #### Stage 2 (Розыгрыш приказов)
 | Фаза | Где определяется | Описание |
 |------|-----------------|---------|
-| `'order-placement'` | orders_placement.py:221 | Расстановка приказов (по 1 за ход) |
-| `'play-orders'` | orders_placement.py:221 | Розыгрыш размещенных приказов |
-| `'end-round'` | order_play.py + pass_turn_order_play | Конец раунда (TODO) |
+| `'order-placement'` | orders_placement.py:225 | Расстановка приказов (по 8 каждому) |
+| `'orders_placed'` | orders_placement.py:229, 235 | Ожидание: оба выставили, ждём розыгрыша |
+| `'execution'` | game_server.py:604, order_play.py | Розыгрыш размещенных приказов |
+| `'end-round'` | game_server.py:706, 710 | Конец раунда (основная логика) |
 
 ---
 
@@ -75,19 +76,24 @@ Stage 1 (Tile Placement):
        ▼
        
 Stage 2 (Order Play):
-┌─────────────────────────┐
-│ 'order-placement'       │ (по 4 приказа на игрока)
-└──────┬──────────────────┘
-       │ После 8 приказов каждым игроком
+┌──────────────────────────────┐
+│ 'order-placement'            │ (расстановка, по 1 за ход)
+└──────┬───────────────────────┘
+       │ После 8 приказов каждым
        ▼
-┌─────────────────────────┐
-│ 'play-orders'           │ (розыгрыш по одному)
-└──────┬──────────────────┘
+┌──────────────────────────────┐
+│ 'orders_placed'              │ (ожидание, только ПЕРЕДАТЬ ХОД)
+└──────┬───────────────────────┘
+       │ После передачи хода обоими
+       ▼
+┌──────────────────────────────┐
+│ 'execution'                  │ (розыгрыш по одному)
+└──────┬───────────────────────┘
        │ После всех приказов
        ▼
-┌─────────────────────────┐
-│ 'end-round'             │ (конец раунда, TODO)
-└─────────────────────────┘
+┌──────────────────────────────┐
+│ 'end-round'                  │ (конец раунда)
+└──────────────────────────────┘
 ```
 
 ---
@@ -95,20 +101,24 @@ Stage 2 (Order Play):
 ## Где искать фазы в коде
 
 ### Python Backend
-- **game_state.py** (строки 91-98): Старый enum Phase
-- **python_engine/orders_placement.py** (строка 221): Переход в `'play-orders'`
-- **python_engine/order_play.py**: Переход в `'end-round'`
-- **game_server.py** (строки 585, 592): Проверка фаз
+- **game_state.py** (строки 91-98): Старый enum Phase (больше не используется в Stage 2)
+- **python_engine/orders_placement.py** (строка 229): Переход в `'orders_placed'`
+- **python_engine/orders_placement.py** (строка 238): Переход в `'execution'`
+- **game_server.py** (строки 604-606): Обработка фазы `'execution'`
+- **game_server.py** (строки 706, 710): Установка фазы `'end-round'`
 
 ### JavaScript Frontend
 - **game_engine.html** (строка 935): Функция `setPhase(phase)` — главная обработка фаз
-- **game_engine.html** (строка 649): Условие `G.phase === 'order-placement' || G.phase === 'game-start'`
-- **game_engine.html** (строка 1847): Отрисовка UI для `'order-placement'`
-- **game_engine.html** (строка 1930): Отрисовка UI для `'play-orders'`
+- **game_engine.html** (строка 987): Обработка `'orders_placed'` в setPhase()
+- **game_engine.html** (строка 992): Обработка `'execution'` в setPhase()
+- **game_engine.html** (строка 1002): Обработка `'end-round'` в setPhase()
+- **game_engine.html** (строка 1957): Отрисовка UI для `'orders_placed'` в renderSide()
+- **game_engine.html** (строка 1976): Отрисовка UI для `'execution'` в renderSide()
+- **game_engine.html** (строка 2037): Отрисовка UI для `'end-round'` в renderSide()`
 
 ### Глобальный state
 - **game_engine.html** (строка 487-519): Объект `G` содержит `G.phase`
-- **current_state.txt** (строка 585): Текущая фаза сохраняется как `"phase": "order-placement"`
+- **current_state.txt**: Текущая фаза сохраняется с соответствующим значением (order-placement, orders_placed, execution, end-round)
 
 ---
 
