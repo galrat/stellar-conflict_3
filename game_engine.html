@@ -361,7 +361,7 @@ input[type=text]:focus{border-color:var(--p1);}
     <button class="abtn bw" id="btn-undo-ws" onclick="undoWarpStorm()" style="display:none">↩ Отменить варп-шторм</button>
     <button class="abtn bp" id="btn-confirm-ws" onclick="confirmWarpStorm()" style="display:none">Подтвердить ✓</button>
     <button class="abtn bw" id="btn-undo-order" onclick="undoLastOrderViaAPI()" style="display:none">↩ Вернуть приказ</button>
-    <button class="abtn bp" id="btn-pass" onclick="passOrderTurnViaAPI()" style="display:none">Передать ход →</button>
+    <button class="abtn bp" id="btn-pass" onclick="passOrderTurn()" style="display:none">Передать ход →</button>
   </div>
 </div>
 
@@ -981,6 +981,19 @@ function setPhase(phase) {
     show('btn-pass');
     if (_orderPlacedThisTurn) {
       show('btn-undo-order');
+    }
+    renderSide(); renderBoard();
+  }
+  else if (phase === 'orders_placed') {
+    ins.innerHTML = `<strong>ОЖИДАНИЕ РОЗЫГРЫША</strong><br>${cp.name}: приказы выставлены. Нажмите ПЕРЕДАТЬ ХОД чтобы начать розыгрыш.`;
+    show('btn-pass');
+    renderSide(); renderBoard();
+  }
+  else if (phase === 'execution') {
+    const availableOrders = G.orders.filter(o => o.owner === G.curP).length;
+    ins.innerHTML = `<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>${cp.name}: выберите приказ слева и нажмите кнопку. Осталось: ${availableOrders}`;
+    if (availableOrders > 0) {
+      show('btn-pass');
     }
     renderSide(); renderBoard();
   }
@@ -1853,7 +1866,10 @@ function renderSide() {
     poolEl.innerHTML = '';
 
     // Раздел 1: Приказы в руке
-    if (cp.hand_orders && cp.hand_orders.length > 0) {
+    const ordersPlacedCount = G.ordersPlaced[G.curP] || 0;
+    const canPlaceMore = ordersPlacedCount < 8;
+
+    if (cp.hand_orders && cp.hand_orders.length > 0 && canPlaceMore) {
       cp.hand_orders.forEach((order, idx) => {
         const btn = document.createElement('button');
         const orderName = ORDER_TYPES[order.type]?.name || order.type;
@@ -1879,7 +1895,11 @@ function renderSide() {
         poolEl.appendChild(btn);
       });
     } else {
-      poolEl.innerHTML = '<span style="color:var(--dim);font-size:.75rem">Приказы выставлены</span>';
+      if (ordersPlacedCount >= 8) {
+        poolEl.innerHTML = '<span style="color:var(--gold);font-size:.75rem">✓ Все 8 приказов размещены</span>';
+      } else {
+        poolEl.innerHTML = '<span style="color:var(--dim);font-size:.75rem">Приказы выставлены</span>';
+      }
     }
 
     // Раздел 2: Приказы на поле (только текущего игрока)
@@ -1921,6 +1941,87 @@ function renderSide() {
         });
 
         divider.appendChild(tileInfo);
+      });
+
+      poolEl.appendChild(divider);
+    }
+
+    return;
+  }
+
+  // ── ФАЗА ОЖИДАНИЯ (ORDERS_PLACED) ──
+  if (G.phase === 'orders_placed') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block';
+    structSection.style.display = 'none';
+
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = `
+      <div style="text-align:center;padding:10px;color:var(--gold);font-weight:bold;">
+        ✓ ВСЕ ПРИКАЗЫ ВЫСТАВЛЕНЫ
+      </div>
+      <div style="margin-top:10px;color:var(--dim);font-size:.75rem;text-align:center;">
+        Ожидание второго игрока...
+      </div>
+    `;
+
+    return;
+  }
+
+  // ── ФАЗА РОЗЫГРЫША ПРИКАЗОВ (EXECUTION) ──
+  if (G.phase === 'execution') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block';
+    structSection.style.display = 'none';
+
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+
+    // Показать доступные приказы для розыгрыша
+    const ordersOnField = G.orders.filter(o => o.owner === G.curP);
+
+    if (ordersOnField.length === 0) {
+      poolEl.innerHTML = '<span style="color:var(--dim);font-size:.75rem">Нет доступных приказов. Нажмите ПЕРЕДАТЬ ХОД.</span>';
+    } else {
+      const divider = document.createElement('div');
+      divider.style.cssText = 'margin:0;padding:0;';
+
+      const title = document.createElement('div');
+      title.className = 'ptitle';
+      title.textContent = 'ДОСТУПНЫЕ ПРИКАЗЫ';
+      divider.appendChild(title);
+
+      // Группируем приказы по системам
+      const ordersByTile = {};
+      ordersOnField.forEach(o => {
+        if (!ordersByTile[o.tile]) ordersByTile[o.tile] = [];
+        ordersByTile[o.tile].push(o);
+      });
+
+      // Выводим каждую систему с приказами (верхний приказ в каждой стопке)
+      Object.entries(ordersByTile).sort().forEach(([tileKey, orders]) => {
+        // Сортируем по позиции, верхний = с наибольшей позицией
+        orders.sort((a, b) => (b.position || 0) - (a.position || 0));
+        const topOrder = orders[0];  // Верхний приказ
+
+        const btn = document.createElement('button');
+        const orderType = ORDER_TYPES[topOrder.type];
+        const orderName = orderType?.name || topOrder.type;
+
+        btn.className = `abtn ${G.curP===0?'bp':'br'}`;
+        btn.style.width = '100%';
+        btn.style.marginBottom = '6px';
+        btn.innerHTML = `
+          <div style="font-weight:bold;margin-bottom:2px;">[${tileKey}]</div>
+          <div>${orderType?.icon || '?'} ${orderName}</div>
+          <div style="font-size:0.7rem;color:var(--dim);margin-top:2px;">
+            в стопке: ${orders.length}
+          </div>
+        `;
+        btn.title = `${orderName} на ${tileKey}`;
+        btn.onclick = () => playOrderViaAPI(topOrder.id);
+
+        divider.appendChild(btn);
       });
 
       poolEl.appendChild(divider);
@@ -2061,7 +2162,8 @@ async function undoLastOrderViaAPI() {
 }
 
 async function passOrderTurnViaAPI() {
-  if (G.phase !== 'order-placement') return;
+  if (G.phase !== 'order-placement' && G.phase !== 'orders_placed') return;
+
   try {
     const res = await apiCall('/api/game/pass-turn', { player_id: G.curP });
     if (res.success) {
@@ -2069,11 +2171,21 @@ async function passOrderTurnViaAPI() {
       _selectedOrderForPlacement = null;
       _orderPlacedThisTurn = false;  // Сбросить флаг для нового хода
 
-      // Проверяем завершили ли оба игрока все приказы
-      if (G.ordersPlaced[0] === 4 && G.ordersPlaced[1] === 4) {
-        addLog('🎮 Все приказы выставлены! Игра готова к розыгрышу.', -1);
-        showMsg('Карта готова', 'Все приказы выставлены. Начало розыгрыша - на следующем этапе разработки.');
+      // Проверяем в какую фазу перешли
+      if (G.phase === 'orders_placed') {
+        addLog('✅ Ожидание начала розыгрыша приказов...', -1);
+        const nextPlayer = G.players[G.curP];
+        showHP(nextPlayer.name, 'Ожидание розыгрыша', () => setPhase('orders_placed'));
+        renderBoard();
+        renderSide();
+      } else if (G.phase === 'execution') {
+        addLog('🎮 Начало розыгрыша приказов!', -1);
+        const nextPlayer = G.players[G.curP];
+        showHP(nextPlayer.name, 'Розыгрыш приказов', () => setPhase('execution'));
+        renderBoard();
+        renderSide();
       } else {
+        // Остаемся в order-placement, смена игрока
         const nextPlayer = G.players[G.curP];
         showHP(nextPlayer.name, 'Выставьте приказы', () => setPhase('order-placement'));
       }
@@ -2095,7 +2207,20 @@ function selectOrderForPlacement(idx, order) {
 }
 
 async function placeOrderViaAPI(tileKey) {
-  if (G.phase !== 'order-placement') return;
+  if (G.phase !== 'order-placement') {
+    if (G.phase === 'orders_placed') {
+      showMsg('Запрещено', 'Размещение приказов завершено. Нажмите ПЕРЕДАТЬ ХОД.');
+    }
+    return;
+  }
+
+  // Проверить лимит 8 приказов
+  const ordersPlaced = G.ordersPlaced[G.curP] || 0;
+  if (ordersPlaced >= 8) {
+    showMsg('Лимит достигнут', 'Вы уже разместили все 8 приказов');
+    return;
+  }
+
   if (!_selectedOrderForPlacement) {
     showMsg('Выберите приказ', 'Сначала выберите приказ слева');
     return;
@@ -2149,6 +2274,72 @@ async function placeOrderViaAPI(tileKey) {
       renderBoard();
     } else {
       showMsg('Ошибка', res.error || 'Не удалось разместить приказ');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+// ── ОБЩАЯ ФУНКЦИЯ ПЕРЕДАЧИ ХОДА ──
+
+function passOrderTurn() {
+  if (G.phase === 'order-placement' || G.phase === 'orders_placed') {
+    passOrderTurnViaAPI();
+  } else if (G.phase === 'execution') {
+    passOrderPlayTurnViaAPI();
+  }
+}
+
+// ── РОЗЫГРЫШ ПРИКАЗОВ ──
+
+async function playOrderViaAPI(orderId) {
+  if (G.phase !== 'execution') return;
+
+  try {
+    const res = await apiCall('/api/game/play-order', {
+      player_id: G.curP,
+      order_id: orderId
+    });
+    if (res.success) {
+      applyState(res.state);
+      addLog(`${G.players[G.curP].name} разыграл приказ`, G.curP);
+      renderBoard();
+      renderSide();
+
+      // Показать кнопку передачи хода
+      document.getElementById('btn-pass').style.display = 'block';
+    } else {
+      showMsg('Ошибка', res.error || 'Не удалось разыграть приказ');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+async function passOrderPlayTurnViaAPI() {
+  if (G.phase !== 'execution') return;
+
+  try {
+    const res = await apiCall('/api/game/pass-turn-order-play', {
+      player_id: G.curP
+    });
+    if (res.success) {
+      applyState(res.state);
+
+      // Проверить какая фаза дальше
+      if (G.phase === 'round-end') {
+        addLog('✅ Все приказы разыграны! Начало фазы КОНЕЦ РАУНДА.', -1);
+        showMsg('Конец раунда', 'Этап разработки: КОНЕЦ РАУНДА - пока не реализован');
+      } else if (G.phase === 'execution') {
+        const nextPlayer = G.players[G.curP];
+        addLog(`${nextPlayer.name} ходит в фазе розыгрыша`, -1);
+        showHP(nextPlayer.name, 'Розыгрыш приказов', () => setPhase('execution'));
+      }
+
+      renderBoard();
+      renderSide();
+    } else {
+      showMsg('Ошибка', res.error || 'Не удалось передать ход');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);

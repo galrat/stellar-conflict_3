@@ -1,5 +1,5 @@
 """
-Stage 2: Order Placement (Расстановка приказов)
+Stage 2.1: Order Placement (Расстановка приказов)
 Этап после выставления последнего варп-шторма
 
 ЛОГИКА РАЗМЕЩЕНИЯ ПРИКАЗА:
@@ -17,8 +17,9 @@ Stage 2: Order Placement (Расстановка приказов)
 - Вернуть state к предыдущему состоянию
 
 ПЕРЕДАЧА ХОДА (Pass Turn):
-- Проверить: если оба игрока разместили по 8 приказов → phase = "play-orders"
+- Проверить: если оба игрока разместили по 8 приказов → phase = "orders_placed"
 - Иначе: смена текущего игрока, остаемся в "order-placement"
+- Когда оба игрока передали ход в "orders_placed" → phase = "execution"
 
 Примечание:
 - Один приказ за раз, потом отмена или передача хода
@@ -213,15 +214,29 @@ def next_phase_or_player(current_state):
     """
     После Pass Turn: переход на следующую фазу или игрока.
 
+    Логика:
+    - order-placement: если оба выставили по 4 → orders_placed
+    - orders_placed: если оба нажали ход → execution (розыгрыш)
+
     Returns:
         dict: обновленное состояние
     """
-    if check_orders_complete(current_state):
-        # Все приказы разместены → переход в play-orders
-        current_state['phase'] = 'play-orders'
+    current_phase = current_state.get('phase', 'unknown')
+
+    if current_phase == 'order-placement':
+        # На этапе расстановки
+        if check_orders_complete(current_state):
+            # Оба выставили по 8 приказов → переход в orders_placed
+            current_state['phase'] = 'orders_placed'
+            current_state['curP'] = 0
+        else:
+            # Еще не все выставили → смена игрока
+            current_state['curP'] = 1 - current_state['curP']
+
+    elif current_phase == 'orders_placed':
+        # На этапе ожидания (оба игрока выставили)
+        # Переход в execution (розыгрыш приказов)
+        current_state['phase'] = 'execution'
         current_state['curP'] = 0
-    else:
-        # Смена игрока, остаемся в order-placement
-        current_state['curP'] = 1 - current_state['curP']
 
     return current_state

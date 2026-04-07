@@ -23,6 +23,12 @@ from python_engine.orders_placement import (
     place_order_impl,
     next_phase_or_player,
 )
+from python_engine.order_play import (
+    get_available_orders,
+    play_order,
+    determine_next_player_order_play,
+    check_orders_remain,
+)
 
 app = FastAPI(title="Stellar Conflict Game Server")
 
@@ -405,6 +411,13 @@ async def init_game(request: InitGameRequest) -> GameStateResponse:
             if 'order_placed_this_turn' not in _active_game:
                 _active_game['order_placed_this_turn'] = [False, False]
 
+            # Удалить из hand_orders приказы которые уже размещены на поле
+            orders_on_field = set(o.get('id') for o in _active_game.get('orders', []))
+            for p in _active_game.get('players', []):
+                if 'hand_orders' in p:
+                    p['hand_orders'] = [o for o in p['hand_orders']
+                                       if o.get('id') not in orders_on_field]
+
             # Добавить status для варп-штормов если нет
             if 'warpStorms' in _active_game:
                 for storm in _active_game['warpStorms']:
@@ -569,6 +582,10 @@ async def pass_turn_endpoint(request: PassTurnRequest) -> GameStateResponse:
                         error="Вы должны разместить приказ перед передачей хода"
                     )
 
+            # На этапе orders_placed просто передать ход
+            elif phase == 'orders_placed':
+                pass  # Просто переход к next_phase_or_player
+
             # СОХРАНИТЬ SNAPSHOT перед изменениями
             _save_temp_snapshot()
 
@@ -576,17 +593,122 @@ async def pass_turn_endpoint(request: PassTurnRequest) -> GameStateResponse:
             next_phase_or_player(_active_game)
 
             # Сбросить флаг для нового игрока если остаемся в order-placement
-            if _active_game.get('phase', 'unknown') == 'order-placement':
-                next_player = _active_game.get('curP', 0)
-                _active_game['order_placed_this_turn'][next_player] = False
-
             current_phase = _active_game.get('phase', 'unknown')
             next_player = _active_game.get('curP', 0)
 
-            if current_phase == 'play-orders':
-                print(f"✅ Переход в фазу play-orders. Начинаем с игрока {next_player}")
+            if current_phase == 'order-placement':
+                _active_game['order_placed_this_turn'][next_player] = False
+                print(f"➜ Ход передан игроку {next_player}")
+            elif current_phase == 'orders_placed':
+                print(f"✅ Оба игрока выставили приказы. Фаза: orders_placed")
+            elif current_phase == 'execution':
+                print(f"✅ Переход в фазу execution (розыгрыш приказов). Начинаем с игрока {next_player}")
             else:
                 print(f"➜ Ход передан игроку {next_player}")
+
+            _save_current_state()
+            return GameStateResponse(success=True, state=_active_game.copy())
+
+        except Exception as e:
+            print(f"❌ Ошибка при передаче хода: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.get('/api/game/available-orders/{player_id}')
+async def get_available_orders_endpoint(player_id: int):
+    """Получить доступные приказы для розыгрыша"""
+    async with _game_lock:
+        if _active_game is None:
+            return {"success": False, "error": "Игра не инициализирована"}
+
+        try:
+            orders = get_available_orders(_active_game, player_id)
+            return {
+                "success": True,
+                "available_orders": orders,
+                "player_id": player_id,
+            }
+        except Exception as e:
+            print(f"❌ Ошибка получения доступных приказов: {e}")
+            return {"success": False, "error": str(e)}
+
+
+@app.post('/api/game/play-order')
+async def play_order_endpoint(request: PlaceOrderRequest) -> GameStateResponse:
+    """Разыграть приказ"""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+
+        try:
+            phase = _active_game.get('phase', 'unknown')
+
+            if phase != 'execution':
+                return GameStateResponse(success=False, error="Не время розыгрыша приказов")
+
+            current_player = _active_game.get('curP', 0)
+            if request.player_id != current_player:
+                return GameStateResponse(success=False, error="Сейчас не ваш ход")
+
+            # СОХРАНИТЬ SNAPSHOT перед разыгрышем
+            _save_temp_snapshot()
+
+            # Разыграть приказ
+            success, message, new_state = play_order(_active_game, request.player_id, request.order_id)
+
+            if not success:
+                return GameStateResponse(success=False, error=message)
+
+            # Обновить state
+            _active_game['orders'] = new_state['orders']
+
+            print(f"🎯 {message}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_active_game.copy())
+
+        except Exception as e:
+            import traceback
+            print(f"❌ Ошибка розыгрыша приказа: {e}")
+            traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/pass-turn-order-play')
+async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateResponse:
+    """Передать ход на этапе розыгрыша приказов"""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+
+        try:
+            phase = _active_game.get('phase', 'unknown')
+
+            if phase != 'execution':
+                return GameStateResponse(success=False, error="Не время розыгрыша приказов")
+
+            current_player = _active_game.get('curP', 0)
+
+            # СОХРАНИТЬ SNAPSHOT перед изменениями
+            _save_temp_snapshot()
+
+            # Проверить остались ли приказы
+            orders_info = check_orders_remain(_active_game)
+
+            if orders_info['any_remain']:
+                # Переход на следующего игрока
+                next_info = determine_next_player_order_play(_active_game)
+
+                if next_info['next_player'] is not None:
+                    _active_game['curP'] = next_info['next_player']
+                    print(f"➜ {next_info['message']}")
+                else:
+                    # Конец раунда
+                    _active_game['phase'] = 'end-round'
+                    print(f"✅ {next_info['message']}")
+            else:
+                # Конец раунда
+                _active_game['phase'] = 'end-round'
+                print(f"✅ Все приказы разыграны. Начало КОНЕЦ РАУНДА.")
 
             _save_current_state()
             return GameStateResponse(success=True, state=_active_game.copy())
@@ -613,12 +735,21 @@ async def root():
             'stage2': {
                 'init': 'POST /api/game/init',
                 'state': 'GET /api/game/state',
-                'available-tiles': 'GET /api/game/available-tiles/{player_id}',
-                'place-order': 'POST /api/game/place-order',
-                'cancel-order': 'POST /api/game/cancel-order',
-                'pass-turn': 'POST /api/game/pass-turn',
-                'undo': 'POST /api/game/undo',
-                'clear-temp': 'POST /api/game/clear-temp',
+                'order-placement': {
+                    'available-tiles': 'GET /api/game/available-tiles/{player_id}',
+                    'place-order': 'POST /api/game/place-order',
+                    'pass-turn': 'POST /api/game/pass-turn',
+                },
+                'order-play': {
+                    'available-orders': 'GET /api/game/available-orders/{player_id}',
+                    'play-order': 'POST /api/game/play-order',
+                    'pass-turn-order-play': 'POST /api/game/pass-turn-order-play',
+                },
+                'shared': {
+                    'cancel-order': 'POST /api/game/cancel-order',
+                    'undo': 'POST /api/game/undo',
+                    'clear-temp': 'POST /api/game/clear-temp',
+                }
             }
         }
     }
