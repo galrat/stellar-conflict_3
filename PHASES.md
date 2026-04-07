@@ -15,8 +15,10 @@ class Phase(Enum):
     TROOP_ON_TILE   = "troop_on_tile"
     TROOP_PLACEMENT = "troop_placement"
     ORDER_PLACEMENT = "order_placement"
+    ORDERS_PLACED   = "orders_placed"
     EXECUTION       = "execution"
-    ENDED           = "ended"
+    ROUND_END       = "round_end"
+    GAME_END        = "game_end"
 ```
 
 **Статус**: Эти фазы определены для старой архитектуры с GameState движком на Python.
@@ -41,10 +43,9 @@ class Phase(Enum):
 #### Stage 2 (Розыгрыш приказов)
 | Фаза | Где определяется | Описание |
 |------|-----------------|---------|
-| `'order-placement'` | orders_placement.py:225 | Расстановка приказов (по 1 за ход) |
-| `'orders_placed'` | orders_placement.py:229, 235 | Ожидание: оба игрока выставили, ждем розыгрыша |
-| `'execution'` | orders_placement.py:238 | Розыгрыш размещенных приказов (по одному) |
-| `'end-round'` | order_play.py (TODO) | Конец раунда |
+| `'order-placement'` | orders_placement.py:221 | Расстановка приказов (по 1 за ход) |
+| `'play-orders'` | orders_placement.py:221 | Розыгрыш размещенных приказов |
+| `'end-round'` | order_play.py + pass_turn_order_play | Конец раунда (TODO) |
 
 ---
 
@@ -75,17 +76,12 @@ Stage 1 (Tile Placement):
        
 Stage 2 (Order Play):
 ┌─────────────────────────┐
-│ 'order-placement'       │ (по 8 приказов на игрока)
+│ 'order-placement'       │ (по 4 приказа на игрока)
 └──────┬──────────────────┘
        │ После 8 приказов каждым игроком
        ▼
 ┌─────────────────────────┐
-│ 'orders_placed'         │ (ожидание: только ПЕРЕДАТЬ ХОД)
-└──────┬──────────────────┘
-       │ После передачи хода обоими игроками
-       ▼
-┌─────────────────────────┐
-│ 'execution'             │ (розыгрыш по одному)
+│ 'play-orders'           │ (розыгрыш по одному)
 └──────┬──────────────────┘
        │ После всех приказов
        ▼
@@ -122,9 +118,8 @@ Stage 2 (Order Play):
 
 ```
 Stage 2 фазы:
-- order-placement      ✅ РЕАЛИЗОВАНА (расстановка приказов, по 8 каждому)
-- orders_placed        ✅ РЕАЛИЗОВАНА (ожидание начала розыгрыша)
-- execution            ✅ РЕАЛИЗОВАНА (розыгрыш приказов по одному)
+- order-placement      ✅ РЕАЛИЗОВАНА (расстановка приказов)
+- play-orders          ✅ РЕАЛИЗОВАНА (розыгрыш приказов)
 - end-round            🟡 TODO (конец раунда)
 ```
 
@@ -132,21 +127,17 @@ Stage 2 фазы:
 
 ## Примечания
 
-### Фазы в game_state.py vs game_engine.html
+### Несоответствие между game_state.py и game_engine.html
 
-`game_state.py` содержит старый enum Phase с подчеркиваниями (для Stage 1):
-- `SETUP = "setup"`
-- `TILE_PLACEMENT = "tile_placement"`
-- и т.д.
+`game_state.py` содержит старый enum Phase с подчеркиваниями:
+- `ORDER_PLACEMENT = "order_placement"`
+- `EXECUTION = "execution"`
 
-`game_engine.html` использует дефисы (Stage 1 и Stage 2):
-- `'game-start'`
-- `'tile-placement'`
+Но `game_engine.html` использует дефисы:
 - `'order-placement'`
-- `'orders_placed'` (новая фаза)
-- `'execution'` (вместо старого 'play-orders')
+- `'play-orders'`
 
-**Статус**: game_state.py Phase enum больше не используется в Stage 2. Все фазы контролируются через `game_engine.html` и Python endpoints. Phase enum в game_state.py может быть удален в будущем или обновлен для соответствия.
+**Статус**: game_state.py больше не используется в Stage 2. Все фазы контролируются через `game_engine.html` и Python endpoints.
 
 ### Как добавить новую фазу
 

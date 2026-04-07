@@ -997,6 +997,10 @@ function setPhase(phase) {
     }
     renderSide(); renderBoard();
   }
+  else if (phase === 'end-round') {
+    ins.innerHTML = `<strong>КОНЕЦ РАУНДА</strong><br>Раунд завершён. Приготовьтесь к следующему раунду...`;
+    renderSide(); renderBoard();
+  }
   updateHeader();
 }
 
@@ -2030,6 +2034,25 @@ function renderSide() {
     return;
   }
 
+  // ── ФАЗА КОНЦА РАУНДА (END-ROUND) ──
+  if (G.phase === 'end-round') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block';
+    structSection.style.display = 'none';
+
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = `
+      <div style="text-align:center;padding:10px;color:var(--gold);font-weight:bold;">
+        ✓ РАУНД ЗАВЕРШЁН
+      </div>
+      <div style="margin-top:10px;color:var(--dim);font-size:.75rem;text-align:center;">
+        Ожидание начала следующего раунда...
+      </div>
+    `;
+
+    return;
+  }
+
   // В других фазах — скрыть пул
   if (poolSection)   poolSection.style.display   = 'none';
   if (structSection) structSection.style.display = 'none';
@@ -2327,7 +2350,7 @@ async function passOrderPlayTurnViaAPI() {
       applyState(res.state);
 
       // Проверить какая фаза дальше
-      if (G.phase === 'round-end') {
+      if (G.phase === 'end-round') {
         addLog('✅ Все приказы разыграны! Начало фазы КОНЕЦ РАУНДА.', -1);
         showMsg('Конец раунда', 'Этап разработки: КОНЕЦ РАУНДА - пока не реализован');
       } else if (G.phase === 'execution') {
