@@ -22,7 +22,7 @@
         },
         {
           "handIdx": 2,
-          "tileDefId": "normal_05",
+          "tileDefId": "normal_07",
           "tileId": 9,
           "isHome": false,
           "placed": true
@@ -33,6 +33,11 @@
         {
           "id": "p1_deploy_2",
           "type": "deploy",
+          "owner": 0
+        },
+        {
+          "id": "p1_advance_2",
+          "type": "advance",
           "owner": 0
         },
         {
@@ -272,33 +277,38 @@
     },
     {
       "name": "Omega",
-      "faction": "chaos",
+      "faction": "marine",
       "pool": [],
       "hand": [
         {
           "handIdx": 0,
-          "tileDefId": "home_chaos",
-          "tileId": 16,
+          "tileDefId": "home_marine",
+          "tileId": 17,
           "isHome": true,
           "placed": true
         },
         {
           "handIdx": 1,
-          "tileDefId": "normal_06",
-          "tileId": 17,
+          "tileDefId": "normal_02",
+          "tileId": 18,
           "isHome": false,
           "placed": true
         },
         {
           "handIdx": 2,
-          "tileDefId": "normal_02",
-          "tileId": 18,
+          "tileDefId": "normal_03",
+          "tileId": 19,
           "isHome": false,
           "placed": true
         }
       ],
       "structurePool": [],
       "hand_orders": [
+        {
+          "id": "p2_dominate_1",
+          "type": "dominate",
+          "owner": 1
+        },
         {
           "id": "p2_deploy_2",
           "type": "deploy",
@@ -323,224 +333,224 @@
       },
       "hand_battle_cards": [
         {
-          "name": "Dark Faith",
+          "name": "Ambush",
           "level": -1,
           "tier": -1,
           "cost": 0,
-          "effect_1": "Gain 1 [M]. Requires: Cultist / Iconoclast.",
-          "effect_2": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."
+          "effect_1": "Gain 2 (g). Requires: Scout / Cruiser.",
+          "effect_2": "When enemy is routed this round, must spend [M] or be destroyed."
         },
         {
-          "name": "Foul Worship",
+          "name": "Blessed Power Armour",
           "level": -1,
           "tier": -1,
           "cost": 0,
-          "effect_1": "Gain 1 [?]. Requires: Cultist / Iconoclast.",
-          "effect_2": "If enemy has routed unit, gain 1 (s) per unrouted Cultist or Iconoclast."
+          "effect_1": "Gain 2 (s). Requires: Bastion / Marine / Cruiser.",
+          "effect_2": "Convert up to 2 dice to [S]."
         },
         {
-          "name": "Impure Zeal",
+          "name": "Faith in the Emperor",
           "level": -1,
           "tier": -1,
           "cost": 0,
-          "effect_1": "If more [M] than enemy, rally 1 unit. Requires: Cultist / Iconoclast.",
-          "effect_2": "Enemy routs 1 unit, or you gain 1 (g) per unrouted Cultist or Iconoclast."
+          "effect_1": "Gain 1 [?]. Requires: Scout / Marine / Cruiser.",
+          "effect_2": "Rally 1 unit or gain 1 [M]."
         },
         {
-          "name": "Khorne's Rage",
+          "name": "Fury of the Ultramar",
           "level": -1,
           "tier": -1,
           "cost": 0,
-          "effect_1": "Spend 1 [G] to gain 3 (g). Requires: Marine / Iconoclast.",
-          "effect_2": "Enemy spends 1 [S] or routs unit of his choosing."
+          "effect_1": "Enemy rerolls 1 [S]. You may reroll 1 [S]. Requires: Marine / Cruiser.",
+          "effect_2": "Force enemy to lose 1 [S] or 2 (s)."
         },
         {
-          "name": "Lure of Chaos",
+          "name": "Reconnaissance",
           "level": -1,
           "tier": -1,
           "cost": 0,
-          "effect_1": "Enemy may choose a unit to rout to gain 1 [?]. Otherwise place a free Cultist or Iconoclast in the area. Requires: Cultist / Iconoclast.",
-          "effect_2": "Gain 2 (g) or 2 (s)."
+          "effect_1": "If attacking, look at enemy card first. Requires: Scout / Cruiser.",
+          "effect_2": "Spend 1 [M] to retreat 1 unit."
         }
       ],
       "available_battle_cards": [
         {
-          "name": "Mark of Khorne",
+          "name": "Drop Pod Assault",
           "level": 0,
           "tier": 0,
           "cost": 2,
-          "effect_1": "Spend 1 [G] or 1 [M] to gain 3 (g). Requires: Marine / Iconoclast.",
-          "effect_2": "Enemy spends 1 [S] or destroys 1 routed unit."
+          "effect_1": "Gain 1 [?]. Requires: Marine.",
+          "effect_2": "Spend 1 [M] to take 1 Scout or 1 Marine from any world to this world."
         },
         {
-          "name": "Mark of Nurgle",
+          "name": "Glory and Death",
           "level": 0,
           "tier": 0,
           "cost": 2,
-          "effect_1": "Spend 1 [S] or 1 [M] to gain 3 (s). Requires: Marine / Iconoclast.",
-          "effect_2": "Enemy destroys 1 routed unit, otherwise gain 2 (s)."
+          "effect_1": "Gain 2 (g). If attacking, rally 1 unit. Requires: Marine / Cruiser.",
+          "effect_2": "Force enemy to lose 1 [S] or 1 [M]."
         },
         {
-          "name": "Mark of Slaanesh",
+          "name": "Hold the Line",
           "level": 0,
           "tier": 0,
           "cost": 2,
-          "effect_1": "Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice. Requires: Marine.",
-          "effect_2": "If enemy has routed unit, place free Cultist on this world."
+          "effect_1": "Gain 2 (s). If defending, rally 1 unit. Requires: Bastion / Marine / Cruiser.",
+          "effect_2": "Gain 1 [S] or 1 [M]."
         },
         {
-          "name": "Mark of Tzeentch",
+          "name": "Veteran Scouts",
           "level": 0,
           "tier": 0,
           "cost": 2,
-          "effect_1": "Gain 1 [M]. If more [M] than enemy, upgrade 1 Cultist / (R) to Marine. Requires: Chaos Marine / Iconoclast.",
-          "effect_2": "Convert up to 2 [M] to [G] and/or [S]."
+          "effect_1": "For each morale dice, gain 1 (g) or (s). Requires: Scout / Cruiser.",
+          "effect_2": "Spend any [M]; retreat 1 unit per die."
         },
         {
-          "name": "Chaos United",
+          "name": "Armoured Advance",
           "level": 2,
           "tier": 2,
           "cost": 4,
-          "effect_1": "Enemy may rout 1 of its units. If not, gain a die of your choice. Requires: Cultist / Marine / Helbrute.",
-          "effect_2": "Take 1 unit from any world and place it on this world. Command level cannot exceed number of Cultists in this system."
+          "effect_1": "Gain 1 [?]. Requires: Land Raider / Battle Barge.",
+          "effect_2": "Resolve 1 additional assess damage step this round (including tokens etc)."
         },
         {
-          "name": "Daemonic Resilience",
+          "name": "Break the Line",
           "level": 2,
           "tier": 2,
           "cost": 4,
-          "effect_1": "Gain 1 [M] or 1 [S]. Requires: Helbrute / Cruiser.",
-          "effect_2": "Gain 4 (s) unless enemy destroys 1 unit of his choice."
+          "effect_1": "Convert up to 3 [M] to [G] and/or [S]. Requires: Land Raider / Battle Barge.",
+          "effect_2": "Enemy chooses 1 face up combat card to discard."
         },
         {
-          "name": "Inhuman Strength",
+          "name": "Show No Fear",
           "level": 2,
           "tier": 2,
           "cost": 4,
-          "effect_1": "Gain 1 [G] or 1 [M]. Requires: Helbrute / Cruiser.",
-          "effect_2": "Destroy 1 unit to gain 4 (g)."
+          "effect_1": "Own units cannot become routed this round. Requires: Bastion / Marine / Cruiser.",
+          "effect_2": "Spend 1 [M] to rally all units."
         },
         {
-          "name": "Chaos Victorious",
+          "name": "Emperor's Glory",
           "level": 3,
           "tier": 3,
           "cost": 6,
-          "effect_1": "Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units. Requires: Titan / Cruiser.",
-          "effect_2": "Rout 1 enemy unit."
+          "effect_1": "Gain 2 [?]. Requires: Titan / Battle Barge.",
+          "effect_2": "Rally all units. Convert any dice to [M]."
         },
         {
-          "name": "Death and Despair",
+          "name": "Emperor's Might",
           "level": 3,
           "tier": 3,
           "cost": 6,
-          "effect_1": "Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit. Requires: Titan / Cruiser.",
-          "effect_2": "If more [M] than enemy, destroy 1 routed unit."
+          "effect_1": "Gain 2 [?]. Requires: Titan / Battle Barge.",
+          "effect_2": "Spend any [G]; gain 2 (g) per die."
         }
       ],
       "hand_order_upgrades": [],
       "available_order_upgrades": [
         {
           "id": "",
-          "name": "Fear from Above",
+          "name": "Reign of Fire",
           "order_type": "advance",
           "tier": 0,
           "cost": 1,
           "effect_1": "Orbital Strike, once per round. Gain [?].",
-          "effect_2": "Spend 1 [M] to force any unit taking damage to rout."
+          "effect_2": "Convert 1 [M] into [G]."
         },
         {
           "id": "",
-          "name": "Dread Ritual",
-          "order_type": "deploy",
-          "tier": 1,
-          "cost": 2,
-          "effect_1": "Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in active system.",
-          "effect_2": "Factory not required."
-        },
-        {
-          "id": "",
-          "name": "Favour of the Dark Gods",
-          "order_type": "strategize",
-          "tier": 1,
-          "cost": 2,
-          "effect_1": "Place 2 order tokens from play area onto top of event deck.",
-          "effect_2": "Once per round."
-        },
-        {
-          "id": "",
-          "name": "From the Warp",
+          "name": "Crusade",
           "order_type": "advance",
           "tier": 1,
           "cost": 2,
-          "effect_1": "Ships can move through Warp Storms.",
-          "effect_2": "Once per round."
+          "effect_1": "If no friendly worlds in system, gain 1 (R). Once per round.",
+          "effect_2": "Command Level 1."
         },
         {
           "id": "",
-          "name": "Complete Destruction",
+          "name": "Direct the Faithful",
+          "order_type": "strategize",
+          "tier": 1,
+          "cost": 2,
+          "effect_1": "May change 1 structure to a different structure. Once per round.",
+          "effect_2": "Command Level 1."
+        },
+        {
+          "id": "",
+          "name": "Recruitment Worlds",
+          "order_type": "deploy",
+          "tier": 1,
+          "cost": 2,
+          "effect_1": "Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.",
+          "effect_2": "Command Level 1."
+        },
+        {
+          "id": "",
+          "name": "Drop Pods",
           "order_type": "advance",
           "tier": 2,
           "cost": 3,
           "effect_1": "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
-          "effect_2": "Spend 2 [S] to force enemy to choose unit or structure to destroy."
+          "effect_2": "Spend 2 [S] to place free Marine (may start combat). Command Level 2."
         }
       ],
       "hand_event_cards": [],
       "available_event_cards": [
         {
-          "name": "Blight of Nurgle",
+          "name": "Adeptus Mechanicus",
           "warp_storm_move": "Across",
           "card_type": "Scheme",
-          "effect": "Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units."
+          "effect": "At start of assess damage, discard to gain 2 (s), plus 1 (s) per (F) you have."
         },
         {
-          "name": "Incantation of Tzeentch",
+          "name": "Emperor's Champion",
+          "warp_storm_move": "Sideways",
+          "card_type": "Scheme",
+          "effect": "At start of assess damage, discard to rally 1 unit."
+        },
+        {
+          "name": "Exterminatus",
+          "warp_storm_move": "Top Left/Bot Rgt",
+          "card_type": "Scheme",
+          "effect": "Before orbital strike, discard to convert all dice to [G]."
+        },
+        {
+          "name": "Heroic Intervention",
           "warp_storm_move": "Across",
           "card_type": "Tactic",
-          "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move)."
+          "effect": "Place free Marine on friendly structure or free Scout on any friendly world."
         },
         {
-          "name": "Prayer to the Dark Gods",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Scheme",
-          "effect": "When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction."
-        },
-        {
-          "name": "Prophets and Signs",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Tactic",
-          "effect": "Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world."
-        },
-        {
-          "name": "Seduced by Chaos",
-          "warp_storm_move": "Sideways",
-          "card_type": "Scheme",
-          "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat."
-        },
-        {
-          "name": "Spoils of War",
+          "name": "Rites of Battle",
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Tactic",
-          "effect": "Gain 1 (F) and 1 (R)."
+          "effect": "Purchase 1 order upgrade, reduce by 1 materiel per Bastion."
         },
         {
-          "name": "Through the Warp",
-          "warp_storm_move": "Top Left/Bot Rgt",
-          "card_type": "Scheme",
-          "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start."
-        },
-        {
-          "name": "Touched by the Warp",
+          "name": "The Emperor Protects",
           "warp_storm_move": "Sideways",
           "card_type": "Tactic",
-          "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
+          "effect": "Place Bastion on friendly world. Free if no other structure there, otherwise cost 2 materiel."
+        },
+        {
+          "name": "Unwavering Resolve",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Scheme",
+          "effect": "Instead of revealing an order, discard to rally all units in a system."
+        },
+        {
+          "name": "Work of the Righteous",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Tactic",
+          "effect": "Gain assets or materiel from a friendly world."
         }
       ],
       "boughtUpgrades": [],
-      "faction_color": "#FF0000"
+      "faction_color": "#1F4E9E"
     }
   ],
-  "phase": "order-placement",
+  "phase": "execution",
   "curP": 0,
   "round": 1,
   "totalRounds": 8,
@@ -566,7 +576,14 @@
           "discount": 1,
           "forge": 0,
           "joker": 1,
-          "troops": [],
+          "troops": [
+            {
+              "id": 2,
+              "player": 0,
+              "unitType": "ground",
+              "tier": 0
+            }
+          ],
           "structures": [
             {
               "id": 6,
@@ -605,7 +622,7 @@
           "joker": 0,
           "troops": [
             {
-              "id": 4,
+              "id": 5,
               "player": 0,
               "unitType": "space",
               "tier": 0
@@ -624,7 +641,7 @@
           "joker": 0,
           "troops": [
             {
-              "id": 5,
+              "id": 4,
               "player": 0,
               "unitType": "space",
               "tier": 0
@@ -645,47 +662,42 @@
       "row": 0,
       "owner": 1,
       "isHome": false,
-      "tileId": 17,
-      "tileDefId": "normal_06",
+      "tileId": 18,
+      "tileDefId": "normal_02",
       "rotation": 180,
-      "side": 1,
+      "side": 0,
       "areas": [
         {
-          "type": "space",
-          "capacity": 3,
+          "type": "planet",
+          "capacity": 5,
           "income": 0,
-          "valuable": 0,
+          "valuable": 1,
           "support": 0,
           "discount": 0,
-          "forge": 0,
+          "forge": 1,
           "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 1,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 12,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 0
+            }
+          ],
           "structures": []
         },
         {
           "type": "planet",
           "capacity": 1,
-          "income": 1,
-          "valuable": 1,
+          "income": 3,
+          "valuable": 0,
           "support": 0,
           "discount": 0,
           "forge": 0,
-          "joker": 1,
+          "joker": 0,
           "troops": [
             {
-              "id": 11,
+              "id": 13,
               "player": 1,
               "unitType": "ground",
               "tier": 0
@@ -704,12 +716,24 @@
           "joker": 0,
           "troops": [],
           "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
         }
       ],
       "needsObjective": true,
       "objectiveMarker": {
         "owner": 0,
-        "realAreaIdx": 2
+        "realAreaIdx": 0
       }
     },
     "0,-1": {
@@ -732,14 +756,7 @@
           "discount": 0,
           "forge": 0,
           "joker": 1,
-          "troops": [
-            {
-              "id": 1,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 0
-            }
-          ],
+          "troops": [],
           "structures": []
         },
         {
@@ -753,7 +770,7 @@
           "joker": 0,
           "troops": [
             {
-              "id": 2,
+              "id": 1,
               "player": 0,
               "unitType": "ground",
               "tier": 0
@@ -789,7 +806,7 @@
       "needsObjective": true,
       "objectiveMarker": {
         "owner": 1,
-        "realAreaIdx": 0
+        "realAreaIdx": 1
       }
     },
     "2,0": {
@@ -798,11 +815,67 @@
       "row": 0,
       "owner": 1,
       "isHome": true,
-      "tileId": 16,
-      "tileDefId": "home_chaos",
-      "rotation": 0,
+      "tileId": 17,
+      "tileDefId": "home_marine",
+      "rotation": 180,
       "side": 0,
       "areas": [
+        {
+          "type": "planet",
+          "capacity": 2,
+          "income": 2,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": [
+            {
+              "id": 16,
+              "player": 1,
+              "type": "factory"
+            }
+          ]
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 15,
+              "player": 1,
+              "unitType": "space",
+              "tier": 0
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 4,
+          "income": 0,
+          "valuable": 0,
+          "support": 2,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 11,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 0
+            }
+          ],
+          "structures": []
+        },
         {
           "type": "planet",
           "capacity": 4,
@@ -814,75 +887,19 @@
           "joker": 0,
           "troops": [
             {
-              "id": 13,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 1
-            }
-          ],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 1,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [
-            {
-              "id": 12,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 1
-            }
-          ],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [
-            {
               "id": 14,
               "player": 1,
-              "unitType": "space",
-              "tier": 0
+              "unitType": "ground",
+              "tier": 1
             }
           ],
           "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 0,
-          "discount": 1,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": [
-            {
-              "id": 15,
-              "player": 1,
-              "type": "factory"
-            }
-          ]
         }
       ],
       "needsObjective": true,
       "objectiveMarker": {
         "owner": 0,
-        "realAreaIdx": 3
+        "realAreaIdx": 0
       }
     },
     "1,-1": {
@@ -892,26 +909,14 @@
       "owner": 0,
       "isHome": false,
       "tileId": 9,
-      "tileDefId": "normal_05",
+      "tileDefId": "normal_07",
       "rotation": 0,
       "side": 0,
       "areas": [
         {
-          "type": "space",
+          "type": "planet",
           "capacity": 3,
-          "income": 0,
-          "valuable": 1,
-          "support": 1,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
+          "income": 2,
           "valuable": 0,
           "support": 0,
           "discount": 0,
@@ -923,11 +928,11 @@
         {
           "type": "planet",
           "capacity": 2,
-          "income": 2,
+          "income": 0,
           "valuable": 0,
           "support": 0,
-          "discount": 0,
-          "forge": 0,
+          "discount": 1,
+          "forge": 1,
           "joker": 0,
           "troops": [
             {
@@ -940,10 +945,22 @@
           "structures": []
         },
         {
-          "type": "planet",
-          "capacity": 4,
-          "income": 1,
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
           "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 2,
           "support": 0,
           "discount": 0,
           "forge": 0,
@@ -961,30 +978,18 @@
       "row": -1,
       "owner": 1,
       "isHome": false,
-      "tileId": 18,
-      "tileDefId": "normal_02",
-      "rotation": 270,
+      "tileId": 19,
+      "tileDefId": "normal_03",
+      "rotation": 0,
       "side": 0,
       "areas": [
         {
           "type": "planet",
-          "capacity": 5,
-          "income": 0,
+          "capacity": 2,
+          "income": 2,
           "valuable": 1,
           "support": 0,
-          "discount": 0,
-          "forge": 1,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 1,
-          "income": 3,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
+          "discount": 1,
           "forge": 0,
           "joker": 0,
           "troops": [
@@ -1020,6 +1025,18 @@
           "joker": 0,
           "troops": [],
           "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 4,
+          "income": 1,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
         }
       ],
       "needsObjective": false,
@@ -1039,13 +1056,13 @@
   "warpStorms": [
     {
       "tileKey": "0,-1",
-      "side": "left",
+      "side": "top",
       "owner": 1,
       "status": "active"
     },
     {
       "tileKey": "2,-1",
-      "side": "right",
+      "side": "top",
       "owner": 0,
       "status": "active"
     }
@@ -1098,15 +1115,15 @@
       "revealed": false
     },
     {
-      "id": "p2_dominate_1",
-      "type": "dominate",
+      "id": "p2_advance_1",
+      "type": "advance",
       "owner": 1,
-      "tile": "2,0",
+      "tile": "0,0",
       "position": 2,
       "revealed": false
     },
     {
-      "id": "p1_advance_2",
+      "id": "p1_advance_1",
       "type": "advance",
       "owner": 0,
       "tile": "1,0",
@@ -1120,31 +1137,19 @@
       "tile": "1,0",
       "position": 1,
       "revealed": false
-    },
-    {
-      "id": "p2_advance_1",
-      "type": "advance",
-      "owner": 1,
-      "tile": "2,-1",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "p1_advance_1",
-      "type": "advance",
-      "owner": 0,
-      "tile": "0,-1",
-      "position": 1,
-      "revealed": false
     }
   ],
   "ordersPlaced": [
-    5,
-    5
+    4,
+    4
   ],
   "dropped_orders": [],
   "order_placed_this_turn": [
     true,
     true
+  ],
+  "execution_order_played": [
+    false,
+    false
   ]
 }

@@ -26,6 +26,8 @@ from python_engine.orders_placement import (
 from python_engine.order_play import (
     get_available_orders,
     play_order,
+    discard_order,
+    return_dropped_orders,
     determine_next_player_order_play,
     check_orders_remain,
 )
@@ -61,6 +63,22 @@ CURRENT_STATE_FILE = PROJECT_DIR / "current_state.txt"
 # ── Stage 2 — активная игра ──────────────────────────────────────────────────
 _active_game: Optional[dict] = None
 _game_lock = asyncio.Lock()
+
+# Поля с дефолтами, которые должны быть в state
+_STATE_DEFAULTS = {
+    'dropped_orders': [],
+    'ordersPlaced': [0, 0],
+    'orders': [],
+    'order_placed_this_turn': [False, False],
+    'execution_order_played': [False, False],
+}
+
+def _ensure_state_fields(state: dict):
+    """Гарантировать наличие всех обязательных полей в state."""
+    import copy
+    for key, default in _STATE_DEFAULTS.items():
+        if key not in state:
+            state[key] = copy.deepcopy(default)
 
 # ── Временные snapshots (для undo) ────────────────────────────────────────────
 TEMP_DIR = Path.home() / "Downloads" / "Stellar_Conflict_Temp"
@@ -104,6 +122,7 @@ def _load_temp_snapshot(idx: int) -> bool:
 
         with open(snapshots[idx], 'r', encoding='utf-8') as f:
             _active_game = json.load(f)
+        _ensure_state_fields(_active_game)
         return True
     except Exception:
         return False
@@ -189,8 +208,14 @@ class PlaceOrderRequest(BaseModel):
     tile_key: str
 
 
+class PlayOrderRequest(BaseModel):
+    """Розыгрыш приказа (без tile_key)"""
+    player_id: int
+    order_id: str
+
+
 class CancelOrderRequest(BaseModel):
-    """Отмена приказа"""
+    """Отмена / сброс приказа"""
     player_id: int
     order_id: str
 
@@ -402,14 +427,7 @@ async def init_game(request: InitGameRequest) -> GameStateResponse:
                 p.pop('color', None)
 
             # Инициализация обязательных полей
-            if 'dropped_orders' not in _active_game:
-                _active_game['dropped_orders'] = []
-            if 'ordersPlaced' not in _active_game:
-                _active_game['ordersPlaced'] = [0, 0]
-            if 'orders' not in _active_game:
-                _active_game['orders'] = []
-            if 'order_placed_this_turn' not in _active_game:
-                _active_game['order_placed_this_turn'] = [False, False]
+            _ensure_state_fields(_active_game)
 
             # Удалить из hand_orders приказы которые уже размещены на поле
             orders_on_field = set(o.get('id') for o in _active_game.get('orders', []))
@@ -634,7 +652,7 @@ async def get_available_orders_endpoint(player_id: int):
 
 
 @app.post('/api/game/play-order')
-async def play_order_endpoint(request: PlaceOrderRequest) -> GameStateResponse:
+async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
     """Разыграть приказ"""
     async with _game_lock:
         if _active_game is None:
@@ -650,6 +668,11 @@ async def play_order_endpoint(request: PlaceOrderRequest) -> GameStateResponse:
             if request.player_id != current_player:
                 return GameStateResponse(success=False, error="Сейчас не ваш ход")
 
+            # Нельзя играть если уже совершено действие в этом ходу (сброс или розыгрыш)
+            played_flag = _active_game.get('execution_order_played', [False, False])
+            if played_flag[current_player]:
+                return GameStateResponse(success=False, error="Вы уже совершили действие в этом ходу. Передайте ход.")
+
             # СОХРАНИТЬ SNAPSHOT перед разыгрышем
             _save_temp_snapshot()
 
@@ -659,8 +682,17 @@ async def play_order_endpoint(request: PlaceOrderRequest) -> GameStateResponse:
             if not success:
                 return GameStateResponse(success=False, error=message)
 
-            # Обновить state
+            # Обновить state (приказ убран с поля, возвращён в руку)
             _active_game['orders'] = new_state['orders']
+            _active_game['players'] = new_state['players']
+
+            # Отметить что игрок разыграл приказ в этом ходу
+            _active_game['execution_order_played'][request.player_id] = True
+
+            # Добавить в лог
+            if 'log' not in _active_game:
+                _active_game['log'] = []
+            _active_game['log'].append({'message': message, 'player_id': request.player_id})
 
             print(f"🎯 {message}")
             _save_current_state()
@@ -670,6 +702,52 @@ async def play_order_endpoint(request: PlaceOrderRequest) -> GameStateResponse:
             import traceback
             print(f"❌ Ошибка розыгрыша приказа: {e}")
             traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/discard-order')
+async def discard_order_endpoint(request: CancelOrderRequest) -> GameStateResponse:
+    """Сбросить приказ в колоду сброса (без розыгрыша)"""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+
+        try:
+            phase = _active_game.get('phase', 'unknown')
+            if phase != 'execution':
+                return GameStateResponse(success=False, error="Сброс доступен только на этапе розыгрыша")
+
+            current_player = _active_game.get('curP', 0)
+            if request.player_id != current_player:
+                return GameStateResponse(success=False, error="Сейчас не ваш ход")
+
+            # Нельзя сбрасывать если уже совершено действие в этом ходу
+            played_flag = _active_game.get('execution_order_played', [False, False])
+            if played_flag[current_player]:
+                return GameStateResponse(success=False, error="Вы уже совершили действие в этом ходу. Передайте ход.")
+
+            _save_temp_snapshot()
+
+            success, message, new_state = discard_order(_active_game, request.player_id, request.order_id)
+            if not success:
+                return GameStateResponse(success=False, error=message)
+
+            _active_game['orders'] = new_state['orders']
+            _active_game['dropped_orders'] = new_state['dropped_orders']
+
+            # Сброс тоже считается ходом — нельзя играть другой приказ после
+            _active_game['execution_order_played'][request.player_id] = True
+
+            if 'log' not in _active_game:
+                _active_game['log'] = []
+            _active_game['log'].append({'message': message, 'player_id': request.player_id})
+
+            print(f"🗑 {message}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_active_game.copy())
+
+        except Exception as e:
+            print(f"❌ Ошибка сброса приказа: {e}")
             return GameStateResponse(success=False, error=str(e))
 
 
@@ -688,27 +766,32 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
 
             current_player = _active_game.get('curP', 0)
 
+            # Проверить: если у игрока есть разыгрываемые приказы — обязан сыграть
+            playable = get_available_orders(_active_game, current_player)
+            played_flag = _active_game.get('execution_order_played', [False, False])
+            if playable and not played_flag[current_player]:
+                return GameStateResponse(
+                    success=False,
+                    error="Вы должны разыграть доступный приказ перед передачей хода"
+                )
+
             # СОХРАНИТЬ SNAPSHOT перед изменениями
             _save_temp_snapshot()
 
-            # Проверить остались ли приказы
-            orders_info = check_orders_remain(_active_game)
+            # Определить следующий ход
+            next_info = determine_next_player_order_play(_active_game)
 
-            if orders_info['any_remain']:
-                # Переход на следующего игрока
-                next_info = determine_next_player_order_play(_active_game)
-
-                if next_info['next_player'] is not None:
-                    _active_game['curP'] = next_info['next_player']
-                    print(f"➜ {next_info['message']}")
-                else:
-                    # Конец раунда
-                    _active_game['phase'] = 'end-round'
-                    print(f"✅ {next_info['message']}")
+            if next_info.get('next_player') is not None:
+                _active_game['curP'] = next_info['next_player']
+                _active_game['execution_order_played'][next_info['next_player']] = False
+                print(f"➜ {next_info['message']}")
             else:
-                # Конец раунда
+                # Конец раунда — вернуть сброшенные приказы в руки
+                updated = return_dropped_orders(_active_game)
+                _active_game['players'] = updated['players']
+                _active_game['dropped_orders'] = updated['dropped_orders']
                 _active_game['phase'] = 'end-round'
-                print(f"✅ Все приказы разыграны. Начало КОНЕЦ РАУНДА.")
+                print(f"✅ {next_info['message']}")
 
             _save_current_state()
             return GameStateResponse(success=True, state=_active_game.copy())
@@ -747,6 +830,7 @@ async def root():
                 },
                 'shared': {
                     'cancel-order': 'POST /api/game/cancel-order',
+                    'discard-order': 'POST /api/game/discard-order',
                     'undo': 'POST /api/game/undo',
                     'clear-temp': 'POST /api/game/clear-temp',
                 }

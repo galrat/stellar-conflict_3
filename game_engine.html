@@ -173,8 +173,9 @@ input[type=text]:focus{border-color:var(--p1);}
   border:2px solid;
   clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 }
-.order-fd.clickable{pointer-events:auto;cursor:pointer;animation:adp .8s ease-in-out infinite;border-width:3px;}
+.order-fd.clickable{pointer-events:auto;cursor:pointer;border-width:3px;}
 .order-fd.clickable:hover{filter:brightness(1.4);}
+.order-fd.selected-order{pointer-events:auto;cursor:pointer;border-width:3px;animation:adp .8s ease-in-out infinite;filter:brightness(1.3);}
 
 /* ── BOTTOM BAR ── */
 .bottom-bar{display:flex;gap:5px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:5px 10px;flex-shrink:0;overflow-x:auto;}
@@ -361,6 +362,7 @@ input[type=text]:focus{border-color:var(--p1);}
     <button class="abtn bw" id="btn-undo-ws" onclick="undoWarpStorm()" style="display:none">↩ Отменить варп-шторм</button>
     <button class="abtn bp" id="btn-confirm-ws" onclick="confirmWarpStorm()" style="display:none">Подтвердить ✓</button>
     <button class="abtn bw" id="btn-undo-order" onclick="undoLastOrderViaAPI()" style="display:none">↩ Вернуть приказ</button>
+    <button class="abtn bw" id="btn-discard-order" onclick="discardOrderViaAPI()" style="display:none">🗑 Сбросить приказ</button>
     <button class="abtn bp" id="btn-pass" onclick="passOrderTurn()" style="display:none">Передать ход →</button>
   </div>
 </div>
@@ -512,6 +514,9 @@ function makeState() {
     // ── orders (управляются Python Stage 2) ──
     orders: [],        // [{ id, type, owner, tile, position, revealed }]
     ordersPlaced: [0, 0],
+    order_placed_this_turn: [false, false],
+    dropped_orders: [],
+    execution_order_played: [false, false],
   };
 }
 
@@ -744,9 +749,27 @@ function showEventCards(playerIdx) {
   const p = G.players[playerIdx];
   const hand = p.hand_event_cards || [];
   const avail = p.available_event_cards || [];
-  const html = `<div style="display:flex;gap:16px;font-size:.85rem;">
+  const dropped = (G.dropped_orders || []).filter(o => o.owner === playerIdx);
+
+  const _renderDroppedOrder = (o) => {
+    const orderType = ORDER_TYPES[o.type];
+    const orderName = orderType?.name || o.type;
+    return `<div style="padding:4px 6px;background:rgba(255,100,50,.1);border:1px solid rgba(255,100,50,.3);border-radius:4px;font-size:.75rem;margin-bottom:3px;">
+      ${orderType?.icon || '?'} ${orderName}
+    </div>`;
+  };
+
+  const droppedHtml = dropped.length === 0
+    ? '<span style="color:var(--dim);font-size:.75rem">Нет сброшенных приказов</span>'
+    : dropped.map(_renderDroppedOrder).join('');
+
+  const html = `<div style="display:flex;gap:16px;font-size:.85rem;flex-wrap:wrap;">
     ${_renderCardColumn(hand, 'На руке', 'rgba(76,175,80,.9)', _renderEventCard)}
     ${_renderCardColumn(avail, 'Доступные для получения', 'rgba(171,71,188,.8)', _renderEventCard)}
+    <div style="flex:1;min-width:120px;">
+      <div style="font-weight:bold;margin-bottom:6px;color:rgba(255,100,50,.9);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;">Сброшенные приказы</div>
+      ${droppedHtml}
+    </div>
   </div>`;
   showMsg(`Карты событий: ${p.name}`, html, true);
 }
@@ -939,9 +962,10 @@ function setPhase(phase) {
   G.selUnitType = null;
 
   // Hide all action buttons
-  ['btn-ut','btn-uu','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-undo-order','btn-undo-ws','btn-confirm-ws'].forEach(id => {
+  ['btn-ut','btn-uu','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-undo-order','btn-undo-ws','btn-confirm-ws','btn-discard-order'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
+  _selectedOrderForPlay = null;
 
   const cp  = G.players[G.curP];
   const ins = document.getElementById('pinstr');
@@ -991,10 +1015,8 @@ function setPhase(phase) {
   }
   else if (phase === 'execution') {
     const availableOrders = G.orders.filter(o => o.owner === G.curP).length;
-    ins.innerHTML = `<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>${cp.name}: выберите приказ слева и нажмите кнопку. Осталось: ${availableOrders}`;
-    if (availableOrders > 0) {
-      show('btn-pass');
-    }
+    ins.innerHTML = `<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>${cp.name}: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: ${availableOrders}`;
+    updateExecutionPassButton();
     renderSide(); renderBoard();
   }
   else if (phase === 'end-round') {
@@ -1676,20 +1698,33 @@ function renderBoard() {
     el.appendChild(centerZone);
 
     // Отрисовка приказов на тайле (стопка в центре, смещение вверх-вправо)
-    const tilesOrders = G.orders.filter(o => o.tile === tile.key);
+    // Сортируем по позиции чтобы верхний (наибольшая position) был последним в DOM (z-index выше)
+    const tilesOrders = G.orders.filter(o => o.tile === tile.key)
+      .sort((a, b) => (a.position || 0) - (b.position || 0));
+
+    // Для execution: верхний приказ каждого игрока на этой плитке
+    // Глобальный топ стека: приказ с наибольшей position среди ВСЕХ на плитке
+    const globalTopOrder = tilesOrders.length > 0 ? tilesOrders[tilesOrders.length - 1] : null;
+
     tilesOrders.forEach((order, idx) => {
       const orderEl = document.createElement('div');
       const fac = FACTIONS.find(f => f.id === G.players[order.owner].faction);
       const facIcon = fac?.icon || (order.owner === 0 ? 'P1' : 'P2');
       const orderName = ORDER_TYPES[order.type]?.name || order.type;
-      const orderAbbrev = orderName.substring(0, 3).toUpperCase();  // первые 3 буквы
 
       // Смещение для стопки: каждый выше и правее (вверх-вправо)
-      const offsetY = -idx * 5;  // вверх
-      const offsetX = idx * 5;   // вправо
+      const offsetY = -idx * 5;
+      const offsetX = idx * 5;
 
-      orderEl.className = `order-fd`;
       const factionColor = G.players[order.owner].faction_color || (order.owner === 0 ? '#00c8ff' : '#ff4d6d');
+
+      // Во время execution: верхний приказ текущего игрока кликабелен
+      const isExecutionPhase = G.phase === 'execution';
+      const isCurrentPlayer = order.owner === G.curP;
+      const isClickable = isExecutionPhase && isCurrentPlayer && globalTopOrder?.id === order.id;
+      const isSelected = _selectedOrderForPlay?.id === order.id;
+
+      orderEl.className = `order-fd${isSelected ? ' selected-order' : ''}`;
       orderEl.style.cssText = `
         position: absolute;
         width: 50px;
@@ -1700,22 +1735,32 @@ function renderBoard() {
         flex-direction: column;
         gap: 1px;
         font-family: 'Orbitron', monospace;
-        pointer-events: none;
+        pointer-events: ${isClickable ? 'auto' : 'none'};
+        cursor: ${isClickable ? 'pointer' : 'default'};
         top: calc(50% + ${offsetY}px);
         left: calc(50% + ${offsetX}px);
         transform: translate(-50%, -50%);
-        box-shadow: 0 2px 10px rgba(0,0,0,.85), inset 0 0 0 6px #444;
+        box-shadow: 0 2px 10px rgba(0,0,0,.85)${isSelected ? ', 0 0 0 3px rgba(255,220,50,.8)' : ''};
         z-index: ${10 + idx};
         background: #1a1a1a;
-        border: 2px solid #333;
+        border: 2px solid ${isSelected ? 'rgba(255,220,50,.9)' : '#333'};
         color: ${factionColor};
         clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
       `;
-      // Рубашка вверх - иконка фракции ЦВЕТОМ ФРАКЦИИ
       orderEl.innerHTML = `
         <div style="font-size: 2rem; font-weight: bold; line-height: 1;">${facIcon}</div>
       `;
-      orderEl.title = `${orderName} (${G.players[order.owner].name})`;
+      orderEl.title = isClickable
+        ? (isSelected ? `Нажмите ещё раз для розыгрыша: ${orderName}` : `Выбрать: ${orderName}`)
+        : `${orderName} (${G.players[order.owner].name})`;
+
+      if (isClickable) {
+        orderEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectOrderForPlay(order.id, order.type, tile.key);
+        });
+      }
+
       el.appendChild(orderEl);
     });
 
@@ -1871,7 +1916,7 @@ function renderSide() {
 
     // Раздел 1: Приказы в руке
     const ordersPlacedCount = G.ordersPlaced[G.curP] || 0;
-    const canPlaceMore = ordersPlacedCount < 8;
+    const canPlaceMore = ordersPlacedCount < 4;
 
     if (cp.hand_orders && cp.hand_orders.length > 0 && canPlaceMore) {
       cp.hand_orders.forEach((order, idx) => {
@@ -1899,8 +1944,8 @@ function renderSide() {
         poolEl.appendChild(btn);
       });
     } else {
-      if (ordersPlacedCount >= 8) {
-        poolEl.innerHTML = '<span style="color:var(--gold);font-size:.75rem">✓ Все 8 приказов размещены</span>';
+      if (ordersPlacedCount >= 4) {
+        poolEl.innerHTML = '<span style="color:var(--gold);font-size:.75rem">✓ Все 4 приказа размещены</span>';
       } else {
         poolEl.innerHTML = '<span style="color:var(--dim);font-size:.75rem">Приказы выставлены</span>';
       }
@@ -1981,56 +2026,97 @@ function renderSide() {
     const poolEl = document.getElementById('unit-pool');
     poolEl.innerHTML = '';
 
-    // Показать доступные приказы для розыгрыша
+    // Показать кнопку сброса если выбран приказ
+    const discardBtn = document.getElementById('btn-discard-order');
+    if (discardBtn) {
+      discardBtn.style.display = _selectedOrderForPlay ? 'block' : 'none';
+    }
+
     const ordersOnField = G.orders.filter(o => o.owner === G.curP);
 
     if (ordersOnField.length === 0) {
-      poolEl.innerHTML = '<span style="color:var(--dim);font-size:.75rem">Нет доступных приказов. Нажмите ПЕРЕДАТЬ ХОД.</span>';
-    } else {
-      const divider = document.createElement('div');
-      divider.style.cssText = 'margin:0;padding:0;';
-
-      const title = document.createElement('div');
-      title.className = 'ptitle';
-      title.textContent = 'ДОСТУПНЫЕ ПРИКАЗЫ';
-      divider.appendChild(title);
-
-      // Группируем приказы по системам
-      const ordersByTile = {};
-      ordersOnField.forEach(o => {
-        if (!ordersByTile[o.tile]) ordersByTile[o.tile] = [];
-        ordersByTile[o.tile].push(o);
-      });
-
-      // Выводим каждую систему с приказами (верхний приказ в каждой стопке)
-      Object.entries(ordersByTile).sort().forEach(([tileKey, orders]) => {
-        // Сортируем по позиции, верхний = с наибольшей позицией
-        orders.sort((a, b) => (b.position || 0) - (a.position || 0));
-        const topOrder = orders[0];  // Верхний приказ
-
-        const btn = document.createElement('button');
-        const orderType = ORDER_TYPES[topOrder.type];
-        const orderName = orderType?.name || topOrder.type;
-
-        btn.className = `abtn ${G.curP===0?'bp':'br'}`;
-        btn.style.width = '100%';
-        btn.style.marginBottom = '6px';
-        btn.innerHTML = `
-          <div style="font-weight:bold;margin-bottom:2px;">[${tileKey}]</div>
-          <div>${orderType?.icon || '?'} ${orderName}</div>
-          <div style="font-size:0.7rem;color:var(--dim);margin-top:2px;">
-            в стопке: ${orders.length}
-          </div>
-        `;
-        btn.title = `${orderName} на ${tileKey}`;
-        btn.onclick = () => playOrderViaAPI(topOrder.id);
-
-        divider.appendChild(btn);
-      });
-
-      poolEl.appendChild(divider);
+      poolEl.innerHTML = '<span style="color:var(--dim);font-size:.75rem">Нет приказов на поле. Нажмите ПЕРЕДАТЬ ХОД.</span>';
+      return;
     }
 
+    const wrap = document.createElement('div');
+
+    const title = document.createElement('div');
+    title.className = 'ptitle';
+    title.textContent = 'ПРИКАЗЫ НА ПОЛЕ';
+    wrap.appendChild(title);
+
+    // Группируем по системам
+    const ordersByTile = {};
+    ordersOnField.forEach(o => {
+      if (!ordersByTile[o.tile]) ordersByTile[o.tile] = [];
+      ordersByTile[o.tile].push(o);
+    });
+
+    Object.entries(ordersByTile).sort().forEach(([tileKey, orders]) => {
+      // Сортируем: наибольшая position = верхний = позиция 1
+      orders.sort((a, b) => (b.position || 0) - (a.position || 0));
+
+      // Глобальный топ стека: приказ с максимальной position среди ВСЕХ приказов на плитке
+      const allOnTile = G.orders.filter(o => o.tile === tileKey);
+      allOnTile.sort((a, b) => (b.position || 0) - (a.position || 0));
+      const globalTopId = allOnTile[0]?.id;
+      const globalTopOwner = allOnTile[0]?.owner;
+      const blockedByOpponent = globalTopId !== orders[0]?.id; // соперник сверху
+
+      const tileLabel = document.createElement('div');
+      tileLabel.style.cssText = 'font-size:.65rem;margin:6px 0 2px;text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:4px;';
+      tileLabel.innerHTML = `<span style="color:var(--dim)">[${tileKey}]</span>${blockedByOpponent ? '<span style="color:#ff6b6b;font-size:.6rem;">⊘ заблокирован</span>' : ''}`;
+      wrap.appendChild(tileLabel);
+
+      orders.forEach((order, stackIdx) => {
+        const posNum = stackIdx + 1;  // 1 = верхний в своей стопке
+        const isMyTop = stackIdx === 0;           // верхний среди своих
+        const isGlobalTop = order.id === globalTopId; // верхний глобально
+        const isPlayable = isMyTop && isGlobalTop;    // можно разыграть
+        const isSelected = _selectedOrderForPlay?.id === order.id;
+        const orderType = ORDER_TYPES[order.type];
+        const orderName = orderType?.name || order.type;
+
+        const row = document.createElement('div');
+        row.style.cssText = `
+          display:flex;align-items:center;gap:6px;padding:4px 6px;margin-bottom:3px;
+          border-radius:5px;cursor:${isPlayable?'pointer':'default'};
+          background:${isSelected ? 'rgba(255,220,50,.15)' : isMyTop && !blockedByOpponent ? 'rgba(255,255,255,.05)' : 'rgba(255,255,255,.02)'};
+          border:1px solid ${isSelected ? 'rgba(255,220,50,.6)' : isMyTop && !blockedByOpponent ? 'rgba(255,255,255,.15)' : 'rgba(255,255,255,.06)'};
+          opacity:${isMyTop ? '1' : '0.55'};
+        `;
+
+        const numBadge = document.createElement('span');
+        numBadge.style.cssText = `
+          min-width:16px;height:16px;border-radius:50%;
+          background:${isPlayable ? (G.curP===0?'#00c8ff':'#ff4d6d') : '#444'};
+          color:#fff;font-size:.6rem;font-weight:bold;
+          display:flex;align-items:center;justify-content:center;flex-shrink:0;
+        `;
+        numBadge.textContent = posNum;
+
+        const label = document.createElement('span');
+        label.style.cssText = 'font-size:.72rem;flex:1;';
+        label.textContent = `${orderType?.icon || '?'} ${orderName}`;
+
+        row.appendChild(numBadge);
+        row.appendChild(label);
+
+        if (isPlayable) {
+          row.onclick = () => selectOrderForPlay(order.id, order.type, tileKey);
+          row.title = isSelected
+            ? 'Нажмите ещё раз для розыгрыша'
+            : `Выбрать: ${orderName}`;
+        } else if (isMyTop && blockedByOpponent) {
+          row.title = 'Заблокирован приказом соперника';
+        }
+
+        wrap.appendChild(row);
+      });
+    });
+
+    poolEl.appendChild(wrap);
     return;
   }
 
@@ -2155,6 +2241,7 @@ function addLog(msg,player){
 
 let _selectedOrderForPlacement = null;  // { idx, id, type, owner }
 let _orderPlacedThisTurn = false;      // запрет на второй приказ в ход
+let _selectedOrderForPlay = null;      // { id, type, tile } — выбранный приказ для розыгрыша/сброса
 
 async function undoLastOrderViaAPI() {
   if (G.phase !== 'order-placement') return;
@@ -2174,8 +2261,6 @@ async function undoLastOrderViaAPI() {
 
       // Скрыть кнопку undo когда больше нечего отменять
       document.getElementById('btn-undo-order').style.display = 'none';
-      renderSide();
-      renderBoard();
     } else {
       showMsg('Ошибка отмены', res.error || 'Не удалось отменить приказ');
     }
@@ -2199,14 +2284,10 @@ async function passOrderTurnViaAPI() {
         addLog('✅ Ожидание начала розыгрыша приказов...', -1);
         const nextPlayer = G.players[G.curP];
         showHP(nextPlayer.name, 'Ожидание розыгрыша', () => setPhase('orders_placed'));
-        renderBoard();
-        renderSide();
       } else if (G.phase === 'execution') {
         addLog('🎮 Начало розыгрыша приказов!', -1);
         const nextPlayer = G.players[G.curP];
         showHP(nextPlayer.name, 'Розыгрыш приказов', () => setPhase('execution'));
-        renderBoard();
-        renderSide();
       } else {
         // Остаемся в order-placement, смена игрока
         const nextPlayer = G.players[G.curP];
@@ -2237,10 +2318,10 @@ async function placeOrderViaAPI(tileKey) {
     return;
   }
 
-  // Проверить лимит 8 приказов
+  // Проверить лимит приказов
   const ordersPlaced = G.ordersPlaced[G.curP] || 0;
-  if (ordersPlaced >= 8) {
-    showMsg('Лимит достигнут', 'Вы уже разместили все 8 приказов');
+  if (ordersPlaced >= 4) {
+    showMsg('Лимит достигнут', 'Вы уже разместили все 4 приказа');
     return;
   }
 
@@ -2293,8 +2374,6 @@ async function placeOrderViaAPI(tileKey) {
       // Показать кнопки
       document.getElementById('btn-pass').style.display = 'block';
       document.getElementById('btn-undo-order').style.display = 'block';
-      renderSide();
-      renderBoard();
     } else {
       showMsg('Ошибка', res.error || 'Не удалось разместить приказ');
     }
@@ -2315,8 +2394,44 @@ function passOrderTurn() {
 
 // ── РОЗЫГРЫШ ПРИКАЗОВ ──
 
+function hasPlayableOrders(playerId) {
+  const playerOrders = G.orders.filter(o => o.owner === playerId);
+  if (!playerOrders.length) return false;
+  const tileKeys = [...new Set(playerOrders.map(o => o.tile))];
+  return tileKeys.some(tileKey => {
+    const allOnTile = G.orders.filter(o => o.tile === tileKey);
+    allOnTile.sort((a, b) => (b.position || 0) - (a.position || 0));
+    return allOnTile[0]?.owner === playerId;
+  });
+}
+
+function updateExecutionPassButton() {
+  if (G.phase !== 'execution') return;
+  const played = (G.execution_order_played || [false, false])[G.curP];
+  const canPass = played || !hasPlayableOrders(G.curP);
+  document.getElementById('btn-pass').style.display = canPass ? 'block' : 'none';
+}
+
+function selectOrderForPlay(orderId, orderType, tileKey) {
+  if (G.phase !== 'execution') return;
+  if (_selectedOrderForPlay?.id === orderId) {
+    // Второй клик — розыгрыш
+    playOrderViaAPI(orderId);
+  } else {
+    // Первый клик — выделение
+    _selectedOrderForPlay = { id: orderId, type: orderType, tile: tileKey };
+    renderSide();
+    renderBoard();
+  }
+}
+
 async function playOrderViaAPI(orderId) {
   if (G.phase !== 'execution') return;
+
+  const ordersBefore = G.orders.filter(o => o.owner === G.curP);
+  const order = ordersBefore.find(o => o.id === orderId);
+  const orderType = ORDER_TYPES[order?.type];
+  const orderName = orderType?.name || order?.type || orderId;
 
   try {
     const res = await apiCall('/api/game/play-order', {
@@ -2324,15 +2439,38 @@ async function playOrderViaAPI(orderId) {
       order_id: orderId
     });
     if (res.success) {
+      _selectedOrderForPlay = null;
       applyState(res.state);
-      addLog(`${G.players[G.curP].name} разыграл приказ`, G.curP);
-      renderBoard();
-      renderSide();
-
-      // Показать кнопку передачи хода
-      document.getElementById('btn-pass').style.display = 'block';
+      addLog(`${G.players[G.curP]?.name || 'Игрок'}: приказ "${orderName}" разыгран`, G.curP);
+      updateExecutionPassButton();
     } else {
       showMsg('Ошибка', res.error || 'Не удалось разыграть приказ');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+async function discardOrderViaAPI() {
+  if (G.phase !== 'execution') return;
+  if (!_selectedOrderForPlay) return;
+
+  const orderId = _selectedOrderForPlay.id;
+  const orderType = ORDER_TYPES[_selectedOrderForPlay.type];
+  const orderName = orderType?.name || _selectedOrderForPlay.type;
+
+  try {
+    const res = await apiCall('/api/game/discard-order', {
+      player_id: G.curP,
+      order_id: orderId
+    });
+    if (res.success) {
+      _selectedOrderForPlay = null;
+      applyState(res.state);
+      addLog(`${G.players[G.curP]?.name || 'Игрок'}: приказ "${orderName}" сброшен`, G.curP);
+      updateExecutionPassButton();
+    } else {
+      showMsg('Ошибка', res.error || 'Не удалось сбросить приказ');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -2347,6 +2485,7 @@ async function passOrderPlayTurnViaAPI() {
       player_id: G.curP
     });
     if (res.success) {
+      _selectedOrderForPlay = null;
       applyState(res.state);
 
       // Проверить какая фаза дальше
@@ -2358,9 +2497,6 @@ async function passOrderPlayTurnViaAPI() {
         addLog(`${nextPlayer.name} ходит в фазе розыгрыша`, -1);
         showHP(nextPlayer.name, 'Розыгрыш приказов', () => setPhase('execution'));
       }
-
-      renderBoard();
-      renderSide();
     } else {
       showMsg('Ошибка', res.error || 'Не удалось передать ход');
     }
@@ -2379,6 +2515,11 @@ async function apiCall(endpoint, body = {}) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
+  if (!r.ok) {
+    const text = await r.text();
+    console.error(`API ${endpoint} → ${r.status}:`, text);
+    return { success: false, error: `Сервер вернул ошибку ${r.status}` };
+  }
   return r.json();
 }
 
@@ -2387,8 +2528,11 @@ function applyState(newState) {
   const uiFields = ['selHandIdx', 'selUnitIdx', 'selUnitType', 'selStructIdx'];
   const saved = {};
   uiFields.forEach(k => { saved[k] = G[k]; });
+  const prevPlayer = G.curP;
   Object.assign(G, newState);
   uiFields.forEach(k => { G[k] = saved[k]; });
+  // Сбросить выбранный приказ при смене игрока
+  if (G.curP !== prevPlayer) _selectedOrderForPlay = null;
   renderBoard();
   renderSide();
   updateHeader();

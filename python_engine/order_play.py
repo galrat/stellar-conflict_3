@@ -18,6 +18,7 @@ Stage 2.2: Order play (Розыгрыш приказов)
 9. Когда все приказы разыграны, то есть игрок с последним приказом нажал ПЕРЕДАТЬ ХОД начинается стадия КОНЕЦ РАУНДА
 она будет описана позже.
 """
+import copy
 
 ORDER_TYPES = {
     'dominate': 'Dominate',
@@ -44,16 +45,18 @@ def get_available_orders(current_state, player_id):
 
     # Для каждой плитки найти все приказы
     for tile_key in map_data.keys():
-        # Получить приказы на этой плитке, отсортировать по позиции
-        tile_orders = [o for o in current_state.get('orders', [])
-                       if o.get('tile') == tile_key and o.get('owner') == player_id]
+        # Все приказы на плитке (оба игрока) — глобальный стек
+        all_tile_orders = [o for o in current_state.get('orders', [])
+                           if o.get('tile') == tile_key]
+        if not all_tile_orders:
+            continue
 
-        # Сортировка: верхний приказ имеет наименьшую позицию
-        # (позиция = индекс в стопке, где 0 = нижний, наибольший = верхний)
-        if tile_orders:
-            tile_orders.sort(key=lambda o: o.get('position', 0), reverse=True)
-            # Верхний приказ = с наибольшей позицией
-            top_order = tile_orders[0]
+        # Глобальный топ = приказ с наибольшей позицией среди всех на плитке
+        all_tile_orders.sort(key=lambda o: o.get('position', 0), reverse=True)
+        top_order = all_tile_orders[0]
+
+        # Доступен только если верхний приказ принадлежит игроку
+        if top_order.get('owner') == player_id:
             available.append({
                 'id': top_order.get('id'),
                 'type': top_order.get('type'),
@@ -105,28 +108,119 @@ def play_order(current_state, player_id, order_id):
     if not order:
         return False, "Приказ не найден или не ваш", None
 
-    # Проверить что это верхний приказ (наибольшая позиция на плитке)
-    tile_orders = [o for o in current_state.get('orders', [])
-                   if o.get('tile') == order.get('tile') and o.get('owner') == player_id]
-
-    if tile_orders:
-        tile_orders.sort(key=lambda o: o.get('position', 0), reverse=True)
-        if tile_orders[0].get('id') != order_id:
-            return False, "Можно разыграть только верхний приказ в стопке", None
+    # Проверить что это глобально верхний приказ на плитке (среди всех игроков)
+    all_tile_orders = [o for o in current_state.get('orders', [])
+                       if o.get('tile') == order.get('tile')]
+    if all_tile_orders:
+        all_tile_orders.sort(key=lambda o: o.get('position', 0), reverse=True)
+        if all_tile_orders[0].get('id') != order_id:
+            return False, "Приказ перекрыт другим приказом в стопке", None
 
     # Разыграть приказ
     order_name = get_order_name(order.get('type'))
     message = f"Приказ '{order_name}' разыгран"
 
-    # Пометить как разыгранный
-    order['revealed'] = True
-
-    # Удалить разыгранный приказ из state
-    new_state = {**current_state}
+    # Удалить приказ с поля
+    new_state = copy.deepcopy(current_state)
     new_state['orders'] = [o for o in new_state.get('orders', [])
                            if o.get('id') != order_id]
 
+    # Вернуть приказ в руку игрока
+    hand_order = {
+        'id': order.get('id'),
+        'type': order.get('type'),
+        'owner': player_id,
+    }
+    new_state['players'] = [dict(p) for p in new_state.get('players', [])]
+    new_state['players'][player_id]['hand_orders'] = list(
+        new_state['players'][player_id].get('hand_orders', [])
+    )
+    new_state['players'][player_id]['hand_orders'].append(hand_order)
+
     return True, message, new_state
+
+
+def discard_order(current_state, player_id, order_id):
+    """
+    Сбросить приказ в колоду сброса (без розыгрыша).
+
+    Только верхний приказ в стопке на плитке может быть сброшен.
+    Сброшенный приказ возвращается в руку на фазе конца раунда.
+
+    Args:
+        current_state: состояние игры
+        player_id: ID игрока
+        order_id: ID приказа
+
+    Returns:
+        tuple: (success: bool, message: str, new_state: dict или None)
+    """
+    # Найти приказ
+    order = None
+    for o in current_state.get('orders', []):
+        if o.get('id') == order_id and o.get('owner') == player_id:
+            order = o
+            break
+
+    if not order:
+        return False, "Приказ не найден или не ваш", None
+
+    # Проверить что это глобально верхний приказ на плитке (среди всех игроков)
+    all_tile_orders = [o for o in current_state.get('orders', [])
+                       if o.get('tile') == order.get('tile')]
+    if all_tile_orders:
+        all_tile_orders.sort(key=lambda o: o.get('position', 0), reverse=True)
+        if all_tile_orders[0].get('id') != order_id:
+            return False, "Приказ перекрыт приказом соперника в стопке", None
+
+    order_name = get_order_name(order.get('type'))
+
+    # Удалить приказ с поля
+    new_state = copy.deepcopy(current_state)
+    new_state['orders'] = [o for o in new_state.get('orders', [])
+                           if o.get('id') != order_id]
+
+    # Добавить в dropped_orders
+    if 'dropped_orders' not in new_state:
+        new_state['dropped_orders'] = []
+    new_state['dropped_orders'] = list(new_state['dropped_orders'])
+    new_state['dropped_orders'].append({
+        'id': order.get('id'),
+        'type': order.get('type'),
+        'owner': player_id,
+    })
+
+    message = f"Приказ '{order_name}' сброшен"
+    return True, message, new_state
+
+
+def return_dropped_orders(current_state):
+    """
+    Вернуть все сброшенные приказы в руки игроков (вызывается на фазе конца раунда).
+
+    Returns:
+        dict: обновлённое состояние
+    """
+    dropped = current_state.get('dropped_orders', [])
+    if not dropped:
+        return current_state
+
+    new_state = copy.deepcopy(current_state)
+    new_state['players'] = [dict(p) for p in new_state.get('players', [])]
+    for p in new_state['players']:
+        p['hand_orders'] = list(p.get('hand_orders', []))
+
+    for order in dropped:
+        pid = order.get('owner')
+        if pid in (0, 1):
+            new_state['players'][pid]['hand_orders'].append({
+                'id': order.get('id'),
+                'type': order.get('type'),
+                'owner': pid,
+            })
+
+    new_state['dropped_orders'] = []
+    return new_state
 
 
 def check_orders_remain(current_state):
@@ -151,15 +245,16 @@ def determine_next_player_order_play(current_state):
     """
     Определить следующего игрока для розыгрыша приказа.
 
-    Логика:
-    - Если у текущего игрока есть приказы → он ходит
-    - Если только у другого игрока есть приказы → тот ходит
-    - Если приказов нет → начало КОНЕЦ РАУНДА
+    Логика (ход всегда чередуется):
+    - Сначала пробуем передать ход сопернику
+    - Если у соперника нет приказов — текущий игрок продолжает
+    - Если приказов нет ни у кого → КОНЕЦ РАУНДА
 
     Returns:
         dict: { 'next_player': int или None, 'can_play': bool, 'message': str }
     """
     current_player = current_state.get('curP', 0)
+    other_player = 1 - current_player
     orders_info = check_orders_remain(current_state)
 
     if orders_info['total'] == 0:
@@ -170,22 +265,22 @@ def determine_next_player_order_play(current_state):
             'phase_next': 'end-round',
         }
 
-    # Есть ли приказы у текущего игрока?
-    p_curr = 'p0' if current_player == 0 else 'p1'
     p_other = 'p1' if current_player == 0 else 'p0'
+    p_curr  = 'p0' if current_player == 0 else 'p1'
 
-    if orders_info[p_curr] > 0:
-        return {
-            'next_player': current_player,
-            'can_play': True,
-            'message': f'Приказы остались. Ход игрока {current_player}.',
-        }
-    elif orders_info[p_other] > 0:
-        other_player = 1 - current_player
+    # Всегда сначала передаём ход сопернику (чередование)
+    if orders_info[p_other] > 0:
         return {
             'next_player': other_player,
             'can_play': True,
-            'message': f'У игрока {current_player} приказов нет. Ход игрока {other_player}.',
+            'message': f'Ход передан игроку {other_player}.',
+        }
+    elif orders_info[p_curr] > 0:
+        # У соперника приказов нет — текущий продолжает
+        return {
+            'next_player': current_player,
+            'can_play': True,
+            'message': f'У соперника приказов нет. Игрок {current_player} продолжает.',
         }
     else:
         return {

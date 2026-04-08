@@ -93,8 +93,10 @@ class Phase(Enum):
     TILE_PLACEMENT  = "tile_placement"     # размещение тайла + войска на него
     TROOP_ON_TILE   = "troop_on_tile"      # размещение войск на только что поставленный тайл
     TROOP_PLACEMENT = "troop_placement"    # общая расстановка оставшихся войск
-    ORDER_PLACEMENT = "order_placement"    # расстановка приказов
+    ORDER_PLACEMENT = "order-placement"    # расстановка приказов
+    ORDERS_PLACED   = "orders_placed"      # все приказы выставлены, ожидание розыгрыша
     EXECUTION       = "execution"          # исполнение приказов
+    END_ROUND       = "end-round"          # конец раунда
     ENDED           = "ended"
 
 

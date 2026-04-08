@@ -1,222 +1,174 @@
-АУДИТ ПРОЕКТА STELLAR CONFLICT — РЕКОМЕНДАЦИИ
-================================================================
-Дата: 2026-04-06
+===============================================================================
+  STELLAR CONFLICT - АУДИТ КОДА
+  Дата: 2026-04-08
+===============================================================================
 
-================================================================
-[1] КРИТИЧНЫЕ БАГИ
-================================================================
+============== КРИТИЧЕСКИЕ БАГИ (ломают игру) ==============
 
-1.1  Соседи: квадратная сетка, а не гексагональная
-     Файл: python_engine/orders_placement.py, строки 86-93
-     Файл: board.py, строки 89-96
+1. [BUG] game_engine.html:1916, 1944, 2324-2327
+   JS фронтенд проверяет лимит приказов = 8, а бэкенд уже исправлен на 4.
+   Строка 1916: `canPlaceMore = ordersPlacedCount < 8`  -> должно быть < 4
+   Строка 1944: `ordersPlacedCount >= 8`                 -> должно быть >= 4
+   Строка 2324-2327: `ordersPlaced >= 8`                 -> должно быть >= 4
+   Результат: после 4 приказов бэкенд не даёт ставить, а UI показывает что можно
+   и вводит игрока в заблуждение.
 
-     В board.py neighbors() использует 4 соседа (квадратная сетка):
-       [(0,1), (0,-1), (1,0), (-1,0)]
+2. [BUG] python_engine/order_play.py:128-130 (play_order)
+   При возврате разыгранного приказа в руку создаётся {id, type} БЕЗ поля owner.
+   Оригинальные hand_orders содержат {id, type, owner}.
+   Результат: приказ в руке может некорректно отображаться или фильтроваться.
+   Исправление: добавить 'owner': player_id в hand_order dict.
 
-     Но в orders_placement.py get_available_tiles() использует 6 соседей:
-       [(1,0), (-1,0), (0,1), (0,-1), (1,-1), (-1,1)]
+3. [BUG] python_engine/order_play.py:214 (return_dropped_orders)
+   Та же проблема: сброшенные приказы возвращаются в руку без поля owner.
+   Исправление: добавить 'owner': pid.
 
-     РЕШЕНИЕ: Использовать те же 4 направления что в board.py,
-     или импортировать board.neighbor_keys() напрямую.
+4. [BUG] game_server.py:703-718 (discard_order_endpoint)
+   Нет проверки execution_order_played перед сбросом.
+   Игрок может сбросить приказ ПОСЛЕ того, как уже разыграл или сбросил другой.
+   Исправление: добавить проверку played_flag[current_player] как в play_order_endpoint.
 
-1.2  Нет проверки лимита приказов (8 шт на игрока)
-     Файл: python_engine/orders_placement.py, функция validate_order_placement()
 
-     Игрок может разместить больше 8 приказов, т.к. нет проверки:
-       if current_state['ordersPlaced'][player_id] >= 8:
-           return False, "Все приказы уже размещены"
+============== ПОТЕНЦИАЛЬНЫЕ ПРОБЛЕМЫ (могут привести к багам) ==============
 
-     РЕШЕНИЕ: Добавить проверку в validate_order_placement().
+5. [RISK] Несоответствие фаз: game_state.py vs game_server.py
+   game_state.py:  Phase.ORDER_PLACEMENT = "order_placement"  (подчёркивание)
+   game_server.py: phase == 'order-placement'                  (дефис)
+   game_state.py не содержит фазы "orders_placed" и "end-round".
+   Сейчас game_state.py не используется для Stage 2, но при интеграции будет конфликт.
+   Рекомендация: привести Phase enum в соответствие с реальными строками фаз,
+   добавить ORDERS_PLACED и END_ROUND.
 
-1.3  ordersPlaced не инициализируется при init_game
-     Файл: game_server.py, функция init_game()
+6. [RISK] Shallow copy в play_order и discard_order
+   `new_state = {**current_state}` - мелкая копия. Вложенные объекты (map, warpStorms,
+   log) остаются ссылками на оригинал. Хотя players и orders пересоздаются,
+   любая мутация других вложенных полей new_state изменит и current_state.
+   Рекомендация: использовать copy.deepcopy или пересоздавать все мутируемые поля.
 
-     Если state из JS не содержит 'ordersPlaced', код упадет при
-     попытке увеличить счетчик.
+7. [RISK] Snapshot/Undo и execution_order_played
+   При undo (восстановлении snapshot) execution_order_played восстанавливается
+   из snapshot. Это корректно для отмены, но если snapshot сохранялся ДО действия
+   (что верно), то при undo флаг вернётся в False. Проблема: если игрок уже
+   разыграл приказ, нажал undo - флаг сбрасывается и он может сыграть снова.
+   Это ожидаемое поведение (undo отменяет действие), но стоит проверить что
+   snapshot действительно создаётся до установки флага.
 
-     РЕШЕНИЕ: Добавить в init_game():
-       if 'ordersPlaced' not in _active_game:
-           _active_game['ordersPlaced'] = [0, 0]
+8. [RISK] Endpoint каталог в root() не содержит discard-order
+   game_server.py:836-840: endpoint /api/game/discard-order не указан в каталоге
+   API. Не влияет на работу, но затрудняет документацию.
 
-================================================================
-[2] НЕСООТВЕТСТВИЯ ИМЁН
-================================================================
+9. [RISK] hand_orders: дубли после undo + повторного розыгрыша
+   Если игрок разыграл приказ (приказ вернулся в hand_orders), затем сделал undo
+   (snapshot восстановил старое состояние с приказом на поле), а затем снова
+   разыграл - приказ повторно добавится в hand_orders. В сочетании с пунктом 7
+   это может привести к дублям в руке.
+   Рекомендация: при загрузке snapshot очищать или пересчитывать hand_orders.
 
-2.1  Имена фаз: дефис vs подчеркивание
-     game_state.py (Phase enum):    "order_placement" (подчеркивание)
-     game_engine.html (JS):         "order-placement" (дефис)
-     game_server.py (проверки):     "order-placement" (дефис)
-     orders_placement.py:           "play-orders"     (дефис)
 
-     ТЕКУЩЕЕ СОСТОЯНИЕ: game_server.py и JS используют дефисы — это
-     работает. Но game_state.py enum НЕ совпадает.
+============== УЛУЧШЕНИЯ (не ломают, но стоит исправить) ==============
 
-     РЕШЕНИЕ: Либо обновить enum в game_state.py на дефисы,
-     либо везде перейти на подчеркивания. Главное — единообразие.
+10. [IMPROVE] game_state.py: класс Phase не используется в Stage 2
+    Вся логика Stage 2 работает на строковых фазах. Phase enum определён но
+    не импортируется в game_server.py или order_play.py.
+    Рекомендация: либо удалить enum и оставить строки, либо начать использовать
+    enum повсюду для безопасности типов.
 
-2.2  Поле "color" vs "faction_color" в state
-     Файл: current_state.txt — всё ещё содержит "color": "c1"
-     Файл: game_server.py — при init_game добавляет "faction_color"
+11. [IMPROVE] game_server.py: дублирование инициализации execution_order_played
+    Строки 421, 682, 728, 782: повторяющийся паттерн
+      if 'execution_order_played' not in _active_game:
+          _active_game['execution_order_played'] = [False, False]
+    Вынести в одну функцию ensure_field() или гарантировать инициализацию в init.
 
-     JS может продолжать смотреть на "color" в некоторых местах.
+12. [IMPROVE] game_server.py: return_dropped_orders вызывается в 2 местах
+    В pass_turn_order_play_endpoint блок return_dropped_orders дублируется
+    (строки 789-791 и 796-798). Можно вынести перед условием if/else.
 
-     РЕШЕНИЕ: При init_game удалять старое поле 'color' из state:
-       p.pop('color', None)
+13. [IMPROVE] game_engine.html: ORDER_TYPES определён в JS, но Python не шарит
+    Если добавить новый тип приказа, нужно обновить оба места.
+    Рекомендация: в будущем грузить ORDER_TYPES с сервера.
 
-2.3  owner vs player в разных контекстах
-     orders (на карте):       "owner": 0
-     troops (в областях):     "player": 0
-     hand_orders:              "owner": 0
-     game_state.py Order:     "player_id": 0
+14. [IMPROVE] game_engine.html: _selectedOrderForPlay не сбрасывается при смене curP
+    Если один игрок выбрал приказ, но не разыграл, и ход перешёл - выбор остаётся.
+    setPhase('execution') сбрасывает его, но applyState() - нет.
+    В текущем потоке это не проблема (showHP блокирует), но может стать при
+    добавлении автоматических переходов.
 
-     РЕШЕНИЕ: Выбрать одно имя и использовать везде.
-     Рекомендация: "owner" для всего что на карте.
+15. [IMPROVE] apiCall() не проверяет HTTP status code
+    game_engine.html: apiCall() всегда делает r.json() без проверки r.ok.
+    При 422/500 от FastAPI ответ не содержит success/error, и показывается
+    общее сообщение "Не удалось...". Добавить проверку r.status.
 
-================================================================
-[3] ДУБЛИРОВАНИЕ КОДА
-================================================================
+16. [IMPROVE] game_engine.html: 8 приказов в hand_orders
+    В setupPhase (строка 922-932) создаётся 8 приказов на руку (2 каждого типа).
+    При лимите 4 приказа на поле - оставшиеся 4 будут в руке. Это by design?
+    Если да - ок. Если нет - уменьшить количество при создании.
 
-3.1  Логика размещения приказа дублируется
-     Файл 1: game_server.py, place_order_endpoint() — вызывает
-              place_order_impl() из orders_placement.py
-     Файл 2: python_engine/orders_placement.py, place_order_impl()
 
-     ТЕКУЩЕЕ СОСТОЯНИЕ: После рефакторинга дублирование устранено.
-     game_server.py теперь вызывает функции из orders_placement.py.
-     ОК — дублирования нет.
+============== ДОПОЛНИТЕЛЬНЫЕ НАХОДКИ (из глубокого аудита) ==============
 
-3.2  Вычисление соседей дублируется
-     Файл 1: board.py, neighbors() — строки 89-96
-     Файл 2: orders_placement.py, get_available_tiles() — строки 86-93
+17. [BUG] game_engine.html: makeState() не содержит dropped_orders и execution_order_played
+    При инициализации JS state (строка ~483) отсутствуют поля dropped_orders и
+    execution_order_played. Если сервер не отправит их (старый snapshot, ошибка),
+    JS упадёт при обращении к G.dropped_orders или G.execution_order_played.
+    Исправление: добавить в makeState():
+      dropped_orders: [],
+      execution_order_played: [false, false],
 
-     РЕШЕНИЕ: В orders_placement.py использовать те же направления
-     что и в board.py, или вынести в общую утилиту.
+18. [BUG] game_engine.html: двойной render в applyState()
+    applyState() вызывает renderBoard() + renderSide(), но большинство вызывающих
+    функций (playOrderViaAPI, discardOrderViaAPI, passOrderPlayTurnViaAPI)
+    тоже вызывают renderBoard() + renderSide() сразу после applyState().
+    Результат: двойная перерисовка на каждое действие, потеря производительности.
+    Исправление: убрать render из applyState() или из вызывающих функций.
 
-3.3  Данные фракций загружаются дважды
-     Файл 1: game_server.py, init_game() — загружает карты из FACTIONS
-     Файл 2: game_server.py, get_faction_cards() — загружает карты из FACTIONS
+19. [RISK] game_server.py: _load_temp_snapshot не инициализирует новые поля
+    Если snapshot создан до добавления execution_order_played или dropped_orders,
+    при undo эти поля будут отсутствовать. get() с дефолтом спасает в Python,
+    но JS получит state без этих полей.
+    Исправление: после загрузки snapshot добавить ensure-блок аналогичный init_game.
 
-     РЕШЕНИЕ: Не критично, но можно унифицировать формат ответа.
+20. [RISK] orders_placement.py:178,197 - прямая мутация входного аргумента
+    place_order_impl() мутирует current_state напрямую (pop из hand_orders,
+    append в orders, increment ordersPlaced). Это связывает snapshot-систему
+    с порядком вызовов - snapshot должен быть сохранён строго ДО вызова.
+    Сейчас порядок правильный, но хрупкая архитектура.
 
-================================================================
-[4] МЁРТВЫЙ КОД
-================================================================
+21. [RISK] game_server.py:451 - _active_game.copy() возвращает shallow copy
+    Все endpoints возвращают _active_game.copy() клиенту. Это поверхностная копия,
+    вложенные объекты (players, orders) остаются ссылками. Если FastAPI
+    сериализует асинхронно, параллельный запрос может мутировать данные.
+    На практике _game_lock защищает, но при рефакторинге стоит учесть.
 
-4.1  cancel_order_endpoint — заглушка
-     Файл: game_server.py, строки 481-490
+22. [IMPROVE] game_engine.html:2326 - лимит приказов дублирован
+    Лимит приказов "4" жёстко прописан в 4+ местах (Python и JS).
+    Стоит вынести в константу MAX_ORDERS_PER_PLAYER = 4 (Python)
+    и const MAX_ORDERS = 4 (JS), или получать с сервера.
 
-     Endpoint /api/game/cancel-order ничего не делает, просто
-     возвращает текущий state. Функционал отмены реализован через
-     /api/game/undo.
 
-     РЕШЕНИЕ: Либо убрать, либо реализовать.
-     Если отмена всегда через undo — убрать endpoint.
+============== РЕЗЮМЕ ПРИОРИТЕТОВ ==============
 
-4.2  game_state.py Order class не используется в web-версии
-     Файл: game_state.py, строки 102-115
+ИСПРАВЛЕНО 2026-04-08:
+  #1  [DONE] лимит 8->4 в JS
+  #2  [DONE] owner при возврате в руку
+  #3  [DONE] owner при return_dropped_orders
+  #4  [DONE] проверка execution_order_played в discard
+  #5  [DONE] Phase enum синхронизация (добавлены ORDERS_PLACED, END_ROUND, исправлен ORDER_PLACEMENT)
+  #6  [DONE] deep copy в order_play.py (copy.deepcopy вместо {**})
+  #8  [DONE] endpoint каталог дополнен discard-order
+  #11 [DONE] дублирование инициализации -> _ensure_state_fields()
+  #12 [DONE] дублирование return_dropped_orders в pass_turn_order_play
+  #14 [DONE] _selectedOrderForPlay сбрасывается при смене curP в applyState
+  #15 [DONE] apiCall() проверяет HTTP status code
+  #17 [DONE] dropped_orders и execution_order_played в makeState()
+  #18 [DONE] двойной render убран (applyState уже рендерит)
+  #19 [DONE] _load_temp_snapshot вызывает _ensure_state_fields
 
-     Класс Order из game_state.py не используется в Stage 2.
-     Приказы создаются как обычные словари в orders_placement.py.
-
-     РЕШЕНИЕ: Не критично. Может пригодиться позже.
-
-================================================================
-[5] ПРОПУЩЕННЫЕ ПРОВЕРКИ
-================================================================
-
-5.1  Нет проверки границ player_id
-     Файл: python_engine/orders_placement.py, строки 117, 154
-
-     player_id может быть не 0 и не 1 — тогда IndexError.
-
-     РЕШЕНИЕ: Добавить проверку:
-       if player_id not in (0, 1):
-           return False, "Некорректный ID игрока"
-
-5.2  Нет проверки что текущий игрок = запрашивающий игрок
-     Файл: game_server.py, place_order_endpoint()
-
-     Игрок может отправить запрос с чужим player_id и разместить
-     приказ за другого игрока.
-
-     РЕШЕНИЕ: Добавить проверку:
-       if request.player_id != _active_game.get('curP'):
-           return error("Не ваш ход")
-
-5.3  Нет валидации snapshot при загрузке
-     Файл: game_server.py, _load_temp_snapshot()
-
-     Загруженный JSON не проверяется на корректность.
-     Если файл повреждён — state станет невалидным.
-
-     РЕШЕНИЕ: Добавить минимальную проверку (наличие ключей
-     players, map, phase).
-
-================================================================
-[6] АРХИТЕКТУРНЫЕ РЕКОМЕНДАЦИИ
-================================================================
-
-6.1  Перенести логику соседей в board.py
-     Сейчас orders_placement.py дублирует логику из board.py.
-
-     РЕШЕНИЕ: Добавить в board.py статический метод
-     neighbor_keys_from_map(map_data, tile_key) который возвращает
-     ключи соседних плиток используя данные из state.
-
-6.2  Единая инициализация state
-     Сейчас init_game() в game_server.py добавляет поля по одному.
-     Легко забыть новое поле.
-
-     РЕШЕНИЕ: Создать функцию ensure_state_fields(state) которая
-     гарантирует наличие ВСЕХ необходимых полей:
-       - dropped_orders
-       - order_placed_this_turn
-       - ordersPlaced
-       - orders
-       - faction_color для каждого игрока
-       - warpStorms[].status
-
-6.3  _save_current_state() вызывается без блокировки
-     Файл: game_server.py, строка 111
-
-     Функция пишет в файл без _game_lock.
-     Вызывается только из locked-контекстов, поэтому безопасна,
-     но лучше задокументировать это требование.
-
-================================================================
-[7] ОПТИМИЗАЦИИ
-================================================================
-
-7.1  get_available_tiles() пересчитывается при каждом запросе
-     Можно кэшировать результат в state при размещении/удалении
-     юнитов или построек.
-
-7.2  Snapshot нумерация может создать пробелы
-     Файл: game_server.py, строки 75-84
-
-     После удаления старого snapshot номер нового файла может
-     совпасть с существующим.
-
-     РЕШЕНИЕ: Использовать timestamp вместо порядкового номера:
-       filepath = TEMP_DIR / f"state_temp_{int(time.time()*1000)}.json"
-
-================================================================
-ПРИОРИТЕТ ИСПРАВЛЕНИЙ
-================================================================
-
-ВЫСОКИЙ (исправить сейчас):
-  [1.1] Соседи — 4 направления вместо 6
-  [1.2] Лимит 8 приказов
-  [1.3] ordersPlaced инициализация
-  [5.2] Проверка "не ваш ход"
-
-СРЕДНИЙ (исправить скоро):
-  [2.1] Унифицировать имена фаз
-  [2.2] Удалить старое поле color
-  [5.1] Проверка границ player_id
-
-НИЗКИЙ (улучшения):
-  [3.2] Вынести соседей в board.py
-  [4.1] Убрать заглушку cancel_order
-  [6.2] Единая инициализация state
-  [7.1] Кэширование available_tiles
+ОСТАЛОСЬ (низкий приоритет):
+  #7  - Undo + повторный розыгрыш (ожидаемое поведение, мониторить)
+  #9  - hand_orders дубли после undo (мониторить)
+  #10 - Phase enum не используется в game_server.py (рефакторинг)
+  #13 - ORDER_TYPES шарить между JS и Python
+  #16 - 8 приказов в hand_orders vs лимит 4 (by design?)
+  #20 - place_order_impl мутирует input (хрупко но работает)
+  #21 - _active_game.copy() shallow в endpoints (защищён _game_lock)
+  #22 - MAX_ORDERS константа

@@ -17,7 +17,7 @@ Stage 2.1: Order Placement (Расстановка приказов)
 - Вернуть state к предыдущему состоянию
 
 ПЕРЕДАЧА ХОДА (Pass Turn):
-- Проверить: если оба игрока разместили по 8 приказов → phase = "orders_placed"
+- Проверить: если оба игрока разместили по 4 приказа → phase = "orders_placed"
 - Иначе: смена текущего игрока, остаемся в "order-placement"
 - Когда оба игрока передали ход в "orders_placed" → phase = "execution"
 
@@ -119,9 +119,9 @@ def validate_order_placement(current_state, player_id, order_id, tile_key):
     if player_id != current_state.get('curP', -1):
         return False, "Сейчас не ваш ход"
 
-    # 1. Проверить лимит приказов (максимум 8)
+    # 1. Проверить лимит приказов (максимум 4)
     orders_placed = current_state.get('ordersPlaced', [0, 0])[player_id]
-    if orders_placed >= 8:
+    if orders_placed >= 4:
         return False, "Все приказы уже размещены"
 
     # 2. Проверить приказ в руке
@@ -201,13 +201,13 @@ def place_order_impl(current_state, player_id, order_id, tile_key):
 
 def check_orders_complete(current_state):
     """
-    Оба игрока разместили по 8 приказов?
+    Оба игрока разместили по 4 приказа?
 
     Returns:
         bool: True если этап размещения завершен
     """
     orders_placed = current_state.get('ordersPlaced', [0, 0])
-    return orders_placed[0] >= 8 and orders_placed[1] >= 8
+    return orders_placed[0] >= 4 and orders_placed[1] >= 4
 
 
 def next_phase_or_player(current_state):
@@ -226,7 +226,7 @@ def next_phase_or_player(current_state):
     if current_phase == 'order-placement':
         # На этапе расстановки
         if check_orders_complete(current_state):
-            # Оба выставили по 8 приказов → переход в orders_placed
+            # Оба выставили по 4 приказа → переход в orders_placed
             current_state['phase'] = 'orders_placed'
             current_state['curP'] = 0
         else:
