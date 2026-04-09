@@ -30,6 +30,7 @@ from python_engine.order_play import (
     return_dropped_orders,
     determine_next_player_order_play,
     check_orders_remain,
+    ORDER_TYPES,
 )
 
 app = FastAPI(title="Stellar Conflict Game Server")
@@ -71,6 +72,7 @@ _STATE_DEFAULTS = {
     'orders': [],
     'order_placed_this_turn': [False, False],
     'execution_order_played': [False, False],
+    'round': 1,
 }
 
 def _ensure_state_fields(state: dict):
@@ -79,6 +81,86 @@ def _ensure_state_fields(state: dict):
     for key, default in _STATE_DEFAULTS.items():
         if key not in state:
             state[key] = copy.deepcopy(default)
+
+
+def compute_ui_hints(state: dict) -> dict:
+    """
+    Вычислить UI-подсказки на основе текущего состояния игры.
+    JS использует эти данные вместо локальной логики.
+    """
+    phase = state.get('phase', 'setup')
+    cur_p = state.get('curP', 0)
+    players = state.get('players', [{}, {}])
+    cp_name = players[cur_p].get('name', f'Игрок {cur_p}') if cur_p < len(players) else f'Игрок {cur_p}'
+
+    ui = {
+        'instruction': '',
+        'buttons': [],
+        'playable_order_ids': [],
+        'blocked_tiles': [],
+        'can_place_order': False,
+        'order_placed_this_turn': False,
+    }
+
+    if phase == 'order-placement':
+        orders_placed = state.get('ordersPlaced', [0, 0])
+        placed_count = orders_placed[cur_p] if cur_p < len(orders_placed) else 0
+        order_placed_flag = state.get('order_placed_this_turn', [False, False])
+        placed_this_turn = order_placed_flag[cur_p] if cur_p < len(order_placed_flag) else False
+
+        ui['instruction'] = f'<strong>РАССТАНОВКА ПРИКАЗОВ</strong><br>{cp_name}: выберите приказ, кликните центр системы. Выставлено: {placed_count}/4'
+        ui['can_place_order'] = placed_count < 4 and not placed_this_turn
+        ui['order_placed_this_turn'] = placed_this_turn
+        ui['buttons'] = ['btn-pass']
+        if placed_this_turn:
+            ui['buttons'].append('btn-undo-order')
+
+    elif phase == 'orders_placed':
+        ui['instruction'] = f'<strong>ОЖИДАНИЕ РОЗЫГРЫША</strong><br>{cp_name}: приказы выставлены. Нажмите ПЕРЕДАТЬ ХОД чтобы начать розыгрыш.'
+        ui['buttons'] = ['btn-pass']
+
+    elif phase == 'execution':
+        # Вычислить playable_order_ids и blocked_tiles
+        available = get_available_orders(state, cur_p)
+        ui['playable_order_ids'] = [o['id'] for o in available]
+
+        # Заблокированные тайлы: тайлы где у игрока есть приказы, но верхний - чужой
+        player_orders = [o for o in state.get('orders', []) if o.get('owner') == cur_p]
+        player_tiles = set(o.get('tile') for o in player_orders)
+        for tile_key in player_tiles:
+            all_on_tile = [o for o in state.get('orders', []) if o.get('tile') == tile_key]
+            all_on_tile.sort(key=lambda o: o.get('position', 0), reverse=True)
+            if all_on_tile and all_on_tile[0].get('owner') != cur_p:
+                ui['blocked_tiles'].append(tile_key)
+
+        played_flag = state.get('execution_order_played', [False, False])
+        played = played_flag[cur_p] if cur_p < len(played_flag) else False
+
+        total_orders = len([o for o in state.get('orders', []) if o.get('owner') == cur_p])
+        ui['instruction'] = f'<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>{cp_name}: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: {total_orders}'
+
+        # Кнопка ПЕРЕДАТЬ ХОД: если уже сыграл или нет доступных приказов
+        can_pass = played or len(ui['playable_order_ids']) == 0
+        if can_pass:
+            ui['buttons'].append('btn-pass')
+
+        ui['order_played_this_turn'] = played
+
+    elif phase == 'end-round':
+        round_num = state.get('round', 1)
+        total_rounds = state.get('totalRounds', 8)
+        ui['instruction'] = f'<strong>КОНЕЦ РАУНДА {round_num}/{total_rounds}</strong><br>Все приказы разыграны. Нажмите "Следующий раунд" для продолжения.'
+        ui['buttons'] = ['btn-next-round']
+
+    return ui
+
+
+def _prepare_response_state() -> dict:
+    """Подготовить state для отправки клиенту: добавить ui hints."""
+    state = _active_game.copy()
+    state['ui'] = compute_ui_hints(_active_game)
+    return state
+
 
 # ── Временные snapshots (для undo) ────────────────────────────────────────────
 TEMP_DIR = Path.home() / "Downloads" / "Stellar_Conflict_Temp"
@@ -444,7 +526,7 @@ async def init_game(request: InitGameRequest) -> GameStateResponse:
 
             print(f"✅ Stage 2 инициализирована. Игроки: {[p.get('name') for p in _active_game.get('players', [])]}")
             _save_current_state()
-        return GameStateResponse(success=True, state=_active_game)
+        return GameStateResponse(success=True, state=_prepare_response_state())
     except Exception as e:
         print(f"❌ Ошибка инициализации Stage 2: {e}")
         return GameStateResponse(success=False, error=str(e))
@@ -456,7 +538,7 @@ async def get_game_state() -> GameStateResponse:
     async with _game_lock:
         if _active_game is None:
             return GameStateResponse(success=False, error="Игра не инициализирована")
-        return GameStateResponse(success=True, state=_active_game.copy())
+        return GameStateResponse(success=True, state=_prepare_response_state())
 
 
 @app.post('/api/game/place-order')
@@ -486,7 +568,7 @@ async def place_order_endpoint(request: PlaceOrderRequest) -> GameStateResponse:
 
             print(f"📝 Приказ {request.order_id} размещён на [{request.tile_key}]")
             _save_current_state()
-            return GameStateResponse(success=True, state=_active_game.copy())
+            return GameStateResponse(success=True, state=_prepare_response_state())
 
         except Exception as e:
             import traceback
@@ -524,7 +606,7 @@ async def cancel_order_endpoint(request: CancelOrderRequest) -> GameStateRespons
 
         print(f"↩️ Отмена приказа {request.order_id} (заглушка)")
         _save_current_state()
-        return GameStateResponse(success=True, state=_active_game.copy())
+        return GameStateResponse(success=True, state=_prepare_response_state())
 
 
 @app.post('/api/game/clear-temp')
@@ -555,7 +637,7 @@ async def undo_endpoint(request: UndoRequest) -> GameStateResponse:
             Path(snapshots[-1]).unlink()
             print(f"↩️  Отмена выполнена")
             _save_current_state()
-            return GameStateResponse(success=True, state=_active_game.copy())
+            return GameStateResponse(success=True, state=_prepare_response_state())
         else:
             return GameStateResponse(success=False, error="Ошибка загрузки snapshot")
 
@@ -625,7 +707,7 @@ async def pass_turn_endpoint(request: PassTurnRequest) -> GameStateResponse:
                 print(f"➜ Ход передан игроку {next_player}")
 
             _save_current_state()
-            return GameStateResponse(success=True, state=_active_game.copy())
+            return GameStateResponse(success=True, state=_prepare_response_state())
 
         except Exception as e:
             print(f"❌ Ошибка при передаче хода: {e}")
@@ -696,7 +778,7 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
 
             print(f"🎯 {message}")
             _save_current_state()
-            return GameStateResponse(success=True, state=_active_game.copy())
+            return GameStateResponse(success=True, state=_prepare_response_state())
 
         except Exception as e:
             import traceback
@@ -744,7 +826,7 @@ async def discard_order_endpoint(request: CancelOrderRequest) -> GameStateRespon
 
             print(f"🗑 {message}")
             _save_current_state()
-            return GameStateResponse(success=True, state=_active_game.copy())
+            return GameStateResponse(success=True, state=_prepare_response_state())
 
         except Exception as e:
             print(f"❌ Ошибка сброса приказа: {e}")
@@ -794,10 +876,65 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                 print(f"✅ {next_info['message']}")
 
             _save_current_state()
-            return GameStateResponse(success=True, state=_active_game.copy())
+            return GameStateResponse(success=True, state=_prepare_response_state())
 
         except Exception as e:
             print(f"❌ Ошибка при передаче хода: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/next-round')
+async def next_round_endpoint(request: PassTurnRequest) -> GameStateResponse:
+    """Перейти к следующему раунду (сброс приказов, смена первого игрока)"""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+
+        try:
+            phase = _active_game.get('phase', 'unknown')
+            if phase != 'end-round':
+                return GameStateResponse(success=False, error="Переход к следующему раунду доступен только в фазе end-round")
+
+            _save_temp_snapshot()
+
+            # Сбросить приказы и флаги
+            _active_game['orders'] = []
+            _active_game['ordersPlaced'] = [0, 0]
+            _active_game['order_placed_this_turn'] = [False, False]
+            _active_game['execution_order_played'] = [False, False]
+            _active_game['dropped_orders'] = []
+
+            # Следующий раунд
+            current_round = _active_game.get('round', 1)
+            _active_game['round'] = current_round + 1
+
+            # Смена первого игрока
+            _active_game['firstPlayer'] = 1 - _active_game.get('firstPlayer', 0)
+            _active_game['curP'] = _active_game['firstPlayer']
+
+            # Генерировать hand_orders для нового раунда (8 приказов: 2 каждого типа)
+            order_types = ['dominate', 'deploy', 'advance', 'strategize']
+            for pid in range(2):
+                hand_orders = []
+                for ot in order_types:
+                    for copy_num in range(2):
+                        hand_orders.append({
+                            'id': f'{ot}_{pid}_{copy_num}_r{_active_game["round"]}',
+                            'type': ot,
+                            'owner': pid,
+                        })
+                _active_game['players'][pid]['hand_orders'] = hand_orders
+
+            _active_game['phase'] = 'order-placement'
+
+            print(f"🔄 Раунд {_active_game['round']}. Первый ход: игрок {_active_game['curP']}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+
+        except Exception as e:
+            import traceback
+            print(f"❌ Ошибка при переходе к следующему раунду: {e}")
+            traceback.print_exc()
             return GameStateResponse(success=False, error=str(e))
 
 
@@ -831,6 +968,7 @@ async def root():
                 'shared': {
                     'cancel-order': 'POST /api/game/cancel-order',
                     'discard-order': 'POST /api/game/discard-order',
+                    'next-round': 'POST /api/game/next-round',
                     'undo': 'POST /api/game/undo',
                     'clear-temp': 'POST /api/game/clear-temp',
                 }
