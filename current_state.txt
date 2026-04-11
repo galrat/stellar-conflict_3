@@ -31,47 +31,47 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "dominate_0_0_r2",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "dominate_0_1_r2",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "deploy_0_0_r2",
+          "id": "p1_deploy_2",
           "type": "deploy",
           "owner": 0
         },
         {
-          "id": "deploy_0_1_r2",
+          "id": "p1_advance_1",
+          "type": "advance",
+          "owner": 0
+        },
+        {
+          "id": "p1_strategize_1",
+          "type": "strategize",
+          "owner": 0
+        },
+        {
+          "id": "p1_strategize_2",
+          "type": "strategize",
+          "owner": 0
+        },
+        {
+          "id": "p1_dominate_1",
+          "type": "dominate",
+          "owner": 0
+        },
+        {
+          "id": "p1_dominate_2",
+          "type": "dominate",
+          "owner": 0
+        },
+        {
+          "id": "p1_deploy_1",
           "type": "deploy",
           "owner": 0
         },
         {
-          "id": "advance_0_0_r2",
+          "id": "p1_advance_2",
           "type": "advance",
-          "owner": 0
-        },
-        {
-          "id": "advance_0_1_r2",
-          "type": "advance",
-          "owner": 0
-        },
-        {
-          "id": "strategize_0_0_r2",
-          "type": "strategize",
-          "owner": 0
-        },
-        {
-          "id": "strategize_0_1_r2",
-          "type": "strategize",
           "owner": 0
         }
       ],
-      "credits": 6,
+      "credits": 13,
       "tokens": {
         "reinforcement": 0,
         "cash": 0,
@@ -241,7 +241,14 @@
           "effect_2": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2."
         }
       ],
-      "hand_event_cards": [],
+      "hand_event_cards": [
+        {
+          "name": "Warp Gate",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Scheme",
+          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
+        }
+      ],
       "available_event_cards": [
         {
           "name": "Exodite Colony",
@@ -284,16 +291,11 @@
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
           "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
-        },
-        {
-          "name": "Warp Gate",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Scheme",
-          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
         }
       ],
       "boughtUpgrades": [],
-      "faction_color": "#F2C94C"
+      "faction_color": "#F2C94C",
+      "collected_objectives": 0
     },
     {
       "name": "Omega",
@@ -325,47 +327,47 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "dominate_1_0_r2",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "dominate_1_1_r2",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "deploy_1_0_r2",
+          "id": "p2_deploy_2",
           "type": "deploy",
           "owner": 1
         },
         {
-          "id": "deploy_1_1_r2",
+          "id": "p2_advance_2",
+          "type": "advance",
+          "owner": 1
+        },
+        {
+          "id": "p2_strategize_1",
+          "type": "strategize",
+          "owner": 1
+        },
+        {
+          "id": "p2_strategize_2",
+          "type": "strategize",
+          "owner": 1
+        },
+        {
+          "id": "p2_advance_1",
+          "type": "advance",
+          "owner": 1
+        },
+        {
+          "id": "p2_dominate_1",
+          "type": "dominate",
+          "owner": 1
+        },
+        {
+          "id": "p2_dominate_2",
+          "type": "dominate",
+          "owner": 1
+        },
+        {
+          "id": "p2_deploy_1",
           "type": "deploy",
-          "owner": 1
-        },
-        {
-          "id": "advance_1_0_r2",
-          "type": "advance",
-          "owner": 1
-        },
-        {
-          "id": "advance_1_1_r2",
-          "type": "advance",
-          "owner": 1
-        },
-        {
-          "id": "strategize_1_0_r2",
-          "type": "strategize",
-          "owner": 1
-        },
-        {
-          "id": "strategize_1_1_r2",
-          "type": "strategize",
           "owner": 1
         }
       ],
-      "credits": 6,
+      "credits": 13,
       "tokens": {
         "reinforcement": 0,
         "cash": 0,
@@ -535,7 +537,14 @@
           "effect_2": "Spend 2 [S] to force enemy to choose unit or structure to destroy."
         }
       ],
-      "hand_event_cards": [],
+      "hand_event_cards": [
+        {
+          "name": "Touched by the Warp",
+          "warp_storm_move": "Sideways",
+          "card_type": "Tactic",
+          "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
+        }
+      ],
       "available_event_cards": [
         {
           "name": "Blight of Nurgle",
@@ -578,23 +587,18 @@
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
           "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start."
-        },
-        {
-          "name": "Touched by the Warp",
-          "warp_storm_move": "Sideways",
-          "card_type": "Tactic",
-          "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
         }
       ],
       "boughtUpgrades": [],
-      "faction_color": "#FF0000"
+      "faction_color": "#FF0000",
+      "collected_objectives": 0
     }
   ],
-  "phase": "order-placement",
-  "curP": 1,
-  "round": 2,
+  "phase": "end-round",
+  "curP": 0,
+  "round": 1,
   "totalRounds": 8,
-  "firstPlayer": 1,
+  "firstPlayer": 0,
   "map": {
     "0,0": {
       "key": "0,0",
@@ -621,7 +625,8 @@
               "id": 3,
               "player": 0,
               "unitType": "ground",
-              "tier": 1
+              "tier": 1,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -658,7 +663,8 @@
               "id": 4,
               "player": 0,
               "unitType": "space",
-              "tier": 0
+              "tier": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -677,7 +683,8 @@
               "id": 5,
               "player": 0,
               "unitType": "space",
-              "tier": 0
+              "tier": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -714,7 +721,8 @@
               "id": 11,
               "player": 1,
               "unitType": "ground",
-              "tier": 0
+              "tier": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -733,7 +741,8 @@
               "id": 13,
               "player": 1,
               "unitType": "ground",
-              "tier": 1
+              "tier": 1,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -794,7 +803,8 @@
               "id": 1,
               "player": 0,
               "unitType": "ground",
-              "tier": 0
+              "tier": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -837,7 +847,8 @@
               "id": 2,
               "player": 0,
               "unitType": "ground",
-              "tier": 0
+              "tier": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -874,7 +885,8 @@
               "id": 12,
               "player": 1,
               "unitType": "ground",
-              "tier": 1
+              "tier": 1,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -911,7 +923,8 @@
               "id": 14,
               "player": 1,
               "unitType": "space",
-              "tier": 0
+              "tier": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -972,7 +985,8 @@
               "id": 0,
               "player": 0,
               "unitType": "ground",
-              "tier": 0
+              "tier": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -1066,7 +1080,8 @@
               "id": 10,
               "player": 1,
               "unitType": "ground",
-              "tier": 0
+              "tier": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -1108,17 +1123,50 @@
   "targetMarkers": [],
   "orders": [],
   "ordersPlaced": [
-    0,
-    0
+    4,
+    4
   ],
   "order_placed_this_turn": [
-    false,
-    false
+    true,
+    true
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    false,
-    false
+    true,
+    true
+  ],
+  "ui": {
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 1",
+    "buttons": [],
+    "playable_order_ids": [
+      "p1_advance_2"
+    ],
+    "blocked_tiles": [],
+    "can_place_order": false,
+    "order_placed_this_turn": false,
+    "order_played_this_turn": false
+  },
+  "event_cards_offered": [
+    [
+      {
+        "name": "Warp Gate",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
+      }
+    ],
+    [
+      {
+        "name": "Touched by the Warp",
+        "warp_storm_move": "Sideways",
+        "card_type": "Tactic",
+        "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
+      }
+    ]
+  ],
+  "event_selection_done": [
+    true,
+    true
   ],
   "log": [
     {
@@ -1126,7 +1174,7 @@
       "player_id": 0
     },
     {
-      "message": "Приказ 'Dominate' разыгран",
+      "message": "Приказ 'Advance' разыгран",
       "player_id": 1
     },
     {
@@ -1138,19 +1186,43 @@
       "player_id": 1
     },
     {
-      "message": "Приказ 'Deploy' сброшен",
+      "message": "Приказ 'Deploy' разыгран",
       "player_id": 0
     },
     {
-      "message": "Приказ 'Deploy' сброшен",
+      "message": "Приказ 'Dominate' разыгран",
       "player_id": 1
     },
     {
-      "message": "Приказ 'Advance' сброшен",
-      "player_id": 1
+      "message": "Карта готова. Инициализация Stage 2...",
+      "player_id": -1
+    },
+    {
+      "message": "Игра загружена",
+      "player_id": -1
     },
     {
       "message": "Приказ 'Advance' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Alpha: доход +7 (итого 13 кредитов)",
+      "player_id": 0
+    },
+    {
+      "message": "Omega: доход +7 (итого 13 кредитов)",
+      "player_id": 1
+    },
+    {
+      "message": "Omega взял карту события: Touched by the Warp",
+      "player_id": 1
+    },
+    {
+      "message": "Alpha взял карту события: Warp Gate",
       "player_id": 0
     }
   ]

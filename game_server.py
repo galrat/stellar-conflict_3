@@ -11,7 +11,7 @@ import asyncio
 import json
 import glob
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -31,6 +31,10 @@ from python_engine.order_play import (
     determine_next_player_order_play,
     check_orders_remain,
     ORDER_TYPES,
+)
+from python_engine.round_end import (
+    run_end_of_round,
+    init_unit_statuses,
 )
 
 app = FastAPI(title="Stellar Conflict Game Server")
@@ -73,6 +77,8 @@ _STATE_DEFAULTS = {
     'order_placed_this_turn': [False, False],
     'execution_order_played': [False, False],
     'round': 1,
+    'event_cards_offered': [[], []],
+    'event_selection_done': [False, False],
 }
 
 def _ensure_state_fields(state: dict):
@@ -144,13 +150,35 @@ def compute_ui_hints(state: dict) -> dict:
         if can_pass:
             ui['buttons'].append('btn-pass')
 
+        # Кнопка ОТМЕНА: появляется после розыгрыша/сброса, до передачи хода
+        if played:
+            ui['buttons'].append('btn-undo-order')
+
         ui['order_played_this_turn'] = played
 
     elif phase == 'end-round':
         round_num = state.get('round', 1)
         total_rounds = state.get('totalRounds', 8)
-        ui['instruction'] = f'<strong>КОНЕЦ РАУНДА {round_num}/{total_rounds}</strong><br>Все приказы разыграны. Нажмите "Следующий раунд" для продолжения.'
-        ui['buttons'] = ['btn-next-round']
+        selection_done = state.get('event_selection_done', [False, False])
+        cp_name = state.get('players', [{}, {}])[cur_p].get('name', f'P{cur_p}')
+
+        if not all(selection_done):
+            # Ожидаем выбор карты событий
+            offered = state.get('event_cards_offered', [[], []])
+            cards = offered[cur_p] if cur_p < len(offered) else []
+            ui['instruction'] = (
+                f'<strong>КОНЕЦ РАУНДА {round_num}/{total_rounds}</strong><br>'
+                f'{cp_name}: выберите карту события'
+            )
+            ui['event_cards_to_pick'] = cards
+            ui['buttons'] = ['btn-pick-event']
+        else:
+            # Оба выбрали — готовы к следующему раунду
+            ui['instruction'] = (
+                f'<strong>КОНЕЦ РАУНДА {round_num}/{total_rounds}</strong><br>'
+                f'Все приказы разыграны. Нажмите "Следующий раунд" для продолжения.'
+            )
+            ui['buttons'] = ['btn-next-round']
 
     return ui
 
@@ -524,6 +552,14 @@ async def init_game(request: InitGameRequest) -> GameStateResponse:
                     if 'status' not in storm:
                         storm['status'] = 'active'
 
+            # Инициализировать unit_status='active' для всех войск на карте
+            init_unit_statuses(_active_game)
+
+            # Инициализировать collected_objectives для каждого игрока
+            for p in _active_game.get('players', []):
+                if 'collected_objectives' not in p:
+                    p['collected_objectives'] = 0
+
             print(f"✅ Stage 2 инициализирована. Игроки: {[p.get('name') for p in _active_game.get('players', [])]}")
             _save_current_state()
         return GameStateResponse(success=True, state=_prepare_response_state())
@@ -868,10 +904,21 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                 _active_game['execution_order_played'][next_info['next_player']] = False
                 print(f"➜ {next_info['message']}")
             else:
+                # Считаем сброшенные приказы ДО очистки (нужно для draw_event_cards)
+                dropped_before = _active_game.get('dropped_orders', [])
+                dropped_counts = [
+                    len([o for o in dropped_before if o.get('owner') == pid])
+                    for pid in range(len(_active_game.get('players', [])))
+                ]
+
                 # Конец раунда — вернуть сброшенные приказы в руки
                 updated = return_dropped_orders(_active_game)
                 _active_game['players'] = updated['players']
                 _active_game['dropped_orders'] = updated['dropped_orders']
+
+                # Авто-шаги конца раунда: цели, доход, восстановление, карты событий
+                run_end_of_round(_active_game, dropped_counts)
+
                 _active_game['phase'] = 'end-round'
                 print(f"✅ {next_info['message']}")
 
@@ -880,6 +927,75 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
 
         except Exception as e:
             print(f"❌ Ошибка при передаче хода: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/select-event-card')
+async def select_event_card_endpoint(request: Request) -> GameStateResponse:
+    """Игрок выбирает карту события из предложенных."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+
+        try:
+            body = await request.json()
+            player_id = body.get('player_id')
+            card_name = body.get('card_name')
+
+            if player_id is None or card_name is None:
+                return GameStateResponse(success=False, error="Требуется player_id и card_name")
+
+            phase = _active_game.get('phase', '')
+            if phase != 'end-round':
+                return GameStateResponse(success=False, error="Выбор карт доступен только в фазе end-round")
+
+            selection_done = _active_game.get('event_selection_done', [False, False])
+            if selection_done[player_id]:
+                return GameStateResponse(success=False, error="Игрок уже выбрал карту")
+
+            # Найти карту в предложенных
+            offered = _active_game.get('event_cards_offered', [[], []])
+            player_offered = offered[player_id] if player_id < len(offered) else []
+            card = next((c for c in player_offered if c.get('name') == card_name), None)
+
+            if not card:
+                return GameStateResponse(success=False, error=f"Карта '{card_name}' не найдена в предложенных")
+
+            _save_temp_snapshot()
+
+            # Добавить карту в руку и убрать из доступных
+            players = _active_game.get('players', [])
+            if player_id < len(players):
+                if 'hand_event_cards' not in players[player_id]:
+                    players[player_id]['hand_event_cards'] = []
+                players[player_id]['hand_event_cards'].append(card)
+
+                # Убрать одну копию карты из available_event_cards
+                available = players[player_id].get('available_event_cards', [])
+                for i, c in enumerate(available):
+                    if c.get('name') == card_name:
+                        available.pop(i)
+                        break
+
+                p_name = players[player_id].get('name', f'P{player_id}')
+                _active_game.get('log', []).append({
+                    'message': f'{p_name} взял карту события: {card_name}',
+                    'player_id': player_id
+                })
+
+            # Отметить выбор
+            _active_game['event_selection_done'][player_id] = True
+
+            # Если второй игрок ещё не выбирал — передать ход ему
+            other = 1 - player_id
+            if not _active_game['event_selection_done'][other]:
+                _active_game['curP'] = other
+
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+
+        except Exception as e:
+            print(f"❌ Ошибка при выборе карты события: {e}")
             return GameStateResponse(success=False, error=str(e))
 
 
@@ -903,6 +1019,8 @@ async def next_round_endpoint(request: PassTurnRequest) -> GameStateResponse:
             _active_game['order_placed_this_turn'] = [False, False]
             _active_game['execution_order_played'] = [False, False]
             _active_game['dropped_orders'] = []
+            _active_game['event_cards_offered'] = [[], []]
+            _active_game['event_selection_done'] = [False, False]
 
             # Следующий раунд
             current_round = _active_game.get('round', 1)

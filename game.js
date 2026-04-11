@@ -145,15 +145,32 @@ function hexAlpha(hex, a) {
 const SAVE_KEY = 'stellar_conflict_map';
 
 function saveGame() {
-  if (isSaving) {
-    console.warn('Сохранение уже в процессе, игнорируем дублирующийся запрос');
-    return;
-  }
+  if (isSaving) return;
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+  const defaultName = `game_${timestamp}`;
+
+  const html = `
+    <div style="margin-bottom:8px;color:#aaa;">Название файла:</div>
+    <input id="save-filename-input" type="text" value="${defaultName}"
+      style="width:100%;box-sizing:border-box;padding:8px;background:rgba(0,200,255,.07);border:1px solid rgba(0,200,255,.3);color:#e0f0ff;border-radius:4px;font-size:.9rem;">
+    <div style="margin-top:12px;display:flex;gap:8px;">
+      <button class="abtn bp" style="flex:1" onclick="_doSaveGame()">💾 Сохранить</button>
+      <button class="abtn bw" style="flex:0 0 auto" onclick="closeMsg()">Отмена</button>
+    </div>`;
+  showMsg('💾 Сохранить игру', html);
+  setTimeout(() => {
+    const inp = document.getElementById('save-filename-input');
+    if (inp) { inp.focus(); inp.select(); }
+  }, 50);
+}
+
+function _doSaveGame() {
+  const inp = document.getElementById('save-filename-input');
+  const filename = (inp ? inp.value.trim() : '') || `game_${Date.now()}`;
+  closeMsg();
 
   isSaving = true;
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-  const filename = `game_${timestamp}`;
-
   fetch(`${API_URL}/api/save`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -162,22 +179,16 @@ function saveGame() {
   .then(r => r.json())
   .then(data => {
     if (data.success) {
-      console.log(`✅ Игра сохранена: ${data.filename}`);
-      showMsg('💾 Сохранено', `Игра сохранена в файл:<br><strong>${data.filename}</strong><br><br>📁 Папка: Загрузки/Stellar_Conflict_Saves/`);
+      showMsg('💾 Сохранено', `Файл: <strong>${data.filename}</strong><br><br>📁 Загрузки/Stellar_Conflict_Saves/`);
     } else {
-      console.error('Ошибка сохранения на сервере:', data.error);
       showMsg('Ошибка сохранения', data.error || 'Неизвестная ошибка');
     }
   })
   .catch(e => {
-    console.error('Сервер недоступен, используем localStorage:', e);
-    // Fallback на localStorage если сервер недоступен
     localStorage.setItem('game_' + filename, JSON.stringify(G));
-    showMsg('💾 Сохранено (локально)', `Игра сохранена в браузер.<br><strong>${filename}</strong><br><br>⚠ Сервер недоступен.<br>Для сохранения в Загрузки запустите:<br><code>python game_server.py</code>`);
+    showMsg('💾 Сохранено (локально)', `<strong>${filename}</strong><br><br>⚠ Сервер недоступен.`);
   })
-  .finally(() => {
-    isSaving = false;
-  });
+  .finally(() => { isSaving = false; });
 }
 
 function loadGame() {
@@ -250,10 +261,11 @@ function loadGameFile(filename) {
       Object.keys(G).forEach(k => delete G[k]);
       Object.assign(G, data.state);
       console.log(`✅ Игра загружена: ${filename}`);
+      clearLog();  // очистить DOM-лог перед загрузкой новой игры
       showScreen('game-screen');
 
       // Если карта готова — инициализируем Stage 2 на сервере
-      if (G.phase === 'order-placement' || G.phase === 'game-start' || G.phase === 'warp-storm') {
+      if (['order-placement', 'orders_placed', 'execution', 'end-round', 'game-start', 'warp-storm'].includes(G.phase)) {
         console.log('🔄 Инициализирую Stage 2 для загруженной игры...');
         startStage2();
       } else {
@@ -261,6 +273,7 @@ function loadGameFile(filename) {
         updateHeader();
         renderBoard();
         renderSide();
+        syncLog();  // восстановить лог из загруженного state
       }
 
       addLog('Игра загружена', -1);
@@ -385,8 +398,9 @@ function setPhase(phase) {
   G.selUnitType = null;
 
   // Hide all action buttons
-  ['btn-ut','btn-uu','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-undo-order','btn-undo-ws','btn-confirm-ws','btn-discard-order','btn-next-round'].forEach(id => {
-    document.getElementById(id).style.display = 'none';
+  ['btn-ut','btn-uu','btn-fl','btn-rccw','btn-rcw','btn-et','btn-pass','btn-undo-order','btn-undo-ws','btn-confirm-ws','btn-discard-order','btn-next-round','btn-pick-event'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
   });
   _selectedOrderForPlay = null;
 
@@ -430,11 +444,16 @@ function setPhase(phase) {
       (G.ui.buttons || []).forEach(id => show(id));
     }
     renderSide(); renderBoard();
+
+    // Конец раунда: если игрок ещё не выбрал карту — показать пикер
+    if (phase === 'end-round' && G.ui?.event_cards_to_pick?.length) {
+      setTimeout(showEventCardPicker, 150);
+    }
   }
   updateHeader();
 }
 
-function show(id) { document.getElementById(id).style.display = 'block'; }
+function show(id) { const el = document.getElementById(id); if (el) el.style.display = 'block'; }
 
 
 // ══════════════════════════════════════════════
@@ -1035,7 +1054,14 @@ function updateHeader() {
       resEl.textContent = parts.join('  ') || '';
     }
   });
-  const hRound = document.getElementById('h-round'); if (hRound) hRound.textContent='';
+  const hRound = document.getElementById('h-round');
+  if (hRound) hRound.textContent = G.round ? `Раунд ${G.round}` : 'Раунд —';
+
+  const hObj0 = document.getElementById('h-obj-p1');
+  const hObj1 = document.getElementById('h-obj-p2');
+  if (hObj0) hObj0.textContent = `🎯 ${G.players[0]?.collected_objectives ?? 0}`;
+  if (hObj1) hObj1.textContent = `🎯 ${G.players[1]?.collected_objectives ?? 0}`;
+
   const edsp = document.getElementById('event-stack-disp');
   if (edsp) edsp.style.display='none';
 }
@@ -1076,11 +1102,44 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function addLog(msg,player){
-  const el=document.getElementById('alog');
-  const e=document.createElement('div');
-  e.className=`le ${player===0?'le1':player===1?'le2':'les'}`;
-  e.textContent=msg; el.prepend(e);
+let _renderedLogCount = 0;
+
+function addLog(msg, player) {
+  // Пишем в DOM и в G.log
+  const el = document.getElementById('alog');
+  const e = document.createElement('div');
+  e.className = `le ${player===0?'le1':player===1?'le2':'les'}`;
+  e.textContent = msg;
+  el.prepend(e);
+  if (!G.log) G.log = [];
+  G.log.push({ message: msg, player_id: player });
+  _renderedLogCount = G.log.length;
+}
+
+function _renderLogEntry(msg, player) {
+  const el = document.getElementById('alog');
+  const e = document.createElement('div');
+  e.className = `le ${player===0?'le1':player===1?'le2':'les'}`;
+  e.textContent = msg;
+  el.prepend(e);
+}
+
+function clearLog() {
+  document.getElementById('alog').innerHTML = '';
+  _renderedLogCount = 0;
+}
+
+function syncLog() {
+  // Отрендерить записи из G.log которые ещё не показаны в DOM
+  const log = G.log || [];
+  if (log.length > _renderedLogCount) {
+    // Новые записи идут с конца — добавляем в обратном порядке чтобы prepend дал правильный порядок
+    const newEntries = log.slice(_renderedLogCount);
+    for (let i = newEntries.length - 1; i >= 0; i--) {
+      _renderLogEntry(newEntries[i].message, newEntries[i].player_id);
+    }
+    _renderedLogCount = log.length;
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -1091,9 +1150,16 @@ let _selectedOrderForPlacement = null;  // { idx, id, type, owner }
 let _selectedOrderForPlay = null;      // { id, type, tile } — выбранный приказ для розыгрыша/сброса
 
 async function undoLastOrderViaAPI() {
-  if (G.phase !== 'order-placement') return;
-  if (!G.ui?.order_placed_this_turn) {
+  const isPlacement = G.phase === 'order-placement';
+  const isExecution = G.phase === 'execution';
+  if (!isPlacement && !isExecution) return;
+
+  if (isPlacement && !G.ui?.order_placed_this_turn) {
     showMsg('Нет приказов', 'В этом ходу приказ не выставлялся');
+    return;
+  }
+  if (isExecution && !G.ui?.order_played_this_turn) {
+    showMsg('Нет действий', 'В этом ходу приказ не разыгрывался');
     return;
   }
 
@@ -1102,10 +1168,11 @@ async function undoLastOrderViaAPI() {
     if (res.success) {
       applyState(res.state);
       _selectedOrderForPlacement = null;
-      addLog(`${G.players[G.curP].name} вернул приказ`, G.curP);
-      setPhase('order-placement');
+      _selectedOrderForPlay = null;
+      addLog(`${G.players[G.curP].name} отменил действие`, G.curP);
+      setPhase(G.phase);
     } else {
-      showMsg('Ошибка отмены', res.error || 'Не удалось отменить приказ');
+      showMsg('Ошибка отмены', res.error || 'Не удалось отменить');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -1283,7 +1350,7 @@ async function passOrderPlayTurnViaAPI() {
       // Проверить какая фаза дальше
       if (G.phase === 'end-round') {
         addLog('✅ Все приказы разыграны! Конец раунда.', -1);
-        setPhase('end-round');
+        setPhase('end-round');  // сам вызовет showEventCardPicker через setTimeout
       } else if (G.phase === 'execution') {
         const nextPlayer = G.players[G.curP];
         addLog(`${nextPlayer.name} ходит в фазе розыгрыша`, -1);
@@ -1308,6 +1375,66 @@ async function nextRoundViaAPI() {
       showHP(G.players[G.curP].name, 'Расстановка приказов', () => setPhase('order-placement'));
     } else {
       showMsg('Ошибка', res.error || 'Не удалось перейти к следующему раунду');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  EVENT CARD PICKER
+// ══════════════════════════════════════════════
+
+function showEventCardPicker() {
+  if (G.phase !== 'end-round') return;
+  const selectionDone = G.event_selection_done || [false, false];
+  if (selectionDone[G.curP]) return;
+
+  const offered = (G.event_cards_offered || [[], []])[G.curP] || [];
+  const playerName = G.players[G.curP].name;
+
+  if (!offered.length) {
+    // Нет карт — сразу отмечаем как готово (сервер обработает)
+    return;
+  }
+
+  let cardsHtml = offered.map(card => `
+    <div class="event-card-choice" onclick="selectEventCard('${card.name.replace(/'/g, "\\'")}')"
+         style="padding:10px;background:rgba(0,200,255,.1);margin-bottom:8px;border-radius:6px;cursor:pointer;border:1px solid rgba(0,200,255,.2);">
+      <div style="font-weight:bold;margin-bottom:4px;">${card.name}</div>
+      <div style="font-size:.75rem;color:#aaa;margin-bottom:4px;">${card.card_type || ''}</div>
+      <div style="font-size:.8rem;">${card.effect || ''}</div>
+    </div>
+  `).join('');
+
+  const html = `
+    <div style="margin-bottom:10px;color:#aaa;">Выберите одну карту для руки:</div>
+    <div style="max-height:400px;overflow-y:auto;">${cardsHtml}</div>
+  `;
+  showMsg(`🃏 Карты событий — ${playerName}`, html);
+}
+
+async function selectEventCard(cardName) {
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/select-event-card', {
+      player_id: G.curP,
+      card_name: cardName
+    });
+    if (res.success) {
+      const prevPlayer = G.curP;
+      applyState(res.state);
+      addLog(`${G.players[prevPlayer].name} взял карту событий`, prevPlayer);
+
+      const selectionDone = G.event_selection_done || [false, false];
+      if (!selectionDone.every(Boolean)) {
+        // Второй игрок ещё не выбирал — hotpass, setPhase внутри колбека покажет пикер
+        showHP(G.players[G.curP].name, 'Выбор карты события', () => setPhase('end-round'));
+      } else {
+        setPhase('end-round');  // Оба выбрали — покажет кнопку "Следующий раунд"
+      }
+    } else {
+      showMsg('Ошибка', res.error || 'Не удалось выбрать карту');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -1342,12 +1469,14 @@ function applyState(newState) {
   uiFields.forEach(k => { G[k] = saved[k]; });
   // Сбросить выбранный приказ при смене игрока
   if (G.curP !== prevPlayer) _selectedOrderForPlay = null;
+  syncLog();
   renderBoard();
   renderSide();
   updateHeader();
 }
 
 async function startStage2() {
+  clearLog();
   addLog('Карта готова. Инициализация Stage 2...', -1);
   try {
     G.phase = 'order-placement';  // Установить фазу ДО отправки на сервер
