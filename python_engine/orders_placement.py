@@ -228,15 +228,15 @@ def next_phase_or_player(current_state):
         if check_orders_complete(current_state):
             # Оба выставили по 4 приказа → переход в orders_placed
             current_state['phase'] = 'orders_placed'
-            current_state['curP'] = 0
+            # curP не меняем — остаётся последний выставлявший
         else:
             # Еще не все выставили → смена игрока
             current_state['curP'] = 1 - current_state['curP']
 
     elif current_phase == 'orders_placed':
         # На этапе ожидания (оба игрока выставили)
-        # Переход в execution (розыгрыш приказов)
+        # Переход в execution, первым ходит firstPlayer
         current_state['phase'] = 'execution'
-        current_state['curP'] = 0
+        current_state['curP'] = current_state.get('firstPlayer', 0)
 
     return current_state

@@ -31,8 +31,8 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "advance_0_0_r2",
-          "type": "advance",
+          "id": "deploy_0_1_r2",
+          "type": "deploy",
           "owner": 0
         },
         {
@@ -48,26 +48,6 @@
         {
           "id": "strategize_0_1_r2",
           "type": "strategize",
-          "owner": 0
-        },
-        {
-          "id": "dominate_0_0_r2",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "deploy_0_1_r2",
-          "type": "deploy",
-          "owner": 0
-        },
-        {
-          "id": "dominate_0_1_r2",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "deploy_0_0_r2",
-          "type": "deploy",
           "owner": 0
         }
       ],
@@ -243,10 +223,10 @@
       ],
       "hand_event_cards": [
         {
-          "name": "Vicious Raids",
-          "warp_storm_move": "Top Left/Bot Rgt",
+          "name": "Warp Gate",
+          "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Scheme",
-          "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
+          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
         }
       ],
       "available_event_cards": [
@@ -291,12 +271,6 @@
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
           "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
-        },
-        {
-          "name": "Warp Gate",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Scheme",
-          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
         }
       ],
       "boughtUpgrades": [],
@@ -333,12 +307,12 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "advance_1_0_r2",
-          "type": "advance",
+          "id": "deploy_1_1_r2",
+          "type": "deploy",
           "owner": 1
         },
         {
-          "id": "advance_1_1_r2",
+          "id": "advance_1_0_r2",
           "type": "advance",
           "owner": 1
         },
@@ -350,26 +324,6 @@
         {
           "id": "strategize_1_1_r2",
           "type": "strategize",
-          "owner": 1
-        },
-        {
-          "id": "deploy_1_1_r2",
-          "type": "deploy",
-          "owner": 1
-        },
-        {
-          "id": "deploy_1_0_r2",
-          "type": "deploy",
-          "owner": 1
-        },
-        {
-          "id": "dominate_1_0_r2",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "dominate_1_1_r2",
-          "type": "dominate",
           "owner": 1
         }
       ],
@@ -545,10 +499,10 @@
       ],
       "hand_event_cards": [
         {
-          "name": "Touched by the Warp",
-          "warp_storm_move": "Sideways",
+          "name": "Incantation of Tzeentch",
+          "warp_storm_move": "Across",
           "card_type": "Tactic",
-          "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
+          "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move)."
         }
       ],
       "available_event_cards": [
@@ -557,12 +511,6 @@
           "warp_storm_move": "Across",
           "card_type": "Scheme",
           "effect": "Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units."
-        },
-        {
-          "name": "Incantation of Tzeentch",
-          "warp_storm_move": "Across",
-          "card_type": "Tactic",
-          "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move)."
         },
         {
           "name": "Prayer to the Dark Gods",
@@ -1133,7 +1081,72 @@
     true
   ],
   "targetMarkers": [],
-  "orders": [],
+  "orders": [
+    {
+      "id": "deploy_1_0_r2",
+      "type": "deploy",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "deploy_0_0_r2",
+      "type": "deploy",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "dominate_1_1_r2",
+      "type": "dominate",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_0_1_r2",
+      "type": "dominate",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_1_0_r2",
+      "type": "dominate",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 2,
+      "revealed": false
+    },
+    {
+      "id": "advance_0_0_r2",
+      "type": "advance",
+      "owner": 0,
+      "tile": "1,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "advance_1_1_r2",
+      "type": "advance",
+      "owner": 1,
+      "tile": "1,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_0_0_r2",
+      "type": "dominate",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 2,
+      "revealed": false
+    }
+  ],
   "ordersPlaced": [
     4,
     4
@@ -1144,17 +1157,18 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    true,
-    true
+    false,
+    false
   ],
   "ui": {
     "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 4",
     "buttons": [],
     "playable_order_ids": [
-      "dominate_0_0_r2",
-      "deploy_0_1_r2"
+      "p1_dominate_1"
     ],
-    "blocked_tiles": [],
+    "blocked_tiles": [
+      "1,0"
+    ],
     "can_place_order": false,
     "order_placed_this_turn": false,
     "order_played_this_turn": false
@@ -1169,70 +1183,6 @@
   ],
   "log": [
     {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Advance' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Карта готова. Инициализация Stage 2...",
-      "player_id": -1
-    },
-    {
-      "message": "Игра загружена",
-      "player_id": -1
-    },
-    {
-      "message": "Приказ 'Advance' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha: доход +7 (итого 13 кредитов)",
-      "player_id": 0
-    },
-    {
-      "message": "Omega: доход +7 (итого 13 кредитов)",
-      "player_id": 1
-    },
-    {
-      "message": "Omega взял карту события: Touched by the Warp",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha взял карту события: Vicious Raids",
-      "player_id": 0
-    },
-    {
-      "message": "🎮 Начало розыгрыша приказов!",
-      "player_id": -1
-    },
-    {
-      "message": "Карта готова. Инициализация Stage 2...",
-      "player_id": -1
-    },
-    {
       "message": "Игра загружена",
       "player_id": -1
     },
@@ -1245,15 +1195,11 @@
       "player_id": 0
     },
     {
-      "message": "Приказ 'Deploy' разыгран",
+      "message": "Приказ 'Dominate' разыгран",
       "player_id": 1
     },
     {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Deploy' разыгран",
+      "message": "Игрок 1: Dominate — получено: 1 support",
       "player_id": 1
     },
     {
@@ -1277,11 +1223,31 @@
       "player_id": 0
     },
     {
-      "message": "Приказ 'Dominate' разыгран",
+      "message": "Приказ 'Deploy' разыгран",
       "player_id": 1
     },
     {
-      "message": "Игрок 1: Dominate — получено: 1 support",
+      "message": "Приказ 'Advance' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Advance' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha: доход +7 (итого 13 кредитов)",
+      "player_id": 0
+    },
+    {
+      "message": "Omega: доход +7 (итого 13 кредитов)",
+      "player_id": 1
+    },
+    {
+      "message": "Alpha взял карту события: Warp Gate",
+      "player_id": 0
+    },
+    {
+      "message": "Omega взял карту события: Incantation of Tzeentch",
       "player_id": 1
     }
   ]
