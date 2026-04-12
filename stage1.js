@@ -7,9 +7,9 @@
 function _facResHtml(f) {
   const parts = [];
   if (f.credits)  parts.push(`💰${f.credits}`);
-  if (f.tokens?.reinforcement) parts.push(`>${f.tokens.reinforcement}`);
-  if (f.tokens?.cash)          parts.push(`$${f.tokens.cash}`);
-  if (f.tokens?.forge)         parts.push(`T${f.tokens.forge}`);
+  if (f.tokens?.support)  parts.push(`⊕${f.tokens.support}`);
+  if (f.tokens?.discount) parts.push(`⊖${f.tokens.discount}`);
+  if (f.tokens?.forge)    parts.push(`⚒${f.tokens.forge}`);
   if (f.structures?.length) {
     const counts = {};
     f.structures.forEach(s => { counts[s] = (counts[s] || 0) + 1; });
@@ -121,7 +121,7 @@ function startGame() {
       fac.structures.forEach(type => p.structurePool.push({ id:nextId++, player:pi, type }));
     }
     p.credits = fac.credits ?? 6;
-    p.tokens  = { ...(fac.tokens ?? {reinforcement:0,cash:0,forge:0}) };
+    p.tokens  = { ...(fac.tokens ?? {support:0,discount:0,forge:0}) };
 
     // Карты загрузятся с сервера асинхронно
     p.hand_battle_cards = [];
@@ -356,8 +356,8 @@ function exportMap() {
         capacity: a.capacity,
         income:   a.income,
         valuable: a.valuable,
-        reinforcement:  a.support,
-        cash:           a.discount,
+        support:  a.support,
+        discount: a.discount,
         forge:    a.forge,
         joker:    a.joker,
         troops:   a.troops.map(u => ({ player:u.player, unitType:u.unitType })),

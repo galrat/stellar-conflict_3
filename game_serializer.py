@@ -28,8 +28,8 @@ def generate_game_state(game_state) -> dict:
                 "name": str,
                 "faction": str,
                 "money": int,
-                "reinforcement": int,
-                "cash": int,
+                "support": int,
+                "discount": int,
                 "forge": int,
                 "hand_battle_cards": [str],              # начальные боевые карты (уровень -1)
                 "available_battle_cards": [str],        # доступные боевые карты (уровни 0, 2, 3)
@@ -166,8 +166,8 @@ def generate_game_state(game_state) -> dict:
             "name": player.name,
             "faction": player.faction.id,
             "money": player.credits,
-            "reinforcement": resource_counts.get("reinforcement", 0),
-            "cash": resource_counts.get("cash", 0),
+            "support": resource_counts.get("support", 0),
+            "discount": resource_counts.get("discount", 0),
             "forge": resource_counts.get("forge", 0),
             "hand_battle_cards": hand_battle_cards,
             "available_battle_cards": available_battle_cards,

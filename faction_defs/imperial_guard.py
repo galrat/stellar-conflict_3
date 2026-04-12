@@ -30,7 +30,7 @@ IMPERIAL_GUARD = Faction(
         # ── Стартовые постройки ─────────────────────────────────────────────
         factories=1, cities=0, bastions=0,
         # ── Стартовые ресурсы ───────────────────────────────────────────────
-        credits=6, reinforcement_tokens=0, cash_tokens=0, forge_tokens=0,
+        credits=6, support_tokens=0, discount_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов ───────────────────────────────────────────
         unit_stats={
             "infantry":   dict(name="Guardsmen",                    cost=2,               combat_strength=1, health=1, morale=2, max_count=12),

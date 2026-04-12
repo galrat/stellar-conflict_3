@@ -156,8 +156,8 @@ class UnitConfig:
     # ── Стартовые ресурсы ─────────────────────────────────────────────────────
     # Хранятся в инвентаре игрока, не размещаются на поле.
     credits:         int = 6   # Монеты — основная валюта
-    reinforcement_tokens:  int = 0   # Жетон поддержки (⊕)
-    cash_tokens: int = 0   # Жетон скидки (⊖)
+    support_tokens:  int = 0   # Жетон поддержки (⊕)
+    discount_tokens: int = 0   # Жетон скидки (⊖)
     forge_tokens:    int = 0   # Жетон кузницы/молотка (⚒)
     # ── Характеристики юнитов (per-faction) ───────────────────────────────────
     unit_stats:      Dict[str, dict] = field(default_factory=dict)
@@ -179,7 +179,7 @@ class UnitConfig:
 
     @property
     def total_resources(self) -> int:
-        return self.reinforcement_tokens + self.cash_tokens + self.forge_tokens
+        return self.support_tokens + self.discount_tokens + self.forge_tokens
 
     @property
     def total(self) -> int:
@@ -218,8 +218,8 @@ class UnitConfig:
         """Создаёт список ResourceToken согласно конфигурации."""
         resources: List[ResourceToken] = []
         specs = [
-            (ResourceType.REINFORCEMENT, self.reinforcement_tokens),
-            (ResourceType.CASH,          self.cash_tokens),
+            (ResourceType.REINFORCEMENT, self.support_tokens),
+            (ResourceType.CASH,          self.discount_tokens),
             (ResourceType.FORGE,         self.forge_tokens),
         ]
         for resource_type, count in specs:
@@ -239,8 +239,8 @@ class UnitConfig:
             "cities":          self.cities,
             "bastions":        self.bastions,
             "credits":         self.credits,
-            "reinforcement_tokens":  self.reinforcement_tokens,
-            "cash_tokens": self.cash_tokens,
+            "support_tokens":  self.support_tokens,
+            "discount_tokens": self.discount_tokens,
             "forge_tokens":    self.forge_tokens,
             "unit_stats":      self.unit_stats,
             "battle_card_deck": self.battle_card_deck,

@@ -28,7 +28,7 @@ NECRONS = Faction(
         # ── Стартовые постройки ─────────────────────────────────────────────
         factories=1, cities=0, bastions=0,
         # ── Стартовые ресурсы ───────────────────────────────────────────────
-        credits=6, reinforcement_tokens=0, cash_tokens=0, forge_tokens=0,
+        credits=6, support_tokens=0, discount_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов ───────────────────────────────────────────
         unit_stats={
             "infantry":   dict(name="Warriors",                   cost=2,               combat_strength=2, health=3, morale=0, max_count=4),

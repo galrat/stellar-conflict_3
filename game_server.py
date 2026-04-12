@@ -340,6 +340,12 @@ class UndoRequest(BaseModel):
     player_id: int
 
 
+class DominateJokerRequest(BaseModel):
+    """Выбор типа токена для джокера при розыгрыше Dominate"""
+    player_id: int
+    choice: str  # 'support' | 'discount' | 'forge'
+
+
 # ── Routes ──────────────────────────────────────────────────────────────────
 
 @app.post('/api/save')
@@ -560,11 +566,86 @@ async def init_game(request: InitGameRequest) -> GameStateResponse:
                 if 'collected_objectives' not in p:
                     p['collected_objectives'] = 0
 
+            # Нормализовать токены: reinforcement → support, cash → discount
+            for p in _active_game.get('players', []):
+                tok = p.setdefault('tokens', {})
+                # Переименовать старые ключи если присутствуют
+                if 'reinforcement' in tok and 'support' not in tok:
+                    tok['support'] = tok.pop('reinforcement')
+                if 'cash' in tok and 'discount' not in tok:
+                    tok['discount'] = tok.pop('cash')
+                # Установить дефолты
+                tok.setdefault('support', 0)
+                tok.setdefault('discount', 0)
+                tok.setdefault('forge', 0)
+                p['tokens'] = tok
+
             print(f"✅ Stage 2 инициализирована. Игроки: {[p.get('name') for p in _active_game.get('players', [])]}")
             _save_current_state()
         return GameStateResponse(success=True, state=_prepare_response_state())
     except Exception as e:
         print(f"❌ Ошибка инициализации Stage 2: {e}")
+        return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/restore')
+async def restore_game(request: InitGameRequest) -> GameStateResponse:
+    """
+    Восстановить сохранённое состояние игры на сервере без сброса фазы.
+    Используется при загрузке сохранения в фазах execution/end-round.
+    Делает то же что /api/game/init, но не меняет фазу.
+    """
+    global _active_game
+    try:
+        async with _game_lock:
+            _active_game = request.state.copy()
+
+            # Обогатить данными фракций (карты, апгрейды, события)
+            for p in _active_game.get('players', []):
+                fid = p.get('faction')
+                if fid and fid in FACTIONS:
+                    fac = FACTIONS[fid]
+                    faction_color = fac.color
+                    if faction_color and not faction_color.startswith('#'):
+                        faction_color = f'#{faction_color}'
+                    p['faction_color'] = faction_color
+                    # Карты восстанавливаем только если их нет в сохранении
+                    if 'hand_battle_cards' not in p:
+                        p['hand_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value == -1]
+                    if 'available_battle_cards' not in p:
+                        p['available_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value != -1]
+                    if 'available_order_upgrades' not in p:
+                        p['available_order_upgrades'] = [u.to_dict() for u in fac.order_upgrades]
+                    if 'available_event_cards' not in p:
+                        p['available_event_cards'] = [e.to_dict() for e in fac.event_cards]
+                    if 'hand_order_upgrades' not in p:
+                        p['hand_order_upgrades'] = []
+                    if 'hand_event_cards' not in p:
+                        p['hand_event_cards'] = []
+
+            for p in _active_game.get('players', []):
+                p.pop('color', None)
+
+            _ensure_state_fields(_active_game)
+            init_unit_statuses(_active_game)
+
+            # Нормализовать токены
+            for p in _active_game.get('players', []):
+                tok = p.setdefault('tokens', {})
+                if 'reinforcement' in tok and 'support' not in tok:
+                    tok['support'] = tok.pop('reinforcement')
+                if 'cash' in tok and 'discount' not in tok:
+                    tok['discount'] = tok.pop('cash')
+                tok.setdefault('support', 0)
+                tok.setdefault('discount', 0)
+                tok.setdefault('forge', 0)
+
+            phase = _active_game.get('phase', 'unknown')
+            print(f"✅ Игра восстановлена. Фаза: {phase}. Игроки: {[p.get('name') for p in _active_game.get('players', [])]}")
+            _save_current_state()
+        return GameStateResponse(success=True, state=_prepare_response_state())
+    except Exception as e:
+        print(f"❌ Ошибка восстановления игры: {e}")
         return GameStateResponse(success=False, error=str(e))
 
 
@@ -794,7 +875,16 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             # СОХРАНИТЬ SNAPSHOT перед разыгрышем
             _save_temp_snapshot()
 
-            # Разыграть приказ
+            # Найти приказ до разыгрыша чтобы знать тип и плитку
+            played_order = next(
+                (o for o in _active_game.get('orders', [])
+                 if o.get('id') == request.order_id and o.get('owner') == request.player_id),
+                None
+            )
+            order_type = played_order.get('type') if played_order else None
+            order_tile = played_order.get('tile') if played_order else None
+
+            # Разыграть приказ (убрать с поля, вернуть в руку)
             success, message, new_state = play_order(_active_game, request.player_id, request.order_id)
 
             if not success:
@@ -811,6 +901,17 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             if 'log' not in _active_game:
                 _active_game['log'] = []
             _active_game['log'].append({'message': message, 'player_id': request.player_id})
+
+            # Выполнить эффект приказа
+            if order_type == 'dominate' and order_tile:
+                from python_engine.dominate import dominate_order
+                dom_success, dom_msg, dom_state = dominate_order(_active_game, request.player_id, order_tile)
+                if dom_success and dom_state:
+                    _active_game.clear()
+                    _active_game.update(dom_state)
+                    print(f"🏆 {dom_msg}")
+                elif not dom_success:
+                    print(f"⚠ Dominate effect failed: {dom_msg}")
 
             print(f"🎯 {message}")
             _save_current_state()
@@ -866,6 +967,51 @@ async def discard_order_endpoint(request: CancelOrderRequest) -> GameStateRespon
 
         except Exception as e:
             print(f"❌ Ошибка сброса приказа: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-joker')
+async def dominate_joker_endpoint(request: DominateJokerRequest) -> GameStateResponse:
+    """Разрешить выбор джокера при розыгрыше приказа Dominate"""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from python_engine.dominate import dominate_resolve_joker
+
+            # Проверить что есть pending_joker_choice
+            pending = _active_game.get('pending_joker_choice', {})
+            if not pending:
+                return GameStateResponse(success=False, error="Нет ожидающего выбора джокера")
+
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Это не ваш выбор джокера")
+
+            joker_count = pending.get('joker_count', 1)
+            # Упрощение: все джокеры одного типа
+            joker_choices = [request.choice] * joker_count
+
+            # Сохранить snapshot перед разрешением
+            _save_temp_snapshot()
+
+            success, message, new_state = dominate_resolve_joker(
+                _active_game, request.player_id, joker_choices
+            )
+
+            if not success:
+                return GameStateResponse(success=False, error=message)
+
+            # Обновить state
+            _active_game.clear()
+            _active_game.update(new_state)
+
+            print(f"🎲 {message}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
             return GameStateResponse(success=False, error=str(e))
 
 

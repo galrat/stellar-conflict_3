@@ -264,20 +264,24 @@ function loadGameFile(filename) {
       clearLog();  // очистить DOM-лог перед загрузкой новой игры
       showScreen('game-screen');
 
-      // Если карта готова — инициализируем Stage 2 на сервере
-      if (['order-placement', 'orders_placed', 'execution', 'end-round', 'game-start', 'warp-storm'].includes(G.phase)) {
+      const phase = G.phase;
+      if (['execution', 'end-round'].includes(phase)) {
+        // Восстановить state на сервере без сброса фазы
+        console.log(`🔄 Восстанавливаю игру в фазе ${phase}...`);
+        _restoreGame(phase);
+      } else if (['order-placement', 'orders_placed', 'game-start', 'warp-storm'].includes(phase)) {
         console.log('🔄 Инициализирую Stage 2 для загруженной игры...');
         startStage2();
       } else {
-        setPhase(G.phase);
+        setPhase(phase);
         updateHeader();
         renderBoard();
         renderSide();
-        syncLog();  // восстановить лог из загруженного state
+        syncLog();
       }
 
       addLog('Игра загружена', -1);
-      closeMsgModal();
+      closeMsg();
     } else {
       console.error('❌ Ошибка загрузки файла:', data.error);
       showMsg('Ошибка загрузки', data.error);
@@ -1300,10 +1304,49 @@ async function playOrderViaAPI(orderId) {
       _selectedOrderForPlay = null;
       applyState(res.state);
       addLog(`${G.players[G.curP]?.name || 'Игрок'}: приказ "${orderName}" разыгран`, G.curP);
-      // UI buttons обновятся через G.ui из setPhase
-      setPhase('execution');
+      // Check if dominate produced a joker choice
+      if (res.state?.pending_joker_choice) {
+        _showJokerChoiceUI(res.state.pending_joker_choice);
+      } else {
+        setPhase('execution');
+      }
     } else {
       showMsg('Ошибка', res.error || 'Не удалось разыграть приказ');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+function _showJokerChoiceUI(pending) {
+  const TOKEN_LABELS = { support: '🛡 Support', discount: '💰 Discount', forge: '🔨 Forge' };
+  const count = pending.joker_count || 1;
+  const pid = pending.player_id;
+
+  const html = `
+    <div style="margin-bottom:10px;color:#aaa;">Выберите тип токена для джокера (${count} шт.):</div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      ${['support','discount','forge'].map(t => `
+        <button class="abtn bp" onclick="_resolveJoker(${pid},'${t}')"
+          style="padding:12px 20px;font-size:1rem;">${TOKEN_LABELS[t]}</button>
+      `).join('')}
+    </div>`;
+  showMsg('🎲 Выбор джокера', html);
+}
+
+async function _resolveJoker(playerId, choiceType) {
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/dominate-joker', {
+      player_id: playerId,
+      choice: choiceType
+    });
+    if (res.success) {
+      applyState(res.state);
+      addLog(`Джокер → ${choiceType}`, playerId);
+      setPhase('execution');
+    } else {
+      showMsg('Ошибка', res.error || 'Не удалось разрешить джокер');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -1473,6 +1516,27 @@ function applyState(newState) {
   renderBoard();
   renderSide();
   updateHeader();
+}
+
+async function _restoreGame(phase) {
+  try {
+    await apiCall('/api/game/clear-temp', {});
+    const data = await apiCall('/api/game/restore', { state: G });
+    if (data.success) {
+      applyState(data.state);
+      syncLog();
+      if (phase === 'execution') {
+        const player = G.players[G.curP];
+        showHP(player.name, 'Розыгрыш приказов', () => setPhase('execution'));
+      } else if (phase === 'end-round') {
+        setPhase('end-round');
+      }
+    } else {
+      showMsg('Ошибка восстановления', data.error || 'Не удалось восстановить игру');
+    }
+  } catch(e) {
+    showMsg('Сервер недоступен', 'Запустите: uvicorn game_server:app --reload --port 8000');
+  }
 }
 
 async function startStage2() {

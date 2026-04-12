@@ -25,7 +25,7 @@ ORKS = Faction(
         # Характеристики построек — см. STRUCTURE_CATALOG в player_hand.py.
         factories=1, cities=0, bastions=0,
         # ── Стартовые ресурсы ───────────────────────────────────────────────
-        credits=6, reinforcement_tokens=1, cash_tokens=0, forge_tokens=0,
+        credits=6, support_tokens=1, discount_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов (cost 2–5 + forge, strength 0–6, health 1–6, morale 0–6) ──
         # Орки: высокая боевая сила, крепкое телосложение, но слабая дисциплина.
         unit_stats={

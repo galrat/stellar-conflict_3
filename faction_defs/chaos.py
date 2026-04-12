@@ -28,7 +28,7 @@ CHAOS = Faction(
         # ── Стартовые постройки ─────────────────────────────────────────────
         factories=1, cities=0, bastions=0,
         # ── Стартовые ресурсы ───────────────────────────────────────────────
-        credits=6, reinforcement_tokens=0, cash_tokens=0, forge_tokens=0,
+        credits=6, support_tokens=0, discount_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов (источник: Forbidden_Stars_Unit_and_Card_Database) ──
         unit_stats={
             # name — название; cost — стоимость; max_count — макс. резерв

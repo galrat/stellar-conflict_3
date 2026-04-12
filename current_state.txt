@@ -31,51 +31,51 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "p1_deploy_2",
-          "type": "deploy",
-          "owner": 0
-        },
-        {
-          "id": "p1_advance_1",
+          "id": "advance_0_0_r2",
           "type": "advance",
           "owner": 0
         },
         {
-          "id": "p1_strategize_1",
+          "id": "advance_0_1_r2",
+          "type": "advance",
+          "owner": 0
+        },
+        {
+          "id": "strategize_0_0_r2",
           "type": "strategize",
           "owner": 0
         },
         {
-          "id": "p1_strategize_2",
+          "id": "strategize_0_1_r2",
           "type": "strategize",
           "owner": 0
         },
         {
-          "id": "p1_dominate_1",
+          "id": "dominate_0_0_r2",
           "type": "dominate",
           "owner": 0
         },
         {
-          "id": "p1_dominate_2",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "p1_deploy_1",
+          "id": "deploy_0_1_r2",
           "type": "deploy",
           "owner": 0
         },
         {
-          "id": "p1_advance_2",
-          "type": "advance",
+          "id": "dominate_0_1_r2",
+          "type": "dominate",
+          "owner": 0
+        },
+        {
+          "id": "deploy_0_0_r2",
+          "type": "deploy",
           "owner": 0
         }
       ],
       "credits": 13,
       "tokens": {
-        "reinforcement": 0,
-        "cash": 0,
-        "forge": 0
+        "forge": 1,
+        "support": 0,
+        "discount": 3
       },
       "hand_battle_cards": [
         {
@@ -243,10 +243,10 @@
       ],
       "hand_event_cards": [
         {
-          "name": "Warp Gate",
-          "warp_storm_move": "Top Rgt/Bot Left",
+          "name": "Vicious Raids",
+          "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
-          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
+          "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
         }
       ],
       "available_event_cards": [
@@ -291,6 +291,12 @@
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
           "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
+        },
+        {
+          "name": "Warp Gate",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Scheme",
+          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
         }
       ],
       "boughtUpgrades": [],
@@ -327,51 +333,51 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "p2_deploy_2",
-          "type": "deploy",
-          "owner": 1
-        },
-        {
-          "id": "p2_advance_2",
+          "id": "advance_1_0_r2",
           "type": "advance",
           "owner": 1
         },
         {
-          "id": "p2_strategize_1",
-          "type": "strategize",
-          "owner": 1
-        },
-        {
-          "id": "p2_strategize_2",
-          "type": "strategize",
-          "owner": 1
-        },
-        {
-          "id": "p2_advance_1",
+          "id": "advance_1_1_r2",
           "type": "advance",
           "owner": 1
         },
         {
-          "id": "p2_dominate_1",
-          "type": "dominate",
+          "id": "strategize_1_0_r2",
+          "type": "strategize",
           "owner": 1
         },
         {
-          "id": "p2_dominate_2",
-          "type": "dominate",
+          "id": "strategize_1_1_r2",
+          "type": "strategize",
           "owner": 1
         },
         {
-          "id": "p2_deploy_1",
+          "id": "deploy_1_1_r2",
           "type": "deploy",
+          "owner": 1
+        },
+        {
+          "id": "deploy_1_0_r2",
+          "type": "deploy",
+          "owner": 1
+        },
+        {
+          "id": "dominate_1_0_r2",
+          "type": "dominate",
+          "owner": 1
+        },
+        {
+          "id": "dominate_1_1_r2",
+          "type": "dominate",
           "owner": 1
         }
       ],
       "credits": 13,
       "tokens": {
-        "reinforcement": 0,
-        "cash": 0,
-        "forge": 0
+        "forge": 0,
+        "support": 2,
+        "discount": 0
       },
       "hand_battle_cards": [
         {
@@ -587,6 +593,12 @@
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
           "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start."
+        },
+        {
+          "name": "Touched by the Warp",
+          "warp_storm_move": "Sideways",
+          "card_type": "Tactic",
+          "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
         }
       ],
       "boughtUpgrades": [],
@@ -594,11 +606,11 @@
       "collected_objectives": 0
     }
   ],
-  "phase": "end-round",
-  "curP": 0,
-  "round": 1,
+  "phase": "execution",
+  "curP": 1,
+  "round": 2,
   "totalRounds": 8,
-  "firstPlayer": 0,
+  "firstPlayer": 1,
   "map": {
     "0,0": {
       "key": "0,0",
@@ -1136,10 +1148,11 @@
     true
   ],
   "ui": {
-    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 1",
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 4",
     "buttons": [],
     "playable_order_ids": [
-      "p1_advance_2"
+      "dominate_0_0_r2",
+      "deploy_0_1_r2"
     ],
     "blocked_tiles": [],
     "can_place_order": false,
@@ -1147,26 +1160,12 @@
     "order_played_this_turn": false
   },
   "event_cards_offered": [
-    [
-      {
-        "name": "Warp Gate",
-        "warp_storm_move": "Top Rgt/Bot Left",
-        "card_type": "Scheme",
-        "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
-      }
-    ],
-    [
-      {
-        "name": "Touched by the Warp",
-        "warp_storm_move": "Sideways",
-        "card_type": "Tactic",
-        "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
-      }
-    ]
+    [],
+    []
   ],
   "event_selection_done": [
-    true,
-    true
+    false,
+    false
   ],
   "log": [
     {
@@ -1222,8 +1221,68 @@
       "player_id": 1
     },
     {
-      "message": "Alpha взял карту события: Warp Gate",
+      "message": "Alpha взял карту события: Vicious Raids",
       "player_id": 0
+    },
+    {
+      "message": "🎮 Начало розыгрыша приказов!",
+      "player_id": -1
+    },
+    {
+      "message": "Карта готова. Инициализация Stage 2...",
+      "player_id": -1
+    },
+    {
+      "message": "Игра загружена",
+      "player_id": -1
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Игрок 0: Dominate — получено: 2 discount, joker→discount",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Игрок 0: Dominate — получено: 1 discount, 1 forge, joker→forge",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Игрок 1: Dominate — получено: 1 support",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Игрок 1: Dominate — получено: 1 support",
+      "player_id": 1
     }
   ]
 }
