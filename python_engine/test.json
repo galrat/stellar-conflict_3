@@ -15,14 +15,14 @@
         },
         {
           "handIdx": 1,
-          "tileDefId": "normal_05",
+          "tileDefId": "normal_03",
           "tileId": 8,
           "isHome": false,
           "placed": true
         },
         {
           "handIdx": 2,
-          "tileDefId": "normal_04",
+          "tileDefId": "normal_06",
           "tileId": 9,
           "isHome": false,
           "placed": true
@@ -31,51 +31,31 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "p1_deploy_2",
+          "id": "deploy_0_1_r2",
           "type": "deploy",
           "owner": 0
         },
         {
-          "id": "p1_advance_2",
+          "id": "advance_0_1_r2",
           "type": "advance",
           "owner": 0
         },
         {
-          "id": "p1_strategize_1",
+          "id": "strategize_0_0_r2",
           "type": "strategize",
           "owner": 0
         },
         {
-          "id": "p1_strategize_2",
+          "id": "strategize_0_1_r2",
           "type": "strategize",
-          "owner": 0
-        },
-        {
-          "id": "p1_dominate_1",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "p1_dominate_2",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "p1_deploy_1",
-          "type": "deploy",
-          "owner": 0
-        },
-        {
-          "id": "p1_advance_1",
-          "type": "advance",
           "owner": 0
         }
       ],
-      "credits": 9,
+      "credits": 13,
       "tokens": {
+        "forge": 1,
         "support": 0,
-        "discount": 0,
-        "forge": 0
+        "discount": 3
       },
       "hand_battle_cards": [
         {
@@ -243,10 +223,10 @@
       ],
       "hand_event_cards": [
         {
-          "name": "Outcasts Returned",
-          "warp_storm_move": "Across",
-          "card_type": "Tactic",
-          "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
+          "name": "Warp Gate",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Scheme",
+          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
         }
       ],
       "available_event_cards": [
@@ -269,6 +249,12 @@
           "effect": "Gain 2 (F)."
         },
         {
+          "name": "Outcasts Returned",
+          "warp_storm_move": "Across",
+          "card_type": "Tactic",
+          "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
+        },
+        {
           "name": "Outmanoeuvre",
           "warp_storm_move": "Sideways",
           "card_type": "Scheme",
@@ -285,12 +271,6 @@
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
           "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
-        },
-        {
-          "name": "Warp Gate",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Scheme",
-          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
         }
       ],
       "boughtUpgrades": [],
@@ -311,14 +291,14 @@
         },
         {
           "handIdx": 1,
-          "tileDefId": "normal_08",
+          "tileDefId": "normal_07",
           "tileId": 17,
           "isHome": false,
           "placed": true
         },
         {
           "handIdx": 2,
-          "tileDefId": "normal_01",
+          "tileDefId": "normal_08",
           "tileId": 18,
           "isHome": false,
           "placed": true
@@ -327,51 +307,31 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "p2_deploy_2",
+          "id": "deploy_1_1_r2",
           "type": "deploy",
           "owner": 1
         },
         {
-          "id": "p2_advance_1",
+          "id": "advance_1_0_r2",
           "type": "advance",
           "owner": 1
         },
         {
-          "id": "p2_strategize_1",
+          "id": "strategize_1_0_r2",
           "type": "strategize",
           "owner": 1
         },
         {
-          "id": "p2_strategize_2",
+          "id": "strategize_1_1_r2",
           "type": "strategize",
-          "owner": 1
-        },
-        {
-          "id": "p2_dominate_2",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "p2_dominate_1",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "p2_deploy_1",
-          "type": "deploy",
-          "owner": 1
-        },
-        {
-          "id": "p2_advance_2",
-          "type": "advance",
           "owner": 1
         }
       ],
-      "credits": 9,
+      "credits": 13,
       "tokens": {
+        "forge": 0,
         "support": 2,
-        "discount": 0,
-        "forge": 0
+        "discount": 0
       },
       "hand_battle_cards": [
         {
@@ -539,10 +499,10 @@
       ],
       "hand_event_cards": [
         {
-          "name": "Seduced by Chaos",
-          "warp_storm_move": "Sideways",
-          "card_type": "Scheme",
-          "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat."
+          "name": "Incantation of Tzeentch",
+          "warp_storm_move": "Across",
+          "card_type": "Tactic",
+          "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move)."
         }
       ],
       "available_event_cards": [
@@ -551,12 +511,6 @@
           "warp_storm_move": "Across",
           "card_type": "Scheme",
           "effect": "Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units."
-        },
-        {
-          "name": "Incantation of Tzeentch",
-          "warp_storm_move": "Across",
-          "card_type": "Tactic",
-          "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move)."
         },
         {
           "name": "Prayer to the Dark Gods",
@@ -569,6 +523,12 @@
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Tactic",
           "effect": "Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world."
+        },
+        {
+          "name": "Seduced by Chaos",
+          "warp_storm_move": "Sideways",
+          "card_type": "Scheme",
+          "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat."
         },
         {
           "name": "Spoils of War",
@@ -594,11 +554,11 @@
       "collected_objectives": 0
     }
   ],
-  "phase": "end-round",
+  "phase": "execution",
   "curP": 1,
-  "round": 1,
+  "round": 2,
   "totalRounds": 8,
-  "firstPlayer": 0,
+  "firstPlayer": 1,
   "map": {
     "0,0": {
       "key": "0,0",
@@ -622,19 +582,14 @@
           "joker": 1,
           "troops": [
             {
-              "unitType": "ground",
-              "tier": 0,
+              "id": 3,
               "player": 0,
+              "unitType": "ground",
+              "tier": 1,
               "unit_status": "active"
             }
           ],
-          "structures": [
-            {
-              "id": 6,
-              "player": 0,
-              "type": "factory"
-            }
-          ]
+          "structures": []
         },
         {
           "type": "planet",
@@ -645,25 +600,12 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 3,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 1,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "ground",
-              "tier": 1,
-              "player": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": [
             {
-              "type": "city",
-              "player": 0
+              "id": 6,
+              "player": 0,
+              "type": "factory"
             }
           ]
         },
@@ -703,12 +645,6 @@
               "unitType": "space",
               "tier": 0,
               "unit_status": "active"
-            },
-            {
-              "unitType": "space",
-              "tier": 0,
-              "player": 0,
-              "unit_status": "active"
             }
           ],
           "structures": []
@@ -717,7 +653,7 @@
       "needsObjective": true,
       "objectiveMarker": {
         "owner": 1,
-        "realAreaIdx": 1
+        "realAreaIdx": 0
       }
     },
     "1,0": {
@@ -727,8 +663,331 @@
       "owner": 1,
       "isHome": false,
       "tileId": 17,
-      "tileDefId": "normal_08",
+      "tileDefId": "normal_07",
+      "rotation": 180,
+      "side": 0,
+      "areas": [
+        {
+          "type": "planet",
+          "capacity": 3,
+          "income": 2,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 11,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 2,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 1,
+          "forge": 1,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 13,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 1,
+              "unit_status": "active"
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 2,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        }
+      ],
+      "needsObjective": true,
+      "objectiveMarker": {
+        "owner": 0,
+        "realAreaIdx": 0
+      }
+    },
+    "0,-1": {
+      "key": "0,-1",
+      "col": 0,
+      "row": -1,
+      "owner": 0,
+      "isHome": false,
+      "tileId": 8,
+      "tileDefId": "normal_03",
       "rotation": 0,
+      "side": 0,
+      "areas": [
+        {
+          "type": "planet",
+          "capacity": 2,
+          "income": 2,
+          "valuable": 1,
+          "support": 0,
+          "discount": 1,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 1,
+              "player": 0,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 4,
+          "income": 1,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 2,
+              "player": 0,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
+          "structures": []
+        }
+      ],
+      "needsObjective": true,
+      "objectiveMarker": {
+        "owner": 1,
+        "realAreaIdx": 0
+      }
+    },
+    "2,0": {
+      "key": "2,0",
+      "col": 2,
+      "row": 0,
+      "owner": 1,
+      "isHome": true,
+      "tileId": 16,
+      "tileDefId": "home_chaos",
+      "rotation": 0,
+      "side": 0,
+      "areas": [
+        {
+          "type": "planet",
+          "capacity": 4,
+          "income": 1,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 12,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 1,
+              "unit_status": "active"
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 3,
+          "income": 1,
+          "valuable": 1,
+          "support": 1,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": [
+            {
+              "id": 15,
+              "player": 1,
+              "type": "factory"
+            }
+          ]
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 14,
+              "player": 1,
+              "unitType": "space",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 3,
+          "income": 1,
+          "valuable": 1,
+          "support": 0,
+          "discount": 1,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        }
+      ],
+      "needsObjective": true,
+      "objectiveMarker": {
+        "owner": 0,
+        "realAreaIdx": 3
+      }
+    },
+    "1,-1": {
+      "key": "1,-1",
+      "col": 1,
+      "row": -1,
+      "owner": 0,
+      "isHome": false,
+      "tileId": 9,
+      "tileDefId": "normal_06",
+      "rotation": 0,
+      "side": 0,
+      "areas": [
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 3,
+          "income": 1,
+          "valuable": 1,
+          "support": 1,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [
+            {
+              "id": 0,
+              "player": 0,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
+          "structures": []
+        },
+        {
+          "type": "planet",
+          "capacity": 3,
+          "income": 1,
+          "valuable": 1,
+          "support": 1,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        },
+        {
+          "type": "space",
+          "capacity": 3,
+          "income": 0,
+          "valuable": 0,
+          "support": 0,
+          "discount": 0,
+          "forge": 0,
+          "joker": 0,
+          "troops": [],
+          "structures": []
+        }
+      ],
+      "needsObjective": false,
+      "objectiveMarker": null
+    },
+    "2,-1": {
+      "key": "2,-1",
+      "col": 2,
+      "row": -1,
+      "owner": 1,
+      "isHome": false,
+      "tileId": 18,
+      "tileDefId": "normal_08",
+      "rotation": 90,
       "side": 0,
       "areas": [
         {
@@ -771,352 +1030,6 @@
           "type": "planet",
           "capacity": 1,
           "income": 3,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [
-            {
-              "id": 11,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 0,
-              "unit_status": "active"
-            }
-          ],
-          "structures": []
-        }
-      ],
-      "needsObjective": true,
-      "objectiveMarker": {
-        "owner": 0,
-        "realAreaIdx": 2
-      }
-    },
-    "0,-1": {
-      "key": "0,-1",
-      "col": 0,
-      "row": -1,
-      "owner": 0,
-      "isHome": false,
-      "tileId": 8,
-      "tileDefId": "normal_05",
-      "rotation": 180,
-      "side": 0,
-      "areas": [
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 1,
-          "support": 1,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 2,
-          "income": 2,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [
-            {
-              "id": 2,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 0,
-              "unit_status": "active"
-            }
-          ],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 4,
-          "income": 1,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        }
-      ],
-      "needsObjective": true,
-      "objectiveMarker": {
-        "owner": 1,
-        "realAreaIdx": 3
-      }
-    },
-    "2,0": {
-      "key": "2,0",
-      "col": 2,
-      "row": 0,
-      "owner": 1,
-      "isHome": true,
-      "tileId": 16,
-      "tileDefId": "home_chaos",
-      "rotation": 0,
-      "side": 0,
-      "areas": [
-        {
-          "type": "planet",
-          "capacity": 4,
-          "income": 1,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [
-            {
-              "id": 12,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 1,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 1,
-              "unit_status": "active"
-            }
-          ],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 1,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": [
-            {
-              "id": 15,
-              "player": 1,
-              "type": "factory"
-            }
-          ]
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [
-            {
-              "id": 14,
-              "player": 1,
-              "unitType": "space",
-              "tier": 0,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "space",
-              "tier": 0,
-              "player": 1,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "space",
-              "tier": 0,
-              "player": 1,
-              "unit_status": "active"
-            }
-          ],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 0,
-          "discount": 1,
-          "forge": 0,
-          "joker": 0,
-          "troops": [
-            {
-              "id": 13,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 1,
-              "unit_status": "active"
-            }
-          ],
-          "structures": [
-            {
-              "type": "city",
-              "player": 1
-            }
-          ]
-        }
-      ],
-      "needsObjective": true,
-      "objectiveMarker": {
-        "owner": 0,
-        "realAreaIdx": 3
-      }
-    },
-    "1,-1": {
-      "key": "1,-1",
-      "col": 1,
-      "row": -1,
-      "owner": 0,
-      "isHome": false,
-      "tileId": 9,
-      "tileDefId": "normal_04",
-      "rotation": 90,
-      "side": 0,
-      "areas": [
-        {
-          "type": "planet",
-          "capacity": 1,
-          "income": 1,
-          "valuable": 1,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 1,
-          "troops": [
-            {
-              "id": 0,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 0,
-              "unit_status": "active"
-            }
-          ],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 0,
-          "discount": 1,
-          "forge": 0,
-          "joker": 0,
-          "troops": [
-            {
-              "id": 1,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 0,
-              "unit_status": "active"
-            }
-          ],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        }
-      ],
-      "needsObjective": false,
-      "objectiveMarker": null
-    },
-    "2,-1": {
-      "key": "2,-1",
-      "col": 2,
-      "row": -1,
-      "owner": 1,
-      "isHome": false,
-      "tileId": 18,
-      "tileDefId": "normal_01",
-      "rotation": 0,
-      "side": 0,
-      "areas": [
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 1,
-          "valuable": 1,
-          "support": 0,
-          "discount": 0,
-          "forge": 1,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "space",
-          "capacity": 3,
-          "income": 0,
-          "valuable": 0,
-          "support": 0,
-          "discount": 0,
-          "forge": 0,
-          "joker": 0,
-          "troops": [],
-          "structures": []
-        },
-        {
-          "type": "planet",
-          "capacity": 3,
-          "income": 2,
           "valuable": 0,
           "support": 0,
           "discount": 0,
@@ -1168,7 +1081,72 @@
     true
   ],
   "targetMarkers": [],
-  "orders": [],
+  "orders": [
+    {
+      "id": "deploy_1_0_r2",
+      "type": "deploy",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "deploy_0_0_r2",
+      "type": "deploy",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "dominate_1_1_r2",
+      "type": "dominate",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_0_1_r2",
+      "type": "dominate",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_1_0_r2",
+      "type": "dominate",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 2,
+      "revealed": false
+    },
+    {
+      "id": "advance_0_0_r2",
+      "type": "advance",
+      "owner": 0,
+      "tile": "1,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "advance_1_1_r2",
+      "type": "advance",
+      "owner": 1,
+      "tile": "1,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_0_0_r2",
+      "type": "dominate",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 2,
+      "revealed": false
+    }
+  ],
   "ordersPlaced": [
     4,
     4
@@ -1179,189 +1157,33 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    true,
-    true
+    false,
+    false
+  ],
+  "ui": {
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Omega: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 4",
+    "buttons": [],
+    "playable_order_ids": [
+      "advance_1_1_r2",
+      "dominate_1_0_r2"
+    ],
+    "blocked_tiles": [],
+    "can_place_order": false,
+    "order_placed_this_turn": false,
+    "order_played_this_turn": false
+  },
+  "event_cards_offered": [
+    [],
+    []
+  ],
+  "event_selection_done": [
+    false,
+    false
   ],
   "log": [
     {
-      "message": "Alpha разместил домашнюю систему [0,0]",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha → [0,0] зона 4 (◈ T0)",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha → [0,0] зона 3 (◈ T0)",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha → [0,0] зона 1 (⚙ Фабрика)",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha разместил метку цели на [0,0] зона 2",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha → [0,0] зона 2 (▲ T1)",
-      "player_id": 0
-    },
-    {
-      "message": "Omega разместил систему [1,0]",
-      "player_id": 1
-    },
-    {
-      "message": "Omega разместил метку цели на [1,0] зона 3",
-      "player_id": 1
-    },
-    {
-      "message": "Omega → [1,0] зона 4 (▲ T0)",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha разместил систему [0,-1]",
-      "player_id": 0
-    },
-    {
-      "message": "Поворот [0,-1] пр. ч. → 270°",
-      "player_id": 0
-    },
-    {
-      "message": "Поворот [0,-1] пр. ч. → 180°",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha → [0,-1] зона 2 (▲ T0)",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha разместил метку цели на [0,-1] зона 1",
-      "player_id": 0
-    },
-    {
-      "message": "Omega разместил домашнюю систему [2,0]",
-      "player_id": 1
-    },
-    {
-      "message": "Omega разместил метку цели на [2,0] зона 4",
-      "player_id": 1
-    },
-    {
-      "message": "Omega → [2,0] зона 4 (▲ T1)",
-      "player_id": 1
-    },
-    {
-      "message": "Omega → [2,0] зона 1 (▲ T1)",
-      "player_id": 1
-    },
-    {
-      "message": "Omega → [2,0] зона 2 (⚙ Фабрика)",
-      "player_id": 1
-    },
-    {
-      "message": "Omega → [2,0] зона 3 (◈ T0)",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha разместил систему [1,-1]",
-      "player_id": 0
-    },
-    {
-      "message": "Поворот [1,-1] пр. ч. → 270°",
-      "player_id": 0
-    },
-    {
-      "message": "Поворот [1,-1] пр. ч. → 180°",
-      "player_id": 0
-    },
-    {
-      "message": "Поворот [1,-1] пр. ч. → 90°",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha → [1,-1] зона 4 (▲ T0)",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha → [1,-1] зона 2 (▲ T0)",
-      "player_id": 0
-    },
-    {
-      "message": "Omega разместил систему [2,-1]",
-      "player_id": 1
-    },
-    {
-      "message": "Omega → [2,-1] зона 4 (▲ T0)",
-      "player_id": 1
-    },
-    {
-      "message": "Omega поставил варп-шторм: [1,-1] top",
-      "player_id": 1
-    },
-    {
-      "message": "Omega подтвердил варп-шторм",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha поставил варп-шторм: [1,0] bottom",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha подтвердил варп-шторм",
-      "player_id": 0
-    },
-    {
-      "message": "Варп-штормы установлены. Переход к приказам...",
-      "player_id": -1
-    },
-    {
-      "message": "Карта готова. Инициализация Stage 2...",
-      "player_id": -1
-    },
-    {
-      "message": "Stage 2 начат. Ход: Alpha",
-      "player_id": -1
-    },
-    {
-      "message": "Карта готова. Инициализация Stage 2...",
-      "player_id": -1
-    },
-    {
       "message": "Игра загружена",
       "player_id": -1
-    },
-    {
-      "message": "Карта готова. Инициализация Stage 2...",
-      "player_id": -1
-    },
-    {
-      "message": "Игра загружена",
-      "player_id": -1
-    },
-    {
-      "message": "Игра загружена",
-      "player_id": -1
-    },
-    {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Игрок 0: Dominate — получено: 1 discount, 1 forge, joker→forge",
-      "player_id": 0
-    },
-    {
-      "message": "Игра загружена",
-      "player_id": -1
-    },
-    {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
-      "player_id": 1
     },
     {
       "message": "Приказ 'Dominate' разыгран",
@@ -1376,79 +1198,70 @@
       "player_id": 1
     },
     {
-      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
+      "message": "Игрок 1: Dominate — получено: 1 support",
       "player_id": 1
     },
     {
-      "message": "Игра загружена",
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Игрок 0: Dominate — получено: 1 discount, 1 forge, joker→forge",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Игрок 1: Dominate — получено: 1 support",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Advance' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Advance' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha: доход +7 (итого 13 кредитов)",
+      "player_id": 0
+    },
+    {
+      "message": "Omega: доход +7 (итого 13 кредитов)",
+      "player_id": 1
+    },
+    {
+      "message": "Alpha взял карту события: Warp Gate",
+      "player_id": 0
+    },
+    {
+      "message": "Omega взял карту события: Incantation of Tzeentch",
+      "player_id": 1
+    },
+    {
+      "message": "🎮 Начало розыгрыша приказов!",
       "player_id": -1
-    },
-    {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Advance' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Advance' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha: доход +7 (итого 9 кредитов)",
-      "player_id": 0
-    },
-    {
-      "message": "Omega: доход +8 (итого 9 кредитов)",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha взял карту события: Outcasts Returned",
-      "player_id": 0
-    },
-    {
-      "message": "Omega взял карту события: Seduced by Chaos",
-      "player_id": 1
     }
   ],
-  "event_cards_offered": [
-    [
-      {
-        "name": "Outcasts Returned",
-        "warp_storm_move": "Across",
-        "card_type": "Tactic",
-        "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
-      }
-    ],
-    [
-      {
-        "name": "Seduced by Chaos",
-        "warp_storm_move": "Sideways",
-        "card_type": "Scheme",
-        "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat."
-      }
-    ]
-  ],
-  "event_selection_done": [
-    true,
-    true
-  ],
-  "ui": {
-    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 2",
-    "buttons": [],
-    "playable_order_ids": [
-      "p1_deploy_1"
-    ],
-    "blocked_tiles": [
-      "1,0"
-    ],
-    "can_place_order": false,
-    "order_placed_this_turn": false,
-    "order_played_this_turn": false
+  "pending_joker_choice": {
+    "player_id": 0,
+    "tile_key": "0,0",
+    "collected": {
+      "support": 0,
+      "discount": 1,
+      "forge": 0
+    },
+    "joker_count": 1
   }
 }

@@ -386,6 +386,11 @@ function _afterTilePlaced() {
 //  AREA CLICK (stub — no unit placement)
 // ══════════════════════════════════════════════
 function areaClick(key, displayIdx) {
+  // Делегировать в deploy если активен
+  if (G.pending_deploy && typeof deployAreaClick === 'function') {
+    deployAreaClick(key, displayIdx);
+    return;
+  }
   if (G.phase !== 'troop-on-tile') return;
   if (key !== G.lastKey) { showMsg('Другой тайл', 'Размещайте войска только на только что поставленной системе.'); return; }
 
@@ -502,6 +507,10 @@ function selectStructFromPool(idx) {
 }
 
 function undoLastUnit() {
+  if (G.pending_deploy?.step === 'place_units' && typeof _deployUndoPlace === 'function') {
+    _deployUndoPlace();
+    return;
+  }
   if (G.phase !== 'troop-on-tile') return;
   const cp = G.players[G.curP];
   const lastUnitSeq   = G.unitsPlaced.length  > 0 ? (G.unitsPlaced[G.unitsPlaced.length-1]._seq   ?? -1) : -1;

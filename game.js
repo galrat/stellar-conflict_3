@@ -542,8 +542,11 @@ function renderBoard() {
       }
       ae.appendChild(lbl);
       const capEl=document.createElement('div'); capEl.className='acap';
-      capEl.textContent=`${used}/${cap}`;
-      if (used>=cap) capEl.style.color='var(--accent2)';
+      const pendingCount = G.pending_deploy?.tile_key === tile.key
+        ? (G.pending_deploy.placed||[]).filter(p => p.area_idx === realIdx).length : 0;
+      const effectiveUsed = used + pendingCount;
+      capEl.textContent=`${effectiveUsed}/${cap}`;
+      if (effectiveUsed>=cap) capEl.style.color='var(--accent2)';
       ae.appendChild(capEl);
 
       // Structures
@@ -573,6 +576,30 @@ function renderBoard() {
         ae.appendChild(tok);
       });
 
+      // Pending deploy units (not yet committed to tile.areas)
+      {
+        const pd = G.pending_deploy;
+        if (pd && tile.key === pd.tile_key && pd.placed) {
+          const cp = G.players[G.curP];
+          const facColor = FACTIONS.find(f=>f.id===cp.faction)?.color || (G.curP===0?'#00c8ff':'#ff4d6d');
+          const catalog = pd.deploy_info?.unit_catalog || [];
+          pd.placed.filter(p => p.area_idx === realIdx).forEach(p => {
+            const uInfo = catalog.find(c => c.unit_key === p.unit_key);
+            const tok = document.createElement('div');
+            const uType = _DEPLOY_UT[p.unit_key] || 'ground';
+            tok.className = `atroop ${uType}`;
+            tok.style.background = hexAlpha(facColor, 0.25);
+            tok.style.borderColor = facColor;
+            tok.style.color = facColor;
+            tok.style.opacity = '0.7';
+            tok.style.outline = '2px dashed ' + facColor;
+            tok.textContent = `T${uInfo?.tier ?? 0}`;
+            tok.title = `${uInfo?.name || p.unit_key} (ожидает)`;
+            ae.appendChild(tok);
+          });
+        }
+      }
+
       // Ownership highlight
       const h1=area.troops.some(t=>t.player===0), h2=area.troops.some(t=>t.player===1);
       if (h1&&h2) ae.classList.add('contested');
@@ -591,6 +618,28 @@ function renderBoard() {
           // Подсветить области для метки цели
           const eligIdxs = getObjectiveEligibleDisplayIdxs(tile);
           if (eligIdxs.includes(displayIdx) && area.type === 'planet') ae.classList.add('aok-obj');
+        }
+      }
+
+      // Deploy highlighting
+      {
+        const pd = G.pending_deploy;
+        if (pd && tile.key === pd.tile_key) {
+          const info = pd.deploy_info || {};
+          const availIdxs = new Set((info.available_areas || []).map(a => a.idx));
+          if (pd.step === 'place_units' && _deploySelectedUnit) {
+            const _UT = {infantry:'ground',marines:'ground',mechanized:'ground',elite:'ground',fighter:'space',destroyer:'space'};
+            const uType = _UT[_deploySelectedUnit];
+            const expected = uType === 'ground' ? 'planet' : 'space';
+            ae.classList.add(availIdxs.has(realIdx) && area.type === expected ? 'aok' : 'ano');
+          } else if (pd.step === 'buy_building' && _deploySelectedBuilding) {
+            const planets = new Set(info.available_planets || []);
+            ae.classList.add(planets.has(realIdx) ? 'aok' : 'ano');
+          } else if (pd.step === 'resolve_overflow') {
+            // Highlight overflow areas in red
+            const cnt = (area.troops || []).length + (pd.placed || []).filter(p => p.area_idx === realIdx).length;
+            if (cnt > area.capacity) ae.classList.add('ano');
+          }
         }
       }
 
@@ -627,6 +676,7 @@ function renderBoard() {
       transform: translate(-50%, -50%);
       cursor: ${G.phase === 'order-placement' ? 'pointer' : 'default'};
       z-index: 5;
+      pointer-events: ${G.phase === 'order-placement' ? 'auto' : 'none'};
     `;
     if (G.phase === 'order-placement') {
       centerZone.onclick = (e) => {
@@ -885,6 +935,142 @@ function renderSide() {
         Ожидание второго игрока...
       </div>
     `;
+
+    return;
+  }
+
+  // ── DEPLOY: place_units — юниты в левой панели ──
+  if (G.phase === 'execution' && G.pending_deploy?.step === 'place_units') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block';
+    structSection.style.display = 'none';
+
+    const pd      = G.pending_deploy;
+    const hand    = pd.hand || [];
+    const placed  = pd.placed || [];
+    const catalog = pd.deploy_info?.unit_catalog || [];
+    const getName = k => catalog.find(c => c.unit_key === k)?.name || k;
+    const cp      = G.players[G.curP];
+    const facColor = FACTIONS.find(f => f.id === cp.faction)?.color || (G.curP === 0 ? '#00c8ff' : '#ff4d6d');
+
+    const handRem = [...hand];
+    for (const p of placed) {
+      const i = handRem.indexOf(p.unit_key);
+      if (i >= 0) handRem.splice(i, 1);
+    }
+
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+
+    const title = document.createElement('div');
+    title.className = 'ptitle';
+    title.textContent = `DEPLOY: юниты (${placed.length}/${hand.length})`;
+    poolEl.appendChild(title);
+
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:.68rem;color:var(--gold);margin-bottom:6px;';
+    hint.textContent = _deploySelectedUnit
+      ? `✓ Выбран: ${_deploySelectedUnit} — кликните область на карте`
+      : '← Выберите юнит, затем кликните область на тайле';
+    poolEl.appendChild(hint);
+
+    if (handRem.length > 0) {
+      handRem.forEach(uk => {
+        const u   = catalog.find(c => c.unit_key === uk);
+        const tok = document.createElement('div');
+        tok.className = `ttok ${_DEPLOY_UT[uk] || 'ground'}${_deploySelectedUnit === uk ? ' sel' : ''}`;
+        tok.style.background  = hexAlpha(facColor, 0.15);
+        tok.style.borderColor = facColor;
+        tok.style.color       = facColor;
+        tok.textContent = `T${u?.tier ?? 0}`;
+        tok.title       = u?.name || uk;
+        tok.onclick     = () => { _deploySelectedUnit = uk; renderSide(); renderBoard(); };
+        poolEl.appendChild(tok);
+      });
+    } else {
+      const msg = document.createElement('span');
+      msg.style.cssText = 'color:var(--dim);font-size:.75rem';
+      msg.textContent = 'Все размещены';
+      poolEl.appendChild(msg);
+    }
+
+    if (placed.length > 0) {
+      const placed_div = document.createElement('div');
+      placed_div.style.cssText = 'margin-top:8px;padding-top:6px;border-top:1px solid var(--border);font-size:.72rem;color:var(--dim);';
+      placed_div.textContent = 'Размещено: ' + placed.map(p => getName(p.unit_key) + ' →area' + p.area_idx).join(', ');
+      poolEl.appendChild(placed_div);
+    }
+    return;
+  }
+
+  // ── DEPLOY: buy_building — здания в левой панели ──
+  if (G.phase === 'execution' && G.pending_deploy?.step === 'buy_building') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block';
+    structSection.style.display = 'none';
+
+    const pd      = G.pending_deploy;
+    const info    = pd.deploy_info || {};
+    const credits = info.credits - (pd.unit_costs?.credits || 0);
+    const cash    = info.cash_tokens - (pd.unit_costs?.cash || 0);
+    const pool    = info.structure_pool || [];
+
+    const poolCounts = {};
+    for (const s of pool) poolCounts[s.type] = (poolCounts[s.type] || 0) + 1;
+    const bTypes = Object.keys(poolCounts);
+
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+
+    const title = document.createElement('div');
+    title.className = 'ptitle';
+    title.textContent = 'DEPLOY: постройка';
+    poolEl.appendChild(title);
+
+    const resLine = document.createElement('div');
+    resLine.style.cssText = 'font-size:.72rem;color:var(--dim);margin-bottom:6px;';
+    resLine.textContent = `💰${credits}  cash:${cash}`;
+    poolEl.appendChild(resLine);
+
+    if (bTypes.length > 0) {
+      bTypes.forEach(bt => {
+        const cost = _DEPLOY_COSTS[bt] || 0;
+        const canAfford = credits >= cost;
+        const isSelected = _deploySelectedBuilding === bt;
+        const btn = document.createElement('button');
+        btn.className = `abtn ${isSelected ? 'bg' : 'bp'}`;
+        btn.style.cssText = 'width:100%;margin-bottom:4px;';
+        btn.disabled = !canAfford;
+        btn.title = !canAfford ? 'Не хватает кредитов' : '';
+        btn.textContent = `${_DEPLOY_ICONS[bt] || '🏠'} ${bt} (${cost}💰) ×${poolCounts[bt]}`;
+        btn.onclick = () => _deploySelectBuilding(bt);
+        poolEl.appendChild(btn);
+      });
+    } else {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'color:var(--dim);font-size:.75rem;';
+      empty.textContent = 'Резерв построек пуст';
+      poolEl.appendChild(empty);
+    }
+
+    if (_deploySelectedBuilding) {
+      const hint = document.createElement('div');
+      hint.style.cssText = 'font-size:.68rem;color:var(--gold);margin:6px 0;';
+      hint.textContent = `✓ Выбрано: ${_DEPLOY_ICONS[_deploySelectedBuilding] || ''} ${_deploySelectedBuilding} — кликните планету на карте`;
+      poolEl.appendChild(hint);
+
+      const cashLabel = document.createElement('label');
+      cashLabel.style.cssText = 'font-size:.75rem;display:flex;align-items:center;gap:6px;cursor:pointer;margin-bottom:6px;';
+      cashLabel.innerHTML = `<input type="checkbox" id="deploy-use-cash-panel"> Cash токен (−2💰)`;
+      poolEl.appendChild(cashLabel);
+    }
+
+    const skipBtn = document.createElement('button');
+    skipBtn.className = 'abtn bw';
+    skipBtn.style.cssText = 'width:100%;margin-top:8px;';
+    skipBtn.textContent = 'Пропустить постройку →';
+    skipBtn.onclick = () => _deploySkipBuilding();
+    poolEl.appendChild(skipBtn);
 
     return;
   }
@@ -1162,7 +1348,7 @@ async function undoLastOrderViaAPI() {
     showMsg('Нет приказов', 'В этом ходу приказ не выставлялся');
     return;
   }
-  if (isExecution && !G.ui?.order_played_this_turn) {
+  if (isExecution && !G.ui?.order_played_this_turn && !G.pending_deploy) {
     showMsg('Нет действий', 'В этом ходу приказ не разыгрывался');
     return;
   }
@@ -1170,6 +1356,10 @@ async function undoLastOrderViaAPI() {
   try {
     const res = await apiCall('/api/game/undo', { player_id: G.curP });
     if (res.success) {
+      closeMsg();  // закрыть deploy modal если открыт
+      _deployBasket = [];
+      _deploySelectedUnit = null;
+      _deploySelectedBuilding = null;
       applyState(res.state);
       _selectedOrderForPlacement = null;
       _selectedOrderForPlay = null;
@@ -1307,6 +1497,9 @@ async function playOrderViaAPI(orderId) {
       // Check if dominate produced a joker choice
       if (res.state?.pending_joker_choice) {
         _showJokerChoiceUI(res.state.pending_joker_choice);
+      } else if (res.state?.pending_deploy) {
+        setPhase('execution');  // обновит инструкцию, затем показываем UI
+        showDeployUI();
       } else {
         setPhase('execution');
       }
@@ -1567,4 +1760,340 @@ async function startStage2() {
 }
 
 // Init вызывается из game_engine.html после загрузки всех скриптов
+
+
+// ══════════════════════════════════════════════
+//  DEPLOY UI
+// ══════════════════════════════════════════════
+
+let _deployBasket = [];
+let _deploySelectedUnit = null;
+let _deploySelectedBuilding = null;
+
+const _DEPLOY_UT = {
+  infantry:'ground', marines:'ground', mechanized:'ground', elite:'ground',
+  fighter:'space', destroyer:'space',
+};
+const _DEPLOY_COSTS = { factory: 2, bastion: 2, city: 3 };
+const _DEPLOY_ICONS = { factory: '🏭', bastion: '🏯', city: '🏙' };
+
+function showDeployUI() {
+  const pd = G.pending_deploy;
+  if (!pd) return;
+  const step = pd.step;
+  if      (step === 'buy_units')        _showDeployBuyUnits();
+  else if (step === 'place_units')      _showDeployPlaceUnitsSide();
+  else if (step === 'resolve_overflow') _showDeployResolveOverflow();
+  else if (step === 'buy_building')     _showDeployBuyBuilding();
+}
+
+// ── Step: buy_units ────────────────────────────────────────────
+
+function _showDeployBuyUnits() {
+  _deployBasket = [];
+  _renderDeployBuyUnitsModal();
+}
+
+function _renderDeployBuyUnitsModal() {
+  const pd   = G.pending_deploy;
+  const info = pd.deploy_info || {};
+  const catalog  = info.unit_catalog || [];
+  const capacity = info.capacity;
+  const credits  = info.credits;
+  const forge    = info.forge_tokens;
+  const cash     = info.cash_tokens;
+
+  // Compute basket totals
+  let totalCred = 0, forgeSpent = 0, cashSpent = 0;
+  const bPool = {};
+  for (const item of _deployBasket) {
+    const u = catalog.find(c => c.unit_key === item.unit_key);
+    if (!u) continue;
+    forgeSpent += (u.needs_tier_forge ? 1 : 0) + (u.cost_forge || 0);
+    cashSpent  += item.use_cash ? 1 : 0;
+    totalCred  += u.cost - (item.use_cash ? 2 : 0);
+    bPool[item.unit_key] = (bPool[item.unit_key] || 0) + 1;
+  }
+  totalCred = Math.max(0, totalCred);
+
+  const credLeft  = credits - totalCred;
+  const forgeLeft = forge - forgeSpent;
+  const cashLeft  = cash - cashSpent;
+  const canConfirm = credLeft >= 0 && forgeLeft >= 0 && cashLeft >= 0 && _deployBasket.length <= capacity;
+
+  const catalogHtml = catalog.map(u => {
+    const inBasket  = bPool[u.unit_key] || 0;
+    const remaining = u.pool_available - inBasket;
+    const disabled  = !u.can_buy || remaining <= 0;
+    const icon      = u.unitType === 'ground' ? '⚔' : '🚀';
+    const tNote     = u.needs_tier_forge ? ' <span style="color:#ffb74d">[+1🔨]</span>' : '';
+    const fNote     = u.cost_forge ? ` <span style="color:#ff8a65">+${u.cost_forge}🔨</span>` : '';
+    return `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;
+                  background:rgba(255,255,255,.05);margin-bottom:3px;border-radius:4px;
+                  ${disabled ? 'opacity:.35;' : 'cursor:pointer;'}"
+           ${disabled ? '' : `onclick="_deployAddUnit('${u.unit_key}')"`}>
+        <span>${icon} T${u.tier}</span>
+        <span style="flex:1">${u.name}</span>
+        <span style="color:#4fc3f7">${u.cost}💰${fNote}${tNote}</span>
+        <span style="color:#888;font-size:.8rem">пул:${remaining}</span>
+      </div>`;
+  }).join('');
+
+  const basketHtml = _deployBasket.length
+    ? _deployBasket.map((item, i) => {
+        const u    = catalog.find(c => c.unit_key === item.unit_key);
+        const name = u?.name || item.unit_key;
+        return `
+          <div style="display:flex;align-items:center;gap:6px;padding:4px 8px;
+                      background:rgba(0,200,255,.1);margin-bottom:2px;border-radius:4px;">
+            <span style="flex:1;font-size:.9rem">${name}</span>
+            <label style="font-size:.8rem;display:flex;align-items:center;gap:4px;cursor:pointer;">
+              <input type="checkbox" ${item.use_cash ? 'checked' : ''}
+                     onchange="_deployToggleCash(${i},this.checked)"> cash −2
+            </label>
+            <button class="abtn bw" style="padding:1px 7px;font-size:.7rem"
+                    onclick="_deployRemoveBasket(${i})">✕</button>
+          </div>`;
+      }).join('')
+    : '<div style="color:#555;text-align:center;padding:6px;font-size:.85rem">Корзина пуста</div>';
+
+  const html = `
+    <div style="font-size:.8rem;color:#888;margin-bottom:8px;">
+      Тайл: ${pd.tile_key} | capacity: ${capacity} | 💰${credits} 🔨${forge} cash:${cash}
+    </div>
+    <div style="max-height:190px;overflow-y:auto;margin-bottom:8px;">${catalogHtml}</div>
+    <div style="font-weight:bold;font-size:.85rem;margin-bottom:4px;color:#4fc3f7">
+      Корзина (${_deployBasket.length}/${capacity}):
+    </div>
+    <div style="margin-bottom:8px;">${basketHtml}</div>
+    <div style="font-size:.85rem;margin-bottom:10px;">
+      Итого: <span style="color:${credLeft<0?'#ff6b6b':'#69f0ae'}">${totalCred}💰</span>
+      ${forgeSpent ? `<span style="color:${forgeLeft<0?'#ff6b6b':'#aaa'}"> ${forgeSpent}🔨</span>` : ''}
+      ${cashSpent  ? `<span style="color:${cashLeft<0?'#ff6b6b':'#aaa'}"> ${cashSpent} cash</span>` : ''}
+      &nbsp; Остаток: <span style="color:${credLeft<0?'#ff6b6b':'#aaa'}">${credLeft}💰</span>
+      <span style="color:${forgeLeft<0?'#ff6b6b':'#aaa'}"> ${forgeLeft}🔨</span>
+      <span style="color:${cashLeft<0?'#ff6b6b':'#aaa'}"> ${cashLeft} cash</span>
+    </div>
+    <button class="abtn bp" style="width:100%"
+            ${canConfirm ? '' : 'disabled'}
+            onclick="_deployConfirmBasket()">
+      ${_deployBasket.length ? '✓ Купить юнитов' : '→ Пропустить юнитов'}
+    </button>`;
+
+  showMsg('🏗 Deploy — Покупка юнитов', html);
+}
+
+function _deployAddUnit(unitKey) {
+  _deployBasket.push({ unit_key: unitKey, use_cash: false });
+  _renderDeployBuyUnitsModal();
+}
+function _deployRemoveBasket(idx) {
+  _deployBasket.splice(idx, 1);
+  _renderDeployBuyUnitsModal();
+}
+function _deployToggleCash(idx, val) {
+  if (_deployBasket[idx]) {
+    _deployBasket[idx].use_cash = val;
+    _renderDeployBuyUnitsModal();  // обновить итоги
+  }
+}
+
+async function _deployConfirmBasket() {
+  closeMsg();
+  // Собрать актуальные значения use_cash из чекбоксов (на случай если не успело сработать onchange)
+  try {
+    const res = await apiCall('/api/game/deploy-confirm-basket', {
+      player_id: G.curP,
+      basket:    _deployBasket,
+    });
+    if (res.success) {
+      _deployBasket = [];
+      applyState(res.state);
+      showDeployUI();
+    } else {
+      showMsg('Ошибка', res.error);
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+// ── Step: place_units — левая панель (без модала) ────────────
+
+function _showDeployPlaceUnitsSide() {
+  closeMsg();                // закрыть buy_units модал если открыт
+  _deploySelectedUnit = null;
+  setPhase('execution');     // обновит инструкцию и кнопки (btn-uu, btn-undo-order)
+  // renderSide/renderBoard уже вызваны внутри setPhase
+}
+
+async function _deployUndoPlace() {
+  const pd = G.pending_deploy;
+  if (!pd || !pd.placed?.length) return;
+  try {
+    const res = await apiCall('/api/game/deploy-undo-place', { player_id: G.curP });
+    if (res.success) {
+      _deploySelectedUnit = null;
+      applyState(res.state);
+      // остаёмся в place_units — renderSide покажет обновлённую панель
+    } else {
+      showMsg('Ошибка', res.error);
+    }
+  } catch(e) { showMsg('Ошибка сервера', e.message); }
+}
+
+// ── Step: resolve_overflow ────────────────────────────────────
+
+function _showDeployResolveOverflow() {
+  const pd      = G.pending_deploy;
+  const placed  = pd.placed || [];
+  const info    = pd.deploy_info || {};
+  const catalog = info.unit_catalog || [];
+  const areas   = G.map[pd.tile_key]?.areas || [];
+  const getName = k => catalog.find(c => c.unit_key === k)?.name || k;
+  const UTR = {ground:{0:'infantry',1:'marines',2:'mechanized',3:'elite'},space:{0:'fighter',2:'destroyer'}};
+
+  // compute counts
+  const counts = {};
+  areas.forEach((a, i) => { counts[i] = (a.troops || []).length; });
+  placed.forEach(p => { counts[p.area_idx] = (counts[p.area_idx] || 0) + 1; });
+  const overflows = Object.entries(counts).filter(([i, c]) => c > (areas[+i]?.capacity || 0)).map(([i]) => +i);
+
+  let html = `<div style="color:#ff6b6b;margin-bottom:8px;">⚠ Переполнено: area[${overflows.join('], area[')}]</div>`;
+  for (const aIdx of overflows) {
+    const a   = areas[aIdx];
+    const cap = a?.capacity || 0;
+    const cnt = counts[aIdx];
+    html += `<div style="margin-bottom:10px;"><strong>area[${aIdx}] ${a?.type} (${cnt}/${cap})</strong><br>`;
+
+    // Map troops belonging to current player
+    (a?.troops || []).filter(t => t.player === G.curP).forEach(t => {
+      const uk = UTR[t.unitType]?.[t.tier] || `${t.unitType}T${t.tier}`;
+      html += `<button class="abtn bw" style="margin:2px;"
+                       onclick="_deployRemoveOverflow(${aIdx},'${uk}')">
+                 ✕ ${getName(uk)} <span style="font-size:.75rem;color:#888">(карта)</span>
+               </button>`;
+    });
+    // Placed units in this area
+    placed.filter(p => p.area_idx === aIdx).forEach(p => {
+      html += `<button class="abtn bw" style="margin:2px;"
+                       onclick="_deployRemoveOverflow(${aIdx},'${p.unit_key}')">
+                 ✕ ${getName(p.unit_key)} <span style="font-size:.75rem;color:#888">(новый)</span>
+               </button>`;
+    });
+    html += '</div>';
+  }
+  showMsg('🏗 Deploy — Разрешение переполнения', html);
+}
+
+async function _deployRemoveOverflow(areaIdx, unitKey) {
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/deploy-resolve-overflow', {
+      player_id:        G.curP,
+      remove_area_idx:  areaIdx,
+      remove_unit_key:  unitKey,
+    });
+    if (res.success) {
+      applyState(res.state);
+      showDeployUI();
+    } else {
+      showMsg('Ошибка', res.error);
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+// ── Step: buy_building — левая панель (без модала) ───────────
+
+function _showDeployBuyBuilding() {
+  closeMsg();
+  _deploySelectedBuilding = null;
+  setPhase('execution');  // renderSide/renderBoard вызовутся внутри
+}
+
+function _deploySelectBuilding(btype) {
+  _deploySelectedBuilding = btype;
+  renderSide();
+  renderBoard();
+}
+
+async function _deploySkipBuilding() {
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/deploy-skip-building', { player_id: G.curP });
+    if (res.success) {
+      _deploySelectedBuilding = null;
+      applyState(res.state);
+      addLog(`${G.players[G.curP]?.name}: Deploy завершён`, G.curP);
+      setPhase('execution');
+    } else {
+      showMsg('Ошибка', res.error);
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+// ── Map click handler for deploy ──────────────────────────────
+
+async function deployAreaClick(key, displayIdx) {
+  const pd = G.pending_deploy;
+  if (!pd || pd.tile_key !== key) return;  // только тайл с приказом
+
+  const tile = G.map[key];
+  if (!tile) return;
+  const area    = getAreaByDisplay(tile, displayIdx);
+  const realIdx = tile.areas.indexOf(area);
+  const step    = pd.step;
+
+  if (step === 'place_units') {
+    if (!_deploySelectedUnit) {
+      showMsg('Deploy', 'Сначала выберите юнит в левой панели, затем кликните область.');
+      return;
+    }
+    try {
+      const res = await apiCall('/api/game/deploy-place-unit', {
+        player_id: G.curP,
+        unit_key:  _deploySelectedUnit,
+        area_idx:  realIdx,
+      });
+      if (res.success) {
+        _deploySelectedUnit = null;
+        applyState(res.state);
+        showDeployUI();
+      } else {
+        showMsg('Ошибка', res.error);
+      }
+    } catch(e) { showMsg('Ошибка сервера', e.message); }
+    return;
+  }
+
+  if (step === 'buy_building') {
+    if (!_deploySelectedBuilding) {
+      showMsg('Deploy', 'Сначала выберите здание в левой панели, затем кликните планету.');
+      return;
+    }
+    const useCash = document.getElementById('deploy-use-cash-panel')?.checked || false;
+    try {
+      const res = await apiCall('/api/game/deploy-buy-building', {
+        player_id:     G.curP,
+        building_type: _deploySelectedBuilding,
+        area_idx:      realIdx,
+        use_cash:      useCash,
+      });
+      if (res.success) {
+        const bname = _deploySelectedBuilding;
+        _deploySelectedBuilding = null;
+        applyState(res.state);
+        addLog(`${G.players[G.curP]?.name}: Deploy — ${bname} построена`, G.curP);
+        setPhase('execution');
+      } else {
+        showMsg('Ошибка', res.error);
+      }
+    } catch(e) { showMsg('Ошибка сервера', e.message); }
+  }
+}
 

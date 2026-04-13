@@ -36,6 +36,14 @@ from python_engine.round_end import (
     run_end_of_round,
     init_unit_statuses,
 )
+from python_engine.deploy import (
+    get_deploy_info,
+    validate_basket_for_state,
+    validate_place_unit_for_state,
+    validate_and_remove_overflow,
+    validate_buy_building_for_state,
+    apply_deploy_to_state,
+)
 
 app = FastAPI(title="Stellar Conflict Game Server")
 
@@ -126,6 +134,33 @@ def compute_ui_hints(state: dict) -> dict:
         ui['buttons'] = ['btn-pass']
 
     elif phase == 'execution':
+        # Если идёт выполнение приказа Deploy
+        pd = state.get('pending_deploy')
+        if pd:
+            step = pd.get('step', '')
+            tile_key = pd.get('tile_key', '')
+            step_labels = {
+                'buy_units':        'покупка юнитов',
+                'place_units':      'размещение юнитов',
+                'resolve_overflow': 'разрешение переполнения',
+                'buy_building':     'покупка здания',
+            }
+            ui['instruction'] = (
+                f'<strong>DEPLOY</strong> — тайл [{tile_key}]<br>'
+                f'{cp_name}: {step_labels.get(step, step)}'
+            )
+            # Кнопки зависят от шага
+            if step == 'place_units':
+                ui['buttons'] = ['btn-uu', 'btn-undo-order']
+            else:
+                ui['buttons'] = ['btn-undo-order']
+            ui['deploy_step']        = step
+            ui['deploy_info']        = pd.get('deploy_info', {})
+            ui['deploy_hand']        = pd.get('hand', [])
+            ui['deploy_placed']      = pd.get('placed', [])
+            ui['deploy_removed_map'] = pd.get('removed_from_map', [])
+            return ui
+
         # Вычислить playable_order_ids и blocked_tiles
         available = get_available_orders(state, cur_p)
         ui['playable_order_ids'] = [o['id'] for o in available]
@@ -344,6 +379,39 @@ class DominateJokerRequest(BaseModel):
     """Выбор типа токена для джокера при розыгрыше Dominate"""
     player_id: int
     choice: str  # 'support' | 'discount' | 'forge'
+
+
+class DeployConfirmBasketRequest(BaseModel):
+    """Подтверждение корзины юнитов при Deploy"""
+    player_id: int
+    basket: List[dict]  # [{'unit_key': str, 'use_cash': bool}]
+
+
+class DeployPlaceUnitRequest(BaseModel):
+    """Размещение одного юнита при Deploy"""
+    player_id: int
+    unit_key: str
+    area_idx: int
+
+
+class DeployResolveOverflowRequest(BaseModel):
+    """Убрать юнита из overflow области при Deploy"""
+    player_id: int
+    remove_area_idx: int
+    remove_unit_key: str
+
+
+class DeployBuyBuildingRequest(BaseModel):
+    """Купить и разместить здание при Deploy"""
+    player_id: int
+    building_type: str
+    area_idx: int
+    use_cash: bool = False
+
+
+class DeploySkipRequest(BaseModel):
+    """Пропустить шаг (здание или юниты) при Deploy"""
+    player_id: int
 
 
 # ── Routes ──────────────────────────────────────────────────────────────────
@@ -750,8 +818,10 @@ async def undo_endpoint(request: UndoRequest) -> GameStateResponse:
 
         # Загрузить последний snapshot (самый новый)
         if _load_temp_snapshot(len(snapshots) - 1):
-            # Удалить использованный snapshot
-            Path(snapshots[-1]).unlink()
+            # В фазе execution snapshot — это «точка возврата» хода игрока.
+            # Его НЕ удаляем: повторный undo должен вернуть к тому же состоянию.
+            if _active_game.get('phase') != 'execution':
+                Path(snapshots[-1]).unlink()
             print(f"↩️  Отмена выполнена")
             _save_current_state()
             return GameStateResponse(success=True, state=_prepare_response_state())
@@ -803,8 +873,9 @@ async def pass_turn_endpoint(request: PassTurnRequest) -> GameStateResponse:
             elif phase == 'orders_placed':
                 pass  # Просто переход к next_phase_or_player
 
-            # СОХРАНИТЬ SNAPSHOT перед изменениями
-            _save_temp_snapshot()
+            # Для order-placement сохраняем snapshot ДО изменений (чтобы отменить размещение)
+            if phase == 'order-placement':
+                _save_temp_snapshot()
 
             # Применить логику следующей фазы или игрока
             next_phase_or_player(_active_game)
@@ -819,6 +890,10 @@ async def pass_turn_endpoint(request: PassTurnRequest) -> GameStateResponse:
             elif current_phase == 'orders_placed':
                 print(f"✅ Оба игрока выставили приказы. Фаза: orders_placed")
             elif current_phase == 'execution':
+                # Начало хода в фазе розыгрыша: сбрасываем все старые snapshots
+                # и сохраняем ОДИН snapshot текущего состояния — к нему и будем возвращаться
+                _clear_temp_snapshots()
+                _save_temp_snapshot()
                 print(f"✅ Переход в фазу execution (розыгрыш приказов). Начинаем с игрока {next_player}")
             else:
                 print(f"➜ Ход передан игроку {next_player}")
@@ -867,13 +942,14 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             if request.player_id != current_player:
                 return GameStateResponse(success=False, error="Сейчас не ваш ход")
 
+            # Нельзя играть если не разрешён выбор джокера
+            if _active_game.get('pending_joker_choice'):
+                return GameStateResponse(success=False, error="Сначала разрешите выбор джокера (Dominate)")
+
             # Нельзя играть если уже совершено действие в этом ходу (сброс или розыгрыш)
             played_flag = _active_game.get('execution_order_played', [False, False])
             if played_flag[current_player]:
                 return GameStateResponse(success=False, error="Вы уже совершили действие в этом ходу. Передайте ход.")
-
-            # СОХРАНИТЬ SNAPSHOT перед разыгрышем
-            _save_temp_snapshot()
 
             # Найти приказ до разыгрыша чтобы знать тип и плитку
             played_order = next(
@@ -894,8 +970,9 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             _active_game['orders'] = new_state['orders']
             _active_game['players'] = new_state['players']
 
-            # Отметить что игрок разыграл приказ в этом ходу
-            _active_game['execution_order_played'][request.player_id] = True
+            # Для deploy — execution_order_played ставится только после завершения deploy
+            if order_type != 'deploy':
+                _active_game['execution_order_played'][request.player_id] = True
 
             # Добавить в лог
             if 'log' not in _active_game:
@@ -903,7 +980,23 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             _active_game['log'].append({'message': message, 'player_id': request.player_id})
 
             # Выполнить эффект приказа
-            if order_type == 'dominate' and order_tile:
+            if order_type == 'deploy' and order_tile:
+                info = get_deploy_info(_active_game, request.player_id, order_tile)
+                _active_game['pending_deploy'] = {
+                    'player_id':        request.player_id,
+                    'tile_key':         order_tile,
+                    'step':             'buy_units' if info['has_factory'] else 'buy_building',
+                    'has_factory':      info['has_factory'],
+                    'deploy_info':      info,
+                    'basket':           [],
+                    'unit_costs':       {'credits': 0, 'forge': 0, 'cash': 0},
+                    'hand':             [],
+                    'placed':           [],
+                    'removed_from_map': [],
+                }
+                print(f"🏗 Deploy на тайле {order_tile}, шаг: {_active_game['pending_deploy']['step']}")
+
+            elif order_type == 'dominate' and order_tile:
                 from python_engine.dominate import dominate_order
                 dom_success, dom_msg, dom_state = dominate_order(_active_game, request.player_id, order_tile)
                 if dom_success and dom_state:
@@ -939,6 +1032,10 @@ async def discard_order_endpoint(request: CancelOrderRequest) -> GameStateRespon
             current_player = _active_game.get('curP', 0)
             if request.player_id != current_player:
                 return GameStateResponse(success=False, error="Сейчас не ваш ход")
+
+            # Нельзя сбрасывать если не разрешён выбор джокера
+            if _active_game.get('pending_joker_choice'):
+                return GameStateResponse(success=False, error="Сначала разрешите выбор джокера (Dominate)")
 
             # Нельзя сбрасывать если уже совершено действие в этом ходу
             played_flag = _active_game.get('execution_order_played', [False, False])
@@ -991,9 +1088,6 @@ async def dominate_joker_endpoint(request: DominateJokerRequest) -> GameStateRes
             # Упрощение: все джокеры одного типа
             joker_choices = [request.choice] * joker_count
 
-            # Сохранить snapshot перед разрешением
-            _save_temp_snapshot()
-
             success, message, new_state = dominate_resolve_joker(
                 _active_game, request.player_id, joker_choices
             )
@@ -1030,6 +1124,10 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
 
             current_player = _active_game.get('curP', 0)
 
+            # Блокировать передачу хода если идёт deploy
+            if _active_game.get('pending_deploy'):
+                return GameStateResponse(success=False, error="Сначала завершите приказ Deploy")
+
             # Проверить: если у игрока есть разыгрываемые приказы — обязан сыграть
             playable = get_available_orders(_active_game, current_player)
             played_flag = _active_game.get('execution_order_played', [False, False])
@@ -1039,15 +1137,15 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                     error="Вы должны разыграть доступный приказ перед передачей хода"
                 )
 
-            # СОХРАНИТЬ SNAPSHOT перед изменениями
-            _save_temp_snapshot()
-
             # Определить следующий ход
             next_info = determine_next_player_order_play(_active_game)
 
             if next_info.get('next_player') is not None:
                 _active_game['curP'] = next_info['next_player']
                 _active_game['execution_order_played'][next_info['next_player']] = False
+                # Начало хода нового игрока: сбросить старые snapshots, сохранить новый checkpoint
+                _clear_temp_snapshots()
+                _save_temp_snapshot()
                 print(f"➜ {next_info['message']}")
             else:
                 # Считаем сброшенные приказы ДО очистки (нужно для draw_event_cards)
@@ -1199,6 +1297,241 @@ async def next_round_endpoint(request: PassTurnRequest) -> GameStateResponse:
             import traceback
             print(f"❌ Ошибка при переходе к следующему раунду: {e}")
             traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+# ── DEPLOY ENDPOINTS ──────────────────────────────────────────────────────────
+
+def _get_pending_deploy(player_id: int):
+    """Вернуть pending_deploy если он активен и принадлежит игроку."""
+    pd = _active_game.get('pending_deploy')
+    if not pd:
+        return None, "Нет активного приказа Deploy"
+    if pd.get('player_id') != player_id:
+        return None, "Это не ваш приказ Deploy"
+    return pd, None
+
+
+def _finish_deploy(player_id: int, building=None):
+    """Применить deploy к state и очистить pending_deploy."""
+    pd = _active_game['pending_deploy']
+    apply_deploy_to_state(
+        _active_game,
+        player_id,
+        pd['tile_key'],
+        pd['placed'],
+        pd['unit_costs'],
+        building=building,
+        removed_from_map=pd.get('removed_from_map'),
+    )
+    del _active_game['pending_deploy']
+    _active_game['execution_order_played'][player_id] = True
+
+
+@app.post('/api/game/deploy-confirm-basket')
+async def deploy_confirm_basket_endpoint(request: DeployConfirmBasketRequest) -> GameStateResponse:
+    """Подтвердить корзину юнитов для покупки."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pd, err = _get_pending_deploy(request.player_id)
+            if err:
+                return GameStateResponse(success=False, error=err)
+            if pd['step'] != 'buy_units':
+                return GameStateResponse(success=False, error=f"Шаг buy_units недоступен (текущий: {pd['step']})")
+
+            success, errors, costs = validate_basket_for_state(
+                _active_game, request.player_id, pd['tile_key'], request.basket
+            )
+            if not success:
+                return GameStateResponse(success=False, error='; '.join(errors))
+
+            hand = [item['unit_key'] for item in request.basket]
+            pd['basket']     = request.basket
+            pd['unit_costs'] = costs
+            pd['hand']       = hand
+            # Если корзина пуста — сразу к зданию
+            pd['step']       = 'place_units' if hand else 'buy_building'
+
+            print(f"✅ Deploy basket confirmed: {hand}, costs={costs}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/deploy-place-unit')
+async def deploy_place_unit_endpoint(request: DeployPlaceUnitRequest) -> GameStateResponse:
+    """Разместить одного купленного юнита в области тайла."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pd, err = _get_pending_deploy(request.player_id)
+            if err:
+                return GameStateResponse(success=False, error=err)
+            if pd['step'] != 'place_units':
+                return GameStateResponse(success=False, error=f"Шаг place_units недоступен (текущий: {pd['step']})")
+
+            success, error, overflow = validate_place_unit_for_state(
+                _active_game, request.player_id, pd['tile_key'],
+                pd['hand'], pd['placed'], request.unit_key, request.area_idx
+            )
+            if not success:
+                return GameStateResponse(success=False, error=error)
+
+            pd['placed'].append({'unit_key': request.unit_key, 'area_idx': request.area_idx})
+
+            # Вычислить остаток в руке
+            hand_remaining = list(pd['hand'])
+            for p in pd['placed']:
+                if p['unit_key'] in hand_remaining:
+                    hand_remaining.remove(p['unit_key'])
+
+            if hand_remaining:
+                pd['step'] = 'place_units'  # ещё есть что размещать
+            elif overflow:
+                pd['step'] = 'resolve_overflow'
+            else:
+                pd['step'] = 'buy_building'
+
+            print(f"📍 Deploy placed {request.unit_key} -> area {request.area_idx}, overflow={overflow}, next={pd['step']}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/deploy-resolve-overflow')
+async def deploy_resolve_overflow_endpoint(request: DeployResolveOverflowRequest) -> GameStateResponse:
+    """Убрать юнита из переполненной области."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pd, err = _get_pending_deploy(request.player_id)
+            if err:
+                return GameStateResponse(success=False, error=err)
+            if pd['step'] != 'resolve_overflow':
+                return GameStateResponse(success=False, error=f"Шаг resolve_overflow недоступен (текущий: {pd['step']})")
+
+            success, error, new_placed, removed_from_map, remaining_overflow = validate_and_remove_overflow(
+                _active_game, request.player_id, pd['tile_key'],
+                pd['placed'], request.remove_area_idx, request.remove_unit_key
+            )
+            if not success:
+                return GameStateResponse(success=False, error=error)
+
+            pd['placed'] = new_placed
+            if removed_from_map:
+                pd['removed_from_map'].append({
+                    'unit_key': request.remove_unit_key,
+                    'area_idx': request.remove_area_idx,
+                })
+
+            pd['step'] = 'resolve_overflow' if remaining_overflow else 'buy_building'
+
+            src = 'с карты' if removed_from_map else 'из размещённых'
+            print(f"↩ Deploy removed {request.remove_unit_key} from area {request.remove_area_idx} ({src}), next={pd['step']}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/deploy-buy-building')
+async def deploy_buy_building_endpoint(request: DeployBuyBuildingRequest) -> GameStateResponse:
+    """Купить и разместить здание, завершить Deploy."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pd, err = _get_pending_deploy(request.player_id)
+            if err:
+                return GameStateResponse(success=False, error=err)
+            if pd['step'] != 'buy_building':
+                return GameStateResponse(success=False, error=f"Шаг buy_building недоступен (текущий: {pd['step']})")
+
+            success, errors, final_cost = validate_buy_building_for_state(
+                _active_game, request.player_id, pd['tile_key'],
+                request.building_type, request.area_idx, request.use_cash
+            )
+            if not success:
+                return GameStateResponse(success=False, error='; '.join(errors))
+
+            building = {
+                'type':       request.building_type,
+                'area_idx':   request.area_idx,
+                'final_cost': final_cost,
+                'use_cash':   request.use_cash,
+            }
+            _finish_deploy(request.player_id, building=building)
+
+            print(f"🏗 Deploy finished: {request.building_type} placed in area {request.area_idx}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/deploy-undo-place')
+async def deploy_undo_place_endpoint(request: DeploySkipRequest) -> GameStateResponse:
+    """Вернуть последнего размещённого юнита в руку (во время deploy place_units)."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pd, err = _get_pending_deploy(request.player_id)
+            if err:
+                return GameStateResponse(success=False, error=err)
+            if pd['step'] not in ('place_units', 'resolve_overflow'):
+                return GameStateResponse(success=False, error="Нет размещённых юнитов для отмены")
+            if not pd['placed']:
+                return GameStateResponse(success=False, error="Нет размещённых юнитов для отмены")
+
+            pd['placed'].pop()
+
+            # Пересчитать шаг
+            hand_remaining = list(pd['hand'])
+            for p in pd['placed']:
+                if p['unit_key'] in hand_remaining:
+                    hand_remaining.remove(p['unit_key'])
+            # После отмены всегда возвращаемся в place_units
+            pd['step'] = 'place_units'
+
+            print(f"↩ Deploy undo place: осталось разместить {len(hand_remaining)}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/deploy-skip-building')
+async def deploy_skip_building_endpoint(request: DeploySkipRequest) -> GameStateResponse:
+    """Пропустить покупку здания и завершить Deploy."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pd, err = _get_pending_deploy(request.player_id)
+            if err:
+                return GameStateResponse(success=False, error=err)
+            if pd['step'] != 'buy_building':
+                return GameStateResponse(success=False, error=f"Шаг buy_building недоступен (текущий: {pd['step']})")
+
+            _finish_deploy(request.player_id, building=None)
+
+            print(f"🏗 Deploy finished (no building)")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
             return GameStateResponse(success=False, error=str(e))
 
 
