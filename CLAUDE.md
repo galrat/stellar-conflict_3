@@ -1,269 +1,74 @@
-# 🎮 Stellar Conflict — Архитектура проекта
+# Stellar Conflict
 
-## Обзор
+Пошаговая тактическая стратегия 2 игрока (Forbidden Stars). Hotseat. Python сервер + JS тонкий клиент.
 
-**Stellar Conflict** — пошаговая тактическая стратегия для двух игроков на основе Forbidden Stars.
+## Архитектура
 
-### Текущий статус
-- ✅ **stage_map_building** (карта): размещение систем, войск, построек, варп-штормов — **РАБОТАЕТ** (одноразовая)
-- ✅ **stage_orders_placement** (расстановка приказов): 4 приказа каждый игрок — **РАБОТАЕТ** (каждый раунд)
-- 🟡 **stage_orders_play** (розыгрыш приказов): execution + end-round — **В РАЗРАБОТКЕ** (каждый раунд)
-  - Розыгрыш/сброс приказов: ✅ работает
-  - Цикл раундов (end-round → order-placement): ✅ работает
-  - Реализация эффектов приказов: 🟡 пока заглушки
-- 🟡 **Реализация эффектов приказов**
-  - dominate, deploy, strategize, advance
-- 🟡 **Реализация особенностей фракций**
+**JS — только UI.** Рисует, принимает клики, вызывает API, вызывает applyState(). Никакой игровой логики.
+**Python — всё остальное.** Логика, валидация, state, snapshots.
 
----
+Поток: JS клик → apiCall() → Python обрабатывает → возвращает state → applyState() → render()
 
-## Архитектура: Python + JavaScript
+## Файлы — что трогать при каких задачах
 
-### 🎨 JavaScript (game.js + styles.css + game_engine.html) — только UI
+### JS (только UI)
+- `game_render_board.js` — отрисовка доски и тайлов
+- `game_render_side.js` — боковая панель (фазы, юниты, здания)
+- `game_render_header.js` — шапка (ресурсы, раунд)
+- `game_orders.js` — обработка кликов по приказам
+- `game_deploy.js` — UI фазы deploy
+- `game_events.js` — UI карт событий
+- `game_advance.js` — UI фазы advance
+- `game_save.js` — сохранение/загрузка через API
+- `game_api.js` — apiCall(), единая точка fetch
+- `game_constants.js` — константы (FACTIONS, CELL, RMAP)
+- `game_utils.js` — вспомогательные функции
+- `game_ui.js` — модалки, лог, showMsg, showHP
+- `tiles.js` — каталог тайлов
+- `stage1.js` — фаза построения карты (одноразовая)
+- `styles.css` — все стили
 
-**Что делает:**
-- Рендеринг доски, боковых панелей, кнопок
-- Принимает клики пользователя
-- Отправляет команды на сервер через REST API
-- Отображает state из Python
+### Python
+- `game_server.py` — FastAPI endpoints, compute_ui_hints
+- `game_state.py` — игровой движок, полный state
+- `python_engine/orders_placement.py` — логика расстановки приказов
+- `python_engine/order_play.py` — логика розыгрыша приказов
+- `faction_base.py` — базовые классы фракций
+- `faction_defs/` — данные фракций
+- `game_serializer.py` — сериализация state
+- `tiles.py` — каталог тайлов (Python)
 
-**Не делает:**
-- ❌ Не проверяет валидность ходов
-- ❌ Не хранит логику игры
-- ❌ Не обновляет счетчики
-- ❌ Не управляет приказами
-
-### 🐍 Python (game_server.py + game_state.py) — всё остальное
-
-**Что делает:**
-- ✅ Хранит глобальное состояние игры (`_active_game`)
-- ✅ Обрабатывает все действия игроков (размещение приказов, передача хода и т.д.)
-- ✅ Валидирует ходы
-- ✅ Управляет snapshots для отмены
-- ✅ Отправляет обновленный state в JS
-
-**Endpoints (Stage 2):**
-```
-POST /api/game/init                    — инициализация Stage 2
-GET  /api/game/state                   — получить текущий state
-GET  /api/game/available-tiles/{id}    — получить доступные плитки для игрока
-POST /api/game/place-order             — разместить приказ
-POST /api/game/cancel-order            — отмена приказа (заглушка)
-POST /api/game/pass-turn               — передать ход
-POST /api/game/undo                    — отмена последнего действия
-POST /api/game/clear-temp              — очистить все snapshots
-```
-
----
-
-## State — единый источник истины
-
-### Что такое State
-
-State (G) — словарь со всем состоянием игры. Хранится на Python сервере.
-
-Ключевые поля:
-```javascript
-{
-  phase: "order-placement",      // текущая фаза
-  curP: 0,                        // чей ход (0 или 1)
-  firstPlayer: 0,                 // кто ходит первым
-  ordersPlaced: [0, 4],          // сколько приказов выставлено
-  
-  players: [
-    { 
-      name, faction, pool, hand_orders, 
-      hand_order_upgrades: [{ name, order_upgrade_status, ... }],  // order_upgrade_status: "active" или "used"
-      ... 
-    },
-    { ... }
-  ],
-  
-  map: {
-    "0,0": { tileDefId, rotation, side, areas, ... },
-    ...
-  },
-  
-  orders: [
-    { id, type, owner, tile, position, revealed },
-    ...
-  ],
-  
-  dropped_orders: [
-    { id, type, owner },
-    ...
-  ],
-  
-  ordersPlaced: [orders_p0, orders_p1],  // количество размещенных приказов
-  
-  order_placed_this_turn: [p0_placed, p1_placed],  // флаг для проверки размещения приказа в этом ходу
-  
-  warpStorms: [
-    { tileKey, side, owner, status },  // status: "active" или "used"
-    ...
-  ],
-  
-  log: [{ message, player_id }]
-}
-```
-
-### Как он обновляется
-
-1. **JS отправляет команду** → `POST /api/game/place-order`
-2. **Python обрабатывает**:
-   - Сохраняет snapshot (для undo)
-   - Проверяет валидность
-   - Обновляет `_active_game`
-3. **Python отправляет обновленный state** → JSON ответ
-4. **JS загружает state** → `applyState(newState)`
-5. **JS перерисовывает** → `renderBoard(), renderSide()`
-
-### Snapshot система (для отмены)
-
-Каждое действие сохраняется в файл `state_temp_N.json`:
-```
-C:\Users\[User]\Downloads\Stellar_Conflict_Temp\
-  state_temp_0.json
-  state_temp_1.json
-  ... (максимум 10)
-```
-
-Логика:
-- **Перед** любым изменением state сохраняется snapshot
-- Максимум 10 файлов; при достижении лимита удаляется самый старый
-- При undo: Python загружает последний snapshot и восстанавливает state
-- Используемый snapshot удаляется
-
----
-
-## Поток данных
-
-```
-┌──────────────────────────────────────────┐
-│ GAME_ENGINE.HTML (рендеринг + UI)        │
-│ → apiCall() отправляет команду           │
-└──────────────┬───────────────────────────┘
-               │ POST /api/game/place-order
-               ▼
-┌──────────────────────────────────────────┐
-│ GAME_SERVER.PY (логика игры)             │
-│ → _active_game хранит state              │
-│ → snapshots для отмены                   │
-│ → возвращает обновленный state           │
-└──────────────┬───────────────────────────┘
-               │ { success: true, state }
-               ▼
-┌──────────────────────────────────────────┐
-│ GAME_ENGINE.HTML                         │
-│ → applyState() обновляет G               │
-│ → renderBoard() перерисовывает           │
-└──────────────────────────────────────────┘
-```
-
----
-
-## Ключевые компоненты
-
-### JavaScript (game_engine.html)
-- `apiCall(endpoint, body)` — отправляет запрос
-- `applyState(newState)` — загружает state из Python
-- `placeOrderViaAPI(tileKey)` — размещает приказ
-- `undoLastOrderViaAPI()` — отменяет приказ
-- `passOrderTurnViaAPI()` — передает ход
-- `renderBoard()`, `renderSide()` — отображение
-
-### Python (game_server.py)
-- `init_game()` — инициализирует Stage 2
-- `place_order_endpoint()` — обрабатывает приказ (использует orders_placement.py)
-- `undo_endpoint()` — восстанавливает snapshot
-- `pass_turn_endpoint()` — передает ход (использует orders_placement.py)
-- `get_available_tiles_endpoint()` — возвращает доступные плитки
-- `_save_temp_snapshot()` — сохраняет state (макс 10 файлов)
-- `_load_temp_snapshot()` — загружает state
-
-### Python (python_engine/orders_placement.py)
-- `get_available_tiles()` — получить дружественные и соседние плитки
-- `validate_order_placement()` — валидировать размещение приказа
-- `place_order_impl()` — реализовать размещение приказа
-- `check_orders_complete()` — проверить все ли 8 приказов разместены
-- `next_phase_or_player()` — переход на следующего игрока или фазу
-
----
+### НЕ читать без явного запроса
+- `factions_data.json` (74 КБ)
+- `current_state.txt` (41 КБ)
+- `state_example.txt`
+- `game.js` (устарел, не подключён)
+- `PHASES.md`, `instructions.txt`, `recommendations.txt`
+- `stage1.js`
+- Используй game_constants.js исключительно для инициализации графического интерфейса и начальной структуры объекта G. Все игровые правила, лимиты войск и характеристики юнитов игнорируй — их нужно брать динамически из Python-файлов фракций через серверные запросы
 
 ## Запуск
 
-**Terminal 1** (HTTP сервер):
-```bash
-python -m http.server 3000
+```
+Terminal 1: python -m http.server 3000
+Terminal 2: uvicorn game_server:app --reload --port 8000
+Browser:    http://localhost:3000/game_engine.html
 ```
 
-**Terminal 2** (API сервер):
-```bash
-uvicorn game_server:app --reload --port 8000
-```
+## Статус фаз
 
-**Browser:**
-```
-http://localhost:3000/game_engine.html
-```
+- ✅ stage_map_building — размещение карты, войск, построек, варп-штормов
+- ✅ stage_orders_placement — расстановка 4 приказов каждым игроком
+- 🟡 stage_orders_play — розыгрыш/сброс работает, эффекты приказов в разработке
+- ✅ dominate, 
+- ✅ deploy, 
+- ❌ strategize, 
+- ❌ advance — заглушки
+- ❌ Особенности фракций
 
----
+## Правила работы
 
-## Файлы
-
-- `game_engine.html` — HTML-разметка (тонкий клиент, ~150 строк)
-- `styles.css` — все стили (~250 строк)
-- `game.js` — shared код + Stage 2 логика + рендеринг (~1350 строк)
-- `stage1.js` — Stage 1: setup, tile/troop/warp placement (~730 строк, не нужен для Stage 2+)
-- `game_server.py` — REST API сервер, обработка ходов, compute_ui_hints
-- `game_state.py` — полный игровой движок на Python
-- `python_engine/order_play.py` — логика розыгрыша приказов
-- `python_engine/orders_placement.py` — логика размещения приказов
-- `tiles.js`, `tiles.py` — каталог плиток
-- `faction_defs/` — описание фракций
-
----
-
-## Важно запомнить
-
-### Единственный источник истины — Python
-
-Все игровое состояние хранится в `_active_game` на Python сервере.
-
-JS — это только "тонкий клиент" который:
-1. Отправляет клики пользователя
-2. Получает обновленный state
-3. Отображает state на экране
-
-### Отмена работает через файлы
-
-Не нужно синхронизировать state между JS и Python:
-1. JS отправляет команду
-2. Python сохраняет snapshot ПЕРЕД изменениями
-3. Если нужно отменить — Python загружает snapshot
-4. JS получает восстановленный state
-
-### Масштабируемость
-
-Для добавления новой команды:
-1. Добавить endpoint в `game_server.py`
-2. Сохранить snapshot
-3. Обновить `_active_game`
-4. Вернуть новый state
-5. В JS: `apiCall()` → `applyState()` → `renderBoard()`
-
----
-
-## Сделано ✅
-
-- Stage 1: полное размещение карты
-- Snapshots и отмена
-- API для приказов
-- Передача хода
-- Фракционные цвета
-
-## Дальше 🟡
-
-- Открытие приказов (reveal)
-- Розыгрыш приказов (execute)
-- Боевая система
+- Be concise. Do not explain what you are about to do without request — just do it
+- Read only files listed for the specific task. Do not explore the project broadly.
+- Game logic always goes in Python. JS only renders and calls API.
+- Snapshots save to `C:\Users\[User]\Downloads\Stellar_Conflict_Temp\` (max 10 files).

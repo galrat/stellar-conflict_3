@@ -1,317 +1,5 @@
 'use strict';
 // ══════════════════════════════════════════════
-//  RENDER BOARD
-// ══════════════════════════════════════════════
-function renderBoard() {
-  const board = document.getElementById('map-board');
-  board.innerHTML = '';
-  const tiles = Object.values(G.map);
-
-  const cols = tiles.map(t=>t.col);
-  const rows = tiles.map(t=>t.row);
-  const minC=(cols.length?Math.min(...cols):0)-1;
-  const minR=(rows.length?Math.min(...rows):0)-1;
-  const maxC=(cols.length?Math.max(...cols):2)+1;
-  const maxR=(rows.length?Math.max(...rows):1)+1;
-  const W=(maxC-minC+1)*CELL, H=(maxR-minR+1)*CELL;
-  board.style.width=W+'px'; board.style.height=H+'px';
-
-  const px = (col,row) => ({left:(col-minC)*CELL, top:(row-minR)*CELL});
-
-  // Drop cells (tile-placement phase)
-  if (G.phase==='tile-placement' && G.selHandIdx!==null) {
-    getValidDrops().forEach(({col,row}) => {
-      const p=px(col,row);
-      const el=document.createElement('div');
-      el.className='drop-cell';
-      el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`;
-      el.innerHTML='<span style="font-size:1.4rem;color:rgba(0,200,255,.5);font-family:Orbitron">+</span>';
-      el.onclick=()=>dropTile(col,row);
-      board.appendChild(el);
-    });
-  }
-
-  // Placed tiles
-  tiles.forEach(tile => {
-    const p=px(tile.col,tile.row);
-    const el=document.createElement('div');
-    el.className='stile';
-    el.classList.add(tile.isHome?(tile.owner===0?'hp1':'hp2'):(tile.owner===0?'np1':'np2'));
-    const side = tile.side || 0;
-    const imgSuffix = side === 0 ? 'a' : 'b';
-    el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`;
-
-    // Rotating background image
-    const bgWrap = document.createElement('div'); bgWrap.className = 'stile-bg';
-    const bgImg  = document.createElement('div'); bgImg.className  = 'stile-bg-img';
-    bgImg.style.backgroundImage = `url('tiles/${tile.tileDefId}_${imgSuffix}.png')`;
-    bgImg.style.transform       = `rotate(${tile.rotation || 0}deg)`;
-    bgWrap.appendChild(bgImg); el.appendChild(bgWrap);
-
-    if (tile.isHome) {
-      const hb=document.createElement('div'); hb.className='hbadge'; hb.textContent='\u{1F3E0}'; el.appendChild(hb);
-    }
-    const cb=document.createElement('div'); cb.className='tcoord';
-    const sideLabel = side===1?' [B]':'';
-    cb.textContent=tile.key+(tile.rotation?` ${tile.rotation}\u00b0`:'')+sideLabel; el.appendChild(cb);
-
-    const inner=document.createElement('div'); inner.className='stilei';
-
-    const rotAreas = getRotatedAreas(tile);
-    rotAreas.forEach((area, displayIdx) => {
-      const realIdx = tile.areas.indexOf(area);
-      const ae=document.createElement('div');
-      ae.className=`tarea a${area.type}`;
-
-      const cap = area.capacity;
-      const used = area.troops.length;
-      const lbl=document.createElement('div'); lbl.className='atlbl';
-      if (area.type==='planet') {
-        const capMark = '\u25cf'.repeat(cap);
-        const incMark = area.income   > 0 ? ` <span class="inc-mark">\u25cf${area.income}</span>`   : '';
-        const valMark = area.valuable > 0 ? ` <span class="val-mark">\u25c6${area.valuable}</span>` : '';
-        let lblHTML = capMark + incMark + valMark;
-        if (area.support)  lblHTML += ' <span class="tok-sup">\u2295</span>';
-        if (area.discount) lblHTML += ' <span class="tok-dis">\u2296</span>';
-        if (area.forge)    lblHTML += ' <span class="tok-frg">\u2692</span>';
-        if (area.joker)    lblHTML += ' <span class="tok-jok">\u2605</span>';
-        lbl.innerHTML = lblHTML;
-      } else {
-        lbl.textContent = '\u2736';
-      }
-      ae.appendChild(lbl);
-      const capEl=document.createElement('div'); capEl.className='acap';
-      const pendingCount = G.pending_deploy?.tile_key === tile.key
-        ? (G.pending_deploy.placed||[]).filter(p => p.area_idx === realIdx).length : 0;
-      const effectiveUsed = used + pendingCount;
-      capEl.textContent=`${effectiveUsed}/${cap}`;
-      if (effectiveUsed>=cap) capEl.style.color='var(--accent2)';
-      ae.appendChild(capEl);
-
-      // Structures
-      (area.structures||[]).forEach(s => {
-        const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
-        const tok=document.createElement('div');
-        tok.className='astruc';
-        const sFacColor = FACTIONS.find(f=>f.id===G.players[s.player].faction)?.color || (s.player===0?'#00c8ff':'#ff4d6d');
-        tok.style.background = hexAlpha(sFacColor, 0.5);
-        tok.style.borderColor = sFacColor;
-        tok.style.color = getTextColor(sFacColor);
-        tok.textContent=info.icon; tok.title=info.label;
-        ae.appendChild(tok);
-      });
-
-      // Troops
-      area.troops.forEach(u => {
-        const tok=document.createElement('div');
-        const uFac = FACTIONS.find(f=>f.id===G.players[u.player].faction);
-        const uColor = uFac?.color || (u.player===0?'#00c8ff':'#ff4d6d');
-        tok.className=`atroop ${u.unitType}`;
-        tok.style.background = hexAlpha(uColor, 0.15);
-        tok.style.borderColor = uColor;
-        tok.style.color = uColor;
-        tok.textContent=`T${u.tier??0}`;
-        tok.title=getUnitName(G.players[u.player].faction, u.unitType, u.tier??0);
-        ae.appendChild(tok);
-      });
-
-      // Pending deploy units (not yet committed to tile.areas)
-      {
-        const pd = G.pending_deploy;
-        if (pd && tile.key === pd.tile_key && pd.placed) {
-          const cp = G.players[G.curP];
-          const facColor = FACTIONS.find(f=>f.id===cp.faction)?.color || (G.curP===0?'#00c8ff':'#ff4d6d');
-          const catalog = pd.deploy_info?.unit_catalog || [];
-          pd.placed.filter(p => p.area_idx === realIdx).forEach(p => {
-            const uInfo = catalog.find(c => c.unit_key === p.unit_key);
-            const tok = document.createElement('div');
-            const uType = _DEPLOY_UT[p.unit_key] || 'ground';
-            tok.className = `atroop ${uType}`;
-            tok.style.background = hexAlpha(facColor, 0.25);
-            tok.style.borderColor = facColor;
-            tok.style.color = facColor;
-            tok.style.opacity = '0.7';
-            tok.style.outline = '2px dashed ' + facColor;
-            tok.textContent = `T${uInfo?.tier ?? 0}`;
-            tok.title = `${uInfo?.name || p.unit_key} (ожидает)`;
-            ae.appendChild(tok);
-          });
-        }
-      }
-
-      // Ownership highlight
-      const h1=area.troops.some(t=>t.player===0), h2=area.troops.some(t=>t.player===1);
-      if (h1&&h2) ae.classList.add('contested');
-      else if (h1) ae.classList.add('h1');
-      else if (h2) ae.classList.add('h2');
-
-      // Подсветка допустимых зон при размещении войск
-      if (G.phase === 'troop-on-tile' && tile.key === G.lastKey) {
-        const cp2 = G.players[G.curP];
-        if (G.selUnitIdx !== null) {
-          const u = cp2.pool[G.selUnitIdx];
-          if (u) ae.classList.add(isCompatible(u, area.type) && area.troops.length < area.capacity ? 'aok' : 'ano');
-        } else if (G.selStructIdx !== null) {
-          ae.classList.add(area.type === 'planet' && (!area.structures || area.structures.length === 0) ? 'aok' : 'ano');
-        } else if (tile.needsObjective && !tile.objectiveMarker) {
-          // Подсветить области для метки цели
-          const eligIdxs = getObjectiveEligibleDisplayIdxs(tile);
-          if (eligIdxs.includes(displayIdx) && area.type === 'planet') ae.classList.add('aok-obj');
-        }
-      }
-
-      // Deploy highlighting
-      {
-        const pd = G.pending_deploy;
-        if (pd && tile.key === pd.tile_key) {
-          const info = pd.deploy_info || {};
-          const availIdxs = new Set((info.available_areas || []).map(a => a.idx));
-          if (pd.step === 'place_units' && _deploySelectedUnit) {
-            const _UT = {infantry:'ground',marines:'ground',mechanized:'ground',elite:'ground',fighter:'space',destroyer:'space'};
-            const uType = _UT[_deploySelectedUnit];
-            const expected = uType === 'ground' ? 'planet' : 'space';
-            ae.classList.add(availIdxs.has(realIdx) && area.type === expected ? 'aok' : 'ano');
-          } else if (pd.step === 'buy_building' && _deploySelectedBuilding) {
-            const planets = new Set(info.available_planets || []);
-            ae.classList.add(planets.has(realIdx) ? 'aok' : 'ano');
-          } else if (pd.step === 'resolve_overflow') {
-            // Highlight overflow areas in red
-            const cnt = (area.troops || []).length + (pd.placed || []).filter(p => p.area_idx === realIdx).length;
-            if (cnt > area.capacity) ae.classList.add('ano');
-          }
-        }
-      }
-
-      // Метка цели
-      if (tile.objectiveMarker && tile.objectiveMarker.realAreaIdx === realIdx) {
-        const opPlayer = tile.objectiveMarker.owner;
-        const opFac = FACTIONS.find(f => f.id === G.players[opPlayer].faction);
-        const opColor = opFac?.color || (opPlayer === 0 ? '#00c8ff' : '#ff4d6d');
-        const opIcon = opFac?.icon || (opPlayer === 0 ? 'P1' : 'P2');
-        const marker = document.createElement('div');
-        marker.className = 'obj-marker';
-        marker.style.background = hexAlpha(opColor, 0.25);
-        marker.style.borderColor = opColor;
-        marker.style.color = opColor;
-        marker.textContent = opIcon;
-        marker.title = `Цель: ${G.players[opPlayer].name}`;
-        ae.appendChild(marker);
-      }
-
-      ae.onclick=()=>areaClick(tile.key, displayIdx);
-      inner.appendChild(ae);
-    });
-
-    el.appendChild(inner);
-
-    // Центральная зона — размещение приказов (клик отправляет на API)
-    const centerZone = document.createElement('div');
-    centerZone.style.cssText = `
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 60px;
-      height: 60px;
-      transform: translate(-50%, -50%);
-      cursor: ${G.phase === 'order-placement' ? 'pointer' : 'default'};
-      z-index: 5;
-      pointer-events: ${G.phase === 'order-placement' ? 'auto' : 'none'};
-    `;
-    if (G.phase === 'order-placement') {
-      centerZone.onclick = (e) => {
-        e.stopPropagation();
-        placeOrderViaAPI(tile.key);
-      };
-    }
-    el.appendChild(centerZone);
-
-    // Отрисовка приказов на тайле (стопка в центре, смещение вверх-вправо)
-    const tilesOrders = G.orders.filter(o => o.tile === tile.key)
-      .sort((a, b) => (a.position || 0) - (b.position || 0));
-
-    // Playable order IDs from server UI hints
-    const boardPlayableIds = new Set(G.ui?.playable_order_ids || []);
-
-    tilesOrders.forEach((order, idx) => {
-      const orderEl = document.createElement('div');
-      const fac = FACTIONS.find(f => f.id === G.players[order.owner].faction);
-      const facIcon = fac?.icon || (order.owner === 0 ? 'P1' : 'P2');
-      const orderName = ORDER_TYPES[order.type]?.name || order.type;
-
-      // Смещение для стопки: каждый выше и правее (вверх-вправо)
-      const offsetY = -idx * 5;
-      const offsetX = idx * 5;
-
-      const factionColor = G.players[order.owner].faction_color || (order.owner === 0 ? '#00c8ff' : '#ff4d6d');
-
-      // Во время execution: кликабелен если сервер пометил как playable
-      const isClickable = G.phase === 'execution' && boardPlayableIds.has(order.id);
-      const isSelected  = _selectedOrderForPlay?.id === order.id;
-
-      orderEl.className = `order-fd${isSelected ? ' selected-order' : ''}`;
-      orderEl.style.cssText = `
-        position: absolute;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 1px;
-        font-family: 'Orbitron', monospace;
-        pointer-events: ${isClickable ? 'auto' : 'none'};
-        cursor: ${isClickable ? 'pointer' : 'default'};
-        top: calc(50% + ${offsetY}px);
-        left: calc(50% + ${offsetX}px);
-        transform: translate(-50%, -50%);
-        box-shadow: 0 2px 10px rgba(0,0,0,.85)${isSelected ? ', 0 0 0 3px rgba(255,220,50,.8)' : ''};
-        z-index: ${10 + idx};
-        background: #1a1a1a;
-        border: 2px solid ${isSelected ? 'rgba(255,220,50,.9)' : '#333'};
-        color: ${factionColor};
-        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-      `;
-      orderEl.innerHTML = `
-        <div style="font-size: 2rem; font-weight: bold; line-height: 1;">${facIcon}</div>
-      `;
-      orderEl.title = isClickable
-        ? (isSelected ? `Нажмите ещё раз для розыгрыша: ${orderName}` : `Выбрать: ${orderName}`)
-        : `${orderName} (${G.players[order.owner].name})`;
-
-      if (isClickable) {
-        orderEl.addEventListener('click', (e) => {
-          e.stopPropagation();
-          selectOrderForPlay(order.id, order.type, tile.key);
-        });
-      }
-
-      el.appendChild(orderEl);
-    });
-
-    // Варп-штормы: визуализация + кликабельные границы в фазе warp-storm
-    ['top','bottom','left','right'].forEach(side => {
-      const isH = side === 'top' || side === 'bottom';
-      const hasWS = G.warpStorms.some(ws => ws.tileKey === tile.key && ws.side === side);
-      if (hasWS) {
-        const ws = document.createElement('div');
-        ws.className = `warp-storm warp-storm-${side} ${isH ? 'warp-storm-h' : 'warp-storm-v'}`;
-        el.appendChild(ws);
-      }
-      const canPlaceWS = G.phase === 'warp-storm' && !hasWS && !G.warpStorms.some(ws => ws.owner === G.curP) && !G.warpConfirmed[G.curP];
-      if (canPlaceWS) {
-        const border = document.createElement('div');
-        border.className = `ws-border ws-border-${isH ? 'h' : 'v'} warp-storm-${side}`;
-        border.onclick = (e) => { e.stopPropagation(); placeWarpStorm(tile.key, side); };
-        el.appendChild(border);
-      }
-    });
-
-    board.appendChild(el);
-  });
-}
-
-
-// ══════════════════════════════════════════════
 //  RENDER SIDE PANEL
 // ══════════════════════════════════════════════
 function renderSide() {
@@ -614,6 +302,146 @@ function renderSide() {
     return;
   }
 
+  // ── ADVANCE: choose_source ──
+  if (G.phase === 'execution' && G.pending_advance?.step === 'choose_source') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block'; structSection.style.display = 'none';
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+    const pa = G.pending_advance;
+    const t0 = document.createElement('div'); t0.className = 'ptitle'; t0.textContent = 'ADVANCE: выбор источника'; poolEl.appendChild(t0);
+    const h0 = document.createElement('div'); h0.style.cssText = 'font-size:.72rem;color:var(--dim);margin-bottom:8px;'; h0.textContent = 'Выберите соседнюю систему с вашими войсками или пропустите'; poolEl.appendChild(h0);
+    (pa.adjacent_tiles || []).forEach(tk => {
+      const btn = document.createElement('button');
+      btn.className = `abtn ${G.curP===0?'bp':'br'}`; btn.style.cssText = 'width:100%;margin-bottom:4px;';
+      btn.textContent = `📍 Система [${tk}]`; btn.onclick = () => _advanceChooseSource(tk); poolEl.appendChild(btn);
+    });
+    if (!(pa.adjacent_tiles || []).length) {
+      const em = document.createElement('div'); em.style.cssText = 'color:var(--dim);font-size:.75rem;margin-bottom:8px;'; em.textContent = 'Нет соседних систем с вашими войсками'; poolEl.appendChild(em);
+    }
+    const sk = document.createElement('button'); sk.className = 'abtn bw'; sk.style.cssText = 'width:100%;margin-top:4px;';
+    sk.textContent = 'Пропустить (только активная система)'; sk.onclick = () => _advanceChooseSource(null); poolEl.appendChild(sk);
+    return;
+  }
+
+  // ── ADVANCE: ships ──
+  if (G.phase === 'execution' && G.pending_advance?.step === 'ships') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block'; structSection.style.display = 'none';
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+    const pa = G.pending_advance;
+    const avail = G.ui?.advance_available_ships || [];
+    const facColor = FACTIONS.find(f=>f.id===cp.faction)?.color || (G.curP===0?'#00c8ff':'#ff4d6d');
+    const t1 = document.createElement('div'); t1.className = 'ptitle'; t1.textContent = 'ADVANCE: корабли'; poolEl.appendChild(t1);
+    const h1 = document.createElement('div'); h1.style.cssText = 'font-size:.68rem;color:var(--gold);margin-bottom:6px;';
+    h1.textContent = _advanceSelectedShip ? '✓ Корабль выбран — кликните область в активной системе' : '← Выберите корабль, затем кликните область назначения';
+    poolEl.appendChild(h1);
+    if (avail.length > 0) {
+      const sub = document.createElement('div'); sub.style.cssText = 'font-size:.65rem;color:var(--dim);text-transform:uppercase;margin-bottom:4px;letter-spacing:.04em;'; sub.textContent = 'Доступные корабли:'; poolEl.appendChild(sub);
+      avail.forEach(s => {
+        const isSel = _advanceSelectedShip?.area_idx === s.area_idx && _advanceSelectedShip?.origin === s.origin;
+        const tok = document.createElement('div');
+        tok.className = `ttok space${isSel?' sel':''}`;
+        tok.style.background = hexAlpha(facColor, isSel?0.35:0.15); tok.style.borderColor = facColor; tok.style.color = facColor;
+        tok.textContent = `T${s.unit.tier??0}`;
+        tok.title = `${getUnitName(cp.faction,'space',s.unit.tier??0)} (${s.origin==='source'?'из источника':'активный'})`;
+        tok.onclick = () => _advanceSelectShip(s); poolEl.appendChild(tok);
+      });
+    } else {
+      const em = document.createElement('div'); em.style.cssText = 'color:var(--dim);font-size:.75rem;margin-bottom:6px;'; em.textContent = 'Нет доступных кораблей'; poolEl.appendChild(em);
+    }
+    if ((pa.committed_moves||[]).length > 0) {
+      const mv = document.createElement('div'); mv.style.cssText = 'margin-top:6px;font-size:.65rem;color:var(--dim);'; mv.textContent = `Перемещений: ${pa.committed_moves.length}`; poolEl.appendChild(mv);
+    }
+    const nxt = document.createElement('button'); nxt.className = `abtn ${G.curP===0?'bp':'br'}`; nxt.style.cssText = 'width:100%;margin-top:8px;';
+    nxt.textContent = 'Готово с кораблями →'; nxt.onclick = () => _advanceNextStep(); poolEl.appendChild(nxt);
+    return;
+  }
+
+  // ── ADVANCE: ground ──
+  if (G.phase === 'execution' && G.pending_advance?.step === 'ground') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block'; structSection.style.display = 'none';
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+    const pa = G.pending_advance;
+    const avail = G.ui?.advance_available_ground || [];
+    const facColor = FACTIONS.find(f=>f.id===cp.faction)?.color || (G.curP===0?'#00c8ff':'#ff4d6d');
+    const t2 = document.createElement('div'); t2.className = 'ptitle'; t2.textContent = 'ADVANCE: наземные юниты'; poolEl.appendChild(t2);
+    const h2 = document.createElement('div'); h2.style.cssText = 'font-size:.68rem;color:var(--gold);margin-bottom:6px;';
+    h2.textContent = _advanceSelectedGround ? '✓ Юнит выбран — кликните планету в активной системе' : '← Выберите юнита, затем кликните планету назначения';
+    poolEl.appendChild(h2);
+    if (avail.length > 0) {
+      const sub = document.createElement('div'); sub.style.cssText = 'font-size:.65rem;color:var(--dim);text-transform:uppercase;margin-bottom:4px;letter-spacing:.04em;'; sub.textContent = 'Доступные юниты:'; poolEl.appendChild(sub);
+      avail.forEach(g => {
+        const isSel = _advanceSelectedGround?.area_idx === g.area_idx && _advanceSelectedGround?.origin === g.origin;
+        const tok = document.createElement('div');
+        tok.className = `ttok ground${isSel?' sel':''}`;
+        tok.style.background = hexAlpha(facColor, isSel?0.35:0.15); tok.style.borderColor = facColor; tok.style.color = facColor;
+        tok.textContent = `T${g.unit.tier??0}`;
+        tok.title = `${getUnitName(cp.faction,'ground',g.unit.tier??0)} (${g.origin==='source'?'из источника':'активный'})`;
+        tok.onclick = () => _advanceSelectGround(g); poolEl.appendChild(tok);
+      });
+    } else {
+      const em = document.createElement('div'); em.style.cssText = 'color:var(--dim);font-size:.75rem;margin-bottom:6px;'; em.textContent = 'Нет доступных наземных юнитов'; poolEl.appendChild(em);
+    }
+    if ((pa.committed_moves||[]).length > 0) {
+      const mv = document.createElement('div'); mv.style.cssText = 'margin-top:6px;font-size:.65rem;color:var(--dim);'; mv.textContent = `Перемещений: ${pa.committed_moves.length}`; poolEl.appendChild(mv);
+    }
+    const cmt = document.createElement('button'); cmt.className = `abtn ${G.curP===0?'bp':'br'}`; cmt.style.cssText = 'width:100%;margin-top:8px;';
+    cmt.textContent = 'Зафиксировать перемещения →'; cmt.onclick = () => _advanceCommit(); poolEl.appendChild(cmt);
+    return;
+  }
+
+  // ── ADVANCE: combat ──
+  if (G.phase === 'execution' && G.pending_advance?.step === 'combat') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block'; structSection.style.display = 'none';
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+    const pa = G.pending_advance;
+    const t3 = document.createElement('div'); t3.className = 'ptitle'; t3.textContent = 'ADVANCE: бой'; poolEl.appendChild(t3);
+    const info = document.createElement('div'); info.style.cssText = 'font-size:.8rem;color:#ff6b6b;margin-bottom:8px;';
+    info.textContent = `⚔ Спорная область [${pa.tile_key}] #${pa.contest_area_idx}`; poolEl.appendChild(info);
+    const h3 = document.createElement('div'); h3.style.cssText = 'font-size:.72rem;color:var(--dim);margin-bottom:10px;';
+    h3.textContent = 'Оба игрока имеют войска в одной области.'; poolEl.appendChild(h3);
+    const fightBtn = document.createElement('button'); fightBtn.style.cssText = 'width:100%;background:rgba(255,77,109,.15);border-color:rgba(255,77,109,.5);';
+    fightBtn.className = 'abtn bp'; fightBtn.textContent = '⚔ Начать бой!'; fightBtn.onclick = () => _advanceFight(); poolEl.appendChild(fightBtn);
+    return;
+  }
+
+  // ── ADVANCE: orbital ──
+  if (G.phase === 'execution' && G.pending_advance?.step === 'orbital') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block'; structSection.style.display = 'none';
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+    const t4 = document.createElement('div'); t4.className = 'ptitle'; t4.textContent = 'ADVANCE: орбитальный удар'; poolEl.appendChild(t4);
+    const h4 = document.createElement('div'); h4.style.cssText = 'font-size:.72rem;color:var(--gold);margin-bottom:8px;';
+    h4.textContent = _advanceOrbitalShipArea === null
+      ? '1. Кликните область с вашим кораблём на карте'
+      : `2. Кликните планету противника для удара (корабль: обл.${_advanceOrbitalShipArea})`;
+    poolEl.appendChild(h4);
+    const sk2 = document.createElement('button'); sk2.className = 'abtn bw'; sk2.style.cssText = 'width:100%;margin-top:4px;';
+    sk2.textContent = 'Пропустить орбитальный удар'; sk2.onclick = () => _advanceSkipOrbital(); poolEl.appendChild(sk2);
+    return;
+  }
+
+  // ── ADVANCE: orbital_defend ──
+  if (G.phase === 'execution' && G.pending_advance?.step === 'orbital_defend') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block'; structSection.style.display = 'none';
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+    const pa = G.pending_advance;
+    const defIdx = 1 - pa.player_id;
+    const t5 = document.createElement('div'); t5.className = 'ptitle'; t5.textContent = 'ADVANCE: защита'; poolEl.appendChild(t5);
+    const h5 = document.createElement('div'); h5.style.cssText = 'font-size:.75rem;color:#ff6b6b;margin-bottom:8px;';
+    h5.textContent = `⏳ ${G.players[defIdx].name} выбирает юнита...`; poolEl.appendChild(h5);
+    return;
+  }
+
   // ── ФАЗА РОЗЫГРЫША ПРИКАЗОВ (EXECUTION) ──
   if (G.phase === 'execution') {
     document.getElementById('tile-hand').innerHTML = '';
@@ -753,56 +581,11 @@ function renderSide() {
     sideLayout.forEach(v=>{ const d=document.createElement('div'); d.className=`hpa ${v===1?'hpp':'hps'}`; prev.appendChild(d); });
     const lbl=document.createElement('div'); lbl.className='htlabel';
     const fac=FACTIONS.find(f=>f.id===cp.faction);
-    lbl.textContent=ht.isHome?`${fac?.icon} \u0414\u043e\u043c\u0430\u0448\u043d\u044f\u044f`:`\u0421\u0438\u0441\u0442\u0435\u043c\u0430 ${idx+1}`;
+    lbl.textContent=ht.isHome?`${fac?.icon} Домашняя`:`Система ${idx+1}`;
     el.appendChild(prev); el.appendChild(lbl);
     el.onclick=()=>selectHandTile(idx);
     el.addEventListener('mouseenter', () => _startTileHover(el, ht.tileDefId));
     el.addEventListener('mouseleave', _cancelTileHover);
     handEl.appendChild(el);
   });
-}
-
-
-// ══════════════════════════════════════════════
-//  HEADER
-// ══════════════════════════════════════════════
-function updateHeader() {
-  const cp=G.players[G.curP];
-  // Если идёт deploy — вычитаем зарезервированные ресурсы за юнитов из отображения
-  const pd = G.pending_deploy;
-  const unitCosts = (pd && pd.unit_costs) ? pd.unit_costs : null;
-  const deployPlayer = pd ? pd.player_id : null;
-
-  [0,1].forEach(pi=>{
-    const p=G.players[pi], pfx=pi===0?'p1':'p2';
-    document.getElementById(`h-${pfx}-name`).textContent=p.name;
-    document.getElementById(`h-${pfx}-init`).textContent=p.name.substring(0,2).toUpperCase();
-    const fac=FACTIONS.find(f=>f.id===p.faction);
-    document.getElementById(`h-${pfx}-fac`).textContent=fac?`${fac.icon} ${fac.name}`:'—';
-    const resEl = document.getElementById(`h-${pfx}-res`);
-    if (resEl) {
-      // Для игрока, выполняющего deploy, показываем скорректированные ресурсы
-      const uc = (unitCosts && pi === deployPlayer) ? unitCosts : null;
-      const credits  = (p.credits  ?? 0) - (uc?.credits ?? 0);
-      const support  = (p.tokens?.support  ?? 0);
-      const discount = (p.tokens?.discount ?? 0) - (uc?.cash    ?? 0);
-      const forge    = (p.tokens?.forge    ?? 0) - (uc?.forge   ?? 0);
-      const parts = [];
-      if (p.credits != null) parts.push(`💰${credits}`);
-      if (support)  parts.push(`⊕${support}`);
-      if (discount) parts.push(`⊖${discount}`);
-      if (forge)    parts.push(`⚒${forge}`);
-      resEl.textContent = parts.join('  ') || '';
-    }
-  });
-  const hRound = document.getElementById('h-round');
-  if (hRound) hRound.textContent = G.round ? `Раунд ${G.round}` : 'Раунд —';
-
-  const hObj0 = document.getElementById('h-obj-p1');
-  const hObj1 = document.getElementById('h-obj-p2');
-  if (hObj0) hObj0.textContent = `🎯 ${G.players[0]?.collected_objectives ?? 0}`;
-  if (hObj1) hObj1.textContent = `🎯 ${G.players[1]?.collected_objectives ?? 0}`;
-
-  const edsp = document.getElementById('event-stack-disp');
-  if (edsp) edsp.style.display='none';
 }

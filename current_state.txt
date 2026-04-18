@@ -64,18 +64,13 @@
           "id": "p1_deploy_1",
           "type": "deploy",
           "owner": 0
-        },
-        {
-          "id": "p1_advance_1",
-          "type": "advance",
-          "owner": 0
         }
       ],
-      "credits": 9,
+      "credits": 3,
       "tokens": {
         "support": 0,
         "discount": 0,
-        "forge": 0
+        "forge": 1
       },
       "hand_battle_cards": [
         {
@@ -241,14 +236,7 @@
           "effect_2": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2."
         }
       ],
-      "hand_event_cards": [
-        {
-          "name": "Outcasts Returned",
-          "warp_storm_move": "Across",
-          "card_type": "Tactic",
-          "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
-        }
-      ],
+      "hand_event_cards": [],
       "available_event_cards": [
         {
           "name": "Exodite Colony",
@@ -267,6 +255,12 @@
           "warp_storm_move": "Sideways",
           "card_type": "Tactic",
           "effect": "Gain 2 (F)."
+        },
+        {
+          "name": "Outcasts Returned",
+          "warp_storm_move": "Across",
+          "card_type": "Tactic",
+          "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
         },
         {
           "name": "Outmanoeuvre",
@@ -367,7 +361,7 @@
           "owner": 1
         }
       ],
-      "credits": 9,
+      "credits": 1,
       "tokens": {
         "support": 2,
         "discount": 0,
@@ -537,14 +531,7 @@
           "effect_2": "Spend 2 [S] to force enemy to choose unit or structure to destroy."
         }
       ],
-      "hand_event_cards": [
-        {
-          "name": "Seduced by Chaos",
-          "warp_storm_move": "Sideways",
-          "card_type": "Scheme",
-          "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat."
-        }
-      ],
+      "hand_event_cards": [],
       "available_event_cards": [
         {
           "name": "Blight of Nurgle",
@@ -571,6 +558,12 @@
           "effect": "Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world."
         },
         {
+          "name": "Seduced by Chaos",
+          "warp_storm_move": "Sideways",
+          "card_type": "Scheme",
+          "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat."
+        },
+        {
           "name": "Spoils of War",
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Tactic",
@@ -594,7 +587,7 @@
       "collected_objectives": 0
     }
   ],
-  "phase": "end-round",
+  "phase": "execution",
   "curP": 1,
   "round": 1,
   "totalRounds": 8,
@@ -620,14 +613,7 @@
           "discount": 1,
           "forge": 0,
           "joker": 1,
-          "troops": [
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": [
             {
               "id": 6,
@@ -655,7 +641,7 @@
             },
             {
               "unitType": "ground",
-              "tier": 1,
+              "tier": 0,
               "player": 0,
               "unit_status": "active"
             }
@@ -682,6 +668,12 @@
               "player": 0,
               "unitType": "space",
               "tier": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 0,
               "unit_status": "active"
             }
           ],
@@ -1168,7 +1160,16 @@
     true
   ],
   "targetMarkers": [],
-  "orders": [],
+  "orders": [
+    {
+      "id": "p1_advance_1",
+      "type": "advance",
+      "owner": 0,
+      "tile": "1,0",
+      "position": 0,
+      "revealed": false
+    }
+  ],
   "ordersPlaced": [
     4,
     4
@@ -1179,8 +1180,8 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    true,
-    true
+    false,
+    false
   ],
   "log": [
     {
@@ -1340,20 +1341,12 @@
       "player_id": -1
     },
     {
-      "message": "Игра загружена",
-      "player_id": -1
-    },
-    {
       "message": "Приказ 'Dominate' разыгран",
       "player_id": 0
     },
     {
       "message": "Игрок 0: Dominate — получено: 1 discount, 1 forge, joker→forge",
       "player_id": 0
-    },
-    {
-      "message": "Игра загружена",
-      "player_id": -1
     },
     {
       "message": "Приказ 'Dominate' разыгран",
@@ -1380,75 +1373,151 @@
       "player_id": 1
     },
     {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 1
+    },
+    {
       "message": "Игра загружена",
       "player_id": -1
     },
     {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 1
-    },
-    {
       "message": "Приказ 'Advance' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Advance' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha: доход +7 (итого 9 кредитов)",
-      "player_id": 0
-    },
-    {
-      "message": "Omega: доход +8 (итого 9 кредитов)",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha взял карту события: Outcasts Returned",
-      "player_id": 0
-    },
-    {
-      "message": "Omega взял карту события: Seduced by Chaos",
       "player_id": 1
     }
   ],
   "event_cards_offered": [
-    [
-      {
-        "name": "Outcasts Returned",
-        "warp_storm_move": "Across",
-        "card_type": "Tactic",
-        "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
-      }
-    ],
-    [
-      {
-        "name": "Seduced by Chaos",
-        "warp_storm_move": "Sideways",
-        "card_type": "Scheme",
-        "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat."
-      }
-    ]
+    [],
+    []
   ],
   "event_selection_done": [
-    true,
-    true
+    false,
+    false
   ],
   "ui": {
-    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 2",
-    "buttons": [],
-    "playable_order_ids": [
-      "p1_deploy_1"
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 1",
+    "buttons": [
+      "btn-pass"
     ],
+    "playable_order_ids": [],
     "blocked_tiles": [
       "1,0"
     ],
     "can_place_order": false,
     "order_placed_this_turn": false,
     "order_played_this_turn": false
+  },
+  "pending_advance": {
+    "player_id": 1,
+    "tile_key": "1,0",
+    "source_tile": "2,0",
+    "step": "ships",
+    "available_ships": [],
+    "available_ground_units": [
+      {
+        "area_idx": 3,
+        "unit": {
+          "id": 11,
+          "player": 1,
+          "unitType": "ground",
+          "tier": 0,
+          "unit_status": "active"
+        },
+        "origin": "active"
+      },
+      {
+        "area_idx": 0,
+        "unit": {
+          "id": 12,
+          "player": 1,
+          "unitType": "ground",
+          "tier": 1,
+          "unit_status": "active"
+        },
+        "origin": "source"
+      },
+      {
+        "area_idx": 0,
+        "unit": {
+          "unitType": "ground",
+          "tier": 0,
+          "player": 1,
+          "unit_status": "active"
+        },
+        "origin": "source"
+      },
+      {
+        "area_idx": 3,
+        "unit": {
+          "id": 13,
+          "player": 1,
+          "unitType": "ground",
+          "tier": 1,
+          "unit_status": "active"
+        },
+        "origin": "source"
+      }
+    ],
+    "committed_moves": [
+      {
+        "origin": "source",
+        "from_area_idx": 2,
+        "to_area_idx": 1,
+        "unit": {
+          "id": 14,
+          "player": 1,
+          "unitType": "space",
+          "tier": 0,
+          "unit_status": "active"
+        }
+      }
+    ],
+    "virtual_active_areas": {
+      "0": {
+        "troops": [],
+        "type": "space",
+        "capacity": 3
+      },
+      "1": {
+        "troops": [
+          {
+            "id": 14,
+            "player": 1,
+            "unitType": "space",
+            "tier": 0,
+            "unit_status": "active"
+          }
+        ],
+        "type": "space",
+        "capacity": 3
+      },
+      "2": {
+        "troops": [],
+        "type": "planet",
+        "capacity": 3
+      },
+      "3": {
+        "troops": [
+          {
+            "id": 11,
+            "player": 1,
+            "unitType": "ground",
+            "tier": 0,
+            "unit_status": "active"
+          }
+        ],
+        "type": "planet",
+        "capacity": 1
+      }
+    },
+    "adjacent_tiles": [
+      "2,0"
+    ],
+    "contest_area_idx": null,
+    "orbital_ship_area": null,
+    "orbital_target_area": null
   }
 }

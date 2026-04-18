@@ -17,7 +17,7 @@ async function undoLastOrderViaAPI() {
     showMsg('Нет приказов', 'В этом ходу приказ не выставлялся');
     return;
   }
-  if (isExecution && !G.ui?.order_played_this_turn && !G.pending_deploy) {
+  if (isExecution && !G.ui?.order_played_this_turn && !G.pending_deploy && !G.pending_advance) {
     showMsg('Нет действий', 'В этом ходу приказ не разыгрывался');
     return;
   }
@@ -25,10 +25,11 @@ async function undoLastOrderViaAPI() {
   try {
     const res = await apiCall('/api/game/undo', { player_id: G.curP });
     if (res.success) {
-      closeMsg();  // закрыть deploy modal если открыт
+      closeMsg();  // закрыть deploy/advance modal если открыт
       _deployBasket = [];
       _deploySelectedUnit = null;
       _deploySelectedBuilding = null;
+      if (typeof _advanceClearSelection === 'function') _advanceClearSelection();
       applyState(res.state);
       _selectedOrderForPlacement = null;
       _selectedOrderForPlay = null;
@@ -167,6 +168,8 @@ async function playOrderViaAPI(orderId) {
       } else if (res.state?.pending_deploy) {
         setPhase('execution');
         showDeployUI();
+      } else if (res.state?.pending_advance) {
+        showAdvanceUI();
       } else {
         setPhase('execution');
       }

@@ -27,6 +27,7 @@ function applyState(newState) {
   // Явно очищаем pending-поля если сервер их удалил
   if (!('pending_deploy' in newState)) G.pending_deploy = null;
   if (!('pending_joker_choice' in newState)) G.pending_joker_choice = null;
+  if (!('pending_advance' in newState)) G.pending_advance = null;
   uiFields.forEach(k => { G[k] = saved[k]; });
   // Сбросить выбранный приказ при смене игрока
   if (G.curP !== prevPlayer) _selectedOrderForPlay = null;

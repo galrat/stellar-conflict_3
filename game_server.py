@@ -44,6 +44,18 @@ from python_engine.deploy import (
     validate_buy_building_for_state,
     apply_deploy_to_state,
 )
+from python_engine.advance import (
+    advance_play,
+    advance_choose_source,
+    advance_move_ship,
+    advance_move_ground,
+    advance_commit,
+    advance_fight,
+    advance_orbital,
+    advance_orbital_remove,
+    advance_skip_orbital,
+    advance_next_step,
+)
 
 app = FastAPI(title="Stellar Conflict Game Server")
 
@@ -159,6 +171,34 @@ def compute_ui_hints(state: dict) -> dict:
             ui['deploy_hand']        = pd.get('hand', [])
             ui['deploy_placed']      = pd.get('placed', [])
             ui['deploy_removed_map'] = pd.get('removed_from_map', [])
+            return ui
+
+        # Если идёт выполнение приказа Advance
+        pa = state.get('pending_advance')
+        if pa:
+            step = pa.get('step', '')
+            tile_key = pa.get('tile_key', '')
+            step_labels = {
+                'choose_source':   'выбор источника',
+                'ships':           'перемещение кораблей',
+                'ground':          'перемещение наземных юнитов',
+                'combat':          'бой',
+                'orbital':         'орбитальный удар',
+                'orbital_defend':  'защита от орбитального удара',
+            }
+            ui['instruction'] = (
+                f'<strong>ADVANCE</strong> — тайл [{tile_key}]<br>'
+                f'{cp_name}: {step_labels.get(step, step)}'
+            )
+            ui['buttons'] = ['btn-undo-order']
+            ui['advance_step'] = step
+            ui['advance_tile_key'] = tile_key
+            ui['advance_adjacent_tiles'] = pa.get('adjacent_tiles', [])
+            ui['advance_available_ships'] = pa.get('available_ships', [])
+            ui['advance_available_ground'] = pa.get('available_ground_units', [])
+            ui['advance_committed_moves'] = pa.get('committed_moves', [])
+            ui['advance_contest_area'] = pa.get('contest_area_idx')
+            ui['advance_source_tile'] = pa.get('source_tile')
             return ui
 
         # Вычислить playable_order_ids и blocked_tiles
@@ -411,6 +451,38 @@ class DeployBuyBuildingRequest(BaseModel):
 
 class DeploySkipRequest(BaseModel):
     """Пропустить шаг (здание или юниты) при Deploy"""
+    player_id: int
+
+
+class AdvanceChooseSourceRequest(BaseModel):
+    """Выбрать source тайл для Advance (или None чтобы пропустить)"""
+    player_id: int
+    source_tile_key: Optional[str] = None
+
+
+class AdvanceMoveUnitRequest(BaseModel):
+    """Переместить юнита при Advance"""
+    player_id: int
+    from_area_idx: int
+    to_area_idx: int
+
+
+class AdvanceOrbitalRequest(BaseModel):
+    """Выбрать корабль и цель для орбитального удара"""
+    player_id: int
+    ship_area_idx: int
+    target_area_idx: int
+
+
+class AdvanceOrbitalRemoveRequest(BaseModel):
+    """Защищающийся удаляет юнита после орбитального удара"""
+    player_id: int
+    area_idx: int
+    unit_idx: int
+
+
+class AdvanceGenericRequest(BaseModel):
+    """Общий запрос для Advance (commit, fight, skip, next_step)"""
     player_id: int
 
 
@@ -970,8 +1042,8 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             _active_game['orders'] = new_state['orders']
             _active_game['players'] = new_state['players']
 
-            # Для deploy — execution_order_played ставится только после завершения deploy
-            if order_type != 'deploy':
+            # Для deploy и advance — execution_order_played ставится только после завершения
+            if order_type not in ('deploy', 'advance'):
                 _active_game['execution_order_played'][request.player_id] = True
 
             # Добавить в лог
@@ -1005,6 +1077,12 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
                     print(f"🏆 {dom_msg}")
                 elif not dom_success:
                     print(f"⚠ Dominate effect failed: {dom_msg}")
+
+            elif order_type == 'advance' and order_tile:
+                adv_state = advance_play(_active_game, request.player_id, order_tile)
+                _active_game.clear()
+                _active_game.update(adv_state)
+                print(f"⚔️ Advance на тайле {order_tile}, шаг: {_active_game['pending_advance']['step']}")
 
             print(f"🎯 {message}")
             _save_current_state()
@@ -1124,9 +1202,11 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
 
             current_player = _active_game.get('curP', 0)
 
-            # Блокировать передачу хода если идёт deploy
+            # Блокировать передачу хода если идёт deploy или advance
             if _active_game.get('pending_deploy'):
                 return GameStateResponse(success=False, error="Сначала завершите приказ Deploy")
+            if _active_game.get('pending_advance'):
+                return GameStateResponse(success=False, error="Сначала завершите приказ Advance")
 
             # Проверить: если у игрока есть разыгрываемые приказы — обязан сыграть
             playable = get_available_orders(_active_game, current_player)
@@ -1528,6 +1608,172 @@ async def deploy_skip_building_endpoint(request: DeploySkipRequest) -> GameState
             _finish_deploy(request.player_id, building=None)
 
             print(f"🏗 Deploy finished (no building)")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+# ── ADVANCE ENDPOINTS ─────────────────────────────────────────────────────────
+
+@app.post('/api/game/advance-choose-source')
+async def advance_choose_source_endpoint(request: AdvanceChooseSourceRequest) -> GameStateResponse:
+    """Выбрать source тайл для Advance."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_choose_source(_active_game, request.player_id, request.source_tile_key)
+            _active_game.clear()
+            _active_game.update(new_state)
+            print(f"⚔️ Advance: выбран source тайл {request.source_tile_key}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-move-ship')
+async def advance_move_ship_endpoint(request: AdvanceMoveUnitRequest) -> GameStateResponse:
+    """Переместить корабль."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_move_ship(_active_game, request.player_id, request.from_area_idx, request.to_area_idx)
+            _active_game.clear()
+            _active_game.update(new_state)
+            print(f"⚔️ Advance: корабль {request.from_area_idx} → {request.to_area_idx}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-move-ground')
+async def advance_move_ground_endpoint(request: AdvanceMoveUnitRequest) -> GameStateResponse:
+    """Переместить наземного юнита."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_move_ground(_active_game, request.player_id, request.from_area_idx, request.to_area_idx)
+            _active_game.clear()
+            _active_game.update(new_state)
+            print(f"⚔️ Advance: наземный юнит {request.from_area_idx} → {request.to_area_idx}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+
+
+@app.post('/api/game/advance-commit')
+async def advance_commit_endpoint(request: AdvanceGenericRequest) -> GameStateResponse:
+    """Зафиксировать все перемещения."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_commit(_active_game, request.player_id)
+            _active_game.clear()
+            _active_game.update(new_state)
+            print(f"⚔️ Advance: перемещения зафиксированы")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-fight')
+async def advance_fight_endpoint(request: AdvanceGenericRequest) -> GameStateResponse:
+    """Провести бой."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_fight(_active_game, request.player_id)
+            _active_game.clear()
+            _active_game.update(new_state)
+            print(f"⚔️ Advance: бой завершён")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-orbital')
+async def advance_orbital_endpoint(request: AdvanceOrbitalRequest) -> GameStateResponse:
+    """Выбрать корабль и цель для орбитального удара."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_orbital(_active_game, request.player_id, request.ship_area_idx, request.target_area_idx)
+            _active_game.clear()
+            _active_game.update(new_state)
+            print(f"⚔️ Advance: орбитальный удар {request.ship_area_idx} → {request.target_area_idx}")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-orbital-remove')
+async def advance_orbital_remove_endpoint(request: AdvanceOrbitalRemoveRequest) -> GameStateResponse:
+    """Защищающийся удаляет юнита после орбитального удара."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_orbital_remove(_active_game, request.player_id, request.area_idx, request.unit_idx)
+            _active_game.clear()
+            _active_game.update(new_state)
+            print(f"⚔️ Advance: орбитальный удар — юнит удалён")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-skip-orbital')
+async def advance_skip_orbital_endpoint(request: AdvanceGenericRequest) -> GameStateResponse:
+    """Пропустить орбитальный удар."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_skip_orbital(_active_game, request.player_id)
+            _active_game.clear()
+            _active_game.update(new_state)
+            print(f"⚔️ Advance: орбитальный удар пропущен")
+            _save_current_state()
+            return GameStateResponse(success=True, state=_prepare_response_state())
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-next-step')
+async def advance_next_step_endpoint(request: AdvanceGenericRequest) -> GameStateResponse:
+    """Перейти от ships к ground."""
+    async with _game_lock:
+        if _active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_next_step(_active_game, request.player_id)
+            _active_game.clear()
+            _active_game.update(new_state)
+            print(f"⚔️ Advance: переход к наземным юнитам")
             _save_current_state()
             return GameStateResponse(success=True, state=_prepare_response_state())
         except Exception as e:

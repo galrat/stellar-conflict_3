@@ -386,6 +386,11 @@ function _afterTilePlaced() {
 //  AREA CLICK (stub — no unit placement)
 // ══════════════════════════════════════════════
 function areaClick(key, displayIdx) {
+  // Делегировать в advance если активен
+  if (G.pending_advance && typeof advanceAreaClick === 'function') {
+    advanceAreaClick(key, displayIdx);
+    return;
+  }
   // Делегировать в deploy если активен
   if (G.pending_deploy && typeof deployAreaClick === 'function') {
     deployAreaClick(key, displayIdx);
