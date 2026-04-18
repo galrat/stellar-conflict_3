@@ -43,7 +43,11 @@ class TileSideDef:
     side:     str        # 'a' или 'b'
     layout:   List[int]  # 1 = планета, 0 = космос
     capacity: List[int]  # вместимость области (для планет = кол-во черепов)
+    income:   List[int]  = field(default_factory=lambda: [0, 0, 0, 0])  # доход ресурсов
     valuable: List[int]  = field(default_factory=lambda: [0, 0, 0, 0])  # ценные ресурсы — красный кружок
+    support:  List[int]  = field(default_factory=lambda: [0, 0, 0, 0])  # жетон поддержки
+    discount: List[int]  = field(default_factory=lambda: [0, 0, 0, 0])  # жетон скидки
+    forge:    List[int]  = field(default_factory=lambda: [0, 0, 0, 0])  # жетон молотка
     joker:    List[int]  = field(default_factory=lambda: [0, 0, 0, 0])  # жетон джокера
 
 
@@ -193,7 +197,6 @@ class SystemTile:
     id:          str       = field(default_factory=lambda: str(uuid.uuid4())[:8])
     tile_type:   TileType  = TileType.NORMAL
     tile_def_id: str       = ""        # ID из TILE_CATALOG; если задан — области берутся из каталога
-    owner:       int       = 0         # player_id владельца
     col:         int       = 0         # колонка на поле (может быть < 0)
     row:         int       = 0         # строка на поле
     rotation:    int       = 0         # 0 | 90 | 180 | 270
@@ -259,7 +262,6 @@ class SystemTile:
             "id":          self.id,
             "tile_type":   self.tile_type.value,
             "tile_def_id": self.tile_def_id,
-            "owner":       self.owner,
             "col":         self.col,
             "row":         self.row,
             "rotation":    self.rotation,

@@ -4,6 +4,20 @@
 //  Этот файл не нужно читать при работе над Stage 2+
 // ══════════════════════════════════════════════
 
+// ── Загрузить каталог тайлов с сервера (тонкий клиент) ──
+function loadTileCatalog() {
+  console.log('loadTileCatalog called, API_URL=' + API_URL);
+  fetch(`${API_URL}/api/tiles`)
+    .then(r => r.json())
+    .then(data => {
+      TILE_CATALOG = data.tiles || [];
+      console.log(`Loaded ${TILE_CATALOG.length} tiles from server`);
+    })
+    .catch(error => {
+      console.error('Error loading tile catalog:', error);
+    });
+}
+
 function _facResHtml(f) {
   const parts = [];
   if (f.credits)  parts.push(`💰${f.credits}`);
@@ -110,10 +124,10 @@ function startGame() {
     p.pool = [];
     // Добавляем юниты с правильными уровнями из unitTiers
     if (fac.unitTiers?.ground && Array.isArray(fac.unitTiers.ground)) {
-      fac.unitTiers.ground.forEach(tier => p.pool.push({ id:nextId++, player:pi, unitType:'ground', tier }));
+      fac.unitTiers.ground.forEach(tier => p.pool.push({ id:nextId++, player:pi, unitType:'ground', tier, ready_to_move:0 }));
     }
     if (fac.unitTiers?.space && Array.isArray(fac.unitTiers.space)) {
-      fac.unitTiers.space.forEach(tier => p.pool.push({ id:nextId++, player:pi, unitType:'space', tier }));
+      fac.unitTiers.space.forEach(tier => p.pool.push({ id:nextId++, player:pi, unitType:'space', tier, ready_to_move:0 }));
     }
     // Добавляем структуры (фабрики из structures массива)
     p.structurePool = [];
@@ -161,11 +175,13 @@ function startGame() {
     const myHome = TILE_CATALOG.find(t => t.id === fac.homeTileId)
                 || TILE_CATALOG.find(t => t.isHome);
     const myNormal = normalTiles.splice(0, TILES_PP - 1);
-    p.hand = [myHome, ...myNormal].map((td, t) => ({
+    const handTiles = myHome ? [myHome, ...myNormal] : myNormal;
+    console.log(`[${p.name}] faction=${fac.id}, homeTileId=${fac.homeTileId}, myHome=${myHome?.id}, myNormal.length=${myNormal.length}, handTiles.length=${handTiles.length}, TILE_CATALOG.length=${TILE_CATALOG.length}`);
+    p.hand = handTiles.map((td, t) => ({
       handIdx:   t,
-      tileDefId: td.id,
+      tileDefId: td?.id || 'unknown',
       tileId:    nextId++,
-      isHome:    td.isHome,
+      isHome:    td?.isHome || false,
       placed:    false,
     }));
   });
@@ -226,15 +242,15 @@ function dropTile(col, row) {
   // Build tile object — areas with capacity, income, tokens, troops
   G.map[key] = {
     key, col, row,
-    owner:     G.curP,
+    player:    G.curP,
     isHome:    ht.isHome,
     tileId:    ht.tileId,
     tileDefId: ht.tileDefId,
     rotation:  0,
     side:      0,
     areas:     tileDefToAreas(sideData).map(a => ({ ...a, structures:[] })),
-    needsObjective: Object.values(G.map).filter(t => t.owner === G.curP).length < 2,  // первые два тайла игрока получают метку цели
-    objectiveMarker: null,               // { owner: playerIdx, realAreaIdx: N }
+    needsObjective: Object.values(G.map).filter(t => t.player === G.curP).length < 2,
+    objectiveMarker: null,               // { owner: playerIdx, area_place: N }
   };
   G.lastKey     = key;
 
@@ -263,7 +279,7 @@ function undoTile() {
   for (const rec of G.unitsPlaced) {
     const tile = G.map[rec.key];
     if (!tile) continue;
-    const area = tile.areas[rec.realAreaIdx];
+    const area = tile.areas.find(a => a.area_place === rec.area_place);
     if (!area) continue;
     const idx = area.troops.findIndex(t => t.id === rec.unitId);
     if (idx >= 0) { cp.pool.push(area.troops.splice(idx, 1)[0]); }
@@ -272,7 +288,7 @@ function undoTile() {
   for (const rec of G.structsPlaced) {
     const tile = G.map[rec.key];
     if (!tile) continue;
-    const area = tile.areas[rec.realAreaIdx];
+    const area = tile.areas.find(a => a.area_place === rec.area_place);
     if (!area) continue;
     if (!area.structures) area.structures = [];
     const idx = area.structures.findIndex(s => s.id === rec.structId);
@@ -347,7 +363,7 @@ function exportMap() {
       row:       tile.row,
       tileDefId: tile.tileDefId,
       isHome:    tile.isHome,
-      owner:     tile.owner,
+      player:    tile.player,
       rotation:  tile.rotation,
       side:      tile.side || 0,
       areas:     tile.areas.map((a, ai) => ({
@@ -410,7 +426,7 @@ function areaClick(key, displayIdx) {
     const eligibleIdxs = getObjectiveEligibleDisplayIdxs(tile);
     if (eligibleIdxs.includes(displayIdx)) {
       if (area.type !== 'planet') return; // только планеты
-      tile.objectiveMarker = { owner: 1 - G.curP, realAreaIdx: realIdx };
+      tile.objectiveMarker = { owner: 1 - G.curP, area_place: area.area_place };
       addLog(`${cp.name} разместил метку цели на [${key}] зона ${displayIdx+1}`, G.curP);
       setPhase('troop-on-tile'); // обновить подсказку
       return;
@@ -426,7 +442,7 @@ function areaClick(key, displayIdx) {
     if (area.structures.length > 0) { showMsg('Занято', 'На этой планете уже есть постройка.'); return; }
     area.structures.push(struct);
     cp.structurePool.splice(G.selStructIdx, 1);
-    G.structsPlaced.push({ key, realAreaIdx: realIdx, structId: struct.id, _seq: nextId++ });
+    G.structsPlaced.push({ key, area_place: area.area_place, structId: struct.id, _seq: nextId++ });
     const info = STRUCTURE_INFO[struct.type] || { icon:'?', label:struct.type };
     addLog(`${cp.name} → [${key}] зона ${displayIdx+1} (${info.icon} ${info.label})`, G.curP);
     G.selStructIdx = null;
@@ -445,7 +461,7 @@ function areaClick(key, displayIdx) {
   if (area.troops.length >= area.capacity) { showMsg('Переполнено', `Максимальная вместимость: ${area.capacity}.`); return; }
   area.troops.push(unit);
   cp.pool.splice(G.selUnitIdx, 1);
-  G.unitsPlaced.push({ key, realAreaIdx: realIdx, unitId: unit.id, _seq: nextId++ });
+  G.unitsPlaced.push({ key, area_place: area.area_place, unitId: unit.id, _seq: nextId++ });
   addLog(`${cp.name} → [${key}] зона ${displayIdx+1} (${unit.unitType === 'ground' ? '▲' : '◈'} T${unit.tier ?? 0})`, G.curP);
   G.selUnitIdx = null; G.selUnitType = null;
   renderSide(); renderBoard(G.lastKey);
@@ -459,7 +475,7 @@ function endTurn() {
   const cp = G.players[G.curP];
 
   // На последнем тайле — обязательно разместить все войска, которые туда помещаются
-  const myTilesPlaced = Object.values(G.map).filter(t => t.owner === G.curP).length;
+  const myTilesPlaced = Object.values(G.map).filter(t => t.player === G.curP).length;
   if (myTilesPlaced >= TILES_PP && cp.pool.length > 0) {
     const tile = G.map[G.lastKey];
     const canPlace = tile && cp.pool.some(u =>
@@ -525,25 +541,29 @@ function undoLastUnit() {
     const rec  = G.structsPlaced.pop();
     const tile = G.map[rec.key];
     if (tile) {
-      const area = tile.areas[rec.realAreaIdx];
-      if (!area.structures) area.structures = [];
-      const idx = area.structures.findIndex(s => s.id === rec.structId);
-      if (idx >= 0) {
-        const s = area.structures.splice(idx, 1)[0];
-        cp.structurePool.push(s);
-        const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
-        addLog(`${cp.name} вернул ${info.icon}${info.label}`, G.curP);
+      const area = tile.areas.find(a => a.area_place === rec.area_place);
+      if (area) {
+        if (!area.structures) area.structures = [];
+        const idx = area.structures.findIndex(s => s.id === rec.structId);
+        if (idx >= 0) {
+          const s = area.structures.splice(idx, 1)[0];
+          cp.structurePool.push(s);
+          const info = STRUCTURE_INFO[s.type] || { icon:'?', label:s.type };
+          addLog(`${cp.name} вернул ${info.icon}${info.label}`, G.curP);
+        }
       }
     }
   } else if (G.unitsPlaced.length > 0) {
     const rec  = G.unitsPlaced.pop();
     const tile = G.map[rec.key];
     if (tile) {
-      const area = tile.areas[rec.realAreaIdx];
-      const idx  = area.troops.findIndex(t => t.id === rec.unitId);
-      if (idx >= 0) {
-        cp.pool.push(area.troops.splice(idx, 1)[0]);
-        addLog(`${cp.name} вернул юнита`, G.curP);
+      const area = tile.areas.find(a => a.area_place === rec.area_place);
+      if (area) {
+        const idx  = area.troops.findIndex(t => t.id === rec.unitId);
+        if (idx >= 0) {
+          cp.pool.push(area.troops.splice(idx, 1)[0]);
+          addLog(`${cp.name} вернул юнита`, G.curP);
+        }
       }
     }
   } else {
@@ -583,7 +603,7 @@ function getObjectiveEligibleDisplayIdxs(tile) {
 //  WARP STORM PLACEMENT
 // ══════════════════════════════════════════════
 function startWarpStormPlacement() {
-  G.warpStorms = [];
+  G.warpStorms = [null, null];
   G.warpStormStep = 0;
   G.warpConfirmed = [false, false];
   // Второй игрок (не первый) ставит варп-шторм первым
@@ -595,22 +615,21 @@ function startWarpStormPlacement() {
 function placeWarpStorm(tileKey, side) {
   if (G.phase !== 'warp-storm') return;
   // Нельзя ставить туда, где уже стоит варп-шторм
-  if (G.warpStorms.some(ws => ws.tileKey === tileKey && ws.side === side)) return;
+  if (G.warpStorms.some(ws => ws && ws.tileKey === tileKey && ws.side === side)) return;
   // Нельзя ставить если уже разместил свой
-  if (G.warpStorms.some(ws => ws.owner === G.curP)) return;
+  if (G.warpStorms[G.curP]) return;
   // Нельзя ставить если уже подтвердил
   if (G.warpConfirmed[G.curP]) return;
 
-  G.warpStorms.push({ tileKey, side, owner: G.curP });
+  G.warpStorms[G.curP] = { tileKey, side };
   addLog(`${G.players[G.curP].name} поставил варп-шторм: [${tileKey}] ${side}`, G.curP);
   setPhase('warp-storm');
 }
 
 function undoWarpStorm() {
   if (G.phase !== 'warp-storm') return;
-  const idx = G.warpStorms.findIndex(ws => ws.owner === G.curP);
-  if (idx === -1) return;
-  G.warpStorms.splice(idx, 1);
+  if (!G.warpStorms[G.curP]) return;
+  G.warpStorms[G.curP] = null;
   G.warpConfirmed[G.curP] = false;
   addLog(`${G.players[G.curP].name} отменил варп-шторм`, G.curP);
   setPhase('warp-storm');
@@ -618,7 +637,7 @@ function undoWarpStorm() {
 
 function confirmWarpStorm() {
   if (G.phase !== 'warp-storm') return;
-  if (!G.warpStorms.some(ws => ws.owner === G.curP)) return;
+  if (!G.warpStorms[G.curP]) return;
   G.warpConfirmed[G.curP] = true;
   addLog(`${G.players[G.curP].name} подтвердил варп-шторм`, G.curP);
 
@@ -636,7 +655,7 @@ function confirmWarpStorm() {
     // Передаём ход второму игроку
     G.curP = 1 - G.curP;
     updateHeader();
-    const myStorm = G.warpStorms.find(ws => ws.owner === G.curP);
+    const myStorm = G.warpStorms[G.curP];
     if (myStorm && G.warpConfirmed[G.curP]) {
       // Второй уже подтвердил (не должно случиться, но на всякий)
     } else if (myStorm) {

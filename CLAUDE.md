@@ -72,3 +72,4 @@ Browser:    http://localhost:3000/game_engine.html
 - Read only files listed for the specific task. Do not explore the project broadly.
 - Game logic always goes in Python. JS only renders and calls API.
 - Snapshots save to `C:\Users\[User]\Downloads\Stellar_Conflict_Temp\` (max 10 files).
+- Tell me which files you will study and change before doing this.

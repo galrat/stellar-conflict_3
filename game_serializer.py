@@ -206,15 +206,11 @@ def generate_game_state(game_state) -> dict:
 
             state["tiles"][tile_key]["areas"].append(area_id)
 
-            # Определить владельца области
-            owner = "neutral"
-            if hasattr(tile, 'owner') and tile.owner is not None:
-                owner = f"p{tile.owner + 1}"
-
             state["areas"][area_id] = {
                 "tile": tile_key,
+                "area_idx": area.index,
                 "type": area.area_type.value,
-                "owner": owner,
+                "owner": "neutral",
                 "units": [],
                 "buildings": [],
             }

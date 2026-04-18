@@ -36,7 +36,7 @@ function renderBoard() {
     const p=px(tile.col,tile.row);
     const el=document.createElement('div');
     el.className='stile';
-    el.classList.add(tile.isHome?(tile.owner===0?'hp1':'hp2'):(tile.owner===0?'np1':'np2'));
+    el.classList.add(tile.isHome?(tile.player===0?'hp1':'hp2'):(tile.player===0?'np1':'np2'));
     const side = tile.side || 0;
     const imgSuffix = side === 0 ? 'a' : 'b';
     el.style.cssText=`left:${p.left}px;top:${p.top}px;width:${CELL}px;height:${CELL}px;`;
@@ -62,7 +62,7 @@ function renderBoard() {
       const realIdx = tile.areas.indexOf(area);
       const ae=document.createElement('div');
       ae.className=`tarea a${area.type}`;
-      ae.dataset.areaIdx=realIdx; # добавил, чтобы было ясно где область находится без обращения к вращению тайла
+      ae.dataset.areaIdx=realIdx;
 
       const cap = area.capacity;
       const used = area.troops.length;
@@ -308,7 +308,7 @@ function renderBoard() {
       }
 
       // Метка цели
-      if (tile.objectiveMarker && tile.objectiveMarker.realAreaIdx === realIdx) {
+      if (tile.objectiveMarker && tile.objectiveMarker.area_place === area.area_place) {
         const opPlayer = tile.objectiveMarker.owner;
         const opFac = FACTIONS.find(f => f.id === G.players[opPlayer].faction);
         const opColor = opFac?.color || (opPlayer === 0 ? '#00c8ff' : '#ff4d6d');
@@ -323,8 +323,7 @@ function renderBoard() {
         ae.appendChild(marker);
       }
 
-      #ae.onclick=()=>areaClick(tile.key, displayIdx);
-      ae.onclick = () => areaClick(tile.key, realIdx);
+      ae.onclick=()=>areaClick(tile.key, displayIdx);
       inner.appendChild(ae);
     });
 
@@ -417,13 +416,13 @@ function renderBoard() {
     // Варп-штормы: визуализация + кликабельные границы в фазе warp-storm
     ['top','bottom','left','right'].forEach(side => {
       const isH = side === 'top' || side === 'bottom';
-      const hasWS = G.warpStorms.some(ws => ws.tileKey === tile.key && ws.side === side);
+      const hasWS = G.warpStorms.some(ws => ws && ws.tileKey === tile.key && ws.side === side);
       if (hasWS) {
         const ws = document.createElement('div');
         ws.className = `warp-storm warp-storm-${side} ${isH ? 'warp-storm-h' : 'warp-storm-v'}`;
         el.appendChild(ws);
       }
-      const canPlaceWS = G.phase === 'warp-storm' && !hasWS && !G.warpStorms.some(ws => ws.owner === G.curP) && !G.warpConfirmed[G.curP];
+      const canPlaceWS = G.phase === 'warp-storm' && !hasWS && !G.warpStorms[G.curP] && !G.warpConfirmed[G.curP];
       if (canPlaceWS) {
         const border = document.createElement('div');
         border.className = `ws-border ws-border-${isH ? 'h' : 'v'} warp-storm-${side}`;

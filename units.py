@@ -73,6 +73,7 @@ class Unit:
     player_id:    int           = 0            # 0 или 1
     category:     UnitCategory  = UnitCategory.GROUND
     unit_type:    Optional[Union[GroundType, SpaceType]] = None
+    ready_to_move: int          = 1            # 0 или 1
 
     @property
     def attack_bonus(self) -> int:
@@ -95,6 +96,7 @@ class Unit:
             "attack_bonus": self.attack_bonus,
             "symbol":    self.symbol,
             "label":     self.label,
+            "ready_to_move": self.ready_to_move,
         }
 
 

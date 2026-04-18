@@ -150,9 +150,9 @@
   </div>
 </div>
 
+<script src="game_constants.js"></script>
 <script src="tiles.js"></script>
 <script src="stage1.js"></script>
-<script src="game_constants.js"></script>
 <script src="game_utils.js"></script>
 <script src="game_ui.js"></script>
 <script src="game_render_board.js"></script>
@@ -164,6 +164,13 @@
 <script src="game_events.js"></script>
 <script src="game_deploy.js"></script>
 <script src="game_advance.js"></script>
-<script>G = makeState(); buildFactionUI();</script>
+<script>
+  function initGame() {
+    G = makeState();
+    buildFactionUI();
+    loadTileCatalog();
+  }
+  initGame();
+</script>
 </body>
 </html>

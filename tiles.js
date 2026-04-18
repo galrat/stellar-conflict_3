@@ -560,6 +560,7 @@ function tileDefToAreas(side) {
     for (let c = 0; c < 2; c++) {
       const isPlanet = side.layout[r][c] === 1;
       out.push({
+        area_place: r * 2 + c,
         type:     isPlanet ? 'planet' : 'space',
         capacity: side.capacity[r][c],
         income:   side.income[r][c],

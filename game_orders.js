@@ -9,19 +9,6 @@ let _selectedOrderForPlay      = null;  // { id, type, tile } — выбранн
 // ── Order placement ──────────────────────────────────────────────
 
 async function undoLastOrderViaAPI() {
-  const isPlacement = G.phase === 'order-placement';
-  const isExecution = G.phase === 'execution';
-  if (!isPlacement && !isExecution) return;
-
-  if (isPlacement && !G.ui?.order_placed_this_turn) {
-    showMsg('Нет приказов', 'В этом ходу приказ не выставлялся');
-    return;
-  }
-  if (isExecution && !G.ui?.order_played_this_turn && !G.pending_deploy && !G.pending_advance) {
-    showMsg('Нет действий', 'В этом ходу приказ не разыгрывался');
-    return;
-  }
-
   try {
     const res = await apiCall('/api/game/undo', { player_id: G.curP });
     if (res.success) {
@@ -36,7 +23,7 @@ async function undoLastOrderViaAPI() {
       addLog(`${G.players[G.curP].name} отменил действие`, G.curP);
       setPhase(G.phase);
     } else {
-      showMsg('Ошибка отмены', res.error || 'Не удалось отменить');
+      showMsg('Ошибка отмены', res.error || '');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -44,8 +31,6 @@ async function undoLastOrderViaAPI() {
 }
 
 async function passOrderTurnViaAPI() {
-  if (G.phase !== 'order-placement' && G.phase !== 'orders_placed') return;
-
   try {
     const res = await apiCall('/api/game/pass-turn', { player_id: G.curP });
     if (res.success) {
@@ -53,7 +38,7 @@ async function passOrderTurnViaAPI() {
       applyState(res.state);
       _selectedOrderForPlacement = null;
 
-      // Проверяем в какую фазу перешли
+      // Проверяем в какую фазу перешли (просто визуализируем)
       if (G.phase === 'orders_placed') {
         addLog('✅ Ожидание начала розыгрыша приказов...', -1);
         const nextPlayer = G.players[G.curP];
@@ -68,7 +53,7 @@ async function passOrderTurnViaAPI() {
         showHP(nextPlayer.name, 'Выставьте приказы', () => setPhase('order-placement'));
       }
     } else {
-      showMsg('Ошибка', res.error || 'Не удалось передать ход');
+      showMsg('Ошибка', res.error || '');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -76,29 +61,12 @@ async function passOrderTurnViaAPI() {
 }
 
 function selectOrderForPlacement(idx, order) {
-  if (G.phase !== 'order-placement') return;
-  if (!G.ui?.can_place_order) return;
   _selectedOrderForPlacement = { idx, id: order.id, type: order.type, owner: G.curP };
   renderSide();
 }
 
 async function placeOrderViaAPI(tileKey) {
-  if (G.phase !== 'order-placement') {
-    if (G.phase === 'orders_placed') {
-      showMsg('Запрещено', 'Размещение приказов завершено. Нажмите ПЕРЕДАТЬ ХОД.');
-    }
-    return;
-  }
-
-  if (!G.ui?.can_place_order) {
-    showMsg('Лимит достигнут', 'Вы уже разместили приказ в этом ходу или достигнут лимит');
-    return;
-  }
-
-  if (!_selectedOrderForPlacement) {
-    showMsg('Выберите приказ', 'Сначала выберите приказ слева');
-    return;
-  }
+  if (!_selectedOrderForPlacement) return;
 
   const orderData = _selectedOrderForPlacement;
   try {
@@ -111,9 +79,9 @@ async function placeOrderViaAPI(tileKey) {
       applyState(res.state);
       _selectedOrderForPlacement = null;
       addLog(`${G.players[G.curP].name} выставил ${ORDER_TYPES[orderData.type]?.name || 'приказ'}`, G.curP);
-      setPhase('order-placement');
+      setPhase(G.phase);
     } else {
-      showMsg('Ошибка', res.error || 'Не удалось разместить приказ');
+      showMsg('Ошибка', res.error || '');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -133,7 +101,6 @@ function passOrderTurn() {
 // ── Order play ────────────────────────────────────────────────────
 
 function selectOrderForPlay(orderId, orderType, tileKey) {
-  if (G.phase !== 'execution') return;
   if (_selectedOrderForPlay?.id === orderId) {
     // Второй клик — розыгрыш
     playOrderViaAPI(orderId);
@@ -146,8 +113,6 @@ function selectOrderForPlay(orderId, orderType, tileKey) {
 }
 
 async function playOrderViaAPI(orderId) {
-  if (G.phase !== 'execution') return;
-
   const ordersBefore = G.orders.filter(o => o.owner === G.curP);
   const order        = ordersBefore.find(o => o.id === orderId);
   const orderType    = ORDER_TYPES[order?.type];
@@ -174,7 +139,7 @@ async function playOrderViaAPI(orderId) {
         setPhase('execution');
       }
     } else {
-      showMsg('Ошибка', res.error || 'Не удалось разыграть приказ');
+      showMsg('Ошибка', res.error || '');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -217,7 +182,6 @@ async function _resolveJoker(playerId, choiceType) {
 }
 
 async function discardOrderViaAPI() {
-  if (G.phase !== 'execution') return;
   if (!_selectedOrderForPlay) return;
 
   const orderId   = _selectedOrderForPlay.id;
@@ -235,7 +199,7 @@ async function discardOrderViaAPI() {
       addLog(`${G.players[G.curP]?.name || 'Игрок'}: приказ "${orderName}" сброшен`, G.curP);
       setPhase('execution');
     } else {
-      showMsg('Ошибка', res.error || 'Не удалось сбросить приказ');
+      showMsg('Ошибка', res.error || '');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -243,8 +207,6 @@ async function discardOrderViaAPI() {
 }
 
 async function passOrderPlayTurnViaAPI() {
-  if (G.phase !== 'execution') return;
-
   try {
     const res = await apiCall('/api/game/pass-turn-order-play', {
       player_id: G.curP
@@ -263,7 +225,7 @@ async function passOrderPlayTurnViaAPI() {
         showHP(nextPlayer.name, 'Розыгрыш приказов', () => setPhase('execution'));
       }
     } else {
-      showMsg('Ошибка', res.error || 'Не удалось передать ход');
+      showMsg('Ошибка', res.error || '');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);
@@ -271,8 +233,6 @@ async function passOrderPlayTurnViaAPI() {
 }
 
 async function nextRoundViaAPI() {
-  if (G.phase !== 'end-round') return;
-
   try {
     const res = await apiCall('/api/game/next-round', { player_id: G.curP });
     if (res.success) {
@@ -280,7 +240,7 @@ async function nextRoundViaAPI() {
       addLog(`Раунд ${G.round}. Первый ход: ${G.players[G.curP].name}`, -1);
       showHP(G.players[G.curP].name, 'Расстановка приказов', () => setPhase('order-placement'));
     } else {
-      showMsg('Ошибка', res.error || 'Не удалось перейти к следующему раунду');
+      showMsg('Ошибка', res.error || '');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);

@@ -54,6 +54,20 @@ function _doSaveGame() {
   .finally(() => { isSaving = false; });
 }
 
+function _upgradeLoadedState(state) {
+  // Ensure all areas have area_place property for objective marker rendering
+  const map = state.map || {};
+  Object.values(map).forEach(tile => {
+    if (tile.areas && Array.isArray(tile.areas)) {
+      tile.areas.forEach((area, idx) => {
+        if (typeof area.area_place !== 'number') {
+          area.area_place = idx;
+        }
+      });
+    }
+  });
+}
+
 function loadGame() {
   fetch(`${API_URL}/api/list`)
   .then(r => r.json())
@@ -120,6 +134,9 @@ function loadGameFile(filename) {
         showMsg('Ошибка загрузки', `Файл повреждён или устарел:<br><strong>${validation.error}</strong>`);
         return;
       }
+
+      // Upgrade state to ensure all areas have area_place
+      _upgradeLoadedState(data.state);
 
       Object.keys(G).forEach(k => delete G[k]);
       Object.assign(G, data.state);

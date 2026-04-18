@@ -53,7 +53,6 @@ class BattleCard:
     def to_dict(self) -> dict:
         return {
             "name":     self.name,
-            "level":    self.level.value,
             "tier":     self.tier,
             "cost":     self.cost,
             "effect_1": self.effect_1,

@@ -197,7 +197,6 @@ class GameState:
             home_tile = SystemTile(
                 tile_type=TileType.HOME,
                 tile_def_id=home_tile_id,
-                owner=pi,
             )
             p.hand.append(home_tile)
 
@@ -207,7 +206,6 @@ class GameState:
                 tile = SystemTile(
                     tile_type=TileType.NORMAL,
                     tile_def_id=normal_id or "",
-                    owner=pi,
                 )
                 p.hand.append(tile)
 

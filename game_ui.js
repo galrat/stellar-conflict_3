@@ -137,7 +137,7 @@ function setPhase(phase) {
     renderSide(); renderBoard(G.lastKey);
   }
   else if (phase === 'warp-storm') {
-    const myStorm = G.warpStorms.find(ws => ws.owner === G.curP);
+    const myStorm = G.warpStorms[G.curP];
     if (myStorm && !G.warpConfirmed[G.curP]) {
       ins.innerHTML = `<strong>ВАРП-ШТОРМ</strong><br>${cp.name}: варп-шторм размещён на [${myStorm.tileKey}] ${myStorm.side}. Подтвердите или отмените.`;
       show('btn-undo-ws');
