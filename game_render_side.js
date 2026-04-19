@@ -237,11 +237,7 @@ function renderSide() {
     const info    = pd.deploy_info || {};
     const credits = info.credits - (pd.unit_costs?.credits || 0);
     const cash    = info.cash_tokens - (pd.unit_costs?.cash || 0);
-    const pool    = info.structure_pool || [];
-
-    const poolCounts = {};
-    for (const s of pool) poolCounts[s.type] = (poolCounts[s.type] || 0) + 1;
-    const bTypes = Object.keys(poolCounts);
+    const catalog = info.building_catalog || [];
 
     const poolEl = document.getElementById('unit-pool');
     poolEl.innerHTML = '';
@@ -256,9 +252,11 @@ function renderSide() {
     resLine.textContent = `💰${credits}  cash:${cash}`;
     poolEl.appendChild(resLine);
 
-    if (bTypes.length > 0) {
-      bTypes.forEach(bt => {
-        const cost = _DEPLOY_COSTS[bt] || 0;
+    if (catalog.length > 0) {
+      catalog.forEach(building => {
+        const bt = building.type;
+        const cost = building.cost;
+        const count = building.count;
         const cashDiscount = cash > 0 ? 2 : 0;
         const canAfford = credits >= cost || (cash > 0 && credits >= Math.max(0, cost - cashDiscount));
         const isSelected = _deploySelectedBuilding === bt;
@@ -267,7 +265,7 @@ function renderSide() {
         btn.style.cssText = 'width:100%;margin-bottom:4px;';
         btn.disabled = !canAfford;
         btn.title = !canAfford ? 'Не хватает кредитов' : '';
-        btn.textContent = `${_DEPLOY_ICONS[bt] || '🏠'} ${bt} (${cost}💰) ×${poolCounts[bt]}`;
+        btn.textContent = `${_DEPLOY_ICONS[bt] || '🏠'} ${bt} (${cost}💰) ×${count}`;
         btn.onclick = () => _deploySelectBuilding(bt);
         poolEl.appendChild(btn);
       });

@@ -1,7 +1,9 @@
 'use strict';
 // ══════════════════════════════════════════════
-//  DEPLOY ORDER UI
+//  DEPLOY ORDER UI — тонкий клиент
 // ══════════════════════════════════════════════
+// Все данные (цены, доступность, лимиты) берутся с сервера.
+// JS только отображает и передаёт пользовательский выбор.
 
 let _deployBasket          = [];
 let _deploySelectedUnit    = null;
@@ -9,17 +11,21 @@ let _deploySelectedBuilding = null;
 let _deployBlockReasons    = [];
 
 const _DEPLOY_UT    = { infantry:'ground', marines:'ground', mechanized:'ground', elite:'ground', fighter:'space', destroyer:'space' };
-const _DEPLOY_COSTS = { factory: 2, bastion: 2, city: 3 };
 const _DEPLOY_ICONS = { factory: '🏭', bastion: '🏯', city: '🏙' };
 
 function showDeployUI() {
   const pd = G.pending_deploy;
-  if (!pd) return;
+  if (!pd) {
+    console.log('showDeployUI: нет pending_deploy');
+    return;
+  }
   const step = pd.step;
-  if      (step === 'buy_units')        _showDeployBuyUnits();
-  else if (step === 'place_units')      _showDeployPlaceUnitsSide();
-  else if (step === 'resolve_overflow') _showDeployResolveOverflow();
-  else if (step === 'buy_building')     _showDeployBuyBuilding();
+  console.log('showDeployUI: step=' + step);
+  if      (step === 'buy_units')        { console.log('→ открываю buy_units'); _showDeployBuyUnits(); }
+  else if (step === 'place_units')      { console.log('→ открываю place_units'); _showDeployPlaceUnitsSide(); }
+  else if (step === 'resolve_overflow') { console.log('→ открываю resolve_overflow'); _showDeployResolveOverflow(); }
+  else if (step === 'buy_building')     { console.log('→ открываю buy_building'); _showDeployBuyBuilding(); }
+  else                                   { console.warn('Unknown step: ' + step); }
 }
 
 // ── Step: buy_units ──────────────────────────────────────────────
@@ -38,7 +44,21 @@ function _renderDeployBuyUnitsModal() {
   const forge    = info.forge_tokens;
   const cash     = info.cash_tokens;
 
-  // Compute basket totals
+  // DEBUG: выводим информацию о deploy
+  const availableCount = catalog.filter(u => u.available).length;
+  const blockedCount = catalog.filter(u => !u.available).length;
+  console.log('DEPLOY_INFO - Каталог:', catalog.length, 'юнитов | Доступно:', availableCount, '| Заблокировано:', blockedCount);
+  console.log('DEPLOY_INFO - Capacity:', capacity, '| Credits:', credits, '| Forge:', forge, '| Cash:', cash);
+  if (availableCount === 0 && catalog.length > 0) {
+    console.log('DEPLOY_INFO - ВСЕ ЮНИТЫ ЗАБЛОКИРОВАНЫ. Причины:');
+    catalog.forEach(u => {
+      if (!u.available) {
+        console.log('  -', u.name, ':', u.reason);
+      }
+    });
+  }
+
+  // Подсчёт состояния корзины
   let totalCred = 0, forgeSpent = 0, cashSpent = 0;
   const bPool = {};
   for (const item of _deployBasket) {
@@ -62,21 +82,34 @@ function _renderDeployBuyUnitsModal() {
   if (forgeLeft < 0) _deployBlockReasons.push(`не хватает ${-forgeLeft}🔨`);
   if (cashLeft  < 0) _deployBlockReasons.push(`не хватает ${-cashLeft} cash`);
 
+  // Ренден каталога: берем данные из deploy_info, НЕ вычисляем локально
   const catalogHtml = catalog.map(u => {
     const inBasket  = bPool[u.unit_key] || 0;
     const remaining = u.pool_available - inBasket;
-    const disabled  = !u.can_buy || remaining <= 0;
+    // available — флаг с сервера (уже учитывает пул и тир)
+    // remaining > 0 проверяет что еще есть в пуле после добавленных в корзину
+    const available = u.available && remaining > 0;
     const icon      = u.unitType === 'ground' ? '⚔' : '🚀';
+
+    console.log(`Unit: ${u.name}, available=${u.available}, remaining=${remaining}, btn_available=${available}`);
+
+    // Дополнительные отметки из сервера
     const tNote     = u.needs_tier_forge ? ' <span style="color:#ffb74d">[+1🔨]</span>' : '';
     const fNote     = u.cost_forge ? ` <span style="color:#ff8a65">+${u.cost_forge}🔨</span>` : '';
+
+    // Если недоступен — показать причину вместо цены
+    const statusHtml = available
+      ? `<span style="color:#4fc3f7">${u.cost}💰${fNote}${tNote}</span>`
+      : `<span style="color:#ff8a80;font-size:.85rem">${u.reason || 'недоступен'}</span>`;
+
     return `
       <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;
                   background:rgba(255,255,255,.05);margin-bottom:3px;border-radius:4px;
-                  ${disabled ? 'opacity:.35;' : 'cursor:pointer;'}"
-           ${disabled ? '' : `onclick="_deployAddUnit('${u.unit_key}')"`}>
+                  ${!available ? 'opacity:.35;' : 'cursor:pointer;'}"
+           ${available ? `onclick="_deployAddUnit('${u.unit_key}')"` : ''}>
         <span>${icon} T${u.tier}</span>
         <span style="flex:1">${u.name}</span>
-        <span style="color:#4fc3f7">${u.cost}💰${fNote}${tNote}</span>
+        ${statusHtml}
         <span style="color:#888;font-size:.8rem">пул:${remaining}</span>
       </div>`;
   }).join('');
@@ -119,6 +152,10 @@ function _renderDeployBuyUnitsModal() {
     <button class="abtn bp" style="width:100%;${!canConfirm && _deployBasket.length ? 'opacity:.5;' : ''}"
             onclick="_deployConfirmBasket()">
       ${_deployBasket.length ? '✓ Купить юнитов' : '→ Пропустить юнитов'}
+    </button>
+    <button class="abtn bw" style="width:100%;margin-top:4px;"
+            onclick="closeMsg();undoLastOrderViaAPI()">
+      ↩ Отменить deploy
     </button>`;
 
   showMsg('🏗 Deploy — Покупка юнитов', html);
