@@ -10,8 +10,13 @@ let _deploySelectedUnit    = null;
 let _deploySelectedBuilding = null;
 let _deployBlockReasons    = [];
 
-const _DEPLOY_UT    = { infantry:'ground', marines:'ground', mechanized:'ground', elite:'ground', fighter:'space', destroyer:'space' };
-const _DEPLOY_ICONS = { factory: '🏭', bastion: '🏯', city: '🏙' };
+// ── UI State Cleanup ──────────────────────────────────
+function _resetDeployUI() {
+  _deployBasket = [];
+  _deploySelectedUnit = null;
+  _deploySelectedBuilding = null;
+  _deployBlockReasons = [];
+}
 
 function showDeployUI() {
   const pd = G.pending_deploy;
@@ -58,13 +63,13 @@ function _renderDeployBuyUnitsModal() {
     });
   }
 
-  // Подсчёт состояния корзины
+  // Подсчёт состояния корзины (используем готовые значения с сервера)
   let totalCred = 0, forgeSpent = 0, cashSpent = 0;
   const bPool = {};
   for (const item of _deployBasket) {
     const u = catalog.find(c => c.unit_key === item.unit_key);
     if (!u) continue;
-    forgeSpent += (u.needs_tier_forge ? 1 : 0) + (u.cost_forge || 0);
+    forgeSpent += u.total_forge_cost || 0;  // ← готовое значение с сервера
     cashSpent  += item.use_cash ? 1 : 0;
     totalCred  += u.cost - (item.use_cash ? 2 : 0);
     bPool[item.unit_key] = (bPool[item.unit_key] || 0) + 1;
@@ -230,9 +235,9 @@ function _showDeployResolveOverflow() {
   const placed  = pd.placed || [];
   const info    = pd.deploy_info || {};
   const catalog = info.unit_catalog || [];
+  const map_    = info.unit_type_tier_map || {};  // {(unitType, tier): unit_key}
   const areas   = G.map[pd.tile_key]?.areas || [];
   const getName = k => catalog.find(c => c.unit_key === k)?.name || k;
-  const UTR = {ground:{0:'infantry',1:'marines',2:'mechanized',3:'elite'},space:{0:'fighter',2:'destroyer'}};
 
   // compute counts
   const counts = {};
@@ -249,7 +254,8 @@ function _showDeployResolveOverflow() {
 
     // Map troops belonging to current player
     (a?.troops || []).filter(t => t.player === G.curP).forEach(t => {
-      const uk = UTR[t.unitType]?.[t.tier] || `${t.unitType}T${t.tier}`;
+      const key = `${t.unitType},${t.tier}`;
+      const uk = map_[key] || `${t.unitType}T${t.tier}`;
       html += `<button class="abtn bw" style="margin:2px;"
                        onclick="_deployRemoveOverflow(${aIdx},'${uk}')">
                  ✕ ${getName(uk)} <span style="font-size:.75rem;color:#888">(карта)</span>

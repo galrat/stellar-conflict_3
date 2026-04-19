@@ -676,6 +676,11 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             order_type = played_order.get('type') if played_order else None
             order_tile = played_order.get('tile') if played_order else None
 
+            # Для deploy/advance сохраняем snapshot ДО розыгрыша — чтобы undo вернул приказ на доску
+            if order_type in ('deploy', 'advance'):
+                clear_temp_snapshots()
+                save_temp_snapshot()
+
             # Разыграть приказ (убрать с поля, вернуть в руку)
             success, message, new_state = play_order(active_game, request.player_id, request.order_id)
 

@@ -3,6 +3,8 @@
 //  ORDER PLACEMENT + PLAY  (Stage 2)
 // ══════════════════════════════════════════════
 
+console.log('game_orders.js загружается');
+
 let _selectedOrderForPlacement = null;  // { idx, id, type, owner }
 let _selectedOrderForPlay      = null;  // { id, type, tile } — выбранный приказ для розыгрыша/сброса
 
@@ -13,15 +15,22 @@ async function undoLastOrderViaAPI() {
     const res = await apiCall('/api/game/undo', { player_id: G.curP });
     if (res.success) {
       closeMsg();  // закрыть deploy/advance modal если открыт
-      _deployBasket = [];
-      _deploySelectedUnit = null;
-      _deploySelectedBuilding = null;
-      if (typeof _advanceClearSelection === 'function') _advanceClearSelection();
-      applyState(res.state);
+
+      // Очищаем ВСЕ временные переменные UI в одном месте
+      _resetDeployUI();
+      _resetAdvanceUI();
       _selectedOrderForPlacement = null;
       _selectedOrderForPlay = null;
+
+      const prevPhase = G.phase;
+      applyState(res.state);
+      // applyState может уже вызвать setPhase если фаза изменилась
+      // Если фаза не изменилась, вызвать setPhase без render чтобы очистить состояние
+      if (G.phase === prevPhase) {
+        setPhase(G.phase, false);
+      }
+
       addLog(`${G.players[G.curP].name} отменил действие`, G.curP);
-      setPhase(G.phase);
     } else {
       showMsg('Ошибка отмены', res.error || '');
     }
@@ -36,22 +45,19 @@ async function passOrderTurnViaAPI() {
     if (res.success) {
       _lastCleanState = JSON.parse(JSON.stringify(res.state));
       applyState(res.state);
+      // applyState вызовет setPhase если фаза изменилась
       _selectedOrderForPlacement = null;
 
-      // Проверяем в какую фазу перешли (просто визуализируем)
-      if (G.phase === 'orders_placed') {
-        addLog('✅ Ожидание начала розыгрыша приказов...', -1);
-        const nextPlayer = G.players[G.curP];
-        showHP(nextPlayer.name, 'Ожидание розыгрыша', () => setPhase('orders_placed'));
-      } else if (G.phase === 'execution') {
-        addLog('🎮 Начало розыгрыша приказов!', -1);
-        const nextPlayer = G.players[G.curP];
-        showHP(nextPlayer.name, 'Розыгрыш приказов', () => setPhase('execution'));
-      } else {
-        // Остаемся в order-placement, смена игрока
-        const nextPlayer = G.players[G.curP];
-        showHP(nextPlayer.name, 'Выставьте приказы', () => setPhase('order-placement'));
-      }
+      // Визуализируем смену игрока или фазы через showHP
+      const nextPlayer = G.players[G.curP];
+      const actionLabels = {
+        'order-placement': 'Выставьте приказы',
+        'orders_placed': 'Ожидание розыгрыша',
+        'execution': 'Розыгрыш приказов',
+      };
+      const action = actionLabels[G.phase] || 'Ход';
+      addLog(`${nextPlayer.name}: ${action}`, -1);
+      showHP(nextPlayer.name, action, () => closeHP());
     } else {
       showMsg('Ошибка', res.error || '');
     }
@@ -101,11 +107,14 @@ function passOrderTurn() {
 // ── Order play ────────────────────────────────────────────────────
 
 function selectOrderForPlay(orderId, orderType, tileKey) {
+  console.log('selectOrderForPlay: orderId=' + orderId + ', selected=' + _selectedOrderForPlay?.id);
   if (_selectedOrderForPlay?.id === orderId) {
     // Второй клик — розыгрыш
+    console.log('→ ВТОРОЙ КЛИК - розыгрыш приказа');
     playOrderViaAPI(orderId);
   } else {
     // Первый клик — выделение
+    console.log('→ ПЕРВЫЙ КЛИК - выделение. Кликни еще раз чтобы разыграть');
     _selectedOrderForPlay = { id: orderId, type: orderType, tile: tileKey };
     renderSide();
     renderBoard();
@@ -125,20 +134,27 @@ async function playOrderViaAPI(orderId) {
     });
     if (res.success) {
       _selectedOrderForPlay = null;
+      console.log('playOrderViaAPI: ответ получен, type=' + orderType?.id);
       applyState(res.state);
+      console.log('applyState выполнена, G.pending_deploy=' + !!G.pending_deploy);
       addLog(`${G.players[G.curP]?.name || 'Игрок'}: приказ "${orderName}" разыгран`, G.curP);
       // Check if dominate produced a joker choice
       if (res.state?.pending_joker_choice) {
+        console.log('→ Joker choice');
         _showJokerChoiceUI(res.state.pending_joker_choice);
       } else if (res.state?.pending_deploy) {
+        console.log('→ Deploy UI (pending_deploy есть)');
         setPhase('execution');
         showDeployUI();
       } else if (res.state?.pending_advance) {
+        console.log('→ Advance UI');
         showAdvanceUI();
       } else {
+        console.log('→ Ничего нет, только execution');
         setPhase('execution');
       }
     } else {
+      console.log('playOrderViaAPI: ошибка - ' + res.error);
       showMsg('Ошибка', res.error || '');
     }
   } catch(e) {
@@ -216,13 +232,14 @@ async function passOrderPlayTurnViaAPI() {
       _selectedOrderForPlay = null;
       applyState(res.state);
 
+      // applyState автоматически вызовет setPhase если фаза изменилась
+      // Здесь только логируем и показываем UI для смены игрока
       if (G.phase === 'end-round') {
         addLog('✅ Все приказы разыграны! Конец раунда.', -1);
-        setPhase('end-round');
       } else if (G.phase === 'execution') {
         const nextPlayer = G.players[G.curP];
         addLog(`${nextPlayer.name} ходит в фазе розыгрыша`, -1);
-        showHP(nextPlayer.name, 'Розыгрыш приказов', () => setPhase('execution'));
+        showHP(nextPlayer.name, 'Розыгрыш приказов', () => closeHP());
       }
     } else {
       showMsg('Ошибка', res.error || '');
@@ -237,8 +254,9 @@ async function nextRoundViaAPI() {
     const res = await apiCall('/api/game/next-round', { player_id: G.curP });
     if (res.success) {
       applyState(res.state);
+      // applyState автоматически вызовет setPhase('order-placement')
       addLog(`Раунд ${G.round}. Первый ход: ${G.players[G.curP].name}`, -1);
-      showHP(G.players[G.curP].name, 'Расстановка приказов', () => setPhase('order-placement'));
+      showHP(G.players[G.curP].name, 'Расстановка приказов', () => closeHP());
     } else {
       showMsg('Ошибка', res.error || '');
     }

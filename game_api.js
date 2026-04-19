@@ -23,6 +23,7 @@ function applyState(newState) {
   const saved = {};
   uiFields.forEach(k => { saved[k] = G[k]; });
   const prevPlayer = G.curP;
+  const prevPhase = G.phase;
   Object.assign(G, newState);
   // Явно очищаем pending-поля если сервер их удалил
   if (!('pending_deploy' in newState)) G.pending_deploy = null;
@@ -31,10 +32,18 @@ function applyState(newState) {
   uiFields.forEach(k => { G[k] = saved[k]; });
   // Сбросить выбранный приказ при смене игрока
   if (G.curP !== prevPlayer) _selectedOrderForPlay = null;
+
   syncLog();
   renderBoard();
   renderSide();
   updateHeader();
+
+  // Если фаза изменилась (Stage 2), вызвать setPhase для полного обновления UI
+  // Для Stage 1 фаз setPhase не нужен, они управляют своим UI сами
+  const stage2Phases = ['order-placement', 'orders_placed', 'execution', 'end-round'];
+  if (G.phase !== prevPhase && stage2Phases.includes(G.phase)) {
+    setPhase(G.phase);
+  }
 }
 
 async function _restoreGame(phase) {

@@ -36,7 +36,7 @@
           "owner": 0
         },
         {
-          "id": "p1_advance_2",
+          "id": "p1_advance_1",
           "type": "advance",
           "owner": 0
         },
@@ -59,13 +59,18 @@
           "id": "p1_dominate_2",
           "type": "dominate",
           "owner": 0
+        },
+        {
+          "id": "p1_deploy_1",
+          "type": "deploy",
+          "owner": 0
         }
       ],
-      "credits": 6,
+      "credits": 0,
       "tokens": {
         "support": 0,
-        "discount": 2,
-        "forge": 2
+        "discount": 0,
+        "forge": 1
       },
       "hand_battle_cards": [
         {
@@ -545,7 +550,7 @@
     }
   ],
   "phase": "execution",
-  "curP": 0,
+  "curP": 1,
   "round": 1,
   "totalRounds": 8,
   "firstPlayer": 0,
@@ -620,6 +625,12 @@
               "tier": 0,
               "ready_to_move": 0,
               "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -642,9 +653,26 @@
               "tier": 1,
               "ready_to_move": 0,
               "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 1,
+              "player": 0,
+              "unit_status": "active"
             }
           ],
-          "structures": []
+          "structures": [
+            {
+              "type": "city",
+              "player": 0
+            }
+          ]
         }
       ],
       "needsObjective": true,
@@ -1106,14 +1134,6 @@
   "targetMarkers": [],
   "orders": [
     {
-      "id": "p1_deploy_1",
-      "type": "deploy",
-      "owner": 0,
-      "tile": "0,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
       "id": "p2_deploy_1",
       "type": "deploy",
       "owner": 1,
@@ -1122,7 +1142,7 @@
       "revealed": false
     },
     {
-      "id": "p1_advance_1",
+      "id": "p1_advance_2",
       "type": "advance",
       "owner": 0,
       "tile": "1,0",
@@ -1148,8 +1168,8 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    false,
-    true
+    true,
+    false
   ],
   "log": [
     {
@@ -1321,20 +1341,16 @@
       "player_id": -1
     },
     {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 0
+      "message": "Stage 2 начат. Ход: Alpha",
+      "player_id": -1
     },
     {
-      "message": "Игрок 0: Dominate — получено: 1 discount, 1 forge",
-      "player_id": 0
+      "message": "Карта готова. Инициализация Stage 2...",
+      "player_id": -1
     },
     {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
-      "player_id": 1
+      "message": "Игра загружена",
+      "player_id": -1
     },
     {
       "message": "Приказ 'Dominate' разыгран",
@@ -1351,6 +1367,30 @@
     {
       "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
       "player_id": 1
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Игрок 0: Dominate — получено: 1 discount, 1 forge",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
+      "player_id": 1
+    },
+    {
+      "message": "Игра загружена",
+      "player_id": -1
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 0
     }
   ],
   "event_cards_offered": [
@@ -1360,5 +1400,19 @@
   "event_selection_done": [
     false,
     false
-  ]
+  ],
+  "ui": {
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 2",
+    "buttons": [],
+    "playable_order_ids": [
+      "p1_deploy_1"
+    ],
+    "blocked_tiles": [
+      "1,0"
+    ],
+    "can_place_order": false,
+    "order_placed_this_turn": false,
+    "order_played_this_turn": false
+  },
+  "pending_advance": null
 }

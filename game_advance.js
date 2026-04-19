@@ -13,10 +13,20 @@ function _advanceClearSelection() {
   _advanceOrbitalShipArea = null;
 }
 
+// ── UI State Cleanup ──────────────────────────────────
+function _resetAdvanceUI() {
+  _advanceClearSelection();  // очистить все advance-переменные
+}
+
 function showAdvanceUI() {
   const pa = G.pending_advance;
-  if (!pa) { setPhase('execution'); return; }
-  setPhase('execution');  // renderSide + renderBoard через setPhase
+  if (!pa) {
+    setPhase('execution');
+    return;
+  }
+  // applyState уже вызвал setPhase если фаза изменилась,
+  // но мы здесь вызываем setPhase сказать что фаза 'execution' с advance в процессе
+  setPhase('execution');
   if (pa.step === 'orbital_defend') {
     _showAdvanceOrbitalDefendModal();
   }

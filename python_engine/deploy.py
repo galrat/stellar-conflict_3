@@ -57,6 +57,7 @@ _UNIT_TYPE_MAP = {
 _KEY_BY_TYPE_TIER = {v: k for k, v in _UNIT_TYPE_MAP.items()}
 
 STRUCTURE_COSTS = {'factory': 2, 'bastion': 2, 'city': 3}
+STRUCTURE_ICONS = {'factory': '🏭', 'bastion': '🏯', 'city': '🏙'}
 STRUCTURE_MAX_COUNT = 9  # резерв каждого типа постройки на игрока
 
 
@@ -734,6 +735,24 @@ def get_deploy_info(state, player_id, tile_key):
         tier_gap = max(0, tier - tile_info['city_count'])
         needs_tier_forge = tier_gap == 1 and forge_tokens >= 1
         can_buy_tier = tier <= tile_info['city_count'] or needs_tier_forge
+
+        # Определить доступность и причину блокировки
+        available = in_pool > 0 and can_buy_tier
+        reason = None
+        if in_pool == 0:
+            reason = f'Нет в пуле (макс {stats["max_count"]})'
+        elif not can_buy_tier:
+            # Tier недоступен: либо разница > 1, либо разница == 1 но нет forge
+            if tier_gap > 1:
+                reason = f'Требуется {tier} городов (есть {tile_info["city_count"]})'
+            elif tier_gap == 1:
+                reason = 'Требуется forge для этого уровня'
+            else:
+                reason = 'Недоступен'
+
+        # Полная стоимость forge: за тир (если нужен) + за самого юнита
+        total_forge_cost = (1 if needs_tier_forge else 0) + stats.get('cost_forge', 0)
+
         unit_catalog.append({
             'unit_key':         unit_key,
             'name':             stats['name'],
@@ -741,18 +760,49 @@ def get_deploy_info(state, player_id, tile_key):
             'tier':             tier,
             'cost':             stats['cost'],
             'cost_forge':       stats.get('cost_forge', 0),
+            'total_forge_cost': total_forge_cost,  # ← готовое значение для UI
             'max_count':        stats['max_count'],
             'pool_available':   in_pool,
-            'needs_tier_forge': needs_tier_forge,
-            'can_buy_tier':     can_buy_tier,
-            'can_buy':          in_pool > 0 and can_buy_tier,
+            'available':        available,
+            'reason':           reason,
         })
+
+    # DEBUG: логирование deploy_info
+    print(f"🔍 get_deploy_info: tile={tile_key}, player={player_id}")
+    print(f"   has_factory={tile_info['has_factory']}, capacity={tile_info['capacity']}, city_count={tile_info['city_count']}")
+    print(f"   credits={credits}, forge={forge_tokens}, cash={cash_tokens}")
+    print(f"   unit_catalog: {len(unit_catalog)} юнитов")
+    if unit_catalog:
+        available_count = sum(1 for u in unit_catalog if u['available'])
+        print(f"   - доступно: {available_count}")
+        for u in unit_catalog[:3]:
+            print(f"     {u['name']:20s} T{u['tier']} available={u['available']} reason={u['reason']}")
+
+    structure_pool = _compute_structure_pool(state, player_id)
+    building_catalog = [
+        {
+            'type': bt,
+            'icon': STRUCTURE_ICONS.get(bt, ''),
+            'cost': STRUCTURE_COSTS.get(bt, 0),
+            'available': cnt > 0,
+            'count': cnt,
+        }
+        for bt, cnt in structure_pool.items()
+    ]
+
+    # Обратное преобразование: "unitType,tier" → unit_key (строковый ключ для JSON)
+    unit_type_tier_map = {}
+    for unit_key, (unit_type, tier) in _UNIT_TYPE_MAP.items():
+        unit_type_tier_map[f'{unit_type},{tier}'] = unit_key
 
     return {
         'has_factory':     tile_info['has_factory'],
         'capacity':        tile_info['capacity'],
         'city_count':      tile_info['city_count'],
         'unit_catalog':    unit_catalog,
+        'building_catalog': building_catalog,
+        'building_costs':  STRUCTURE_COSTS,  # {'factory': 2, 'bastion': 2, 'city': 3}
+        'unit_type_tier_map': unit_type_tier_map,  # {"unitType,tier": unit_key}
         'available_areas': [
             {
                 'idx':           i,
@@ -766,11 +816,6 @@ def get_deploy_info(state, player_id, tile_key):
         'credits':         credits,
         'forge_tokens':    forge_tokens,
         'cash_tokens':     cash_tokens,
-        'structure_pool':  [
-            {'type': t}
-            for t, cnt in _compute_structure_pool(state, player_id).items()
-            for _ in range(cnt)
-        ],
     }
 
 

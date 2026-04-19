@@ -213,7 +213,7 @@ function renderSide() {
         const u = catalog.find(c => c.unit_key === uk);
         const isSelected = _deploySelectedUnit === uk;
         const tok = document.createElement('div');
-        tok.className = `ttok ${_DEPLOY_UT[uk] || 'ground'}${isSelected ? ' sel' : ''}`;
+        tok.className = `ttok ${u?.unitType || 'ground'}${isSelected ? ' sel' : ''}`;
         tok.style.background   = hexAlpha(facColor, isSelected ? 0.35 : 0.15);
         tok.style.borderColor  = facColor;
         tok.style.color        = facColor;
@@ -255,6 +255,7 @@ function renderSide() {
     if (catalog.length > 0) {
       catalog.forEach(building => {
         const bt = building.type;
+        const icon = building.icon || '🏠';
         const cost = building.cost;
         const count = building.count;
         const cashDiscount = cash > 0 ? 2 : 0;
@@ -265,7 +266,7 @@ function renderSide() {
         btn.style.cssText = 'width:100%;margin-bottom:4px;';
         btn.disabled = !canAfford;
         btn.title = !canAfford ? 'Не хватает кредитов' : '';
-        btn.textContent = `${_DEPLOY_ICONS[bt] || '🏠'} ${bt} (${cost}💰) ×${count}`;
+        btn.textContent = `${icon} ${bt} (${cost}💰) ×${count}`;
         btn.onclick = () => _deploySelectBuilding(bt);
         poolEl.appendChild(btn);
       });
@@ -277,9 +278,11 @@ function renderSide() {
     }
 
     if (_deploySelectedBuilding) {
+      const selectedBuilding = catalog.find(b => b.type === _deploySelectedBuilding);
+      const selectedIcon = selectedBuilding?.icon || '';
       const hint = document.createElement('div');
       hint.style.cssText = 'font-size:.68rem;color:var(--gold);margin:6px 0;';
-      hint.textContent = `✓ Выбрано: ${_DEPLOY_ICONS[_deploySelectedBuilding] || ''} ${_deploySelectedBuilding} — кликните планету на карте`;
+      hint.textContent = `✓ Выбрано: ${selectedIcon} ${_deploySelectedBuilding} — кликните планету на карте`;
       poolEl.appendChild(hint);
 
       if (cash > 0) {

@@ -102,9 +102,13 @@ function showEventCards(playerIdx) {
 
 // ── Phase control ────────────────────────────────────────────────
 
-// PHASE  — only sets UI state, never touches tileSnap/unitsPlaced
-function setPhase(phase) {
+// PHASE — sets UI state, never touches tileSnap/unitsPlaced
+// forceRender: если false и фаза не изменилась, только очистить UI-состояние без render
+function setPhase(phase, forceRender = true) {
+  const phaseChanged = G.phase !== phase;
   G.phase = phase;
+
+  // Всегда очищаем UI-состояние при любом вызове setPhase
   G.selHandIdx = null;
   G.selUnitIdx = null;
   G.selUnitType = null;
@@ -115,6 +119,9 @@ function setPhase(phase) {
     if (el) el.style.display = 'none';
   });
   _selectedOrderForPlay = null;
+
+  // Если фаза не изменилась и forceRender=false, только очистили состояние, выход
+  if (!phaseChanged && !forceRender) return;
 
   const cp  = G.players[G.curP];
   const ins = document.getElementById('pinstr');

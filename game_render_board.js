@@ -203,7 +203,7 @@ function renderBoard() {
           pd.placed.filter(p => p.area_idx === realIdx).forEach(p => {
             const uInfo = catalog.find(c => c.unit_key === p.unit_key);
             const tok = document.createElement('div');
-            const uType = _DEPLOY_UT[p.unit_key] || 'ground';
+            const uType = uInfo?.unitType || 'ground';
             tok.className = `atroop ${uType}`;
             tok.style.background = hexAlpha(facColor, 0.25);
             tok.style.borderColor = facColor;
