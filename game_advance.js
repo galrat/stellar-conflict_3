@@ -1,11 +1,8 @@
 'use strict';
-// ══════════════════════════════════════════════
-//  ADVANCE ORDER UI
-// ══════════════════════════════════════════════
 
-let _advanceSelectedShip    = null;  // {area_idx, unit, origin}
-let _advanceSelectedGround  = null;  // {area_idx, unit, origin}
-let _advanceOrbitalShipArea = null;  // int: realIdx в активном тайле
+let _advanceSelectedShip    = null;
+let _advanceSelectedGround  = null;
+let _advanceOrbitalShipArea = null;
 
 function _advanceClearSelection() {
   _advanceSelectedShip    = null;
@@ -13,9 +10,8 @@ function _advanceClearSelection() {
   _advanceOrbitalShipArea = null;
 }
 
-// ── UI State Cleanup ──────────────────────────────────
 function _resetAdvanceUI() {
-  _advanceClearSelection();  // очистить все advance-переменные
+  _advanceClearSelection();
 }
 
 function showAdvanceUI() {
@@ -24,11 +20,11 @@ function showAdvanceUI() {
     setPhase('execution');
     return;
   }
-  // applyState уже вызвал setPhase если фаза изменилась,
-  // но мы здесь вызываем setPhase сказать что фаза 'execution' с advance в процессе
   setPhase('execution');
   if (pa.step === 'orbital_defend') {
     _showAdvanceOrbitalDefendModal();
+  } else if (pa.step === 'capacity_overflow') {
+    _showOverflowModal();
   }
 }
 
@@ -53,22 +49,22 @@ async function _advanceChooseSource(sourceTileKey) {
 // ── ships ──────────────────────────────────────────────────────
 
 function _advanceSelectShip(ship) {
-  const same = _advanceSelectedShip?.area_idx === ship.area_idx
-            && _advanceSelectedShip?.origin   === ship.origin;
+  const same = _advanceSelectedShip?.ship_id === ship.ship_id;
   _advanceSelectedShip = same ? null : ship;
   renderSide(); renderBoard();
 }
 
-async function _advanceMoveShip(fromAreaIdx, toAreaIdx) {
+async function _advanceMoveShip(shipId, toAreaIdx) {
   try {
     const res = await apiCall('/api/game/advance-move-ship', {
-      player_id:     G.curP,
-      from_area_idx: fromAreaIdx,
-      to_area_idx:   toAreaIdx,
+      player_id:   G.curP,
+      ship_id:     shipId,
+      to_area_idx: toAreaIdx,
     });
     if (res.success) {
       _advanceClearSelection();
       applyState(res.state);
+      renderBoard();
       showAdvanceUI();
     } else {
       showMsg('Ошибка', res.error || 'Нельзя переместить корабль');
@@ -92,27 +88,41 @@ async function _advanceNextStep() {
 // ── ground ─────────────────────────────────────────────────────
 
 function _advanceSelectGround(unit) {
-  const same = _advanceSelectedGround?.area_idx === unit.area_idx
-            && _advanceSelectedGround?.origin   === unit.origin;
+  const same = _advanceSelectedGround?.ground_id === unit.ground_id;
   _advanceSelectedGround = same ? null : unit;
   renderSide(); renderBoard();
 }
 
-async function _advanceMoveGround(fromAreaIdx, toAreaIdx) {
+async function _advanceMoveGround(groundId, toAreaIdx) {
   try {
     const res = await apiCall('/api/game/advance-move-ground', {
-      player_id:     G.curP,
-      from_area_idx: fromAreaIdx,
-      to_area_idx:   toAreaIdx,
+      player_id:   G.curP,
+      ground_id:   groundId,
+      to_area_idx: toAreaIdx,
     });
     if (res.success) {
       _advanceClearSelection();
       applyState(res.state);
+      renderBoard();
       showAdvanceUI();
     } else {
       showMsg('Ошибка', res.error || 'Нельзя переместить юнита');
     }
   } catch(e) { showMsg('Ошибка сервера', e.message); }
+}
+
+async function _advanceNextStepUI() {
+  const pa = G.pending_advance;
+  if (!pa) return;
+
+  const step = pa.step;
+  if (step === 'choose_source') {
+    // Skip source selection
+    _advanceChooseSource(null);
+  } else if (step === 'ships') {
+    // Move to ground step
+    _advanceNextStep();
+  }
 }
 
 async function _advanceCommit() {
@@ -244,7 +254,43 @@ async function _advanceOrbitalRemove(defenderIdx, areaIdx, unitIdx) {
   } catch(e) { showMsg('Ошибка сервера', e.message); }
 }
 
-// ── Map area click handler ─────────────────────────────────────
+function _showShipSelectModal(ships) {
+  let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  ships.forEach(s => {
+    const name = getUnitName(G.players[G.curP].faction, 'space', s.unit.tier ?? 0);
+    const shipId = s.ship_id;
+    html += `<button class="abtn br" style="width:100%" onclick="window._selectShipById(${shipId});closeMsg();renderBoard();">
+      🚀 ${name} T${s.unit.tier ?? 0}
+    </button>`;
+  });
+  html += '</div>';
+  showMsg('Выбрать корабль', html);
+  window._shipOptions = ships;
+}
+
+function _showGroundSelectModal(units) {
+  let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  units.forEach(g => {
+    const name = getUnitName(G.players[G.curP].faction, 'ground', g.unit.tier ?? 0);
+    const groundId = g.ground_id;
+    html += `<button class="abtn bp" style="width:100%" onclick="window._selectGroundById(${groundId});closeMsg();renderBoard();">
+      ⚔ ${name} T${g.unit.tier ?? 0}
+    </button>`;
+  });
+  html += '</div>';
+  showMsg('Выбрать юнита', html);
+  window._groundOptions = units;
+}
+
+function _selectShipById(shipId) {
+  const ship = (window._shipOptions || []).find(s => s.ship_id === shipId);
+  if (ship) _advanceSelectShip(ship);
+}
+
+function _selectGroundById(groundId) {
+  const unit = (window._groundOptions || []).find(g => g.ground_id === groundId);
+  if (unit) _advanceSelectGround(unit);
+}
 
 function advanceAreaClick(tileKey, displayIdx) {
   const pa = G.pending_advance;
@@ -258,76 +304,160 @@ function advanceAreaClick(tileKey, displayIdx) {
   const activeKey = pa.tile_key;
   const sourceKey = pa.source_tile;
 
+  // Choose source: только для выбора source тайла
+  if (step === 'choose_source') {
+    const adjacent = pa.adjacent_tiles || [];
+    if (adjacent.includes(tileKey)) {
+      _advanceChooseSource(tileKey);
+    }
+    return;
+  }
+
+  // Ships: только в одобренные области космоса
   if (step === 'ships') {
     if (!_advanceSelectedShip) {
       const origin = tileKey === activeKey ? 'active'
                    : tileKey === sourceKey  ? 'source' : null;
       if (!origin) return;
-      const ship = (G.ui?.advance_available_ships || [])
-        .find(s => s.area_idx === realIdx && s.origin === origin);
-      if (ship) _advanceSelectShip(ship);
+      const shipsInArea = (pa.available_ships || [])
+        .filter(s => s.area_idx === realIdx && s.origin === origin);
+
+      if (!shipsInArea.length) return;
+
+      if (shipsInArea.length === 1) {
+        _advanceSelectShip(shipsInArea[0]);
+      } else {
+        _showShipSelectModal(shipsInArea);
+      }
       return;
     }
-    if (tileKey !== activeKey) {
-      showMsg('Неверная цель', 'Корабли перемещаются только в активную систему');
+    // Клик на ту же область — снять выделение
+    const selShip = _advanceSelectedShip;
+    const selOrigin = selShip.origin === 'active' ? activeKey : sourceKey;
+    if (tileKey === selOrigin && realIdx === selShip.area_idx) {
+      _advanceSelectedShip = null;
+      renderSide(); renderBoard();
       return;
     }
-    if (area.type !== 'space') {
-      showMsg('Неверная цель', 'Корабли могут стоять только в космосе');
-      return;
+    if (tileKey !== activeKey) return;
+    const clickable = pa.clickable_space_areas || [];
+    if (clickable.includes(realIdx)) {
+      _advanceMoveShip(_advanceSelectedShip.ship_id, realIdx);
     }
-    _advanceMoveShip(_advanceSelectedShip.area_idx, realIdx);
     return;
   }
 
+  // На шаге ships ground юниты недоступны
+  if (step === 'ships') return;
+
+  // Ground: только в доступные планеты
   if (step === 'ground') {
     if (!_advanceSelectedGround) {
       const origin = tileKey === activeKey ? 'active'
                    : tileKey === sourceKey  ? 'source' : null;
       if (!origin) return;
-      const unit = (G.ui?.advance_available_ground || [])
-        .find(g => g.area_idx === realIdx && g.origin === origin);
-      if (unit) _advanceSelectGround(unit);
-      return;
-    }
-    if (tileKey !== activeKey) {
-      showMsg('Неверная цель', 'Наземные юниты перемещаются только в активную систему');
-      return;
-    }
-    if (area.type !== 'planet') {
-      showMsg('Неверная цель', 'Наземные юниты могут стоять только на планетах');
-      return;
-    }
-    _advanceMoveGround(_advanceSelectedGround.area_idx, realIdx);
-    return;
-  }
+      const unitsInArea = (pa.available_ground_units || [])
+        .filter(g => g.area_idx === realIdx && g.origin === origin);
 
-  if (step === 'orbital' && tileKey === activeKey) {
-    if (_advanceOrbitalShipArea === null) {
-      if (area.type !== 'space') {
-        showMsg('Орбитальный удар', 'Выберите область с вашим кораблём');
-        return;
+      if (!unitsInArea.length) return;
+
+      if (unitsInArea.length === 1) {
+        _advanceSelectGround(unitsInArea[0]);
+      } else {
+        _showGroundSelectModal(unitsInArea);
       }
-      const hasShip = (area.troops || []).some(t => t.player === G.curP && t.unitType === 'space');
-      if (!hasShip) {
-        showMsg('Орбитальный удар', 'В этой области нет вашего корабля');
-        return;
-      }
-      _advanceOrbitalShipArea = realIdx;
+      return;
+    }
+    // Клик на ту же область — снять выделение
+    const selGround = _advanceSelectedGround;
+    const selOriginTile = selGround.origin === 'active' ? activeKey : sourceKey;
+    if (tileKey === selOriginTile && realIdx === selGround.area_idx) {
+      _advanceSelectedGround = null;
       renderSide(); renderBoard();
       return;
     }
-    // Корабль выбран → выбрать целевую планету
-    if (area.type !== 'planet') {
-      showMsg('Орбитальный удар', 'Выберите планету для удара');
+    if (tileKey !== activeKey) return;
+    const gid = _advanceSelectedGround.ground_id;
+    const reachableById = pa.reachable_planets_by_id || {};
+    const planetList = reachableById[gid] ?? reachableById[String(gid)] ?? [];
+    if (planetList.includes(realIdx)) {
+      _advanceMoveGround(_advanceSelectedGround.ground_id, realIdx);
+    }
+    return;
+  }
+
+  // Orbital: только разрешённые кораблями и вражеские планеты
+  if (step === 'orbital' && tileKey === activeKey) {
+    if (_advanceOrbitalShipArea === null) {
+      const orbitalShips = pa.orbital_ships || [];
+      if (orbitalShips.includes(realIdx)) {
+        _advanceOrbitalShipArea = realIdx;
+        renderSide(); renderBoard();
+      }
       return;
     }
     const opp = 1 - G.curP;
-    if (!(area.troops || []).some(t => t.player === opp)) {
-      showMsg('Орбитальный удар', 'На планете нет вражеских юнитов');
-      return;
+    if ((area.troops || []).some(t => t.player === opp)) {
+      _advanceOrbital(_advanceOrbitalShipArea, realIdx);
     }
-    _advanceOrbital(_advanceOrbitalShipArea, realIdx);
     return;
   }
+}
+
+// ── capacity_overflow ──────────────────────────────────────────────────────
+
+function _showOverflowModal() {
+  const pa = G.pending_advance;
+  if (!pa) return;
+
+  const overflowAreas = pa.overflow_areas || [];
+  if (!overflowAreas.length) return;
+
+  const { area_idx, excess } = overflowAreas[0];
+  const tile = G.map?.[pa.tile_key];
+  if (!tile) return;
+  const area = tile.areas?.[area_idx];
+  if (!area) return;
+
+  const cp = G.players[G.curP];
+  const fac = FACTIONS.find(f => f.id === cp.faction);
+  const facColor = fac?.color || '#00c8ff';
+
+  const myUnits = (area.troops || [])
+    .map((t, i) => ({ ...t, _i: i }))
+    .filter(t => t.player === G.curP);
+
+  let html = `<div style="color:#aaa;font-size:.82rem;margin-bottom:10px;">
+    Область ${area_idx} переполнена (лишних: ${excess}).<br>
+    Выберите юнита для возврата в запас:
+  </div>`;
+
+  myUnits.forEach((t, idx) => {
+    const name = getUnitName(cp.faction, t.unitType, t.tier ?? 0);
+    const icon = t.unitType === 'space' ? '🚀' : '⚔';
+    html += `<button class="abtn br" style="width:100%;margin-bottom:4px"
+      onclick="_advanceRemoveOverflow(${area_idx},${idx})">
+      ${icon} ${name} T${t.tier ?? 0}
+    </button>`;
+  });
+
+  showMsg(`⚠ Переполнение области ${area_idx}`, html);
+}
+
+async function _advanceRemoveOverflow(areaIdx, unitIdx) {
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/advance-remove-overflow', {
+      player_id: G.curP,
+      area_idx:  areaIdx,
+      unit_idx:  unitIdx,
+    });
+    if (res.success) {
+      _advanceClearSelection();
+      applyState(res.state);
+      showAdvanceUI();
+    } else {
+      showMsg('Ошибка', res.error || 'Не удалось убрать юнита');
+    }
+  } catch(e) { showMsg('Ошибка сервера', e.message); }
 }

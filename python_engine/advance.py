@@ -12,7 +12,29 @@ python_engine/advance.py — логика приказа Advance
 """
 import copy
 import random
+import uuid
 from typing import Optional
+
+# Сетка 2×2: displayPos → смежные displayPos
+# 0=TL, 1=TR, 2=BL, 3=BR
+_DISPLAY_NEIGHBORS: dict[int, tuple] = {0: (1, 2), 1: (0, 3), 2: (0, 3), 3: (1, 2)}
+
+# RMAP[rot//90][arrayIdx] = displayPos  (синхронизировано с game_constants.js)
+_RMAP = [
+    [0, 1, 2, 3],  # 0°
+    [1, 3, 0, 2],  # 90°
+    [3, 2, 1, 0],  # 180°
+    [2, 0, 3, 1],  # 270°
+]
+
+
+def get_tile_area_neighbors(tile: dict, area_idx: int) -> list[int]:
+    """Индексы физически смежных областей в тайле (с учётом rotation)."""
+    rot = int(tile.get('rotation', 0))
+    rmap = _RMAP[(rot // 90) % 4]
+    disp = rmap[area_idx]
+    adj_displays = _DISPLAY_NEIGHBORS[disp]
+    return [i for i, d in enumerate(rmap) if d in adj_displays]
 
 
 def get_adjacent_tile_keys(tile_key: str) -> list[str]:
@@ -59,53 +81,77 @@ def get_available_units(state, player_id, source_tile_key, active_tile_key) -> d
 
     Returns:
         {
-            'ships': [{area_idx, unit, origin}],
-            'ground_units': [{area_idx, unit, origin}]
+            'ships': [{ship_id, area_idx, unit, origin}],
+            'ground_units': [{ground_id, area_idx, unit, origin}]
         }
 
     origin: 'source' | 'active'
     """
     ships = []
     ground_units = []
+    ship_id = 0
+    ground_id = 0
 
     # Из активного тайла
     active_tile = state.get('map', {}).get(active_tile_key)
     if active_tile:
         for area_idx, area in enumerate(active_tile.get('areas', [])):
-            for troop in area.get('troops', []):
-                if troop.get('player') == player_id:
-                    if troop.get('unitType') == 'space':
-                        ships.append({
-                            'area_idx': area_idx,
-                            'unit': copy.deepcopy(troop),
-                            'origin': 'active',
-                        })
-                    elif troop.get('unitType') == 'ground':
-                        ground_units.append({
-                            'area_idx': area_idx,
-                            'unit': copy.deepcopy(troop),
-                            'origin': 'active',
-                        })
+            for unit_idx, troop in enumerate(area.get('troops', [])):
+                if troop.get('player') != player_id:
+                    continue
+                if troop.get('unit_status') == 'routed':
+                    continue
+                unit_copy = copy.deepcopy(troop)
+                unit_copy['_uid'] = str(uuid.uuid4())
+                if troop.get('unitType') == 'space':
+                    ships.append({
+                        'ship_id': ship_id,
+                        'area_idx': area_idx,
+                        'unit_index': unit_idx,
+                        'unit': unit_copy,
+                        'origin': 'active',
+                    })
+                    ship_id += 1
+                elif troop.get('unitType') == 'ground':
+                    ground_units.append({
+                        'ground_id': ground_id,
+                        'area_idx': area_idx,
+                        'unit_index': unit_idx,
+                        'unit': unit_copy,
+                        'origin': 'active',
+                    })
+                    ground_id += 1
 
     # Из source тайла (если выбран)
     if source_tile_key:
         source_tile = state.get('map', {}).get(source_tile_key)
         if source_tile:
             for area_idx, area in enumerate(source_tile.get('areas', [])):
-                for troop in area.get('troops', []):
-                    if troop.get('player') == player_id:
-                        if troop.get('unitType') == 'space':
-                            ships.append({
-                                'area_idx': area_idx,
-                                'unit': copy.deepcopy(troop),
-                                'origin': 'source',
-                            })
-                        elif troop.get('unitType') == 'ground':
-                            ground_units.append({
-                                'area_idx': area_idx,
-                                'unit': copy.deepcopy(troop),
-                                'origin': 'source',
-                            })
+                for unit_idx, troop in enumerate(area.get('troops', [])):
+                    if troop.get('player') != player_id:
+                        continue
+                    if troop.get('unit_status') == 'routed':
+                        continue
+                    unit_copy = copy.deepcopy(troop)
+                    unit_copy['_uid'] = str(uuid.uuid4())
+                    if troop.get('unitType') == 'space':
+                        ships.append({
+                            'ship_id': ship_id,
+                            'area_idx': area_idx,
+                            'unit_index': unit_idx,
+                            'unit': unit_copy,
+                            'origin': 'source',
+                        })
+                        ship_id += 1
+                    elif troop.get('unitType') == 'ground':
+                        ground_units.append({
+                            'ground_id': ground_id,
+                            'area_idx': area_idx,
+                            'unit_index': unit_idx,
+                            'unit': unit_copy,
+                            'origin': 'source',
+                        })
+                        ground_id += 1
 
     return {
         'ships': ships,
@@ -263,28 +309,36 @@ def apply_committed_moves(state, pending_advance):
         from_area_idx = move.get('from_area_idx')
         to_area_idx = move['to_area_idx']
         unit = move['unit']
+        unit_uid = unit.get('_uid')
 
         # Убрать юнита из источника
         if origin == 'source' and source_tile and from_area_idx is not None:
             troops = source_tile['areas'][from_area_idx]['troops']
             for i, t in enumerate(troops):
-                if (t.get('player') == unit.get('player') and
-                    t.get('unitType') == unit.get('unitType') and
-                    t.get('tier') == unit.get('tier')):
+                if unit_uid and t.get('_uid') == unit_uid:
+                    troops.pop(i)
+                    break
+                elif (t.get('player') == unit.get('player') and
+                      t.get('unitType') == unit.get('unitType') and
+                      t.get('tier') == unit.get('tier')):
                     troops.pop(i)
                     break
 
         elif origin == 'active' and from_area_idx is not None:
             troops = active_tile['areas'][from_area_idx]['troops']
             for i, t in enumerate(troops):
-                if (t.get('player') == unit.get('player') and
-                    t.get('unitType') == unit.get('unitType') and
-                    t.get('tier') == unit.get('tier')):
+                if unit_uid and t.get('_uid') == unit_uid:
+                    troops.pop(i)
+                    break
+                elif (t.get('player') == unit.get('player') and
+                      t.get('unitType') == unit.get('unitType') and
+                      t.get('tier') == unit.get('tier')):
                     troops.pop(i)
                     break
 
         # Добавить юнита в целевую область (всегда в active_tile)
-        active_tile['areas'][to_area_idx]['troops'].append(copy.deepcopy(unit))
+        unit_copy = copy.deepcopy(unit)
+        active_tile['areas'][to_area_idx]['troops'].append(unit_copy)
 
 
 def find_contested_area(state, active_tile_key, player_id) -> Optional[int]:
@@ -393,6 +447,83 @@ def roll_combat(state, active_tile_key, area_idx, player_id):
 # PUBLIC API — вызываемые из game_server.py
 # =========================================================================
 
+def get_available_space_areas(active_tile, player_id, exclude_from_area=None) -> list[int]:
+    """Вернуть индексы областей космоса куда можно летать (включая занятые врагом — бой разрешён)."""
+    available = []
+    for idx, area in enumerate(active_tile.get('areas', [])):
+        if area.get('type') != 'space':
+            continue
+        if exclude_from_area is not None and idx == exclude_from_area:
+            continue
+        available.append(idx)
+    return available
+
+
+def get_reachable_planets_for_unit(active_tile, virtual_areas, from_area_idx, player_id, origin) -> list[int]:
+    """
+    BFS по тайлу для наземного юнита. Смежность берётся из геометрии тайла (rotation-aware).
+
+    Правила:
+    - Транзит через дружественную планету (свои юниты) или космос с дружественным кораблём
+    - Пустая/вражеская планета — только пункт назначения, не транзит
+    - Пустой/вражеский космос — блок
+
+    origin='active': старт от from_area_idx
+    origin='source': старт от всех дружественных областей активного тайла
+    """
+    n_areas = len(active_tile.get('areas', []))
+
+    if origin == 'source':
+        start_idxs = [
+            idx for idx, area_data in virtual_areas.items()
+            if any(t.get('player') == player_id for t in area_data.get('troops', []))
+        ]
+        if not start_idxs:
+            return []
+    else:
+        start_idxs = [from_area_idx]
+
+    visited = set(start_idxs)
+    queue = list(start_idxs)
+    reachable = []
+
+    if origin == 'source':
+        for idx in start_idxs:
+            if virtual_areas.get(idx, {}).get('type') == 'planet' and idx not in reachable:
+                reachable.append(idx)
+
+    while queue:
+        current_idx = queue.pop(0)
+
+        for neighbor_idx in get_tile_area_neighbors(active_tile, current_idx):
+            if neighbor_idx in visited or neighbor_idx >= n_areas:
+                continue
+
+            neighbor_data = virtual_areas.get(neighbor_idx, {})
+            neighbor_type = neighbor_data.get('type', 'space')
+            troops = neighbor_data.get('troops', [])
+
+            has_friendly = any(t.get('player') == player_id for t in troops)
+            has_friendly_ship = any(
+                t.get('player') == player_id and t.get('unitType') == 'space'
+                for t in troops
+            )
+
+            if neighbor_type == 'planet':
+                visited.add(neighbor_idx)
+                if neighbor_idx not in reachable:
+                    reachable.append(neighbor_idx)
+                if has_friendly:
+                    queue.append(neighbor_idx)
+
+            elif neighbor_type == 'space':
+                if has_friendly_ship:
+                    visited.add(neighbor_idx)
+                    queue.append(neighbor_idx)
+
+    return reachable
+
+
 def advance_play(state, player_id, tile_key) -> dict:
     """
     Инициализировать pending_advance при розыгрыше приказа Advance.
@@ -417,6 +548,7 @@ def advance_play(state, player_id, tile_key) -> dict:
         'contest_area_idx': None,
         'orbital_ship_area': None,
         'orbital_target_area': None,
+        'instruction': 'Выберите соседнюю систему для подкрепления или пропустите' if adjacent_tiles else 'Нет соседних систем с вашими юнитами',
     }
 
     return new_state
@@ -425,6 +557,7 @@ def advance_play(state, player_id, tile_key) -> dict:
 def advance_choose_source(state, player_id, source_tile_key) -> dict:
     """
     Выбрать source тайл (или None чтобы пропустить).
+    При выборе устанавливает ready_to_move=1 для доступных юнитов.
 
     Returns: обновленный state
     """
@@ -455,18 +588,45 @@ def advance_choose_source(state, player_id, source_tile_key) -> dict:
     # Инициализировать виртуальные области
     pa['virtual_active_areas'] = init_virtual_areas(new_state, tile_key)
 
+    # Установить ready_to_move=1 и _uid для доступных юнитов
+    if source_tile_key:
+        source_tile = new_state['map'][source_tile_key]
+        for area in source_tile.get('areas', []):
+            for troop in area.get('troops', []):
+                if (troop.get('player') == player_id and
+                        troop.get('unitType') in ('space', 'ground') and
+                        troop.get('unit_status') != 'routed'):
+                    if '_uid' not in troop:
+                        troop['_uid'] = str(uuid.uuid4())
+                    troop['ready_to_move'] = 1
+
+    active_tile = new_state['map'][tile_key]
+    for area in active_tile.get('areas', []):
+        for troop in area.get('troops', []):
+            if (troop.get('player') == player_id and
+                    troop.get('unitType') in ('space', 'ground') and
+                    troop.get('unit_status') != 'routed'):
+                if '_uid' not in troop:
+                    troop['_uid'] = str(uuid.uuid4())
+                troop['ready_to_move'] = 1
+
+    # Вычислить доступные области для каждого корабля
+    clickable_space_areas = get_available_space_areas(active_tile, player_id)
+    pa['clickable_space_areas'] = clickable_space_areas
+
     # Переход к шагу перемещения кораблей
     pa['step'] = 'ships'
+    pa['instruction'] = f'Переместите корабли в области космоса системы {tile_key}. Нажмите "Далее" для наземных юнитов.'
 
     return new_state
 
 
-def advance_move_ship(state, player_id, from_area_idx, to_area_idx) -> dict:
+def advance_move_ship(state, player_id, ship_id, to_area_idx) -> dict:
     """
-    Переместить корабль из from_area_idx в to_area_idx (оба в активном тайле или from source).
+    Переместить корабль по ship_id в to_area_idx.
 
     Параметры:
-        from_area_idx: индекс области откуда перемещать (может быть из source или active)
+        ship_id: уникальный ID корабля из available_ships
         to_area_idx: индекс области куда перемещать (всегда в active)
 
     Returns: обновленный state
@@ -483,17 +643,26 @@ def advance_move_ship(state, player_id, from_area_idx, to_area_idx) -> dict:
     tile_key = pa['tile_key']
     source_tile_key = pa.get('source_tile')
 
-    # Найти корабль в доступных
+    # Найти корабль в доступных по ship_id
     ship = None
     origin = None
+    from_area_idx = None
+    unit_index = None
     for s in pa['available_ships']:
-        if s['area_idx'] == from_area_idx:
+        if s.get('ship_id') == ship_id:
             ship = s['unit']
             origin = s['origin']
+            from_area_idx = s['area_idx']
+            unit_index = s.get('unit_index')
             break
 
     if not ship:
-        raise ValueError(f"Нет доступного корабля в области {from_area_idx}")
+        raise ValueError(f"Нет доступного корабля с ID {ship_id}")
+
+    # Проверить что целевая область в списке разрешённых
+    clickable = pa.get('clickable_space_areas', [])
+    if to_area_idx not in clickable:
+        raise ValueError(f"Область {to_area_idx} недоступна для кораблей")
 
     # Проверить что целевая область — космос
     virtual_areas = pa['virtual_active_areas']
@@ -538,14 +707,31 @@ def advance_move_ship(state, player_id, from_area_idx, to_area_idx) -> dict:
 
     # Убрать корабль из доступных
     pa['available_ships'] = [s for s in pa['available_ships']
-                              if not (s['area_idx'] == from_area_idx and s['origin'] == origin)]
+                              if s.get('ship_id') != ship_id]
+
+    # Установить ready_to_move=0 для перемещённого юнита в исходной системе
+    ship_uid = ship.get('_uid')
+    if origin == 'source' and source_tile_key:
+        source_tile = new_state['map'][source_tile_key]
+        troops = source_tile['areas'][from_area_idx]['troops']
+        for troop in troops:
+            if troop.get('_uid') == ship_uid:
+                troop['ready_to_move'] = 0
+                break
+    elif origin == 'active':
+        active_tile = new_state['map'][tile_key]
+        troops = active_tile['areas'][from_area_idx]['troops']
+        for troop in troops:
+            if troop.get('_uid') == ship_uid:
+                troop['ready_to_move'] = 0
+                break
 
     return new_state
 
 
-def advance_move_ground(state, player_id, from_area_idx, to_area_idx) -> dict:
+def advance_move_ground(state, player_id, ground_id, to_area_idx) -> dict:
     """
-    Переместить наземного юнита из from_area_idx на планету to_area_idx.
+    Переместить наземного юнита по ground_id на планету to_area_idx.
 
     Returns: обновленный state
     """
@@ -559,38 +745,32 @@ def advance_move_ground(state, player_id, from_area_idx, to_area_idx) -> dict:
         raise ValueError(f"Перемещение наземных юнитов доступно только на шаге ground (текущий: {pa['step']})")
 
     tile_key = pa['tile_key']
+    source_tile_key = pa.get('source_tile')
 
-    # Найти юнита в доступных
+    # Найти юнита в доступных по ground_id
     unit = None
     origin = None
+    from_area_idx = None
+    unit_index = None
     for g in pa['available_ground_units']:
-        if g['area_idx'] == from_area_idx:
+        if g.get('ground_id') == ground_id:
             unit = g['unit']
             origin = g['origin']
+            from_area_idx = g['area_idx']
+            unit_index = g.get('unit_index')
             break
 
     if not unit:
-        raise ValueError(f"Нет доступного наземного юнита в области {from_area_idx}")
+        raise ValueError(f"Нет доступного наземного юнита с ID {ground_id}")
 
-    # Проверить что целевая область — планета
-    virtual_areas = pa['virtual_active_areas']
-    if to_area_idx not in virtual_areas:
-        raise ValueError(f"Область {to_area_idx} не существует")
-
-    if virtual_areas[to_area_idx]['type'] != 'planet':
-        raise ValueError(f"Наземные юниты могут перемещаться только на планеты (область {to_area_idx} — {virtual_areas[to_area_idx]['type']})")
-
-    # Проверить доступность планеты
-    active_tile = new_state['map'][tile_key]
-    reachable = is_ground_reachable(
-        virtual_areas, active_tile,
-        from_area_idx, to_area_idx, player_id, origin
-    )
-
-    if not reachable:
-        raise ValueError(f"Планета {to_area_idx} недоступна из области {from_area_idx}")
+    # Проверить что целевая область доступна для этого юнита
+    reachable_by_id = pa.get('reachable_planets_by_id', {})
+    reachable = reachable_by_id.get(ground_id, [])
+    if to_area_idx not in reachable:
+        raise ValueError(f"Планета {to_area_idx} недоступна для юнита {ground_id}")
 
     # Проверить что не создается вторая спорная область
+    virtual_areas = pa['virtual_active_areas']
     valid, error = validate_no_second_contest(
         virtual_areas, player_id,
         from_area_idx if origin == 'active' else None,
@@ -623,11 +803,68 @@ def advance_move_ground(state, player_id, from_area_idx, to_area_idx) -> dict:
 
     # Убрать юнита из доступных
     pa['available_ground_units'] = [g for g in pa['available_ground_units']
-                                     if not (g['area_idx'] == from_area_idx and g['origin'] == origin)]
+                                     if g.get('ground_id') != ground_id]
+
+    # Установить ready_to_move=0 для перемещённого юнита в исходной системе
+    unit_uid = unit.get('_uid')
+    if origin == 'source' and source_tile_key:
+        source_tile = new_state['map'][source_tile_key]
+        troops = source_tile['areas'][from_area_idx]['troops']
+        for troop in troops:
+            if troop.get('_uid') == unit_uid:
+                troop['ready_to_move'] = 0
+                break
+    elif origin == 'active':
+        active_tile = new_state['map'][tile_key]
+        troops = active_tile['areas'][from_area_idx]['troops']
+        for troop in troops:
+            if troop.get('_uid') == unit_uid:
+                troop['ready_to_move'] = 0
+                break
 
     return new_state
 
 
+
+
+def _find_overflow_areas(state, tile_key, player_id) -> list[dict]:
+    """Вернуть список областей где у игрока юнитов больше capacity."""
+    active_tile = state['map'].get(tile_key, {})
+    result = []
+    for area_idx, area in enumerate(active_tile.get('areas', [])):
+        capacity = area.get('capacity', 99)
+        friendly = [t for t in area.get('troops', []) if t.get('player') == player_id]
+        if len(friendly) > capacity:
+            result.append({'area_idx': area_idx, 'excess': len(friendly) - capacity})
+    return result
+
+
+def _resolve_post_moves(state, pa, player_id):
+    """Перейти к бою / орбитальному удару / завершению после применения перемещений."""
+    tile_key = pa['tile_key']
+    contested_idx = find_contested_area(state, tile_key, player_id)
+
+    if contested_idx is not None:
+        pa['contest_area_idx'] = contested_idx
+        pa['step'] = 'combat'
+        pa['instruction'] = f'В области {contested_idx} произойдёт бой. Каждый юнит кидает 1d6, проигравший теряет всех.'
+        return
+
+    active_tile = state['map'][tile_key]
+    orbital_ships = [
+        idx for idx, area in enumerate(active_tile.get('areas', []))
+        if area.get('type') == 'space' and
+           any(t.get('player') == player_id and t.get('unitType') == 'space'
+               for t in area.get('troops', []))
+    ]
+
+    if orbital_ships:
+        pa['step'] = 'orbital'
+        pa['orbital_ships'] = orbital_ships
+        pa['instruction'] = 'Выберите корабль и целевую планету для орбитального удара или пропустите.'
+    else:
+        pa['instruction'] = 'Движение завершено.'
+        finalize_advance(state, player_id)
 
 
 def advance_commit(state, player_id) -> dict:
@@ -648,31 +885,57 @@ def advance_commit(state, player_id) -> dict:
     # Применить перемещения к реальному state
     apply_committed_moves(new_state, pa)
 
-    # Найти спорную область
+    # Очистить зафиксированные перемещения (иначе JS рендер задваивает юниты)
+    pa['committed_moves'] = []
+
     tile_key = pa['tile_key']
-    contested_idx = find_contested_area(new_state, tile_key, player_id)
 
-    if contested_idx is not None:
-        # Есть спорная область — перейти к бою
-        pa['contest_area_idx'] = contested_idx
-        pa['step'] = 'combat'
+    # Проверка вместимости — если переполнено, дать игроку выбрать что убрать
+    overflow = _find_overflow_areas(new_state, tile_key, player_id)
+    if overflow:
+        pa['step'] = 'capacity_overflow'
+        pa['overflow_areas'] = overflow
+        pa['instruction'] = 'Превышена вместимость. Выберите юнита для возврата в запас.'
+        return new_state
+
+    _resolve_post_moves(new_state, pa, player_id)
+    return new_state
+
+
+def advance_remove_overflow_unit(state, player_id, area_idx, unit_idx) -> dict:
+    """
+    Игрок убирает юнита из переполненной области в запас.
+    unit_idx — индекс среди своих юнитов в этой области (0-based).
+    """
+    new_state = copy.deepcopy(state)
+    pa = new_state.get('pending_advance')
+
+    if not pa or pa['player_id'] != player_id:
+        raise ValueError("Нет активного приказа Advance для этого игрока")
+
+    if pa['step'] != 'capacity_overflow':
+        raise ValueError(f"Удаление юнита доступно только на шаге capacity_overflow (текущий: {pa['step']})")
+
+    tile_key = pa['tile_key']
+    area = new_state['map'][tile_key]['areas'][area_idx]
+    troops = area.get('troops', [])
+
+    friendly = [(i, t) for i, t in enumerate(troops) if t.get('player') == player_id]
+    if unit_idx < 0 or unit_idx >= len(friendly):
+        raise ValueError(f"Нет юнита с индексом {unit_idx} в области {area_idx}")
+
+    actual_idx, removed = friendly[unit_idx]
+    troops.pop(actual_idx)
+    new_state['players'][player_id].setdefault('pool', []).append(removed)
+
+    # Перепроверить вместимость
+    overflow = _find_overflow_areas(new_state, tile_key, player_id)
+    if overflow:
+        pa['overflow_areas'] = overflow
+        pa['instruction'] = 'Превышена вместимость. Выберите юнита для возврата в запас.'
     else:
-        # Нет боя — проверить возможность орбитального удара
-        # Орбитальный удар доступен если у игрока есть корабль в active_tile
-        active_tile = new_state['map'][tile_key]
-        has_ship = False
-        for area in active_tile.get('areas', []):
-            if area.get('type') == 'space':
-                if any(t.get('player') == player_id and t.get('unitType') == 'space'
-                       for t in area.get('troops', [])):
-                    has_ship = True
-                    break
-
-        if has_ship:
-            pa['step'] = 'orbital'
-        else:
-            # Нет кораблей — завершить
-            finalize_advance(new_state, player_id)
+        pa.pop('overflow_areas', None)
+        _resolve_post_moves(new_state, pa, player_id)
 
     return new_state
 
@@ -709,18 +972,19 @@ def advance_fight(state, player_id) -> dict:
 
     # После боя проверить возможность орбитального удара
     active_tile = new_state['map'][tile_key]
-    has_ship = False
-    for area in active_tile.get('areas', []):
+    orbital_ships = []
+    for idx, area in enumerate(active_tile.get('areas', [])):
         if area.get('type') == 'space':
             if any(t.get('player') == player_id and t.get('unitType') == 'space'
                    for t in area.get('troops', [])):
-                has_ship = True
-                break
+                orbital_ships.append(idx)
 
-    if has_ship:
+    if orbital_ships:
         pa['step'] = 'orbital'
+        pa['orbital_ships'] = orbital_ships
+        pa['instruction'] = 'Выберите корабль и целевую планету для орбитального удара или пропустите.'
     else:
-        # Завершить
+        pa['instruction'] = 'Бой завершён. Движение окончено.'
         finalize_advance(new_state, player_id)
 
     return new_state
@@ -776,6 +1040,7 @@ def advance_orbital(state, player_id, ship_area_idx, target_area_idx) -> dict:
     pa['orbital_ship_area'] = ship_area_idx
     pa['orbital_target_area'] = target_area_idx
     pa['step'] = 'orbital_defend'
+    pa['instruction'] = 'Защищающийся игрок выбирает, какого юнита потерять.'
 
     return new_state
 
@@ -848,6 +1113,7 @@ def advance_skip_orbital(state, player_id) -> dict:
     if pa['step'] != 'orbital':
         raise ValueError(f"Пропуск орбитального удара доступен только на шаге orbital (текущий: {pa['step']})")
 
+    pa['instruction'] = 'Орбитальный удар пропущен. Движение завершено.'
     finalize_advance(new_state, player_id)
 
     return new_state
@@ -855,7 +1121,7 @@ def advance_skip_orbital(state, player_id) -> dict:
 
 def advance_next_step(state, player_id) -> dict:
     """
-    Перейти от ships к ground.
+    Перейти от ships к ground и рассчитать reachable планеты для каждого наземного юнита.
 
     Returns: обновленный state
     """
@@ -867,6 +1133,24 @@ def advance_next_step(state, player_id) -> dict:
 
     if pa['step'] == 'ships':
         pa['step'] = 'ground'
+
+        # Вычислить доступные планеты для каждого наземного юнита
+        tile_key = pa['tile_key']
+        active_tile = new_state['map'][tile_key]
+        virtual_areas = pa['virtual_active_areas']
+
+        reachable_by_id = {}
+        for ground in pa['available_ground_units']:
+            gid = ground['ground_id']
+            origin = ground['origin']
+            from_area_idx = ground['area_idx']
+            reachable = get_reachable_planets_for_unit(
+                active_tile, virtual_areas, from_area_idx, player_id, origin
+            )
+            reachable_by_id[gid] = reachable
+
+        pa['reachable_planets_by_id'] = reachable_by_id
+        pa['instruction'] = 'Переместите наземные юниты на планеты. Нажмите "Готово" для завершения движения.'
     else:
         raise ValueError(f"Переход доступен только с шага ships (текущий: {pa['step']})")
 
@@ -874,7 +1158,29 @@ def advance_next_step(state, player_id) -> dict:
 
 
 def finalize_advance(state, player_id):
-    """Очистить pending_advance и отметить что приказ разыгран."""
-    if 'pending_advance' in state:
+    """Очистить pending_advance, очистить ready_to_move и отметить что приказ разыгран."""
+    pa = state.get('pending_advance')
+    if pa:
+        tile_key = pa.get('tile_key')
+        source_tile_key = pa.get('source_tile')
+
+        # Очистить ready_to_move флаги и _uid
+        if tile_key and tile_key in state.get('map', {}):
+            active_tile = state['map'][tile_key]
+            for area in active_tile.get('areas', []):
+                for troop in area.get('troops', []):
+                    if troop.get('player') == player_id:
+                        troop.pop('ready_to_move', None)
+                        troop.pop('_uid', None)
+
+        if source_tile_key and source_tile_key in state.get('map', {}):
+            source_tile = state['map'][source_tile_key]
+            for area in source_tile.get('areas', []):
+                for troop in area.get('troops', []):
+                    if troop.get('player') == player_id:
+                        troop.pop('ready_to_move', None)
+                        troop.pop('_uid', None)
+
         del state['pending_advance']
+
     state['execution_order_played'][player_id] = True

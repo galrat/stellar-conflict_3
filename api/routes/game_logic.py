@@ -55,6 +55,7 @@ from python_engine.advance import (
     advance_orbital_remove,
     advance_skip_orbital,
     advance_next_step,
+    advance_remove_overflow_unit,
 )
 
 
@@ -147,9 +148,25 @@ class AdvanceChooseSourceRequest(BaseModel):
 
 
 class AdvanceMoveUnitRequest(BaseModel):
-    """Переместить юнита при Advance"""
+    """Переместить юнита при Advance (deprecated, used temporarily)"""
     player_id: int
-    from_area_idx: int
+    from_area_idx: int = None
+    to_area_idx: int
+    ship_id: int = None
+    ground_id: int = None
+
+
+class AdvanceMoveShipRequest(BaseModel):
+    """Переместить корабль при Advance"""
+    player_id: int
+    ship_id: int
+    to_area_idx: int
+
+
+class AdvanceMoveGroundRequest(BaseModel):
+    """Переместить наземного юнита при Advance"""
+    player_id: int
+    ground_id: int
     to_area_idx: int
 
 
@@ -162,6 +179,13 @@ class AdvanceOrbitalRequest(BaseModel):
 
 class AdvanceOrbitalRemoveRequest(BaseModel):
     """Защищающийся удаляет юнита после орбитального удара"""
+    player_id: int
+    area_idx: int
+    unit_idx: int
+
+
+class AdvanceOverflowRemoveRequest(BaseModel):
+    """Игрок убирает юнита из переполненной области"""
     player_id: int
     area_idx: int
     unit_idx: int
@@ -247,29 +271,10 @@ def compute_ui_hints(state: dict) -> dict:
         # Если идёт выполнение приказа Advance
         pa = state.get('pending_advance')
         if pa:
-            step = pa.get('step', '')
-            tile_key = pa.get('tile_key', '')
-            step_labels = {
-                'choose_source':   'выбор источника',
-                'ships':           'перемещение кораблей',
-                'ground':          'перемещение наземных юнитов',
-                'combat':          'бой',
-                'orbital':         'орбитальный удар',
-                'orbital_defend':  'защита от орбитального удара',
-            }
-            ui['instruction'] = (
-                f'<strong>ADVANCE</strong> — тайл [{tile_key}]<br>'
-                f'{cp_name}: {step_labels.get(step, step)}'
-            )
             ui['buttons'] = ['btn-undo-order']
-            ui['advance_step'] = step
-            ui['advance_tile_key'] = tile_key
-            ui['advance_adjacent_tiles'] = pa.get('adjacent_tiles', [])
+            ui['instruction'] = pa.get('instruction', 'ADVANCE')
             ui['advance_available_ships'] = pa.get('available_ships', [])
             ui['advance_available_ground'] = pa.get('available_ground_units', [])
-            ui['advance_committed_moves'] = pa.get('committed_moves', [])
-            ui['advance_contest_area'] = pa.get('contest_area_idx')
-            ui['advance_source_tile'] = pa.get('source_tile')
             return ui
 
         # Вычислить playable_order_ids и blocked_tiles
@@ -1347,17 +1352,17 @@ async def advance_choose_source_endpoint(request: AdvanceChooseSourceRequest) ->
 
 
 @app.post('/api/game/advance-move-ship')
-async def advance_move_ship_endpoint(request: AdvanceMoveUnitRequest) -> GameStateResponse:
+async def advance_move_ship_endpoint(request: AdvanceMoveShipRequest) -> GameStateResponse:
     """Переместить корабль."""
     async with get_game_lock():
         active_game = get_active_game()
         if active_game is None:
             return GameStateResponse(success=False, error="Игра не инициализирована")
         try:
-            new_state = advance_move_ship(active_game, request.player_id, request.from_area_idx, request.to_area_idx)
+            new_state = advance_move_ship(active_game, request.player_id, request.ship_id, request.to_area_idx)
             active_game.clear()
             active_game.update(new_state)
-            print(f"⚔️ Advance: корабль {request.from_area_idx} → {request.to_area_idx}")
+            print(f"⚔️ Advance: корабль {request.ship_id} → {request.to_area_idx}")
             save_current_state()
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
         except Exception as e:
@@ -1366,17 +1371,17 @@ async def advance_move_ship_endpoint(request: AdvanceMoveUnitRequest) -> GameSta
 
 
 @app.post('/api/game/advance-move-ground')
-async def advance_move_ground_endpoint(request: AdvanceMoveUnitRequest) -> GameStateResponse:
+async def advance_move_ground_endpoint(request: AdvanceMoveGroundRequest) -> GameStateResponse:
     """Переместить наземного юнита."""
     async with get_game_lock():
         active_game = get_active_game()
         if active_game is None:
             return GameStateResponse(success=False, error="Игра не инициализирована")
         try:
-            new_state = advance_move_ground(active_game, request.player_id, request.from_area_idx, request.to_area_idx)
+            new_state = advance_move_ground(active_game, request.player_id, request.ground_id, request.to_area_idx)
             active_game.clear()
             active_game.update(new_state)
-            print(f"⚔️ Advance: наземный юнит {request.from_area_idx} → {request.to_area_idx}")
+            print(f"⚔️ Advance: наземный юнит {request.ground_id} → {request.to_area_idx}")
             save_current_state()
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
         except Exception as e:
@@ -1396,6 +1401,24 @@ async def advance_commit_endpoint(request: AdvanceGenericRequest) -> GameStateRe
             active_game.clear()
             active_game.update(new_state)
             print(f"⚔️ Advance: перемещения зафиксированы")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-remove-overflow')
+async def advance_remove_overflow_endpoint(request: AdvanceOverflowRemoveRequest) -> GameStateResponse:
+    """Игрок убирает юнита из переполненной области в запас."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_remove_overflow_unit(active_game, request.player_id, request.area_idx, request.unit_idx)
+            active_game.clear()
+            active_game.update(new_state)
             save_current_state()
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
         except Exception as e:

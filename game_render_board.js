@@ -144,6 +144,17 @@ function renderBoard() {
           tok.textContent=`T${u.tier??0}`;
           tok.title=getUnitName(G.players[u.player].faction, u.unitType, u.tier??0);
 
+          // Highlight ready_to_move units with dashed outline (only matching type for current step)
+          if (u.ready_to_move) {
+            const showDash = !paAdv ||
+              (advStep === 'ships'  && u.unitType === 'space') ||
+              (advStep === 'ground' && u.unitType === 'ground');
+            if (showDash) {
+              tok.style.outline = `2px dashed ${uColor}`;
+              tok.style.opacity = '0.9';
+            }
+          }
+
           // Bug 2: clickable token on map for advance unit selection
           if (paAdv && u.player === G.curP && (isAdvActiveTile || isAdvSourceTile)) {
             const origin = isAdvActiveTile ? 'active' : 'source';
@@ -284,10 +295,17 @@ function renderBoard() {
             const avail  = G.ui?.advance_available_ground || [];
             const hasUnit = avail.some(g => g.area_idx === realIdx && g.origin === origin);
             const isSel   = _advanceSelectedGround?.area_idx === realIdx && _advanceSelectedGround?.origin === origin;
-            if (isSel)      ae.classList.add('aok');
-            else if (hasUnit) ae.classList.add('aok');
-            else if (isActive && _advanceSelectedGround && area.type === 'planet') ae.classList.add('aok');
-            else if (isActive && _advanceSelectedGround && area.type !== 'planet') ae.classList.add('ano');
+            if (isSel) {
+              ae.classList.add('aok');
+            } else if (hasUnit) {
+              ae.classList.add('aok');
+            } else if (isActive && _advanceSelectedGround) {
+              const gid = _advanceSelectedGround.ground_id;
+              const rById = G.pending_advance?.reachable_planets_by_id || {};
+              const reachList = rById[gid] ?? rById[String(gid)] ?? [];
+              if (area.type === 'planet' && reachList.includes(realIdx)) ae.classList.add('aok');
+              else ae.classList.add('ano');
+            }
           }
 
           if (step === 'orbital' && isActive) {
