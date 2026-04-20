@@ -94,18 +94,17 @@ function _renderDeployBuyUnitsModal() {
     // available — флаг с сервера (уже учитывает пул и тир)
     // remaining > 0 проверяет что еще есть в пуле после добавленных в корзину
     const available = u.available && remaining > 0;
-    const icon      = u.unitType === 'ground' ? '⚔' : '🚀';
+    const icon      = u.type === 'ground' ? '⚔' : '🚀';
 
     console.log(`Unit: ${u.name}, available=${u.available}, remaining=${remaining}, btn_available=${available}`);
 
-    // Дополнительные отметки из сервера
-    const tNote     = u.needs_tier_forge ? ' <span style="color:#ffb74d">[+1🔨]</span>' : '';
-    const fNote     = u.cost_forge ? ` <span style="color:#ff8a65">+${u.cost_forge}🔨</span>` : '';
+    // Полная стоимость forge берется готовой с сервера
+    const forgeNote = u.total_forge_cost ? ` <span style="color:#ff8a65">${u.total_forge_cost}🔨</span>` : '';
 
     // Если недоступен — показать причину вместо цены
     const statusHtml = available
-      ? `<span style="color:#4fc3f7">${u.cost}💰${fNote}${tNote}</span>`
-      : `<span style="color:#ff8a80;font-size:.85rem">${u.reason || 'недоступен'}</span>`;
+      ? `<span style="color:#4fc3f7">${u.cost}💰${forgeNote}</span>`
+      : `<span style="color:#ff8a80;font-size:.85rem">${u.lock_reason || 'недоступен'}</span>`;
 
     return `
       <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;
