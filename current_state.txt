@@ -4,24 +4,7 @@
     {
       "name": "Alpha",
       "faction": "eldar",
-      "pool": [
-        {
-          "unitType": "space",
-          "tier": 0,
-          "player": 0,
-          "unit_status": "active",
-          "_uid": "bab92fb0-b27b-4b06-81fe-184e8ad4c1b1"
-        },
-        {
-          "id": 4,
-          "player": 0,
-          "unitType": "space",
-          "tier": 0,
-          "ready_to_move": 0,
-          "unit_status": "active",
-          "_uid": "7a9d1022-0b5b-437d-a5b7-2e75f17d6cab"
-        }
-      ],
+      "pool": [],
       "hand": [
         {
           "handIdx": 0,
@@ -80,11 +63,6 @@
         {
           "id": "p1_deploy_1",
           "type": "deploy",
-          "owner": 0
-        },
-        {
-          "id": "p1_advance_2",
-          "type": "advance",
           "owner": 0
         }
       ],
@@ -302,28 +280,7 @@
     {
       "name": "Omega",
       "faction": "chaos",
-      "pool": [
-        {
-          "id": 14,
-          "player": 1,
-          "unitType": "space",
-          "tier": 0,
-          "unit_status": "active"
-        },
-        {
-          "unitType": "space",
-          "tier": 0,
-          "player": 1,
-          "unit_status": "active"
-        },
-        {
-          "id": 13,
-          "player": 1,
-          "unitType": "ground",
-          "tier": 1,
-          "unit_status": "active"
-        }
-      ],
+      "pool": [],
       "hand": [
         {
           "handIdx": 0,
@@ -648,7 +605,16 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 4,
+              "player": 0,
+              "unitType": "space",
+              "tier": 0,
+              "ready_to_move": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": []
         },
         {
@@ -661,7 +627,22 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 5,
+              "player": 0,
+              "unitType": "space",
+              "tier": 0,
+              "ready_to_move": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": []
         },
         {
@@ -680,6 +661,7 @@
               "player": 0,
               "unitType": "ground",
               "tier": 1,
+              "ready_to_move": 0,
               "unit_status": "active"
             },
             {
@@ -730,22 +712,7 @@
           "discount": 0,
           "forge": 1,
           "joker": 0,
-          "troops": [
-            {
-              "id": 12,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 1,
-              "unit_status": "active"
-            },
-            {
-              "id": 11,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": []
         },
         {
@@ -758,7 +725,15 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 13,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 1,
+              "unit_status": "active"
+            }
+          ],
           "structures": []
         },
         {
@@ -784,15 +759,7 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 5,
-              "player": 0,
-              "unitType": "space",
-              "tier": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": []
         }
       ],
@@ -913,6 +880,13 @@
           "joker": 0,
           "troops": [
             {
+              "id": 12,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 1,
+              "unit_status": "active"
+            },
+            {
               "unitType": "ground",
               "tier": 0,
               "player": 1,
@@ -931,7 +905,15 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 11,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": [
             {
               "type": "city",
@@ -950,6 +932,19 @@
           "forge": 0,
           "joker": 0,
           "troops": [
+            {
+              "id": 14,
+              "player": 1,
+              "unitType": "space",
+              "tier": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 1,
+              "unit_status": "active"
+            },
             {
               "unitType": "space",
               "tier": 0,
@@ -1166,7 +1161,16 @@
     true
   ],
   "targetMarkers": [],
-  "orders": [],
+  "orders": [
+    {
+      "id": "p1_advance_2",
+      "type": "advance",
+      "owner": 0,
+      "tile": "1,0",
+      "position": 0,
+      "revealed": false
+    }
+  ],
   "ordersPlaced": [
     4,
     4
@@ -1177,7 +1181,7 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    true,
+    false,
     true
   ],
   "log": [
@@ -1412,18 +1416,6 @@
     {
       "message": "Приказ 'Advance' разыгран",
       "player_id": 1
-    },
-    {
-      "message": "Приказ 'Advance' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "БОЙ в области 2 тайла 1,0: Ничья (5 vs 5). Обе стороны теряют всех юнитов.",
-      "player_id": 0
-    },
-    {
-      "message": "Орбитальный удар: игрок 1 потерял юнита на планете 1",
-      "player_id": 0
     }
   ],
   "event_cards_offered": [

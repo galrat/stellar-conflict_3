@@ -459,67 +459,113 @@ def get_available_space_areas(active_tile, player_id, exclude_from_area=None) ->
     return available
 
 
-def get_reachable_planets_for_unit(active_tile, virtual_areas, from_area_idx, player_id, origin) -> list[int]:
+def _compute_border_pairs(active_tile_key, source_tile_key, active_tile, source_tile) -> list[tuple]:
     """
-    BFS по тайлу для наземного юнита. Смежность берётся из геометрии тайла (rotation-aware).
-
-    Правила:
-    - Транзит через дружественную планету (свои юниты) или космос с дружественным кораблём
-    - Пустая/вражеская планета — только пункт назначения, не транзит
-    - Пустой/вражеский космос — блок
-
-    origin='active': старт от from_area_idx
-    origin='source': старт от всех дружественных областей активного тайла
+    Вернуть пары (source_area_idx, active_area_idx) для смежной границы между тайлами.
     """
-    n_areas = len(active_tile.get('areas', []))
+    try:
+        a_col, a_row = map(int, active_tile_key.split(','))
+        s_col, s_row = map(int, source_tile_key.split(','))
+    except (ValueError, AttributeError):
+        return []
 
-    if origin == 'source':
-        start_idxs = [
-            idx for idx, area_data in virtual_areas.items()
-            if any(t.get('player') == player_id for t in area_data.get('troops', []))
-        ]
-        if not start_idxs:
+    active_rmap = _RMAP[(int(active_tile.get('rotation', 0)) // 90) % 4]
+    source_rmap = _RMAP[(int(source_tile.get('rotation', 0)) // 90) % 4]
+
+    if s_row < a_row:    dp_pairs = [(2, 0), (3, 1)]  # source севернее
+    elif s_row > a_row:  dp_pairs = [(0, 2), (1, 3)]  # source южнее
+    elif s_col < a_col:  dp_pairs = [(1, 0), (3, 2)]  # source западнее
+    else:                dp_pairs = [(0, 1), (2, 3)]  # source восточнее
+
+    n_src = len(source_tile.get('areas', []))
+    n_act = len(active_tile.get('areas', []))
+    result = []
+    for src_dp, act_dp in dp_pairs:
+        for si, d in enumerate(source_rmap):
+            if d == src_dp and si < n_src:
+                for ai, d2 in enumerate(active_rmap):
+                    if d2 == act_dp and ai < n_act:
+                        result.append((si, ai))
+    return result
+
+
+def get_reachable_planets_for_unit(
+    active_tile_key, source_tile_key,
+    active_tile, source_tile,
+    virtual_areas,
+    start_tile_type, start_area_idx,
+    player_id,
+) -> list[int]:
+    """
+    Поиск доступных планет активного тайла для наземного юнита.
+
+    Алгоритм — 3 итерации расширения зоны через дружественные области:
+      1. Стартуем от планеты юнита (active или source тайл).
+      2. Три раза расширяем зону: добавляем все смежные дружественные области
+         в обоих тайлах (включая межтайловые связи по границе).
+         Дружественная область = планета со своими войсками
+                               | космос со своими кораблями.
+      3. Доступные планеты = планеты активного тайла, которые находятся в зоне
+         или смежны с любой областью зоны.
+    """
+    n_active = len(active_tile.get('areas', []))
+    source_areas_list = source_tile.get('areas', []) if source_tile else []
+    n_source = len(source_areas_list)
+
+    # Межтайловые связи
+    inter: dict[tuple, list[tuple]] = {}
+    if source_tile and source_tile_key:
+        for si, ai in _compute_border_pairs(active_tile_key, source_tile_key, active_tile, source_tile):
+            inter.setdefault(('source', si), []).append(('active', ai))
+            inter.setdefault(('active', ai), []).append(('source', si))
+
+    def area_data(ttype, idx):
+        if ttype == 'active':
+            return virtual_areas.get(idx, {})
+        return source_areas_list[idx] if idx < n_source else {}
+
+    def is_friendly(ttype, idx):
+        d = area_data(ttype, idx)
+        troops = d.get('troops', [])
+        if d.get('type') == 'planet':
+            return any(t.get('player') == player_id for t in troops)
+        if d.get('type') == 'space':
+            return any(t.get('player') == player_id and t.get('unitType') == 'space' for t in troops)
+        return False
+
+    def neighbors(ttype, idx):
+        tile = active_tile if ttype == 'active' else source_tile
+        n = n_active if ttype == 'active' else n_source
+        if not tile:
             return []
-    else:
-        start_idxs = [from_area_idx]
+        intra = [(ttype, ni) for ni in get_tile_area_neighbors(tile, idx) if ni < n]
+        return intra + inter.get((ttype, idx), [])
 
-    visited = set(start_idxs)
-    queue = list(start_idxs)
+    # 3 итерации расширения зоны
+    start = (start_tile_type, start_area_idx)
+    zone = {start}
+    frontier = {start}
+
+    for _ in range(3):
+        nxt = set()
+        for node in frontier:
+            for nb in neighbors(*node):
+                if nb not in zone and is_friendly(*nb):
+                    nxt.add(nb)
+        zone |= nxt
+        frontier = nxt
+
+    # Доступные планеты: в зоне + смежные с зоной, только активный тайл
     reachable = []
-
-    if origin == 'source':
-        for idx in start_idxs:
-            if virtual_areas.get(idx, {}).get('type') == 'planet' and idx not in reachable:
+    for node in zone:
+        ttype, idx = node
+        if ttype == 'active' and area_data('active', idx).get('type') == 'planet':
+            if idx not in reachable:
                 reachable.append(idx)
-
-    while queue:
-        current_idx = queue.pop(0)
-
-        for neighbor_idx in get_tile_area_neighbors(active_tile, current_idx):
-            if neighbor_idx in visited or neighbor_idx >= n_areas:
-                continue
-
-            neighbor_data = virtual_areas.get(neighbor_idx, {})
-            neighbor_type = neighbor_data.get('type', 'space')
-            troops = neighbor_data.get('troops', [])
-
-            has_friendly = any(t.get('player') == player_id for t in troops)
-            has_friendly_ship = any(
-                t.get('player') == player_id and t.get('unitType') == 'space'
-                for t in troops
-            )
-
-            if neighbor_type == 'planet':
-                visited.add(neighbor_idx)
-                if neighbor_idx not in reachable:
-                    reachable.append(neighbor_idx)
-                if has_friendly:
-                    queue.append(neighbor_idx)
-
-            elif neighbor_type == 'space':
-                if has_friendly_ship:
-                    visited.add(neighbor_idx)
-                    queue.append(neighbor_idx)
+        for nb_type, nb_idx in neighbors(ttype, idx):
+            if nb_type == 'active' and area_data('active', nb_idx).get('type') == 'planet':
+                if nb_idx not in reachable:
+                    reachable.append(nb_idx)
 
     return reachable
 
@@ -1139,13 +1185,22 @@ def advance_next_step(state, player_id) -> dict:
         active_tile = new_state['map'][tile_key]
         virtual_areas = pa['virtual_active_areas']
 
+        source_tile_key = pa.get('source_tile')
+        source_tile = new_state['map'].get(source_tile_key) if source_tile_key else None
+
         reachable_by_id = {}
         for ground in pa['available_ground_units']:
             gid = ground['ground_id']
             origin = ground['origin']
             from_area_idx = ground['area_idx']
+            start_tile_type = 'active' if origin == 'active' else 'source'
+
             reachable = get_reachable_planets_for_unit(
-                active_tile, virtual_areas, from_area_idx, player_id, origin
+                tile_key, source_tile_key,
+                active_tile, source_tile,
+                virtual_areas,
+                start_tile_type, from_area_idx,
+                player_id,
             )
             reachable_by_id[gid] = reachable
 

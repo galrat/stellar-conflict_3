@@ -326,6 +326,44 @@ function renderSide() {
   }
 
   // ── ADVANCE: ships ──
+  // ── ADVANCE debug: области с юнитами ──────────────────────────
+  function _renderAdvanceDebugAreas(poolEl, pa) {
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'margin-top:10px;font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.04em;border-top:1px solid rgba(255,255,255,.08);padding-top:6px;';
+    hdr.textContent = 'DEBUG — области с юнитами (array idx):';
+    poolEl.appendChild(hdr);
+
+    const dispIdx = (tile, arrayIdx) => {
+      const rot = tile.rotation || 0;
+      return RMAP[Math.floor(rot / 90) % 4][arrayIdx] ?? arrayIdx;
+    };
+
+    const renderTile = (tileKey, label) => {
+      const tile = G.map?.[tileKey];
+      if (!tile) return;
+      const lbl = document.createElement('div');
+      lbl.style.cssText = 'font-size:.63rem;color:var(--gold);margin-top:4px;';
+      lbl.textContent = `${label} [${tileKey}] rot=${tile.rotation}°:`;
+      poolEl.appendChild(lbl);
+      (tile.areas || []).forEach((area, idx) => {
+        const ships  = (area.troops || []).filter(t => t.unitType === 'space');
+        const ground = (area.troops || []).filter(t => t.unitType === 'ground');
+        if (!ships.length && !ground.length) return;
+        const row = document.createElement('div');
+        row.style.cssText = 'font-size:.63rem;color:#ccc;margin-left:8px;';
+        const parts = [];
+        if (ships.length)  parts.push(`🚀×${ships.length} p${ships.map(t=>t.player).join(',')}`);
+        if (ground.length) parts.push(`⚔×${ground.length} p${ground.map(t=>t.player).join(',')}`);
+        const disp = dispIdx(tile, idx);
+        row.textContent = `disp.${disp} arr.${idx} (${area.type}): ${parts.join('  ')}`;
+        poolEl.appendChild(row);
+      });
+    };
+
+    renderTile(pa.tile_key, 'Активная');
+    if (pa.source_tile) renderTile(pa.source_tile, 'Source');
+  }
+
   if (G.phase === 'execution' && G.pending_advance?.step === 'ships') {
     document.getElementById('tile-hand').innerHTML = '';
     poolSection.style.display = 'block'; structSection.style.display = 'none';
@@ -357,6 +395,7 @@ function renderSide() {
     }
     const nxt = document.createElement('button'); nxt.className = `abtn ${G.curP===0?'bp':'br'}`; nxt.style.cssText = 'width:100%;margin-top:8px;';
     nxt.textContent = 'Готово с кораблями →'; nxt.onclick = () => _advanceNextStep(); poolEl.appendChild(nxt);
+    _renderAdvanceDebugAreas(poolEl, pa);
     return;
   }
 
@@ -390,6 +429,47 @@ function renderSide() {
     if ((pa.committed_moves||[]).length > 0) {
       const mv = document.createElement('div'); mv.style.cssText = 'margin-top:6px;font-size:.65rem;color:var(--dim);'; mv.textContent = `Перемещений: ${pa.committed_moves.length}`; poolEl.appendChild(mv);
     }
+
+    // ── DEBUG: легальные маршруты по стартовым областям ──
+    const reachById = pa.reachable_planets_by_id || {};
+    const allUnits  = pa.available_ground_units   || [];
+    if (allUnits.length > 0) {
+      const dbgHdr = document.createElement('div');
+      dbgHdr.style.cssText = 'margin-top:10px;font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.04em;border-top:1px solid rgba(255,255,255,.08);padding-top:6px;';
+      dbgHdr.textContent = 'Легальные маршруты:';
+      poolEl.appendChild(dbgHdr);
+
+      // Группируем по стартовой области (area_idx + origin)
+      const areaMap = new Map();
+      allUnits.forEach(g => {
+        const key = `${g.origin}:${g.area_idx}`;
+        if (!areaMap.has(key)) areaMap.set(key, { origin: g.origin, area_idx: g.area_idx, reachable: new Set() });
+        const r = reachById[g.ground_id] ?? reachById[String(g.ground_id)] ?? [];
+        r.forEach(x => areaMap.get(key).reachable.add(x));
+      });
+
+      const activeTile = G.map?.[pa.tile_key];
+      const srcTileKey = pa.source_tile;
+      const srcTile = srcTileKey ? G.map?.[srcTileKey] : null;
+
+      areaMap.forEach(({ origin, area_idx, reachable }) => {
+        const row = document.createElement('div');
+        row.style.cssText = 'font-size:.65rem;color:#ccc;margin-top:3px;line-height:1.4;';
+        const fromTile = origin === 'source' ? srcTile : activeTile;
+        const fromDisp = fromTile ? (RMAP[Math.floor((fromTile.rotation||0)/90)%4][area_idx] ?? area_idx) : area_idx;
+        // Конвертируем array idx → display idx для целевых планет
+        const targets = reachable.size > 0
+          ? [...reachable].sort((a,b)=>a-b).map(ai => {
+              const d = activeTile ? (RMAP[Math.floor((activeTile.rotation||0)/90)%4][ai] ?? ai) : ai;
+              return `disp.${d}(arr.${ai})`;
+            }).join(', ')
+          : '—';
+        row.textContent = `[${origin}] disp.${fromDisp}(arr.${area_idx}) → ${targets}`;
+        poolEl.appendChild(row);
+      });
+    }
+
+    _renderAdvanceDebugAreas(poolEl, pa);
     const cmt = document.createElement('button'); cmt.className = `abtn ${G.curP===0?'bp':'br'}`; cmt.style.cssText = 'width:100%;margin-top:8px;';
     cmt.textContent = 'Зафиксировать перемещения →'; cmt.onclick = () => _advanceCommit(); poolEl.appendChild(cmt);
     return;
