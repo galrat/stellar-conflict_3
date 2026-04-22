@@ -1,0 +1,152 @@
+[
+  {
+    "cards": [
+      { "name": "Ambush", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Gain 2 (g).", "secondary": { "requires": ["Scout", "Cruiser"], "effect": "When enemy is routed this round, must spend [M] or be destroyed." } },
+      { "name": "Blessed Power Armour", "tier": -1, "cost": 0, "icons": {"G":0,"S":1,"M":0}, "primary": "Gain 2 (s).", "secondary": { "requires": ["Bastion", "Marine", "Cruiser"], "effect": "Convert up to 2 dice to [S]." } },
+      { "name": "Faith in the Emperor", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":1}, "primary": "Gain 1 [?].", "secondary": { "requires": ["Scout", "Marine", "Cruiser"], "effect": "Rally 1 unit or gain 1 [M]." } },
+      { "name": "Fury of the Ultramar", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Enemy rerolls 1 [S]. You may reroll 1 [S].", "secondary": { "requires": ["Marine", "Cruiser"], "effect": "Force enemy to lose 1 [S] or 2 (s)." } },
+      { "name": "Reconnaissance", "tier": -1, "cost": 0, "icons": {"G":0,"S":1,"M":0}, "primary": "If attacking, look at enemy card first.", "secondary": { "requires": ["Scout", "Cruiser"], "effect": "Spend 1 [M] to retreat 1 unit." } },
+      { "name": "Drop Pod Assault", "tier": 0, "cost": 2, "icons": {"G":1,"S":1,"M":0}, "primary": "Gain 1 [?].", "secondary": { "requires": ["Marine"], "effect": "Spend 1 [M] to take 1 scout or 1 marine from any world to this world." } },
+      { "name": "Glory and Death", "tier": 0, "cost": 2, "icons": {"G":1,"S":0,"M":1}, "primary": "Gain 2 (g). If attacking, rally 1 unit.", "secondary": { "requires": ["Marine", "Cruiser"], "effect": "Force enemy to lose 1 [S] or 1 [M]." } },
+      { "name": "Hold the Line", "tier": 0, "cost": 2, "icons": {"G":0,"S":1,"M":1}, "primary": "Gain 2 (s). If defending, rally 1 unit.", "secondary": { "requires": ["Bastion", "Marine", "Cruiser"], "effect": "Gain 1 [S] or 1 [M]." } },
+      { "name": "Veteran Scouts", "tier": 0, "cost": 2, "icons": {"G":1,"S":1,"M":1}, "primary": "For each morale dice, gain 1 (g) or (s).", "secondary": { "requires": ["Scout", "Cruiser"], "effect": "Spend any [M]; retreat 1 unit per die." } },
+      { "name": "Armoured Advance", "tier": 2, "cost": 4, "icons": {"G":2,"S":1,"M":0}, "primary": "Gain 1 [?].", "secondary": { "requires": ["Land Raider", "Battle Barge"], "effect": "Resolve 1 additional assess damage step this round." } },
+      { "name": "Show No Fear", "tier": 2, "cost": 4, "icons": {"G":0,"S":2,"M":1}, "primary": "Own units cannot become routed this round.", "secondary": { "requires": ["Bastion", "Marine", "Cruiser"], "effect": "Spend 1 [M] rally all units." } },
+      { "name": "Tactical Versatility", "tier": 2, "cost": 4, "icons": {"G":1,"S":1,"M":1}, "primary": "Reroll any of your dice.", "secondary": { "requires": ["Marine", "Cruiser"], "effect": "Gain 1 [G], 1 [S], or 1 [M]." } },
+      { "name": "Emperor's Might", "tier": 3, "cost": 6, "icons": {"G":3,"S":0,"M":0}, "primary": "Gain 2 [?].", "secondary": { "requires": ["Titan", "Battle Barge"], "effect": "Spend any [G]; gain 2 (g) per die." } },
+      { "name": "Emperor's Glory", "tier": 3, "cost": 6, "icons": {"G":0,"S":2,"M":2}, "primary": "Gain 2 [?].", "secondary": { "requires": ["Titan", "Battle Barge"], "effect": "Rally all units. Convert any dice to [M]." } }
+    ]
+  },
+  {
+    "cards": [
+      { "name": "Dark Faith", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":1}, "primary": "Gain 1 [M].", "secondary": { "requires": ["Cultist", "Iconoclast"], "effect": "If more [M] than enemy, place free Cultist on another world." } },
+      { "name": "Foul Worship", "tier": -1, "cost": 0, "icons": {"G":0,"S":1,"M":0}, "primary": "Gain 1 [?].", "secondary": { "requires": ["Cultist", "Iconoclast"], "effect": "If enemy has routed unit, gain 1 (s) per unrouted Cultist/Iconoclast." } },
+      { "name": "Impure Zeal", "tier": -1, "cost": 0, "icons": {"G":1,"S":1,"M":0}, "primary": "If more [M] than enemy, rally 1 unit.", "secondary": { "requires": ["Cultist", "Iconoclast"], "effect": "Enemy routs 1 unit, or you gain 1 (g) per unrouted Cultist/Iconoclast." } },
+      { "name": "Khorne's Rage", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Spend 1 [G] to gain 3 (g).", "secondary": { "requires": ["Marine", "Iconoclast"], "effect": "Enemy spends 1 [S] or routs unit of his choosing." } },
+      { "name": "Lure of Chaos", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":1}, "primary": "Enemy may rout unit for 1 [?]. Otherwise, place free Cultist.", "secondary": { "requires": ["Cultist", "Iconoclast"], "effect": "Gain 2 (g) or 2 (s)." } },
+      { "name": "Mark of Khorne", "tier": 0, "cost": 2, "icons": {"G":2,"S":0,"M":0}, "primary": "Spend 1 [G] or 1 [M] to gain 3 (g).", "secondary": { "requires": ["Marine", "Iconoclast"], "effect": "Enemy spends 1 [S] or destroys 1 routed unit." } },
+      { "name": "Mark of Nurgle", "tier": 0, "cost": 2, "icons": {"G":0,"S":2,"M":0}, "primary": "Spend 1 [S] or 1 [M] to gain 3 (s).", "secondary": { "requires": ["Marine", "Iconoclast"], "effect": "Enemy destroys 1 routed unit, otherwise gain 2 (s)." } },
+      { "name": "Mark of Slaanesh", "tier": 0, "cost": 2, "icons": {"G":1,"S":1,"M":0}, "primary": "Gain 1 [?]. If more [M] than enemy, he routs 1 unit.", "secondary": { "requires": ["Marine"], "effect": "If enemy has routed unit, place free Cultist." } },
+      { "name": "Mark of Tzeentch", "tier": 0, "cost": 2, "icons": {"G":0,"S":0,"M":2}, "primary": "Gain 1 [M]. If more [M] than enemy, upgrade Cultist to Marine.", "secondary": { "requires": ["Marine", "Iconoclast"], "effect": "Convert up to 2 [M] to [G] and/or [S]." } },
+      { "name": "Chaos United", "tier": 2, "cost": 4, "icons": {"G":1,"S":1,"M":1}, "primary": "Enemy may rout unit. If not, gain a die of your choice.", "secondary": { "requires": ["Cultist", "Marine", "Helbrute"], "effect": "Move 1 unit from any world to this world (limit by Cultists)." } },
+      { "name": "Daemonic Resilience", "tier": 2, "cost": 4, "icons": {"G":0,"S":2,"M":1}, "primary": "Gain 1 [M]. Reduce damage suffered by 1.", "secondary": { "requires": ["Marine", "Helbrute"], "effect": "If more [M] than enemy, gain 3 (s)." } },
+      { "name": "Let the Galaxy Burn", "tier": 2, "cost": 4, "icons": {"G":2,"S":0,"M":1}, "primary": "Force enemy to reroll all [S].", "secondary": { "requires": ["Marine", "Helbrute", "Despoiler"], "effect": "If you have more [M], gain 3 (g)." } },
+      { "name": "Blood for the Blood God", "tier": 3, "cost": 6, "icons": {"G":3,"S":0,"M":1}, "primary": "Spend 1 [M] to gain 1 [G] for each of your unrouted units.", "secondary": { "requires": ["Lord of Change", "Despoiler"], "effect": "Destroy 1 unrouted unit to destroy 1 enemy unit." } },
+      { "name": "Voices of the Warp", "tier": 3, "cost": 6, "icons": {"G":1,"S":1,"M":2}, "primary": "Enemy must reroll all [G].", "secondary": { "requires": ["Lord of Change", "Despoiler"], "effect": "Enemy must spend 1 [M] or rout all his units." } }
+    ]
+  }
+]
+[
+  {
+    "cards": [
+      { "name": "'Ard Boyz", "tier": -1, "cost": 0, "icons": {"G":0,"S":2,"M":0}, "primary": "You must reroll all of your [G].", "secondary": { "requires": ["Boyz"], "effect": "Enemy must reroll 1 [G] for each unrouted Boyz." } },
+      { "name": "Gretchin", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":0}, "primary": "Gain 1 (g) and 1 (s). Enemy rerolls 1 die.", "secondary": { "requires": ["Onslaught"], "effect": "Destroy 1 Onslaught to force enemy to destroy one of his units." } },
+      { "name": "Mek Boyz", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":1}, "primary": "Gain 1 [?].", "secondary": { "requires": ["Boyz", "Onslaught"], "effect": "Enemy discards top card; you gain its icons." } },
+      { "name": "Shoota Boyz", "tier": -1, "cost": 0, "icons": {"G":2,"S":0,"M":0}, "primary": "You must reroll all of your [S].", "secondary": { "requires": ["Boyz"], "effect": "Enemy must reroll 1 [S] for each unrouted Boyz." } },
+      { "name": "Slugga Boyz", "tier": -1, "cost": 0, "icons": {"G":1,"S":1,"M":0}, "primary": "Both sides must reroll all [M].", "secondary": { "requires": ["Boyz", "Onslaught"], "effect": "Rally 1 unit." } },
+      { "name": "Biker Nobz", "tier": 0, "cost": 2, "icons": {"G":2,"S":1,"M":0}, "primary": "Enemy must reroll all [G].", "secondary": { "requires": ["Nobz", "Onslaught"], "effect": "Gain 1 (g)." } },
+      { "name": "Mega Nobz", "tier": 0, "cost": 2, "icons": {"G":1,"S":2,"M":0}, "primary": "Enemy must reroll all [S].", "secondary": { "requires": ["Nobz", "Onslaught"], "effect": "Gain 1 (s)." } },
+      { "name": "Sea of Green", "tier": 0, "cost": 2, "icons": {"G":1,"S":1,"M":0}, "primary": "Place free (R). If you have more units, enemy spends 1 [M] or routs unit.", "secondary": { "requires": [], "effect": "Gain 1 (g) for each unrouted unit." } },
+      { "name": "Waaagh!!!!", "tier": 0, "cost": 2, "icons": {"G":0,"S":0,"M":3}, "primary": "Rally 1 unit.", "secondary": { "requires": ["Boyz", "Onslaught"], "effect": "Gain 1 (g) per unrouted Boyz/Onslaught." } },
+      { "name": "Party Wagon", "tier": 2, "cost": 4, "icons": {"G":1,"S":2,"M":0}, "primary": "Place free (R) in this area.", "secondary": { "requires": ["Wagon", "Kroozer"], "effect": "If you have more unrouted units, gain 2 (g) and 2 (s)." } },
+      { "name": "Power of the Waaagh!", "tier": 2, "cost": 4, "icons": {"G":2,"S":0,"M":1}, "primary": "Spend up to 3 (R) to gain 2 (g) each.", "secondary": { "requires": ["Nobz", "Wagon", "Kroozer"], "effect": "Rally all units." } },
+      { "name": "Stomp!", "tier": 2, "cost": 4, "icons": {"G":3,"S":0,"M":0}, "primary": "Enemy must reroll all [M].", "secondary": { "requires": ["Gargant", "Kroozer"], "effect": "For each of your unrouted Tier 2/3 units, enemy routs 1 unit." } },
+      { "name": "Big Mek's Kustom Shield", "tier": 3, "cost": 6, "icons": {"G":0,"S":3,"M":1}, "primary": "You cannot suffer more than 2 damage this execution round.", "secondary": { "requires": ["Gargant", "Kroozer"], "effect": "Rally all units. Gain 4 (s)." } },
+      { "name": "Gork (or Mork) Is Great", "tier": 3, "cost": 6, "icons": {"G":3,"S":1,"M":0}, "primary": "Gain 1 (g) for each unrouted unit.", "secondary": { "requires": ["Gargant", "Kroozer"], "effect": "Enemy must spend 2 [M] or destroy all his routed units." } }
+    ]
+  },
+  {
+    "cards": [
+      { "name": "Command of the Autarch", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":0}, "primary": "Either rally 1 unit or gain 1 [M]. Play card from hand for icons.", "secondary": { "requires": [], "effect": "Gain 2 (g) and 1 (s)." } },
+      { "name": "Hit and Run", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Gain 2 (g).", "secondary": { "requires": ["Aspect", "Frigate"], "effect": "Spend 1 [M] to move 1 unit to adjacent area." } },
+      { "name": "Howling Banshees", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Gain 1 [?].", "secondary": { "requires": ["Aspect", "Frigate"], "effect": "Spend 1 [M] to force enemy to rout a unit." } },
+      { "name": "Ranger Support", "tier": -1, "cost": 0, "icons": {"G":0,"S":1,"M":1}, "primary": "If attacking, gain 1 (g) and 1 (s). If defending, retreat 1 unit.", "secondary": { "requires": [], "effect": "Gain 2 [?]." } },
+      { "name": "Striking Scorpions", "tier": -1, "cost": 0, "icons": {"G":0,"S":1,"M":0}, "primary": "Gain 1 [?].", "secondary": { "requires": ["Aspect", "Frigate"], "effect": "Enemy loses 1 die of his choice." } },
+      { "name": "Fire Dragon's Vengeance", "tier": 0, "cost": 2, "icons": {"G":2,"S":0,"M":0}, "primary": "If attacking, enemy cannot gain (s) this round.", "secondary": { "requires": ["Aspect", "Frigate"], "effect": "Gain 2 (s)." } },
+      { "name": "Swooping Hawks", "tier": 0, "cost": 2, "icons": {"G":0,"S":2,"M":0}, "primary": "If defending, enemy loses 3 (g).", "secondary": { "requires": ["Aspect", "Frigate"], "effect": "Spend 1 [M] to gain 2 (g)." } },
+      { "name": "Wraithguard Advance", "tier": 0, "cost": 2, "icons": {"G":1,"S":0,"M":1}, "primary": "Gain 1 [?] or 1 [M]. Convert up to 2 [S] into [G].", "secondary": { "requires": ["Wraithguard", "Frigate", "Stalker"], "effect": "Enemy spends 1 [M] or routs unit." } },
+      { "name": "Wraithguard Support", "tier": 0, "cost": 2, "icons": {"G":0,"S":1,"M":1}, "primary": "Gain 1 [?] or 1 [M]. Convert up to 2 [G] into [S].", "secondary": { "requires": ["Wraithguard", "Frigate", "Stalker"], "effect": "Spend 1 [M] to rally 1 unit." } },
+      { "name": "Fire Prism", "tier": 2, "cost": 4, "icons": {"G":2,"S":1,"M":0}, "primary": "Convert any [M] into [G].", "secondary": { "requires": ["Falcon", "Stalker"], "effect": "If attacking, gain 2 (g). If defending, force enemy to lose 5 (s)." } },
+      { "name": "Spiritseer's Guidance", "tier": 2, "cost": 4, "icons": {"G":1,"S":1,"M":1}, "primary": "Gain 1 [M]. Rout 1 unit; units cannot suffer damage this round.", "secondary": { "requires": [], "effect": "Gain 3 (g) or 3 (s)." } },
+      { "name": "Wave Serpent", "tier": 2, "cost": 4, "icons": {"G":1,"S":2,"M":0}, "primary": "Gain 1 [?]. Gain 3 (s) unless enemy spends 1 [M].", "secondary": { "requires": ["Falcon", "Stalker"], "effect": "Spend 1 [M] to gain 1 [G] and 1 [S]." } },
+      { "name": "Eldritch Storm", "tier": 3, "cost": 6, "icons": {"G":3,"S":0,"M":1}, "primary": "Enemy rerolls all [G] and [S].", "secondary": { "requires": ["Avatar", "Void Stalker"], "effect": "Gain 4 (g). Spend any [M]; force enemy to destroy 1 unit per die." } },
+      { "name": "Webway Gate", "tier": 3, "cost": 6, "icons": {"G":1,"S":2,"M":1}, "primary": "Move any units from any worlds to this world.", "secondary": { "requires": ["Avatar", "Void Stalker"], "effect": "Gain 4 (s). Rally all units." } }
+    ]
+  }
+]
+[
+  {
+    "cards": [
+      { "name": "Attack Subroutines", "tier": -1, "cost": 0, "icons": {"G":2,"S":0,"M":0}, "primary": "No effect.", "secondary": { "requires": ["Warrior", "Harvest Ship"], "effect": "Gain 1 [M]." } },
+      { "name": "Everlasting Conquest", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":0}, "primary": "Gain 1 [M]. Rally 1 of your units.", "secondary": { "requires": ["Warrior", "Immortal", "Harvest Ship"], "effect": "For each [M] you have, gain either 1 [G] or 1 [S]." } },
+      { "name": "Flayed Ones", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Gain 2 (g).", "secondary": { "requires": ["Warrior", "Harvest Ship"], "effect": "If enemy has [M], gain 1 [M] and force enemy to lose 1 [M]." } },
+      { "name": "Fortelling Cryptek", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":1}, "primary": "Gain 1 [G], 1 [S] or 1 [M]. Spend 1 [M] to move unit.", "secondary": { "requires": [], "effect": "Look at enemy card." } },
+      { "name": "Warrior Phalanx", "tier": -1, "cost": 0, "icons": {"G":0,"S":2,"M":0}, "primary": "No effect.", "secondary": { "requires": ["Warrior", "Harvest Ship"], "effect": "Gain 1 [M]." } },
+      { "name": "Canoptek Swarm", "tier": 0, "cost": 2, "icons": {"G":1,"S":0,"M":1}, "primary": "Gain 1 [?]. Place 1 free (R).", "secondary": { "requires": [], "effect": "Gain 1 (s) for each of your units." } },
+      { "name": "Destroyers", "tier": 0, "cost": 2, "icons": {"G":2,"S":0,"M":1}, "primary": "Spend 1 [S] or 1 [M] to gain 2 (s).", "secondary": { "requires": ["Immortal", "Harvest Ship"], "effect": "If enemy has routed unit, gain 2 (g)." } },
+      { "name": "Lychguard", "tier": 0, "cost": 2, "icons": {"G":0,"S":2,"M":1}, "primary": "Rout 1 of your units to rout 1 enemy unit.", "secondary": { "requires": ["Immortal", "Harvest Ship"], "effect": "If enemy has routed unit, gain 2 (s)." } },
+      { "name": "Overlord's Will", "tier": 0, "cost": 2, "icons": {"G":0,"S":0,"M":3}, "primary": "Rally 1 unit. Reroll up to 2 dice.", "secondary": { "requires": [], "effect": "Gain 1 [M] or 2 (g)." } },
+      { "name": "Doomsday Phalanx", "tier": 2, "cost": 4, "icons": {"G":3,"S":0,"M":0}, "primary": "Force enemy to lose 1 [S].", "secondary": { "requires": ["Monolith", "Tomb Ship"], "effect": "Routed enemy units are destroyed unless enemy spends 1 [S]." } },
+      { "name": "Monolith Phalanx", "tier": 2, "cost": 4, "icons": {"G":2,"S":1,"M":0}, "primary": "If you suffer no damage, enemy retreats 1 unit.", "secondary": { "requires": ["Monolith", "Tomb Ship"], "effect": "Gain 3 (s)." } },
+      { "name": "Triarch Praetorians", "tier": 2, "cost": 4, "icons": {"G":1,"S":1,"M":1}, "primary": "Rally 1 unit or place 1 free (R).", "secondary": { "requires": ["Warrior", "Harvest Ship"], "effect": "Spend up to 1 die to gain 1 [G], 1 [S] or 1 [M]." } },
+      { "name": "Shard of the Deceiver", "tier": 3, "cost": 6, "icons": {"G":1,"S":2,"M":1}, "primary": "Enemy rerolls all [G].", "secondary": { "requires": ["C'tan", "Tomb Ship"], "effect": "Gain 2 [M]. Choose 1 enemy unit; it suffers damage first." } },
+      { "name": "Shard of the Nightbringer", "tier": 3, "cost": 6, "icons": {"G":3,"S":0,"M":1}, "primary": "Enemy rerolls all [S].", "secondary": { "requires": ["C'tan", "Tomb Ship"], "effect": "Gain 4 (g). Destroy 1 enemy unit." } }
+    ]
+  },
+  {
+    "cards": [
+      { "name": "Burrowing Organisms", "tier": -1, "cost": 0, "icons": {"G":0,"S":1,"M":0}, "primary": "If attacking, gain 2 (g). If defending, place (R).", "secondary": { "requires": [], "effect": "Spend 1 [M] to rally 1 unit." } },
+      { "name": "Genestealer Hybrids", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "No effect.", "secondary": { "requires": ["Gaunt", "Devourer"], "effect": "Force enemy to lose 1 [G], [S], or [M]. You gain what they lost." } },
+      { "name": "Hive Tyrant", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Play 1 card from hand for icons only.", "secondary": { "requires": ["Warrior", "Hive Ship"], "effect": "Rally 1 unit or spend 1 [M] for 1 [G] or [S]." } },
+      { "name": "Hormagaunt Brood", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Gain 1 (s).", "secondary": { "requires": ["Gaunt", "Devourer"], "effect": "Destroy 1 unrouted Gaunt/Devourer to gain 3 (g)." } },
+      { "name": "Rain of Spores", "tier": -1, "cost": 0, "icons": {"G":0,"S":1,"M":0}, "primary": "Destroy 1 Devourer to place 1 free Warrior.", "secondary": { "requires": [], "effect": "Gain 2 (s)." } },
+      { "name": "Ripper Swarms", "tier": 0, "cost": 2, "icons": {"G":2,"S":0,"M":0}, "primary": "Gain 2 (g).", "secondary": { "requires": ["Gaunt", "Devourer"], "effect": "Gain 1 materiel for each unit destroyed this round." } },
+      { "name": "Shadow in the Warp", "tier": 0, "cost": 2, "icons": {"G":0,"S":1,"M":1}, "primary": "Destroy 1 unit to gain 2 (s) and reduce damage by 2.", "secondary": { "requires": ["Warrior", "Hive Ship"], "effect": "Reroll all of your dice." } },
+      { "name": "Spore Chimneys", "tier": 0, "cost": 2, "icons": {"G":1,"S":1,"M":0}, "primary": "Enemy must reroll all [G].", "secondary": { "requires": ["Warrior", "Devourer"], "effect": "Gain 2 (s) and 1 (g)." } },
+      { "name": "Winged Horror", "tier": 0, "cost": 2, "icons": {"G":2,"S":0,"M":0}, "primary": "Destroy 1 unit to gain 3 (g).", "secondary": { "requires": ["Warrior", "Devourer"], "effect": "Gain 2 (s) or add 2 to offence next round." } },
+      { "name": "Crushing Claws", "tier": 2, "cost": 4, "icons": {"G":1,"S":2,"M":0}, "primary": "Destroy 1 unit to gain 3 (g).", "secondary": { "requires": ["Carnifex", "Hive Ship"], "effect": "Spend 1 [G] or [M] to force enemy to lose 2 [S]." } },
+      { "name": "Scything Talons", "tier": 2, "cost": 4, "icons": {"G":2,"S":1,"M":0}, "primary": "Enemy assigns 3 additional damage.", "secondary": { "requires": ["Carnifex", "Hive Ship"], "effect": "Destroy 1 unrouted Carnifex/Hive Ship for 3 (g) and 2 (s)." } },
+      { "name": "Synaptic Control", "tier": 2, "cost": 4, "icons": {"G":1,"S":1,"M":0}, "primary": "Gain 1 [?]. Place 1 free (R).", "secondary": { "requires": ["Warrior", "Hive Ship"], "effect": "Rally 1 unit. Gain icons per unit advantage." } },
+      { "name": "Glory of the Swarm", "tier": 3, "cost": 6, "icons": {"G":3,"S":1,"M":0}, "primary": "Spend any [M]; place 1 free unit per die.", "secondary": { "requires": ["Hierophant", "Hive Ship"], "effect": "Rally all units. Gain 4 (g)." } },
+      { "name": "The Great Devourer", "tier": 3, "cost": 6, "icons": {"G":1,"S":2,"M":1}, "primary": "Enemy rerolls all [S].", "secondary": { "requires": ["Hierophant", "Hive Ship"], "effect": "Destroy all enemy routed units. Gain 4 (s)." } }
+    ]
+  }
+]
+[
+  {
+    "cards": [
+      { "name": "Crossfire", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Enemy loses 3 (g).", "secondary": { "requires": ["Fire Warrior", "Battlesuit", "Protector"], "effect": "Gain 2 (g)." } },
+      { "name": "Kroot Hunting Packs", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "If fewer units, gain 1 (s) and enemy loses [G].", "secondary": { "requires": ["Fire Warrior", "Protector"], "effect": "Gain 1 [?]." } },
+      { "name": "Pathfinder Teams", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":0}, "primary": "No effect.", "secondary": { "requires": ["Fire Warrior", "Protector"], "effect": "Look at enemy card; play 1 card from hand." } },
+      { "name": "Stealth Teams", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Gain 1 (s).", "secondary": { "requires": ["Fire Warrior", "Protector"], "effect": "Enemy routs 1 unit or loses [G], [S], or [M]." } },
+      { "name": "Tactical Retreat", "tier": -1, "cost": 0, "icons": {"G":0,"S":1,"M":0}, "primary": "Retreat 1 unit. Spend 1 [M] to rally it.", "secondary": { "requires": ["Fire Warrior", "Protector"], "effect": "Gain 2 (s)." } },
+      { "name": "Evasion", "tier": 0, "cost": 2, "icons": {"G":0,"S":1,"M":1}, "primary": "Gain 1 [?].", "secondary": { "requires": ["Fire Warrior", "Protector"], "effect": "Place routed/destroyed units back in area at end of step." } },
+      { "name": "Feigned Retreat", "tier": 0, "cost": 2, "icons": {"G":0,"S":2,"M":0}, "primary": "Retreat all units. Gain 1 (s) for each unit.", "secondary": { "requires": ["Battlesuit", "Protector"], "effect": "Choose 1 enemy unit; it suffers damage first." } },
+      { "name": "Kauyon", "tier": 0, "cost": 2, "icons": {"G":0,"S":2,"M":0}, "primary": "Gain 1 (s). Defending: move unit from adjacent area.", "secondary": { "requires": [], "effect": "Gain [?] equal to unit combat value." } },
+      { "name": "Mont'ka", "tier": 0, "cost": 2, "icons": {"G":1,"S":0,"M":0}, "primary": "Gain 2 (g). Choose enemy unit; it suffers damage first.", "secondary": { "requires": ["Battlesuit", "Protector"], "effect": "Spend up to 2 dice; gain 2 (g) per die." } },
+      { "name": "Fire and Movement", "tier": 2, "cost": 4, "icons": {"G":2,"S":1,"M":0}, "primary": "Reroll all of your [G], [S], or [M].", "secondary": { "requires": ["Hammerhead", "Custodian"], "effect": "Destroyed units may retreat instead." } },
+      { "name": "Firefight", "tier": 2, "cost": 4, "icons": {"G":3,"S":0,"M":0}, "primary": "Enemy loses 3 (g).", "secondary": { "requires": ["Battlesuit", "Hammerhead", "Custodian"], "effect": "Gain 1 (s). Force enemy to lose [G] or [M]." } },
+      { "name": "Regroup", "tier": 2, "cost": 4, "icons": {"G":1,"S":1,"M":1}, "primary": "Spend dice to rally units (2 dice = 1 unit).", "secondary": { "requires": ["Hammerhead", "Custodian"], "effect": "Gain 2 [?]." } },
+      { "name": "For the Greater Good", "tier": 3, "cost": 6, "icons": {"G":2,"S":0,"M":3}, "primary": "Enemy must reroll all [G].", "secondary": { "requires": ["Supremacy Armor", "Custodian"], "effect": "Gain 4 (g). Rally all units." } },
+      { "name": "Unity of Purpose", "tier": 3, "cost": 6, "icons": {"G":1,"S":3,"M":0}, "primary": "Gain 1 [?] for each of your units.", "secondary": { "requires": ["Supremacy Armor", "Custodian"], "effect": "Gain 4 (s). Enemy rerolls all [S]." } }
+    ]
+  },
+  {
+    "cards": [
+      { "name": "Fire Support", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "If defending, gain 2 (s). Otherwise, enemy loses 2 (s).", "secondary": { "requires": ["Guardsman", "Cruiser"], "effect": "Reroll 1 [S]." } },
+      { "name": "For the Emperor!", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Reroll 1 of your dice.", "secondary": { "requires": ["Guardsman", "Cruiser"], "effect": "Gain 1 (g) per unit (max 3)." } },
+      { "name": "Incoming!", "tier": -1, "cost": 0, "icons": {"G":0,"S":1,"M":0}, "primary": "Gain 1 [?].", "secondary": { "requires": ["Guardsman", "Cruiser"], "effect": "Gain 1 (s) per unit (max 3)." } },
+      { "name": "Iron Discipline", "tier": -1, "cost": 0, "icons": {"G":0,"S":0,"M":1}, "primary": "Gain 1 [?] per unit of different Tier.", "secondary": { "requires": ["Guardsman", "Cruiser"], "effect": "Rally 1 of your units." } },
+      { "name": "Ratling Marksmen", "tier": -1, "cost": 0, "icons": {"G":1,"S":0,"M":0}, "primary": "Enemy loses 2 (g) at assess damage step.", "secondary": { "requires": ["Guardsman", "Cruiser"], "effect": "Enemy routs 1 unit or spends 1 die." } },
+      { "name": "Bullgryn Bulwark", "tier": 0, "cost": 2, "icons": {"G":0,"S":2,"M":0}, "primary": "You must reroll 2 [G] or [M].", "secondary": { "requires": ["Ogryn", "Cruiser"], "effect": "Gain 1 (g) per unit (max 3)." } },
+      { "name": "Mechanised Combat Group", "tier": 0, "cost": 2, "icons": {"G":1,"S":1,"M":1}, "primary": "Enemy loses [G] or [M] at assess damage step.", "secondary": { "requires": ["Ogryn", "Cruiser"], "effect": "Look at enemy card; gain 2 [G] or 2 [S]." } },
+      { "name": "Overwhelming Firepower", "tier": 0, "cost": 2, "icons": {"G":2,"S":0,"M":1}, "primary": "Gain 1 (g) for each of your ground units.", "secondary": { "requires": ["Guardsman", "Cruiser"], "effect": "Spend 1 [G] to gain 3 (g)." } },
+      { "name": "Summary Execution", "tier": 0, "cost": 2, "icons": {"G":0,"S":0,"M":3}, "primary": "Rally 1 unit. Gain 2 [?].", "secondary": { "requires": ["Guardsman", "Cruiser"], "effect": "Destroy 1 routed unit to rally all units." } },
+      { "name": "Armoured Spearhead", "tier": 2, "cost": 4, "icons": {"G":3,"S":0,"M":0}, "primary": "Destroy units to force enemy to lose dice.", "secondary": { "requires": ["Leman Russ", "Battleship"], "effect": "Choose enemy unit; it suffers damage first." } },
+      { "name": "Combined Arms", "tier": 2, "cost": 4, "icons": {"G":1,"S":1,"M":0}, "primary": "Gain (g)/(s) for each unit of different Tier. Rally unit.", "secondary": { "requires": [], "effect": "Gain 1 [?]." } },
+      { "name": "Wyvern Suppression Fire", "tier": 2, "cost": 4, "icons": {"G":1,"S":2,"M":0}, "primary": "If more T0 units, enemy routs 1 unit.", "secondary": { "requires": ["Leman Russ", "Battleship"], "effect": "Enemy destroys 1 routed T0/T1 unit." } },
+      { "name": "Hammer of the Emperor", "tier": 3, "cost": 6, "icons": {"G":3,"S":0,"M":1}, "primary": "Force enemy to lose 1 [S].", "secondary": { "requires": ["Warhound Titan", "Battleship"], "effect": "Gain (g) per unit of different Tier (max 6)." } },
+      { "name": "Shield of the Imperium", "tier": 3, "cost": 6, "icons": {"G":1,"S":2,"M":1}, "primary": "Enemy rerolls all [G].", "secondary": { "requires": ["Warhound Titan", "Battleship"], "effect": "Gain 4 (s). Rally all units." } }
+    ]
+  }
+]

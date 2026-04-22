@@ -4,15 +4,7 @@
     {
       "name": "Alpha",
       "faction": "eldar",
-      "pool": [
-        {
-          "id": 4,
-          "player": 0,
-          "unitType": "space",
-          "tier": 0,
-          "unit_status": "active"
-        }
-      ],
+      "pool": [],
       "hand": [
         {
           "handIdx": 0,
@@ -57,33 +49,13 @@
           "id": "strategize_0_1_r2",
           "type": "strategize",
           "owner": 0
-        },
-        {
-          "id": "deploy_0_1_r2",
-          "type": "deploy",
-          "owner": 0
-        },
-        {
-          "id": "strategize_0_0_r2",
-          "type": "strategize",
-          "owner": 0
-        },
-        {
-          "id": "dominate_0_1_r2",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "deploy_0_0_r2",
-          "type": "deploy",
-          "owner": 0
         }
       ],
       "credits": 7,
       "tokens": {
         "support": 0,
         "discount": 0,
-        "forge": 2
+        "forge": 1
       },
       "hand_battle_cards": [
         {
@@ -101,6 +73,13 @@
           "effect_2": "Spend 1 [M] to move 1 unit to adjacent friendly or uncontrolled area."
         },
         {
+          "name": "Howling Banshees",
+          "tier": -1,
+          "cost": 0,
+          "effect_1": "Gain 1 [?]. Requires: Aspect / Frigate.",
+          "effect_2": "Spend 1 [M] to force enemy to rout a unit of his choice."
+        },
+        {
           "name": "Ranger Support",
           "tier": -1,
           "cost": 0,
@@ -113,13 +92,6 @@
           "cost": 0,
           "effect_1": "Gain 1 [?]. Requires: Aspect / Frigate.",
           "effect_2": "Enemy loses 1 die of his choice."
-        },
-        {
-          "name": "Wave Serpent",
-          "tier": 2,
-          "cost": 4,
-          "effect_1": "Gain 1 [?]. Gain 3 (s) unless enemy spends 1 [M]. Requires: Falcon / Stalker.",
-          "effect_2": "Spend 1 [M] to move any number of Tier 0 and Tier 1 units to an adjacent area — may start a new combat."
         }
       ],
       "available_battle_cards": [
@@ -166,6 +138,13 @@
           "effect_2": "—"
         },
         {
+          "name": "Wave Serpent",
+          "tier": 2,
+          "cost": 4,
+          "effect_1": "Gain 1 [?]. Gain 3 (s) unless enemy spends 1 [M]. Requires: Falcon / Stalker.",
+          "effect_2": "Spend 1 [M] to move any number of Tier 0 and Tier 1 units to an adjacent area — may start a new combat."
+        },
+        {
           "name": "Holofield Emitter",
           "tier": 3,
           "cost": 6,
@@ -178,13 +157,6 @@
           "cost": 6,
           "effect_1": "Gain 1 [?]. Enemy discards 1 random combat card from his hand. Requires: Titan / Stalker.",
           "effect_2": "Gain 4 (g) unless enemy discards 1 face up card of your choice."
-        },
-        {
-          "name": "Howling Banshees",
-          "tier": -1,
-          "cost": 0,
-          "effect_1": "Gain 1 [?]. Requires: Aspect / Frigate.",
-          "effect_2": "Spend 1 [M] to force enemy to rout a unit of his choice."
         }
       ],
       "hand_order_upgrades": [],
@@ -241,15 +213,15 @@
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
           "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
-        },
+        }
+      ],
+      "available_event_cards": [
         {
           "name": "Exodite Colony",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Tactic",
           "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token."
-        }
-      ],
-      "available_event_cards": [
+        },
         {
           "name": "Farsight",
           "warp_storm_move": "Across",
@@ -314,13 +286,6 @@
           "unitType": "ground",
           "tier": 0,
           "unit_status": "active"
-        },
-        {
-          "unitType": "ground",
-          "tier": 1,
-          "player": 1,
-          "unit_status": "active",
-          "_uid": "a9f842c1-b8e2-43be-9e9b-20abc851a920"
         }
       ],
       "hand": [
@@ -369,33 +334,25 @@
           "owner": 1
         },
         {
-          "id": "dominate_1_1_r2",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "deploy_1_1_r2",
-          "type": "deploy",
-          "owner": 1
-        },
-        {
           "id": "strategize_1_0_r2",
           "type": "strategize",
           "owner": 1
-        },
-        {
-          "id": "advance_1_0_r2",
-          "type": "advance",
-          "owner": 1
         }
       ],
-      "credits": 7,
+      "credits": 8,
       "tokens": {
-        "support": 3,
+        "support": 2,
         "discount": 0,
         "forge": 0
       },
       "hand_battle_cards": [
+        {
+          "name": "Dark Faith",
+          "tier": -1,
+          "cost": 0,
+          "effect_1": "Gain 1 [M]. Requires: Cultist / Iconoclast.",
+          "effect_2": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."
+        },
         {
           "name": "Foul Worship",
           "tier": -1,
@@ -423,16 +380,16 @@
           "cost": 0,
           "effect_1": "Enemy may choose a unit to rout to gain 1 [?]. Otherwise place a free Cultist or Iconoclast in the area. Requires: Cultist / Iconoclast.",
           "effect_2": "Gain 2 (g) or 2 (s)."
-        },
+        }
+      ],
+      "available_battle_cards": [
         {
           "name": "Mark of Khorne",
           "tier": 0,
           "cost": 2,
           "effect_1": "Spend 1 [G] or 1 [M] to gain 3 (g). Requires: Marine / Iconoclast.",
           "effect_2": "Enemy spends 1 [S] or destroys 1 routed unit."
-        }
-      ],
-      "available_battle_cards": [
+        },
         {
           "name": "Mark of Nurgle",
           "tier": 0,
@@ -488,26 +445,9 @@
           "cost": 6,
           "effect_1": "Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit. Requires: Titan / Cruiser.",
           "effect_2": "If more [M] than enemy, destroy 1 routed unit."
-        },
-        {
-          "name": "Dark Faith",
-          "tier": -1,
-          "cost": 0,
-          "effect_1": "Gain 1 [M]. Requires: Cultist / Iconoclast.",
-          "effect_2": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."
         }
       ],
-      "hand_order_upgrades": [
-        {
-          "id": "",
-          "name": "Dread Ritual",
-          "order_type": "deploy",
-          "tier": 1,
-          "cost": 2,
-          "effect_1": "Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in active system.",
-          "effect_2": "Factory not required."
-        }
-      ],
+      "hand_order_upgrades": [],
       "available_order_upgrades": [
         {
           "id": "",
@@ -517,6 +457,15 @@
           "cost": 1,
           "effect_1": "Orbital Strike, once per round. Gain [?].",
           "effect_2": "Spend 1 [M] to force any unit taking damage to rout."
+        },
+        {
+          "id": "",
+          "name": "Dread Ritual",
+          "order_type": "deploy",
+          "tier": 1,
+          "cost": 2,
+          "effect_1": "Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in active system.",
+          "effect_2": "Factory not required."
         },
         {
           "id": "",
@@ -552,12 +501,6 @@
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Tactic",
           "effect": "Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world."
-        },
-        {
-          "name": "Through the Warp",
-          "warp_storm_move": "Top Left/Bot Rgt",
-          "card_type": "Scheme",
-          "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start."
         }
       ],
       "available_event_cards": [
@@ -598,6 +541,12 @@
           "effect": "Gain 1 (F) and 1 (R)."
         },
         {
+          "name": "Through the Warp",
+          "warp_storm_move": "Top Left/Bot Rgt",
+          "card_type": "Scheme",
+          "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start."
+        },
+        {
           "name": "Touched by the Warp",
           "warp_storm_move": "Sideways",
           "card_type": "Tactic",
@@ -609,7 +558,7 @@
       "collected_objectives": 0
     }
   ],
-  "phase": "end-round",
+  "phase": "execution",
   "curP": 1,
   "round": 2,
   "totalRounds": 8,
@@ -636,14 +585,7 @@
           "discount": 0,
           "forge": 1,
           "joker": 1,
-          "troops": [
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": [
             {
               "id": 6,
@@ -787,15 +729,10 @@
           "joker": 0,
           "troops": [
             {
+              "id": 4,
+              "player": 0,
               "unitType": "space",
               "tier": 0,
-              "player": 1,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "space",
-              "tier": 0,
-              "player": 1,
               "unit_status": "active"
             }
           ],
@@ -856,12 +793,7 @@
               "unit_status": "active"
             }
           ],
-          "structures": [
-            {
-              "type": "city",
-              "player": 0
-            }
-          ]
+          "structures": []
         },
         {
           "area_place": 1,
@@ -947,12 +879,7 @@
               "unit_status": "active"
             }
           ],
-          "structures": [
-            {
-              "type": "city",
-              "player": 1
-            }
-          ]
+          "structures": []
         },
         {
           "area_place": 1,
@@ -983,6 +910,19 @@
           "forge": 0,
           "joker": 0,
           "troops": [
+            {
+              "id": 14,
+              "player": 1,
+              "unitType": "space",
+              "tier": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 1,
+              "unit_status": "active"
+            },
             {
               "unitType": "space",
               "tier": 0,
@@ -1199,7 +1139,64 @@
     true
   ],
   "targetMarkers": [],
-  "orders": [],
+  "orders": [
+    {
+      "id": "deploy_1_1_r2",
+      "type": "deploy",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "deploy_0_0_r2",
+      "type": "deploy",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "strategize_0_0_r2",
+      "type": "strategize",
+      "owner": 0,
+      "tile": "0,-1",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "dominate_1_1_r2",
+      "type": "dominate",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "deploy_0_1_r2",
+      "type": "deploy",
+      "owner": 0,
+      "tile": "0,-1",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "advance_1_0_r2",
+      "type": "advance",
+      "owner": 1,
+      "tile": "1,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "dominate_0_1_r2",
+      "type": "dominate",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 1,
+      "revealed": false
+    }
+  ],
   "ordersPlaced": [
     4,
     4
@@ -1210,7 +1207,7 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    true,
+    false,
     true
   ],
   "log": [
@@ -1487,87 +1484,17 @@
       "player_id": -1
     },
     {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 1
-    },
-    {
       "message": "Приказ 'Strategize' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Strategize' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Dominate' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Игрок 0: Dominate — получено: 1 discount, 1 forge, joker→discount",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Advance' разыгран",
-      "player_id": 1
-    },
-    {
-      "message": "БОЙ в области 2 тайла 1,0: Игрок 1 победил (7 vs 3). Игрок 0 теряет всех юнитов.",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Deploy' разыгран",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha: доход +7 (итого 7 кредитов)",
-      "player_id": 0
-    },
-    {
-      "message": "Omega: доход +7 (итого 7 кредитов)",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha взял карту события: Exodite Colony",
-      "player_id": 0
-    },
-    {
-      "message": "Omega взял карту события: Through the Warp",
       "player_id": 1
     }
   ],
   "event_cards_offered": [
-    [
-      {
-        "name": "Exodite Colony",
-        "warp_storm_move": "Top Rgt/Bot Left",
-        "card_type": "Tactic",
-        "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token."
-      }
-    ],
-    [
-      {
-        "name": "Through the Warp",
-        "warp_storm_move": "Top Left/Bot Rgt",
-        "card_type": "Scheme",
-        "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start."
-      }
-    ]
+    [],
+    []
   ],
   "event_selection_done": [
-    true,
-    true
+    false,
+    false
   ],
   "ui": {
     "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Omega: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 4",
