@@ -202,9 +202,13 @@ function showMsg(t, b, cb) {
   document.getElementById('msg-body').innerHTML    = b;
   // Always restore standard OK button
   document.querySelector('#msg-modal .mbtns').innerHTML = '<button class="abtn bp" onclick="closeMsg()">OK</button>';
-  document.getElementById('msg-modal').classList.add('active');
+  const modal = document.getElementById('msg-modal');
+  console.log('showMsg: добавляю класс active к модалю', modal);
+  modal.classList.add('active');
+  console.log('showMsg: модаль после добавления класса:', modal.classList.contains('active'));
 }
 function closeMsg() {
+  console.log('closeMsg: вызвана');
   document.getElementById('msg-modal').classList.remove('active');
   if (_msgCb) { const f = _msgCb; _msgCb = null; f(); }
 }

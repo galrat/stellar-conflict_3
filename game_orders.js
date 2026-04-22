@@ -19,6 +19,7 @@ async function undoLastOrderViaAPI() {
       // Очищаем ВСЕ временные переменные UI в одном месте
       _resetDeployUI();
       _resetAdvanceUI();
+      _resetStrategizeUI();
       _selectedOrderForPlacement = null;
       _selectedOrderForPlay = null;
 
@@ -149,6 +150,9 @@ async function playOrderViaAPI(orderId) {
       } else if (res.state?.pending_advance) {
         console.log('→ Advance UI');
         showAdvanceUI();
+      } else if (res.state?.pending_strategize) {
+        console.log('→ Strategize UI');
+        renderStrategize();
       } else {
         console.log('→ Ничего нет, только execution');
         setPhase('execution');

@@ -3,6 +3,7 @@ api/routes/game_logic.py — игровые эндпоинты и логика (
 """
 from typing import Any, Optional, List
 from pathlib import Path
+import copy
 from pydantic import BaseModel
 from fastapi import Request
 from api.routes.common import app
@@ -56,6 +57,11 @@ from python_engine.advance import (
     advance_skip_orbital,
     advance_next_step,
     advance_remove_overflow_unit,
+)
+from python_engine.strategize import (
+    strategize_play,
+    strategize_buy_combat_card,
+    strategize_buy_order_upgrade,
 )
 
 
@@ -681,8 +687,8 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             order_type = played_order.get('type') if played_order else None
             order_tile = played_order.get('tile') if played_order else None
 
-            # Для deploy/advance сохраняем snapshot ДО розыгрыша — чтобы undo вернул приказ на доску
-            if order_type in ('deploy', 'advance'):
+            # Для deploy/advance/strategize сохраняем snapshot ДО розыгрыша — чтобы undo вернул приказ на доску
+            if order_type in ('deploy', 'advance', 'strategize'):
                 clear_temp_snapshots()
                 save_temp_snapshot()
 
@@ -696,8 +702,8 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             active_game['orders'] = new_state['orders']
             active_game['players'] = new_state['players']
 
-            # Для deploy и advance — execution_order_played ставится только после завершения
-            if order_type not in ('deploy', 'advance'):
+            # Для deploy, advance, strategize — execution_order_played ставится только после завершения
+            if order_type not in ('deploy', 'advance', 'strategize'):
                 active_game['execution_order_played'][request.player_id] = True
 
             # Добавить в лог
@@ -737,6 +743,12 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
                 active_game.clear()
                 active_game.update(adv_state)
                 print(f"⚔️ Advance на тайле {order_tile}, шаг: {active_game['pending_advance']['step']}")
+
+            elif order_type == 'strategize':
+                strat_state = strategize_play(active_game, request.player_id, order_tile)
+                active_game.clear()
+                active_game.update(strat_state)
+                print(f"🎯 Strategize, шаг: {active_game['pending_strategize']['step']}")
 
             print(f"🎯 {message}")
             save_current_state()
@@ -1514,6 +1526,135 @@ async def advance_next_step_endpoint(request: AdvanceGenericRequest) -> GameStat
             active_game.clear()
             active_game.update(new_state)
             print(f"⚔️ Advance: переход к наземным юнитам")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+# ── STRATEGIZE ENDPOINTS ────────────────────────────────────────────────────
+
+class StrategizeBuyCombatCardRequest(BaseModel):
+    player_id: int
+    card_to_buy_name: str
+    card_from_hand_name: str
+
+
+class StrategizeBuyOrderUpgradeRequest(BaseModel):
+    player_id: int
+    upgrade_name: str
+
+
+class StrategyzeSkipRequest(BaseModel):
+    player_id: int
+
+
+@app.post('/api/game/strategize-buy-combat-card')
+async def strategize_buy_combat_card_endpoint(request: StrategizeBuyCombatCardRequest) -> GameStateResponse:
+    """Обменять одну боевую карту на другую при Strategize."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pending = active_game.get('pending_strategize')
+            if not pending:
+                return GameStateResponse(success=False, error="Нет активного приказа Strategize")
+            if pending['step'] != 'buy_combat_card':
+                return GameStateResponse(success=False, error=f"Шаг buy_combat_card недоступен (текущий: {pending['step']})")
+
+            success, error, new_state = strategize_buy_combat_card(
+                active_game, request.player_id,
+                request.card_to_buy_name,
+                request.card_from_hand_name
+            )
+            if not success:
+                return GameStateResponse(success=False, error=error)
+
+            active_game.clear()
+            active_game.update(new_state)
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/strategize-buy-order-upgrade')
+async def strategize_buy_order_upgrade_endpoint(request: StrategizeBuyOrderUpgradeRequest) -> GameStateResponse:
+    """Купить одно улучшение приказа при Strategize."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pending = active_game.get('pending_strategize')
+            if not pending:
+                return GameStateResponse(success=False, error="Нет активного приказа Strategize")
+            if pending['step'] != 'buy_order_upgrade':
+                return GameStateResponse(success=False, error=f"Шаг buy_order_upgrade недоступен (текущий: {pending['step']})")
+
+            success, error, new_state = strategize_buy_order_upgrade(
+                active_game, request.player_id, request.upgrade_name
+            )
+            if not success:
+                return GameStateResponse(success=False, error=error)
+
+            active_game.clear()
+            active_game.update(new_state)
+            active_game['execution_order_played'][request.player_id] = True
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/strategize-skip-combat-card')
+async def strategize_skip_combat_card_endpoint(request: StrategyzeSkipRequest) -> GameStateResponse:
+    """Пропустить обмен боевой карты и перейти к покупке улучшения."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pending = active_game.get('pending_strategize')
+            if not pending:
+                return GameStateResponse(success=False, error="Нет активного приказа Strategize")
+            if pending['step'] != 'buy_combat_card':
+                return GameStateResponse(success=False, error=f"Шаг buy_combat_card недоступен")
+
+            new_state = copy.deepcopy(active_game)
+            new_state['pending_strategize']['step'] = 'buy_order_upgrade'
+            active_game.clear()
+            active_game.update(new_state)
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/strategize-skip-order-upgrade')
+async def strategize_skip_order_upgrade_endpoint(request: StrategyzeSkipRequest) -> GameStateResponse:
+    """Пропустить покупку улучшения и завершить Strategize."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pending = active_game.get('pending_strategize')
+            if not pending:
+                return GameStateResponse(success=False, error="Нет активного приказа Strategize")
+            if pending['step'] != 'buy_order_upgrade':
+                return GameStateResponse(success=False, error=f"Шаг buy_order_upgrade недоступен")
+
+            new_state = copy.deepcopy(active_game)
+            del new_state['pending_strategize']
+            active_game.clear()
+            active_game.update(new_state)
+            active_game['execution_order_played'][request.player_id] = True
             save_current_state()
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
         except Exception as e:

@@ -523,6 +523,31 @@ function renderSide() {
     return;
   }
 
+  // ── ФАЗА РАЗЫГРЫША STRATEGIZE ──
+  if (G.phase === 'execution' && G.pending_strategize) {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block'; structSection.style.display = 'none';
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+
+    const step = G.pending_strategize.step || 'buy_combat_card';
+    const player = G.players[G.curP];
+    const credits = player.credits || 0;
+
+    let html = '<div class="ptitle">🎯 STRATEGIZE</div>';
+
+    if (step === 'buy_combat_card') {
+      html += `<div style="font-size:.75rem;color:#aaa;margin-bottom:8px;">Обменять боевую карту (${credits} кредитов)</div>`;
+      html += '<button class="abtn bp" style="width:100%;margin-top:8px;" onclick="renderStrategize()">📋 Открыть обмен</button>';
+    } else if (step === 'buy_order_upgrade') {
+      html += `<div style="font-size:.75rem;color:#aaa;margin-bottom:8px;">Купить улучшение приказа (${credits} кредитов)</div>`;
+      html += '<button class="abtn bp" style="width:100%;margin-top:8px;" onclick="renderStrategize()">⚔ Выбрать улучшение</button>';
+    }
+
+    poolEl.innerHTML = html;
+    return;
+  }
+
   // ── ФАЗА РОЗЫГРЫША ПРИКАЗОВ (EXECUTION) ──
   if (G.phase === 'execution') {
     document.getElementById('tile-hand').innerHTML = '';

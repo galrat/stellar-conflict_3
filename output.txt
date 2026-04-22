@@ -1,0 +1,38 @@
+→ ВТОРОЙ КЛИК - розыгрыш приказа
+game_orders.js:137 playOrderViaAPI: ответ получен, type=undefined
+game_strategize.js:11 renderStrategize: ps= {player_id: 1, step: 'buy_combat_card'}
+game_strategize.js:12 renderStrategize вызвана отсюда:
+renderStrategize @ game_strategize.js:12
+applyState @ game_api.js:45
+playOrderViaAPI @ game_orders.js:138
+await in playOrderViaAPI
+selectOrderForPlay @ game_orders.js:114
+(anonymous) @ game_render_board.js:427
+game_strategize.js:19 renderStrategize: step= buy_combat_card
+game_strategize.js:22 renderStrategize: показываю модаль обмена карт
+game_strategize.js:37 _showCombatCardExchangeModal: handCards= (5) [{…}, {…}, {…}, {…}, {…}]
+game_strategize.js:38 _showCombatCardExchangeModal: availableCards= (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+game_strategize.js:108 _showCombatCardExchangeModal: вызываю showMsg
+game_ui.js:206 showMsg: добавляю класс active к модалю <div class=​"moverlay" id=​"msg-modal">​…​</div>​flex
+game_ui.js:208 showMsg: модаль после добавления класса: true
+game_strategize.js:110 _showCombatCardExchangeModal: showMsg вызвана
+game_orders.js:139 applyState выполнена, G.pending_deploy=false
+game_orders.js:153 → Strategize UI
+game_strategize.js:114 _selectFromHandCard: вызвана с cardName= Impure Zeal
+game_strategize.js:37 _showCombatCardExchangeModal: handCards= (5) [{…}, {…}, {…}, {…}, {…}]
+game_strategize.js:38 _showCombatCardExchangeModal: availableCards= (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+game_strategize.js:108 _showCombatCardExchangeModal: вызываю showMsg
+game_ui.js:206 showMsg: добавляю класс active к модалю <div class=​"moverlay" id=​"msg-modal">​…​</div>​flex
+game_ui.js:208 showMsg: модаль после добавления класса: true
+game_strategize.js:110 _showCombatCardExchangeModal: showMsg вызвана
+game_strategize.js:120 _selectToBuyCard: вызвана с cardName= Mark of Slaanesh
+game_strategize.js:37 _showCombatCardExchangeModal: handCards= (5) [{…}, {…}, {…}, {…}, {…}]
+game_strategize.js:38 _showCombatCardExchangeModal: availableCards= (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+game_strategize.js:108 _showCombatCardExchangeModal: вызываю showMsg
+game_ui.js:206 showMsg: добавляю класс active к модалю <div class=​"moverlay active" id=​"msg-modal">​…​</div>​flex
+game_ui.js:208 showMsg: модаль после добавления класса: true
+game_strategize.js:110 _showCombatCardExchangeModal: showMsg вызвана
+game_strategize.js:127 _buyCombatCard: вызвана, sel= {fromHand: null, toBuy: null}
+game_ui.js:206 showMsg: добавляю класс active к модалю <div class=​"moverlay" id=​"msg-modal">​…​</div>​flex
+game_ui.js:208 showMsg: модаль после добавления класса: true
+game_ui.js:211 closeMsg: вызвана
