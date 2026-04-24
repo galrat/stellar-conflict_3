@@ -175,6 +175,49 @@ Emperor's Might
          ),
 ],
 
+order_upgrades = [
+        OrderUpgrade(
+            name       = "Reign of Fire",
+            order_type = "advance",
+            tier       = 0,
+            cost       = 1,
+            effect_1   = "Orbital Strike, once per round. Gain [?].",
+            effect_2   = "Convert 1 [M] into [G].",
+        ),
+        OrderUpgrade(
+            name       = "Crusade",
+            order_type = "advance",
+            tier       = 1,
+            cost       = 2,
+            effect_1   = "If no friendly worlds in system, gain 1 (R). Once per round.",
+            effect_2   = "Command Level 1.",
+        ),
+        OrderUpgrade(
+            name       = "Direct the Faithful",
+            order_type = "strategize",
+            tier       = 1,
+            cost       = 2,
+            effect_1   = "May change 1 structure to a different structure. Once per round.",
+            effect_2   = "Command Level 1.",
+        ),
+        OrderUpgrade(
+            name       = "Recruitment Worlds",
+            order_type = "deploy",
+            tier       = 1,
+            cost       = 2,
+            effect_1   = "Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.",
+            effect_2   = "Command Level 1.",
+        ),
+        OrderUpgrade(
+            name       = "Drop Pods",
+            order_type = "advance",
+            tier       = 2,
+            cost       = 3,
+            effect_1   = "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
+            effect_2   = "Spend 2 [S] to place free Marine (may start combat). Command Level 2.",
+        ),
+    ],
+
 event_cards = [
         EventCard(name="Adeptus Mechanicus",  warp_storm_move="Across",           card_type="Scheme", effect="At start of assess damage, discard to gain 2 (s), plus 1 (s) per (F) you have."),
         EventCard(name="Emperor's Champion",  warp_storm_move="Sideways",         card_type="Scheme", effect="At start of assess damage, discard to rally 1 unit."),

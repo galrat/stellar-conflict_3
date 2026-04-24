@@ -56,6 +56,7 @@ Holofield Emitter
 Psychic Lance
 '''.split('\n'),
     ),
+
     battle_cards=[
         BattleCard(
             name="Command of the Autarch",
@@ -171,8 +172,51 @@ BattleCard(
     primary="Gain 1 [?]. Enemy discards 1 random combat card from his hand.",
     secondary={"requires": ["Titan", "Stalker"], "effect": "Gain 4 (g) unless enemy discards 1 face up card of your choice."},
 ),
-]
-,
+],
+
+order_upgrades = [
+        OrderUpgrade(
+            name       = "Tactical Strikes",
+            order_type = "advance",
+            tier       = 0,
+            cost       = 1,
+            effect_1   = "Orbital Strike, once per round. Gain 1 [?].",
+            effect_2   = "Spend 1 [M] to choose enemy unit on the world — this must suffer damage first.",
+        ),
+        OrderUpgrade(
+            name       = "Wraithbone Singers",
+            order_type = "deploy",
+            tier       = 1,
+            cost       = 2,
+            effect_1   = "When purchasing structure, may place it on world containing exactly 1 different structure. Once per round.",
+            effect_2   = "Command Level 1.",
+        ),
+        OrderUpgrade(
+            name       = "Farseer",
+            order_type = "strategize",
+            tier       = 1,
+            cost       = 2,
+            effect_1   = "This order can be resolved even if there are no units in the active system. Once per round.",
+            effect_2   = "Command Level 1.",
+        ),
+        OrderUpgrade(
+            name       = "Corsair Raid",
+            order_type = "advance",
+            tier       = 1,
+            cost       = 2,
+            effect_1   = "After resolving a combat with this order, you may perform 1 orbital strike in the active system. Once per round.",
+            effect_2   = "Command Level 1.",
+        ),
+        OrderUpgrade(
+            name       = "Strafing Run",
+            order_type = "advance",
+            tier       = 2,
+            cost       = 3,
+            effect_1   = "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
+            effect_2   = "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2.",
+        ),
+    ],
+
     event_cards = [
         EventCard(name="Exodite Colony",    warp_storm_move="Top Rgt/Bot Left", card_type="Tactic", effect="Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token."),
         EventCard(name="Farsight",          warp_storm_move="Across",           card_type="Scheme", effect="At start of assess damage, discard to take all units in this combat and place on any friendly area."),
