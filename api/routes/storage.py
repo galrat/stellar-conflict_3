@@ -78,7 +78,7 @@ async def save_game(request: SaveRequest) -> SaveResponse:
             json.dump(request.state, f, indent=2, ensure_ascii=False)
 
         file_size = filepath.stat().st_size
-        print(f"✅ Сохранено: {filename} ({file_size} B)")
+        print(f"[OK] Сохранено: {filename} ({file_size} B)")
 
         return SaveResponse(
             success=True,
@@ -86,7 +86,7 @@ async def save_game(request: SaveRequest) -> SaveResponse:
             path=str(filepath)
         )
     except Exception as e:
-        print(f"❌ Ошибка сохранения: {e}")
+        print(f"[ERR] Ошибка сохранения: {e}")
         return SaveResponse(
             success=False,
             error=str(e)
@@ -103,7 +103,7 @@ async def load_game(filename: str) -> LoadResponse:
         filepath = SAVES_DIR / filename
 
         if not filepath.exists():
-            print(f"⚠️  Файл не найден: {filename}")
+            print(f"[WARN] Файл не найден: {filename}")
             raise HTTPException(
                 status_code=404,
                 detail='File not found'
@@ -112,7 +112,7 @@ async def load_game(filename: str) -> LoadResponse:
         with open(filepath, 'r', encoding='utf-8') as f:
             state = json.load(f)
 
-        print(f"✅ Загружено: {filename}")
+        print(f"[OK] Загружено: {filename}")
         return LoadResponse(
             success=True,
             state=state
@@ -120,7 +120,7 @@ async def load_game(filename: str) -> LoadResponse:
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Ошибка загрузки: {e}")
+        print(f"[ERR] Ошибка загрузки: {e}")
         return LoadResponse(
             success=False,
             error=str(e)
@@ -139,10 +139,10 @@ async def list_games() -> ListResponse:
                 modified=filepath.stat().st_mtime
             ))
 
-        print(f"📂 Список игр: найдено {len(games)} файлов")
+        print(f"[OK] Список игр: найдено {len(games)} файлов")
         return ListResponse(success=True, games=games)
     except Exception as e:
-        print(f"❌ Ошибка при получении списка: {e}")
+        print(f"[ERR] Ошибка при получении списка: {e}")
         return ListResponse(
             success=False,
             error=str(e)
@@ -159,19 +159,19 @@ async def delete_game(filename: str) -> SuccessResponse:
         filepath = SAVES_DIR / filename
 
         if not filepath.exists():
-            print(f"⚠️  Файл не найден для удаления: {filename}")
+            print(f"[WARN] Файл не найден для удаления: {filename}")
             raise HTTPException(
                 status_code=404,
                 detail='File not found'
             )
 
         filepath.unlink()
-        print(f"🗑️  Удалено: {filename}")
+        print(f"[OK] Удалено: {filename}")
         return SuccessResponse(success=True)
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Ошибка удаления: {e}")
+        print(f"[ERR] Ошибка удаления: {e}")
         return SuccessResponse(
             success=False,
             error=str(e)
@@ -189,13 +189,13 @@ async def download_game(filename: str):
         filepath = SAVES_DIR / filename
 
         if not filepath.exists():
-            print(f"⚠️  Файл не найден для скачивания: {filename}")
+            print(f"[WARN] Файл не найден для скачивания: {filename}")
             raise HTTPException(
                 status_code=404,
                 detail='File not found'
             )
 
-        print(f"⬇️  Скачивание: {filename}")
+        print(f"[OK] Скачивание: {filename}")
         return FileResponse(
             filepath,
             media_type='application/json',

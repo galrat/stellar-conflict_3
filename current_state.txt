@@ -332,11 +332,6 @@
           "id": "strategize_1_1_r2",
           "type": "strategize",
           "owner": 1
-        },
-        {
-          "id": "strategize_1_0_r2",
-          "type": "strategize",
-          "owner": 1
         }
       ],
       "credits": 8,
@@ -1157,6 +1152,14 @@
       "revealed": false
     },
     {
+      "id": "strategize_1_0_r2",
+      "type": "strategize",
+      "owner": 1,
+      "tile": "2,-1",
+      "position": 0,
+      "revealed": false
+    },
+    {
       "id": "strategize_0_0_r2",
       "type": "strategize",
       "owner": 0,
@@ -1208,7 +1211,7 @@
   "dropped_orders": [],
   "execution_order_played": [
     false,
-    true
+    false
   ],
   "log": [
     {
@@ -1482,10 +1485,6 @@
     {
       "message": "Игра загружена",
       "player_id": -1
-    },
-    {
-      "message": "Приказ 'Strategize' разыгран",
-      "player_id": 1
     }
   ],
   "event_cards_offered": [

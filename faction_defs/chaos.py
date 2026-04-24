@@ -32,189 +32,189 @@ CHAOS = Faction(
         # ── Характеристики юнитов (источник: Forbidden_Stars_Unit_and_Card_Database) ──
         unit_stats={
             # name — название; cost — стоимость; max_count — макс. резерв
-            "infantry":   dict(name="Cultists",                   cost=2,               combat_strength=1, health=2, morale=2, max_count=9),
-            "marines":    dict(name="Chaos Space Marines",        cost=3,               combat_strength=3, health=3, morale=2, max_count=6),
+            "infantry":   dict(name="Cultist",                   cost=2,               combat_strength=1, health=2, morale=2, max_count=9),
+            "marines":    dict(name="Chaos Space Marine",        cost=3,               combat_strength=3, health=3, morale=2, max_count=6),
             "mechanized": dict(name="Helbrute",                   cost=4,               combat_strength=3, health=4, morale=3, max_count=3),
             "elite":      dict(name="Chaos Reaver Titan",         cost=5, cost_forge=1, combat_strength=4, health=5, morale=3, max_count=3),
             "fighter":    dict(name="Iconoclast Destroyer",       cost=2,               combat_strength=2, health=2, morale=2, max_count=3),
             "destroyer":  dict(name="Repulsive Cruiser",          cost=5, cost_forge=1, combat_strength=4, health=5, morale=4, max_count=3),
         },
         # ── Стартовая колода боевых карт ──────────────────────────────────────
-        battle_card_deck = [
-            "Dark Faith",
-            "Foul Worship",
-            "Impure Zeal",
-            "Khorne's Rage",
-            "Lure of Chaos",
-            "Mark of Khorne",
-            "Mark of Nurgle",
-            "Mark of Slaanesh",
-            "Mark of Tzeentch",
-            "Chaos United",
-            "Daemonic Resilience",
-            "Inhuman Strength",
-            "Chaos Victorious",
-            "Death and Despair",
-        ],
+        battle_card_deck = '''Dark Faith
+Foul Worship
+Impure Zeal
+Khorne's Rage
+Lure of Chaos
+Mark of Khorne
+Mark of Nurgle
+Mark of Slaanesh
+Mark of Tzeentch
+Chaos United
+Daemonic Resilience
+Inhuman Strength
+Chaos Victorious
+Death and Despair
+'''.split('\n')
     ),
-    battle_cards = [
-        # ── Начальные (бесплатные) ──────────────────────────────────────────
+    battle_cards=[
         BattleCard(
-            name     = "Dark Faith",
-            level    = CardLevel.INITIAL,
-            tier       = -1,
-            cost       = 0,
-            effect_1 = "Gain 1 [M]. Requires: Cultist / Iconoclast.",
-            effect_2 = "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system.",
-        ),
-        BattleCard(
-            name     = "Foul Worship",
-            level=CardLevel.INITIAL,
+            name="Dark Faith",
             tier=-1,
             cost=0,
-            effect_1 = "Gain 1 [?]. Requires: Cultist / Iconoclast.",
-            effect_2 = "If enemy has routed unit, gain 1 (s) per unrouted Cultist or Iconoclast.",
+            icons={"G": 0, "S": 0, "M": 1},
+            primary="Gain 1 [M].",
+            secondary={"requires": ["Cultist", "Iconoclast"],
+                       "effect": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."},
         ),
         BattleCard(
-            name     = "Impure Zeal",
-            level=CardLevel.INITIAL,
+            name="Foul Worship",
             tier=-1,
             cost=0,
-            effect_1 = "If more [M] than enemy, rally 1 unit. Requires: Cultist / Iconoclast.",
-            effect_2 = "Enemy routs 1 unit, or you gain 1 (g) per unrouted Cultist or Iconoclast.",
+            icons={"G": 0, "S": 1, "M": 0},
+            primary="Gain 1 [?].",
+            secondary={"requires": ["Cultist", "Iconoclast"],
+                       "effect": "If enemy has routed unit, gain 1 (s) per unrouted Cultist or Iconoclast."},
         ),
         BattleCard(
-            name     = "Khorne's Rage",
-            level=CardLevel.INITIAL,
+            name="Impure Zeal",
             tier=-1,
             cost=0,
-            effect_1 = "Spend 1 [G] to gain 3 (g). Requires: Marine / Iconoclast.",
-            effect_2 = "Enemy spends 1 [S] or routs unit of his choosing.",
+            icons={"G": 1, "S": 1, "M": 0},
+            primary="If more [M] than enemy, rally 1 unit.",
+            secondary={"requires": ["Cultist", "Iconoclast"],
+                       "effect": "Enemy routs 1 unit, or you gain 1 (g) per unrouted Cultist or Iconoclast."},
         ),
         BattleCard(
-            name     = "Lure of Chaos",
-            level=CardLevel.INITIAL,
+            name="Khorne's Rage",
             tier=-1,
             cost=0,
-            effect_1 = "Enemy may choose a unit to rout to gain 1 [?]. Otherwise place a free Cultist or Iconoclast in the area. Requires: Cultist / Iconoclast.",
-            effect_2 = "Gain 2 (g) or 2 (s).",
-        ),
-        # ── Нулевой уровень ────────────────────────────────────────────────
-        BattleCard(
-            name     = "Mark of Khorne",
-            level    = CardLevel.ZERO,
-            tier = 0,
-            cost = 2,
-            effect_1 = "Spend 1 [G] or 1 [M] to gain 3 (g). Requires: Marine / Iconoclast.",
-            effect_2 = "Enemy spends 1 [S] or destroys 1 routed unit.",
+            icons={"G": 1, "S": 0, "M": 0},
+            primary="Spend 1 [G] to gain 3 (g).",
+            secondary={"requires": ["Marine", "Iconoclast"],
+                       "effect": "Enemy spends 1 [S] or routs unit of his choosing."},
         ),
         BattleCard(
-            name     = "Mark of Nurgle",
-            level=CardLevel.ZERO,
-            tier=0,
-            cost=2,
-            effect_1 = "Spend 1 [S] or 1 [M] to gain 3 (s). Requires: Marine / Iconoclast.",
-            effect_2 = "Enemy destroys 1 routed unit, otherwise gain 2 (s).",
-        ),
-        BattleCard(
-            name     = "Mark of Slaanesh",
-            level=CardLevel.ZERO,
-            tier=0,
-            cost=2,
-            effect_1 = "Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice. Requires: Marine.",
-            effect_2 = "If enemy has routed unit, place free Cultist on this world.",
-        ),
-        BattleCard(
-            name     = "Mark of Tzeentch",
-            level=CardLevel.ZERO,
-            tier=0,
-            cost=2,
-            effect_1 = "Gain 1 [M]. If more [M] than enemy, upgrade 1 Cultist / (R) to Marine. Requires: Chaos Marine / Iconoclast.",
-            effect_2 = "Convert up to 2 [M] to [G] and/or [S].",
-        ),
-        # ── Второй уровень ────────────────────────────────────────────────
-        BattleCard(
-            name     = "Chaos United",
-            level    = CardLevel.TWO,
-            tier = 2,
-            cost = 4,
-            effect_1 = "Enemy may rout 1 of its units. If not, gain a die of your choice. Requires: Cultist / Marine / Helbrute.",
-            effect_2 = "Take 1 unit from any world and place it on this world. Command level cannot exceed number of Cultists in this system.",
-        ),
-        BattleCard(
-            name     = "Daemonic Resilience",
-            level=CardLevel.TWO,
-            tier=2,
-            cost=4,
-            effect_1 = "Gain 1 [M] or 1 [S]. Requires: Helbrute / Cruiser.",
-            effect_2 = "Gain 4 (s) unless enemy destroys 1 unit of his choice.",
-        ),
-        BattleCard(
-            name     = "Inhuman Strength",
-            level=CardLevel.TWO,
-            tier=2,
-            cost=4,
-            effect_1 = "Gain 1 [G] or 1 [M]. Requires: Helbrute / Cruiser.",
-            effect_2 = "Destroy 1 unit to gain 4 (g).",
-        ),
-        # ── Третий уровень ────────────────────────────────────────────────
-        BattleCard(
-            name     = "Chaos Victorious",
-            level    = CardLevel.THREE,
-            tier = 3,
-            cost = 6,
-            effect_1 = "Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units. Requires: Titan / Cruiser.",
-            effect_2 = "Rout 1 enemy unit.",
-        ),
-        BattleCard(
-            name     = "Death and Despair",
-            level=CardLevel.THREE,
-            tier=3,
-            cost=6,
-            effect_1 = "Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit. Requires: Titan / Cruiser.",
-            effect_2 = "If more [M] than enemy, destroy 1 routed unit.",
-        ),
-    ],
+            name="Lure of Chaos",
+            tier=-1,
+            cost=0,
+            icons={"G": 0, "S": 0, "M": 1},
+            primary="Enemy may choose a unit to rout to gain 1 [?]. Otherwise, place a free Cultist or Iconoclast in the area.",
+        secondary = {"requires": ["Cultist", "Iconoclast"], "effect": "Gain 2 (g) or 2 (s)."},
+),
+BattleCard(
+    name="Mark of Khorne",
+    tier=0,
+    cost=2,
+    icons={"G": 2, "S": 0, "M": 0},
+    primary="Spend 1 [G] or 1 [M] to gain 3 (g).",
+    secondary={"requires": ["Marine", "Iconoclast"], "effect": "Enemy spends 1 [S] or destroys 1 routed unit."},
+),
+BattleCard(
+    name="Mark of Nurgle",
+    tier=0,
+    cost=2,
+    icons={"G": 0, "S": 2, "M": 0},
+    primary="Spend 1 [S] or 1 [M] to gain 3 (s).",
+    secondary={"requires": ["Marine", "Iconoclast"], "effect": "Enemy destroys 1 routed unit, otherwise gain 2 (s)."},
+),
+BattleCard(
+    name="Mark of Slaanesh",
+    tier=0,
+    cost=2,
+    icons={"G": 1, "S": 1, "M": 0},
+    primary="Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice.",
+    secondary={"requires": ["Marine"], "effect": "If enemy has routed unit, place free Cultist on this world."},
+),
+BattleCard(
+    name="Mark of Tzeentch",
+    tier=0,
+    cost=2,
+    icons={"G": 0, "S": 0, "M": 2},
+    primary="Gain 1 [M]. If more [M] than enemy, upgrade 1 Cultist / (R) to Chaos Marine.",
+    secondary = {"requires": ["Marine", "Iconoclast"], "effect": "Convert up to 2 [M] to [G] and/or [S]."},
+),
+BattleCard(
+    name="Chaos United",
+    tier=2,
+    cost=4,
+    icons={"G": 1, "S": 1, "M": 1},
+    primary="Enemy may rout 1 of its units.  If not, gain a die of your choice.",
+    secondary={"requires": ["Cultist", "Marine", "Helbrute"], "effect": "Take 1 unit from any world and place it on this world.Command level cannot exceed number of Cultists in this system."},
+),
+BattleCard(
+    name="Daemonic Resilience",
+    tier=2,
+    cost=4,
+    icons={"G": 0, "S": 2, "M": 1},
+    primary="Gain 1 [M] or 1 [S].",
+    secondary={"requires": ["Helbrute", "Cruiser"], "effect": "Gain 4 (s) unless enemy destroys 1 unit of his choice."},
+),
+BattleCard(
+    name="Inhuman Strength",
+    tier=2,
+    cost=4,
+    icons={"G": 2, "S": 0, "M": 1},
+    primary="Gain 1 [G] or 1 [M].",
+    secondary={"requires": ["Helbrute", "Cruiser"], "effect": "Destroy 1 unit to gain 4 (g)."},
+),
+BattleCard(
+    name="Chaos Victorious",
+    tier=3,
+    cost=6,
+    icons={"G": 1, "S": 1, "M": 1},
+    primary="Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units.",
+    secondary={"requires": ["Titan", "Cruiser"], "effect": "Rout 1 enemy unit."},
+),
+BattleCard(
+    name="Death and Despair",
+    tier=3,
+    cost=6,
+    icons={"G": 2, "S": 0, "M": 1},
+    primary="Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit.",
+    secondary={"requires": ["Titan", "Cruiser"], "effect": "If more [M] than enemy, destroy 1 routed unit."},
+),
+]
+,
     order_upgrades = [
         OrderUpgrade(
             name       = "Fear from Above",
             order_type = "advance",
             tier       = 0,
             cost       = 1,
-            effect_1   = "Orbital Strike, once per round. Gain [?].",
-            effect_2   = "Spend 1 [M] to force any unit taking damage to rout.",
+            primary   = "Gain [?], spend 1 [M] to force any unit taking damage to rout.",
+
         ),
         OrderUpgrade(
             name       = "Dread Ritual",
             order_type = "deploy",
             tier       = 1,
             cost       = 2,
-            effect_1   = "Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in active system.",
-            effect_2   = "Factory not required.",
+            primary   = "Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in active system.",
+
         ),
         OrderUpgrade(
             name       = "Favour of the Dark Gods",
             order_type = "strategize",
             tier       = 1,
             cost       = 2,
-            effect_1   = "Place 2 order tokens from play area onto top of event deck.",
-            effect_2   = "Once per round.",
+            primary   = "Place 2 order tokens from play area onto top of event deck.",
+
         ),
         OrderUpgrade(
             name       = "From the Warp",
             order_type = "advance",
             tier       = 1,
             cost       = 2,
-            effect_1   = "Ships can move through Warp Storms.",
-            effect_2   = "Once per round.",
+            primary   = "Ships can move through Warp Storms."
+
         ),
         OrderUpgrade(
             name       = "Complete Destruction",
             order_type = "advance",
             tier       = 2,
             cost       = 3,
-            effect_1   = "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
-            effect_2   = "Spend 2 [S] to force enemy to choose unit or structure to destroy.",
+            primary   = "Bastions do not prevent orbital strike. Spend 2 [S] to force enemy to choose unit or structure to destroy",
+
         ),
     ],
     event_cards = [

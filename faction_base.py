@@ -41,22 +41,23 @@ class CardLevel(Enum):
 class BattleCard:
     """
     Боевая карта, разыгрываемая в бою для изменения его исхода.
-    Каждая карта имеет два независимых свойства/эффекта.
+    Имеет первичный эффект и вторичный эффект с требованиями.
     """
-    name:     str
-    level:    CardLevel
-    effect_1: str   # первый эффект карты
-    effect_2: str   # второй эффект карты
-    tier:     int = 0  # уровень карты для совместимости (дублирует level.value)
-    cost:     int = 0  # стоимость карты в условных единицах (0, 2, 4, 6)
+    name:      str
+    tier:      int
+    cost:      int
+    icons:     Dict[str, int]  # {"G": X, "S": Y, "M": Z}
+    primary:   str   # первичный эффект
+    secondary: Dict  # {"requires": list, "effect": str}
 
     def to_dict(self) -> dict:
         return {
-            "name":     self.name,
-            "tier":     self.tier,
-            "cost":     self.cost,
-            "effect_1": self.effect_1,
-            "effect_2": self.effect_2,
+            "name":      self.name,
+            "tier":      self.tier,
+            "cost":      self.cost,
+            "icons":     self.icons,
+            "primary":   self.primary,
+            "secondary": self.secondary,
         }
 
 
@@ -70,8 +71,8 @@ class OrderUpgrade:
     """
     name:       str
     order_type: str   # "move" | "attack" | "reinforce" | "dominate" | "build"
-    effect_1:   str   # первый эффект улучшения
-    effect_2:   str   # второй эффект улучшения
+    primary:    str   # основной эффект улучшения
+    secondary:  str = ""  # дополнительный эффект улучшения (опционально)
     id:         str = ""  # уникальный идентификатор улучшения (опционально)
     tier:       int = 0   # уровень улучшения (опционально)
     cost:       int = 0   # стоимость улучшения (опционально)
@@ -83,8 +84,8 @@ class OrderUpgrade:
             "order_type": self.order_type,
             "tier":       self.tier,
             "cost":       self.cost,
-            "effect_1":   self.effect_1,
-            "effect_2":   self.effect_2,
+            "primary":    self.primary,
+            "secondary":  self.secondary,
         }
 
 
