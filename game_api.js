@@ -62,6 +62,8 @@ async function _restoreGame(phase) {
         showHP(player.name, 'Розыгрыш приказов', () => setPhase('execution'));
       } else if (phase === 'end-round') {
         setPhase('end-round');
+      } else if (phase === 'order-placement' || phase === 'orders_placed') {
+        setPhase(phase);
       }
     } else {
       showMsg('Ошибка восстановления', data.error || 'Не удалось восстановить игру');

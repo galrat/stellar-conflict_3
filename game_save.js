@@ -145,14 +145,12 @@ function loadGameFile(filename) {
       showScreen('game-screen');
 
       const phase = G.phase;
-      if (['execution', 'end-round'].includes(phase)) {
-        // Восстановить state на сервере без сброса фазы
+      if (['execution', 'end-round', 'order-placement', 'orders_placed'].includes(phase)) {
+        // Восстановить state на сервере без сброса карт и прочих данных
         console.log(`🔄 Восстанавливаю игру в фазе ${phase}...`);
         _restoreGame(phase);
-      } else if (['order-placement', 'orders_placed', 'game-start', 'warp-storm'].includes(phase)) {
-        console.log('🔄 Инициализирую Stage 2 для загруженной игры...');
-        startStage2();
       } else {
+        // Stage 1 фазы: tile-placement, troop-on-tile, warp-storm и т.д.
         setPhase(phase);
         updateHeader();
         renderBoard();
