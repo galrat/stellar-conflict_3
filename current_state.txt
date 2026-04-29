@@ -31,27 +31,47 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "dominate_0_0_r2",
+          "id": "p1_deploy_2",
+          "type": "deploy",
+          "owner": 0
+        },
+        {
+          "id": "p1_advance_1",
+          "type": "advance",
+          "owner": 0
+        },
+        {
+          "id": "p1_strategize_1",
+          "type": "strategize",
+          "owner": 0
+        },
+        {
+          "id": "p1_strategize_2",
+          "type": "strategize",
+          "owner": 0
+        },
+        {
+          "id": "p1_dominate_1",
           "type": "dominate",
           "owner": 0
         },
         {
-          "id": "advance_0_0_r2",
-          "type": "advance",
+          "id": "p1_dominate_2",
+          "type": "dominate",
           "owner": 0
         },
         {
-          "id": "advance_0_1_r2",
-          "type": "advance",
+          "id": "p1_deploy_1",
+          "type": "deploy",
           "owner": 0
         },
         {
-          "id": "strategize_0_1_r2",
-          "type": "strategize",
+          "id": "p1_advance_2",
+          "type": "advance",
           "owner": 0
         }
       ],
-      "credits": 7,
+      "credits": 0,
       "tokens": {
         "support": 0,
         "discount": 0,
@@ -207,14 +227,7 @@
           "effect_2": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2."
         }
       ],
-      "hand_event_cards": [
-        {
-          "name": "Vicious Raids",
-          "warp_storm_move": "Top Left/Bot Rgt",
-          "card_type": "Scheme",
-          "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
-        }
-      ],
+      "hand_event_cards": [],
       "available_event_cards": [
         {
           "name": "Exodite Colony",
@@ -267,27 +280,12 @@
       ],
       "boughtUpgrades": [],
       "faction_color": "#F2C94C",
-      "collected_objectives": 1
+      "collected_objectives": 0
     },
     {
       "name": "Omega",
       "faction": "chaos",
-      "pool": [
-        {
-          "id": 12,
-          "player": 1,
-          "unitType": "ground",
-          "tier": 1,
-          "unit_status": "active"
-        },
-        {
-          "id": 11,
-          "player": 1,
-          "unitType": "ground",
-          "tier": 0,
-          "unit_status": "active"
-        }
-      ],
+      "pool": [],
       "hand": [
         {
           "handIdx": 0,
@@ -314,27 +312,47 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "dominate_1_0_r2",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "deploy_1_0_r2",
+          "id": "p2_deploy_2",
           "type": "deploy",
           "owner": 1
         },
         {
-          "id": "advance_1_1_r2",
+          "id": "p2_advance_2",
           "type": "advance",
           "owner": 1
         },
         {
-          "id": "strategize_1_1_r2",
+          "id": "p2_strategize_1",
           "type": "strategize",
+          "owner": 1
+        },
+        {
+          "id": "p2_strategize_2",
+          "type": "strategize",
+          "owner": 1
+        },
+        {
+          "id": "p2_dominate_1",
+          "type": "dominate",
+          "owner": 1
+        },
+        {
+          "id": "p2_dominate_2",
+          "type": "dominate",
+          "owner": 1
+        },
+        {
+          "id": "p2_deploy_1",
+          "type": "deploy",
+          "owner": 1
+        },
+        {
+          "id": "p2_advance_1",
+          "type": "advance",
           "owner": 1
         }
       ],
-      "credits": 8,
+      "credits": 1,
       "tokens": {
         "support": 2,
         "discount": 0,
@@ -490,14 +508,7 @@
           "effect_2": "Spend 2 [S] to force enemy to choose unit or structure to destroy."
         }
       ],
-      "hand_event_cards": [
-        {
-          "name": "Prophets and Signs",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Tactic",
-          "effect": "Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world."
-        }
-      ],
+      "hand_event_cards": [],
       "available_event_cards": [
         {
           "name": "Blight of Nurgle",
@@ -554,10 +565,10 @@
     }
   ],
   "phase": "execution",
-  "curP": 1,
-  "round": 2,
+  "curP": 0,
+  "round": 1,
   "totalRounds": 8,
-  "firstPlayer": 1,
+  "firstPlayer": 0,
   "map": {
     "0,0": {
       "key": "0,0",
@@ -599,7 +610,17 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 4,
+              "player": 0,
+              "unitType": "space",
+              "tier": 0,
+              "ready_to_move": 1,
+              "unit_status": "active",
+              "_uid": "56f5a4e0-184d-469f-8b49-e6a406d952ea"
+            }
+          ],
           "structures": []
         },
         {
@@ -617,7 +638,9 @@
               "unitType": "space",
               "tier": 0,
               "player": 0,
-              "unit_status": "active"
+              "unit_status": "active",
+              "_uid": "f2447df9-a227-4e59-803f-3d70728da783",
+              "ready_to_move": 1
             }
           ],
           "structures": []
@@ -632,7 +655,25 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 3,
+              "player": 0,
+              "unitType": "ground",
+              "tier": 1,
+              "ready_to_move": 1,
+              "unit_status": "active",
+              "_uid": "130f2c61-4b8b-4759-99ad-f3725b8f4ace"
+            },
+            {
+              "unitType": "ground",
+              "tier": 1,
+              "player": 0,
+              "unit_status": "active",
+              "_uid": "502227b2-4382-4922-8da9-d910bc31e826",
+              "ready_to_move": 1
+            }
+          ],
           "structures": [
             {
               "type": "city",
@@ -670,20 +711,8 @@
           "joker": 0,
           "troops": [
             {
-              "unitType": "ground",
-              "tier": 1,
-              "player": 0,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 0,
-              "unit_status": "active"
-            },
-            {
-              "id": 3,
-              "player": 0,
+              "id": 12,
+              "player": 1,
               "unitType": "ground",
               "tier": 1,
               "unit_status": "active"
@@ -708,6 +737,13 @@
               "unitType": "ground",
               "tier": 1,
               "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "active",
+              "_uid": "0825bfc6-f6d1-42fd-b13b-a9d804103ade"
             }
           ],
           "structures": []
@@ -724,10 +760,9 @@
           "joker": 0,
           "troops": [
             {
-              "id": 4,
-              "player": 0,
               "unitType": "space",
               "tier": 0,
+              "player": 1,
               "unit_status": "active"
             }
           ],
@@ -745,17 +780,21 @@
           "joker": 0,
           "troops": [
             {
-              "id": 5,
-              "player": 0,
               "unitType": "space",
               "tier": 0,
-              "unit_status": "active"
+              "player": 0,
+              "unit_status": "active",
+              "_uid": "bdec069f-c963-4bd5-bab8-f24c307168e0"
             }
           ],
           "structures": []
         }
       ],
-      "needsObjective": false
+      "needsObjective": true,
+      "objectiveMarker": {
+        "owner": 0,
+        "area_place": 0
+      }
     },
     "0,-1": {
       "key": "0,-1",
@@ -886,7 +925,15 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 11,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": [
             {
               "type": "city",
@@ -905,13 +952,6 @@
           "forge": 0,
           "joker": 0,
           "troops": [
-            {
-              "id": 14,
-              "player": 1,
-              "unitType": "space",
-              "tier": 0,
-              "unit_status": "active"
-            },
             {
               "unitType": "space",
               "tier": 0,
@@ -1134,72 +1174,7 @@
     true
   ],
   "targetMarkers": [],
-  "orders": [
-    {
-      "id": "deploy_1_1_r2",
-      "type": "deploy",
-      "owner": 1,
-      "tile": "2,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "deploy_0_0_r2",
-      "type": "deploy",
-      "owner": 0,
-      "tile": "0,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "strategize_1_0_r2",
-      "type": "strategize",
-      "owner": 1,
-      "tile": "2,-1",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "strategize_0_0_r2",
-      "type": "strategize",
-      "owner": 0,
-      "tile": "0,-1",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "dominate_1_1_r2",
-      "type": "dominate",
-      "owner": 1,
-      "tile": "2,0",
-      "position": 1,
-      "revealed": false
-    },
-    {
-      "id": "deploy_0_1_r2",
-      "type": "deploy",
-      "owner": 0,
-      "tile": "0,-1",
-      "position": 1,
-      "revealed": false
-    },
-    {
-      "id": "advance_1_0_r2",
-      "type": "advance",
-      "owner": 1,
-      "tile": "1,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "dominate_0_1_r2",
-      "type": "dominate",
-      "owner": 0,
-      "tile": "0,0",
-      "position": 1,
-      "revealed": false
-    }
-  ],
+  "orders": [],
   "ordersPlaced": [
     4,
     4
@@ -1211,7 +1186,7 @@
   "dropped_orders": [],
   "execution_order_played": [
     false,
-    false
+    true
   ],
   "log": [
     {
@@ -1447,44 +1422,16 @@
       "player_id": 1
     },
     {
+      "message": "Игра загружена",
+      "player_id": -1
+    },
+    {
       "message": "Приказ 'Advance' разыгран",
       "player_id": 0
     },
     {
-      "message": "БОЙ в области 0 тайла 1,0: Игрок 0 победил (13 vs 8). Игрок 1 теряет всех юнитов.",
+      "message": "БОЙ в области 1 тайла 1,0: победил Alpha. Omega отступает.",
       "player_id": 0
-    },
-    {
-      "message": "Alpha собрал жетон цели на 1,0",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha: доход +7 (итого 7 кредитов)",
-      "player_id": 0
-    },
-    {
-      "message": "Omega: доход +7 (итого 8 кредитов)",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha взял карту события: Vicious Raids",
-      "player_id": 0
-    },
-    {
-      "message": "Omega взял карту события: Prophets and Signs",
-      "player_id": 1
-    },
-    {
-      "message": "Карта готова. Инициализация Stage 2...",
-      "player_id": -1
-    },
-    {
-      "message": "Игра загружена",
-      "player_id": -1
-    },
-    {
-      "message": "Игра загружена",
-      "player_id": -1
     }
   ],
   "event_cards_offered": [
@@ -1496,16 +1443,186 @@
     false
   ],
   "ui": {
-    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Omega: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 4",
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 1",
     "buttons": [],
     "playable_order_ids": [
-      "advance_1_0_r2",
-      "dominate_1_1_r2",
-      "strategize_1_0_r2"
+      "p1_advance_2"
     ],
     "blocked_tiles": [],
     "can_place_order": false,
     "order_placed_this_turn": false,
     "order_played_this_turn": false
+  },
+  "pending_advance": {
+    "player_id": 0,
+    "tile_key": "1,0",
+    "source_tile": "0,0",
+    "step": "combat_retreat",
+    "available_ships": [
+      {
+        "ship_id": 0,
+        "area_idx": 1,
+        "unit_index": 0,
+        "unit": {
+          "id": 4,
+          "player": 0,
+          "unitType": "space",
+          "tier": 0,
+          "ready_to_move": 0,
+          "unit_status": "active",
+          "_uid": "285bb136-cd4a-4e5c-8bfd-937251dadfc0"
+        },
+        "origin": "source"
+      },
+      {
+        "ship_id": 1,
+        "area_idx": 2,
+        "unit_index": 0,
+        "unit": {
+          "id": 5,
+          "player": 0,
+          "unitType": "space",
+          "tier": 0,
+          "ready_to_move": 0,
+          "unit_status": "active",
+          "_uid": "133c90fa-06a0-450e-ad5e-835eb4fab3b4"
+        },
+        "origin": "source"
+      }
+    ],
+    "available_ground_units": [
+      {
+        "ground_id": 0,
+        "area_idx": 3,
+        "unit_index": 0,
+        "unit": {
+          "id": 3,
+          "player": 0,
+          "unitType": "ground",
+          "tier": 1,
+          "ready_to_move": 0,
+          "unit_status": "active",
+          "_uid": "5da0da04-21a3-4597-a54a-408c99f318eb"
+        },
+        "origin": "source"
+      },
+      {
+        "ground_id": 1,
+        "area_idx": 3,
+        "unit_index": 1,
+        "unit": {
+          "unitType": "ground",
+          "tier": 1,
+          "player": 0,
+          "unit_status": "active",
+          "_uid": "ac29bac3-1d91-451b-a62b-78dff7278e7e"
+        },
+        "origin": "source"
+      }
+    ],
+    "committed_moves": [],
+    "virtual_active_areas": {
+      "0": {
+        "troops": [
+          {
+            "id": 12,
+            "player": 1,
+            "unitType": "ground",
+            "tier": 1,
+            "unit_status": "active"
+          }
+        ],
+        "type": "planet",
+        "capacity": 5
+      },
+      "1": {
+        "troops": [
+          {
+            "id": 13,
+            "player": 1,
+            "unitType": "ground",
+            "tier": 1,
+            "unit_status": "active"
+          },
+          {
+            "unitType": "ground",
+            "tier": 0,
+            "player": 0,
+            "unit_status": "active",
+            "_uid": "0825bfc6-f6d1-42fd-b13b-a9d804103ade"
+          }
+        ],
+        "type": "planet",
+        "capacity": 1
+      },
+      "2": {
+        "troops": [
+          {
+            "unitType": "space",
+            "tier": 0,
+            "player": 1,
+            "unit_status": "active"
+          }
+        ],
+        "type": "space",
+        "capacity": 3
+      },
+      "3": {
+        "troops": [
+          {
+            "unitType": "space",
+            "tier": 0,
+            "player": 0,
+            "unit_status": "active",
+            "_uid": "bdec069f-c963-4bd5-bab8-f24c307168e0"
+          }
+        ],
+        "type": "space",
+        "capacity": 3
+      }
+    },
+    "adjacent_tiles": [
+      "1,-1",
+      "0,0"
+    ],
+    "contest_area_idx": 1,
+    "orbital_ship_area": null,
+    "orbital_target_area": null,
+    "instruction": "Выберите дружественную область для отступления (Omega). Кликните по области на карте.",
+    "clickable_space_areas": [
+      2,
+      3
+    ],
+    "reachable_planets_by_id": {
+      "0": [
+        1
+      ],
+      "1": [
+        1
+      ],
+      "2": [
+        1
+      ]
+    },
+    "combat_winner": 0,
+    "combat_loser": 1,
+    "retreat_valid_areas": [
+      [
+        "2,0",
+        0
+      ],
+      [
+        "2,0",
+        3
+      ],
+      [
+        "1,0",
+        0
+      ],
+      [
+        "2,0",
+        1
+      ]
+    ]
   }
 }

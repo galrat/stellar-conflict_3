@@ -1,4 +1,4 @@
-'use strict';
+
 
 let _advanceSelectedShip    = null;
 let _advanceSelectedGround  = null;
@@ -25,6 +25,8 @@ function showAdvanceUI() {
     _showAdvanceOrbitalDefendModal();
   } else if (pa.step === 'capacity_overflow') {
     _showOverflowModal();
+  } else if (pa.step === 'combat_declare') {
+    _showCombatDeclareModal();
   }
 }
 
@@ -138,7 +140,88 @@ async function _advanceCommit() {
   } catch(e) { showMsg('Ошибка сервера', e.message); }
 }
 
-// ── combat ─────────────────────────────────────────────────────
+// ── combat_declare ─────────────────────────────────────────────
+
+function _showCombatDeclareModal() {
+  const pa = G.pending_advance;
+  if (!pa) return;
+
+  const areaIdx = pa.contest_area_idx;
+  const tile = G.map?.[pa.tile_key];
+  if (!tile) return;
+  const area = tile.areas?.[areaIdx];
+  if (!area) return;
+
+  const attackerIdx = pa.player_id;
+  const defenderIdx = 1 - attackerIdx;
+
+  const attacker = G.players[attackerIdx];
+  const attackerFac = FACTIONS.find(f => f.id === attacker.faction);
+  const attackerColor = attackerFac?.color || (attackerIdx === 0 ? '#00c8ff' : '#ff4d6d');
+
+  const makeBtn = (pIdx) => {
+    const p = G.players[pIdx];
+    const fac = FACTIONS.find(f => f.id === p.faction);
+    const col = fac?.color || (pIdx === 0 ? '#00c8ff' : '#ff4d6d');
+    const units = (area.troops || []).filter(t => t.player === pIdx);
+    const role = pIdx === attackerIdx ? 'Атакующий' : 'Защищающийся';
+    return `<button class="abtn" style="flex:1;border-color:${col};color:${col}"
+      onclick="_advanceDeclareWinner(${pIdx})">
+      <strong>${p.name}</strong><br>
+      <small style="opacity:.7">${role}</small><br>
+      <small>${units.length} юн.</small>
+    </button>`;
+  };
+
+  const html = `<div style="color:#aaa;font-size:.82rem;margin-bottom:12px;">
+    Бой в области ${areaIdx} системы [${pa.tile_key}].<br>
+    <span style="color:${attackerColor}">Атакует: <strong>${attacker.name}</strong></span><br>
+    Выберите победителя:
+  </div>
+  <div style="display:flex;gap:8px;">
+    ${makeBtn(attackerIdx)}
+    ${makeBtn(defenderIdx)}
+  </div>`;
+
+  showMsg('⚔ Разрешение боя', html);
+}
+
+async function _advanceDeclareWinner(winnerId) {
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/advance-declare-winner', {
+      player_id: G.curP,
+      winner_id: winnerId,
+    });
+    if (res.success) {
+      _advanceClearSelection();
+      applyState(res.state);
+      renderBoard();
+      showAdvanceUI();
+    } else {
+      showMsg('Ошибка', res.error || 'Ошибка объявления победителя');
+    }
+  } catch(e) { showMsg('Ошибка сервера', e.message); }
+}
+
+async function _advanceRetreat(tileKey, areaIdx) {
+  try {
+    const res = await apiCall('/api/game/advance-retreat', {
+      player_id: G.curP,
+      retreat_tile_key: tileKey,
+      retreat_area_idx: areaIdx,
+    });
+    if (res.success) {
+      _advanceClearSelection();
+      applyState(res.state);
+      showAdvanceUI();
+    } else {
+      showMsg('Ошибка', res.error || 'Нельзя выполнить отступление');
+    }
+  } catch(e) { showMsg('Ошибка сервера', e.message); }
+}
+
+// ── combat (legacy, не используется в UI) ──────────────────────
 
 async function _advanceFight() {
   try {
@@ -386,6 +469,16 @@ function advanceAreaClick(tileKey, displayIdx) {
     return;
   }
 
+  // combat_retreat: клик на допустимую область для отступления (может быть в другом тайле)
+  if (step === 'combat_retreat') {
+    const validAreas = pa.retreat_valid_areas || [];
+    const isValid = validAreas.some(([tk, ai]) => tk === tileKey && ai === realIdx);
+    if (isValid) {
+      _advanceRetreat(tileKey, realIdx);
+    }
+    return;
+  }
+
   // Orbital: только разрешённые кораблями и вражеские планеты
   if (step === 'orbital' && tileKey === activeKey) {
     if (_advanceOrbitalShipArea === null) {
@@ -419,13 +512,14 @@ function _showOverflowModal() {
   const area = tile.areas?.[area_idx];
   if (!area) return;
 
-  const cp = G.players[G.curP];
+  const overflowPIdx = pa.overflow_player ?? G.curP;
+  const cp = G.players[overflowPIdx];
   const fac = FACTIONS.find(f => f.id === cp.faction);
   const facColor = fac?.color || '#00c8ff';
 
   const myUnits = (area.troops || [])
     .map((t, i) => ({ ...t, _i: i }))
-    .filter(t => t.player === G.curP);
+    .filter(t => t.player === overflowPIdx);
 
   let html = `<div style="color:#aaa;font-size:.82rem;margin-bottom:10px;">
     Область ${area_idx} переполнена (лишних: ${excess}).<br>
@@ -436,7 +530,7 @@ function _showOverflowModal() {
     const name = getUnitName(cp.faction, t.unitType, t.tier ?? 0);
     const icon = t.unitType === 'space' ? '🚀' : '⚔';
     html += `<button class="abtn br" style="width:100%;margin-bottom:4px"
-      onclick="_advanceRemoveOverflow(${area_idx},${idx})">
+      onclick="_advanceRemoveOverflow(${area_idx},${idx},${overflowPIdx})">
       ${icon} ${name} T${t.tier ?? 0}
     </button>`;
   });
@@ -444,11 +538,11 @@ function _showOverflowModal() {
   showMsg(`⚠ Переполнение области ${area_idx}`, html);
 }
 
-async function _advanceRemoveOverflow(areaIdx, unitIdx) {
+async function _advanceRemoveOverflow(areaIdx, unitIdx, overflowPlayer) {
   closeMsg();
   try {
     const res = await apiCall('/api/game/advance-remove-overflow', {
-      player_id: G.curP,
+      player_id: overflowPlayer ?? G.curP,
       area_idx:  areaIdx,
       unit_idx:  unitIdx,
     });

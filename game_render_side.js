@@ -492,6 +492,60 @@ function renderSide() {
     return;
   }
 
+  // ── ADVANCE: combat_retreat ──
+  if (G.phase === 'execution' && G.pending_advance?.step === 'combat_retreat') {
+    document.getElementById('tile-hand').innerHTML = '';
+    poolSection.style.display = 'block'; structSection.style.display = 'none';
+    const poolEl = document.getElementById('unit-pool');
+    poolEl.innerHTML = '';
+    const pa = G.pending_advance;
+    const loserIdx = pa.combat_loser;
+    const loser = G.players[loserIdx];
+    const fac = FACTIONS.find(f => f.id === loser?.faction);
+    const col = fac?.color || (loserIdx === 0 ? '#00c8ff' : '#ff4d6d');
+
+    const hdr = document.createElement('div'); hdr.className = 'ptitle';
+    hdr.textContent = 'ADVANCE: отступление'; poolEl.appendChild(hdr);
+
+    const info = document.createElement('div');
+    info.style.cssText = 'font-size:.8rem;margin-bottom:10px;';
+    info.innerHTML = `<span style="color:${col}">${loser?.name || 'Игрок'}</span> выбирает область для отступления:`;
+    poolEl.appendChild(info);
+
+    const validAreas = pa.retreat_valid_areas || [];
+    if (!validAreas.length) {
+      const none = document.createElement('div');
+      none.style.cssText = 'font-size:.78rem;color:#ff4d6d;';
+      none.textContent = 'Нет допустимых областей — юниты уничтожены.';
+      poolEl.appendChild(none);
+      return;
+    }
+
+    // Группируем по tile_key
+    const byTile = {};
+    validAreas.forEach(([tk, ai]) => { (byTile[tk] = byTile[tk] || []).push(ai); });
+
+    Object.entries(byTile).forEach(([tk, areaIdxs]) => {
+      const tileHdr = document.createElement('div');
+      tileHdr.style.cssText = 'font-size:.72rem;color:var(--dim);margin:6px 0 3px;';
+      tileHdr.textContent = `Система [${tk}]:`;
+      poolEl.appendChild(tileHdr);
+
+      areaIdxs.forEach(ai => {
+        const tile = G.map?.[tk];
+        const area = tile?.areas?.[ai];
+        const atype = area?.type === 'planet' ? '🌍' : '🌌';
+        const btn = document.createElement('button');
+        btn.className = 'abtn';
+        btn.style.cssText = `width:100%;margin-bottom:4px;border-color:${col};`;
+        btn.textContent = `${atype} Область ${ai}`;
+        btn.onclick = () => _advanceRetreat(tk, ai);
+        poolEl.appendChild(btn);
+      });
+    });
+    return;
+  }
+
   // ── ADVANCE: orbital ──
   if (G.phase === 'execution' && G.pending_advance?.step === 'orbital') {
     document.getElementById('tile-hand').innerHTML = '';

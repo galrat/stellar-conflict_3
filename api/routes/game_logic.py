@@ -57,6 +57,8 @@ from python_engine.advance import (
     advance_skip_orbital,
     advance_next_step,
     advance_remove_overflow_unit,
+    advance_declare_winner,
+    advance_retreat,
 )
 from python_engine.strategize import (
     strategize_play,
@@ -195,6 +197,19 @@ class AdvanceOverflowRemoveRequest(BaseModel):
     player_id: int
     area_idx: int
     unit_idx: int
+
+
+class AdvanceDeclareWinnerRequest(BaseModel):
+    """Объявление победителя боя"""
+    player_id: int
+    winner_id: int
+
+
+class AdvanceRetreatRequest(BaseModel):
+    """Отступление проигравшего в указанную область"""
+    player_id: int
+    retreat_tile_key: str
+    retreat_area_idx: int
 
 
 class AdvanceGenericRequest(BaseModel):
@@ -1450,6 +1465,44 @@ async def advance_fight_endpoint(request: AdvanceGenericRequest) -> GameStateRes
             active_game.clear()
             active_game.update(new_state)
             print(f"⚔️ Advance: бой завершён")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-declare-winner')
+async def advance_declare_winner_endpoint(request: AdvanceDeclareWinnerRequest) -> GameStateResponse:
+    """Объявить победителя боя вручную."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_declare_winner(active_game, request.player_id, request.winner_id)
+            active_game.clear()
+            active_game.update(new_state)
+            print(f"⚔️ Advance: победитель боя — игрок {request.winner_id}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/advance-retreat')
+async def advance_retreat_endpoint(request: AdvanceRetreatRequest) -> GameStateResponse:
+    """Отступить всеми юнитами проигравшего в указанную область."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            new_state = advance_retreat(active_game, request.player_id, request.retreat_tile_key, request.retreat_area_idx)
+            active_game.clear()
+            active_game.update(new_state)
+            print(f"⚔️ Advance: отступление в [{request.retreat_tile_key}] обл.{request.retreat_area_idx}")
             save_current_state()
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
         except Exception as e:

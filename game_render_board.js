@@ -138,6 +138,7 @@ function renderBoard() {
           const uFac = FACTIONS.find(f=>f.id===G.players[u.player].faction);
           const uColor = uFac?.color || (u.player===0?'#00c8ff':'#ff4d6d');
           tok.className=`atroop ${u.unitType}`;
+          if (u.unit_status === 'routed') tok.classList.add('routed');
           tok.style.background = hexAlpha(uColor, 0.15);
           tok.style.borderColor = uColor;
           tok.style.color = uColor;
@@ -321,6 +322,12 @@ function renderBoard() {
                 ae.classList.add(area.type === 'planet' && hasEnemy ? 'aok' : 'ano');
               }
             }
+          }
+
+          if (step === 'combat_retreat') {
+            const validAreas = pa.retreat_valid_areas || [];
+            const isValid = validAreas.some(([tk, ai]) => tk === tile.key && ai === realIdx);
+            ae.classList.add(isValid ? 'adv-retreat' : 'ano');
           }
         }
       }
