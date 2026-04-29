@@ -4,7 +4,15 @@
     {
       "name": "Alpha",
       "faction": "eldar",
-      "pool": [],
+      "pool": [
+        {
+          "unitType": "ground",
+          "tier": 0,
+          "player": 0,
+          "unit_status": "active",
+          "_uid": "572f4d2a-4fa8-4fad-a895-68a948f0bd7b"
+        }
+      ],
       "hand": [
         {
           "handIdx": 0,
@@ -71,7 +79,7 @@
           "owner": 0
         }
       ],
-      "credits": 0,
+      "credits": 10,
       "tokens": {
         "support": 0,
         "discount": 0,
@@ -352,7 +360,7 @@
           "owner": 1
         }
       ],
-      "credits": 1,
+      "credits": 5,
       "tokens": {
         "support": 2,
         "discount": 0,
@@ -564,7 +572,7 @@
       "collected_objectives": 0
     }
   ],
-  "phase": "execution",
+  "phase": "end-round",
   "curP": 0,
   "round": 1,
   "totalRounds": 8,
@@ -616,9 +624,7 @@
               "player": 0,
               "unitType": "space",
               "tier": 0,
-              "ready_to_move": 1,
-              "unit_status": "active",
-              "_uid": "56f5a4e0-184d-469f-8b49-e6a406d952ea"
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -638,9 +644,7 @@
               "unitType": "space",
               "tier": 0,
               "player": 0,
-              "unit_status": "active",
-              "_uid": "f2447df9-a227-4e59-803f-3d70728da783",
-              "ready_to_move": 1
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -657,21 +661,10 @@
           "joker": 0,
           "troops": [
             {
-              "id": 3,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 1,
-              "ready_to_move": 1,
-              "unit_status": "active",
-              "_uid": "130f2c61-4b8b-4759-99ad-f3725b8f4ace"
-            },
-            {
               "unitType": "ground",
               "tier": 1,
               "player": 0,
-              "unit_status": "active",
-              "_uid": "502227b2-4382-4922-8da9-d910bc31e826",
-              "ready_to_move": 1
+              "unit_status": "active"
             }
           ],
           "structures": [
@@ -716,6 +709,13 @@
               "unitType": "ground",
               "tier": 1,
               "unit_status": "active"
+            },
+            {
+              "id": 13,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 1,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -732,18 +732,11 @@
           "joker": 0,
           "troops": [
             {
-              "id": 13,
-              "player": 1,
+              "id": 3,
+              "player": 0,
               "unitType": "ground",
               "tier": 1,
               "unit_status": "active"
-            },
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 0,
-              "unit_status": "active",
-              "_uid": "0825bfc6-f6d1-42fd-b13b-a9d804103ade"
             }
           ],
           "structures": []
@@ -783,8 +776,7 @@
               "unitType": "space",
               "tier": 0,
               "player": 0,
-              "unit_status": "active",
-              "_uid": "bdec069f-c963-4bd5-bab8-f24c307168e0"
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -1185,7 +1177,7 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    false,
+    true,
     true
   ],
   "log": [
@@ -1432,11 +1424,41 @@
     {
       "message": "БОЙ в области 1 тайла 1,0: победил Alpha. Omega отступает.",
       "player_id": 0
+    },
+    {
+      "message": "Omega (защитник) отступил в область 0 (1 юн.). Статус: разбит.",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha: доход +10 (итого 10 кредитов)",
+      "player_id": 0
+    },
+    {
+      "message": "Omega: доход +4 (итого 5 кредитов)",
+      "player_id": 1
+    },
+    {
+      "message": "Omega: восстановлено 1 войск",
+      "player_id": 1
     }
   ],
   "event_cards_offered": [
-    [],
-    []
+    [
+      {
+        "name": "Warp Gate",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Scheme",
+        "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
+      }
+    ],
+    [
+      {
+        "name": "Spoils of War",
+        "warp_storm_move": "Top Left/Bot Rgt",
+        "card_type": "Tactic",
+        "effect": "Gain 1 (F) and 1 (R)."
+      }
+    ]
   ],
   "event_selection_done": [
     false,
@@ -1452,177 +1474,5 @@
     "can_place_order": false,
     "order_placed_this_turn": false,
     "order_played_this_turn": false
-  },
-  "pending_advance": {
-    "player_id": 0,
-    "tile_key": "1,0",
-    "source_tile": "0,0",
-    "step": "combat_retreat",
-    "available_ships": [
-      {
-        "ship_id": 0,
-        "area_idx": 1,
-        "unit_index": 0,
-        "unit": {
-          "id": 4,
-          "player": 0,
-          "unitType": "space",
-          "tier": 0,
-          "ready_to_move": 0,
-          "unit_status": "active",
-          "_uid": "285bb136-cd4a-4e5c-8bfd-937251dadfc0"
-        },
-        "origin": "source"
-      },
-      {
-        "ship_id": 1,
-        "area_idx": 2,
-        "unit_index": 0,
-        "unit": {
-          "id": 5,
-          "player": 0,
-          "unitType": "space",
-          "tier": 0,
-          "ready_to_move": 0,
-          "unit_status": "active",
-          "_uid": "133c90fa-06a0-450e-ad5e-835eb4fab3b4"
-        },
-        "origin": "source"
-      }
-    ],
-    "available_ground_units": [
-      {
-        "ground_id": 0,
-        "area_idx": 3,
-        "unit_index": 0,
-        "unit": {
-          "id": 3,
-          "player": 0,
-          "unitType": "ground",
-          "tier": 1,
-          "ready_to_move": 0,
-          "unit_status": "active",
-          "_uid": "5da0da04-21a3-4597-a54a-408c99f318eb"
-        },
-        "origin": "source"
-      },
-      {
-        "ground_id": 1,
-        "area_idx": 3,
-        "unit_index": 1,
-        "unit": {
-          "unitType": "ground",
-          "tier": 1,
-          "player": 0,
-          "unit_status": "active",
-          "_uid": "ac29bac3-1d91-451b-a62b-78dff7278e7e"
-        },
-        "origin": "source"
-      }
-    ],
-    "committed_moves": [],
-    "virtual_active_areas": {
-      "0": {
-        "troops": [
-          {
-            "id": 12,
-            "player": 1,
-            "unitType": "ground",
-            "tier": 1,
-            "unit_status": "active"
-          }
-        ],
-        "type": "planet",
-        "capacity": 5
-      },
-      "1": {
-        "troops": [
-          {
-            "id": 13,
-            "player": 1,
-            "unitType": "ground",
-            "tier": 1,
-            "unit_status": "active"
-          },
-          {
-            "unitType": "ground",
-            "tier": 0,
-            "player": 0,
-            "unit_status": "active",
-            "_uid": "0825bfc6-f6d1-42fd-b13b-a9d804103ade"
-          }
-        ],
-        "type": "planet",
-        "capacity": 1
-      },
-      "2": {
-        "troops": [
-          {
-            "unitType": "space",
-            "tier": 0,
-            "player": 1,
-            "unit_status": "active"
-          }
-        ],
-        "type": "space",
-        "capacity": 3
-      },
-      "3": {
-        "troops": [
-          {
-            "unitType": "space",
-            "tier": 0,
-            "player": 0,
-            "unit_status": "active",
-            "_uid": "bdec069f-c963-4bd5-bab8-f24c307168e0"
-          }
-        ],
-        "type": "space",
-        "capacity": 3
-      }
-    },
-    "adjacent_tiles": [
-      "1,-1",
-      "0,0"
-    ],
-    "contest_area_idx": 1,
-    "orbital_ship_area": null,
-    "orbital_target_area": null,
-    "instruction": "Выберите дружественную область для отступления (Omega). Кликните по области на карте.",
-    "clickable_space_areas": [
-      2,
-      3
-    ],
-    "reachable_planets_by_id": {
-      "0": [
-        1
-      ],
-      "1": [
-        1
-      ],
-      "2": [
-        1
-      ]
-    },
-    "combat_winner": 0,
-    "combat_loser": 1,
-    "retreat_valid_areas": [
-      [
-        "2,0",
-        0
-      ],
-      [
-        "2,0",
-        3
-      ],
-      [
-        "1,0",
-        0
-      ],
-      [
-        "2,0",
-        1
-      ]
-    ]
   }
 }

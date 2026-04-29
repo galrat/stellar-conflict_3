@@ -10,6 +10,7 @@ from ..map_graph import (
     build_graph,
     get_reachable,
 )
+from .convert import state_to_areas, _UNROTATE
 
 
 def get_adjacent_tiles_with_units(state, tile_key, player_id) -> list[str]:
@@ -147,11 +148,14 @@ def is_ground_reachable(virtual_areas, active_tile, from_area_idx, to_area_idx, 
                     visited.add(neighbor_idx)
                     queue.append(neighbor_idx)
             elif neighbor_type == 'space':
+                neighbor_troops = neighbor_virtual.get('troops', [])
+                opponent = 1 - player_id
                 has_friendly_ship = any(
                     t.get('player') == player_id and t.get('unitType') == 'space'
-                    for t in neighbor_virtual.get('troops', [])
+                    for t in neighbor_troops
                 )
-                if has_friendly_ship:
+                has_enemy = any(t.get('player') == opponent for t in neighbor_troops)
+                if has_friendly_ship and not has_enemy:
                     visited.add(neighbor_idx)
                     queue.append(neighbor_idx)
     return False
@@ -191,20 +195,69 @@ def get_reachable_planets_for_unit(
     start_tile_type, start_area_idx,
     player_id,
 ) -> list[int]:
-    map_slice = {active_tile_key: active_tile}
+    active_copy = copy.deepcopy(active_tile)
+    for idx, vdata in virtual_areas.items():
+        if idx < len(active_copy.get('areas', [])):
+            active_copy['areas'][idx]['troops'] = list(vdata.get('troops', []))
+
+    mini_map = {active_tile_key: active_copy}
     if source_tile and source_tile_key:
-        map_slice[source_tile_key] = source_tile
+        mini_map[source_tile_key] = source_tile
 
-    graph = build_graph(map_slice, virtual_override={active_tile_key: virtual_areas})
+    areas = state_to_areas({'map': mini_map})
+    my_owner = player_id + 1
 
-    start_tile_key = active_tile_key if start_tile_type == 'active' else source_tile_key
-    start_id = f"{start_tile_key}:{start_area_idx}"
+    area_meta = {}
+    pos_map = {}
+    for entry in areas:
+        tile_coords, area_vis, unique_num, area_type, owner, capacity, rotation = entry
+        tile_col, tile_row = tile_coords
+        area_row, area_col = area_vis
+        area_idx = _UNROTATE.get(rotation, _UNROTATE[0])[(area_row, area_col)]
+        global_pos = (tile_row * 2 + area_row, tile_col * 2 + area_col)
+        tk = f"{tile_col},{tile_row}"
+        area_meta[unique_num] = {
+            'pos': global_pos, 'type': area_type, 'owner': owner,
+            'tile_key': tk, 'area_idx': area_idx,
+        }
+        pos_map[global_pos] = unique_num
 
-    node_ids = get_reachable(
-        graph, start_id, "ground",
-        steps=3, player_id=player_id, target_tile_key=active_tile_key,
+    adj = {uid: [] for uid in area_meta}
+    for uid, meta in area_meta.items():
+        gr, gc = meta['pos']
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nb_uid = pos_map.get((gr + dr, gc + dc))
+            if nb_uid is not None:
+                adj[uid].append(nb_uid)
+
+    start_tk = active_tile_key if start_tile_type == 'active' else source_tile_key
+    start_uid = next(
+        (uid for uid, m in area_meta.items()
+         if m['tile_key'] == start_tk and m['area_idx'] == start_area_idx),
+        None
     )
-    return [graph[nid]["area_idx"] for nid in node_ids]
+    if start_uid is None:
+        return []
+
+    zone = {start_uid}
+    frontier = {start_uid}
+    for _ in range(3):
+        nxt = set()
+        for uid in frontier:
+            for nb in adj[uid]:
+                if nb not in zone and area_meta[nb]['owner'] == my_owner:
+                    nxt.add(nb)
+        zone |= nxt
+        frontier = nxt
+
+    result = []
+    for uid in zone:
+        for cid in [uid] + adj[uid]:
+            m = area_meta[cid]
+            if m['tile_key'] == active_tile_key and m['type'] == 'planet':
+                if m['area_idx'] not in result:
+                    result.append(m['area_idx'])
+    return result
 
 
 def get_areas_within_steps_ground(state, start_tile_key: str, start_area_idx: int, steps: int = 3) -> list:

@@ -16,7 +16,9 @@ from .combat import (
 from .retreat_defender import retreat_defender
 from .retreat_attacker import retreat_attacker
 from .orbital import advance_orbital, advance_orbital_remove, advance_skip_orbital
-from .movement import (
-    apply_committed_moves, advance_play, advance_choose_source,
-    advance_move_ship, advance_move_ground, advance_next_step, advance_commit,
+from .ships import (
+    advance_play, advance_choose_source, advance_move_ship, advance_next_step,
+)
+from .ground import (
+    apply_committed_moves, advance_move_ground, advance_commit,
 )
