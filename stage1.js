@@ -5,16 +5,21 @@
 // ══════════════════════════════════════════════
 
 // ── Загрузить каталог тайлов с сервера (тонкий клиент) ──
+let _tileCatalogReady = Promise.resolve();
 function loadTileCatalog() {
   console.log('loadTileCatalog called, API_URL=' + API_URL);
-  fetch(`${API_URL}/api/tiles`)
+  _tileCatalogReady = fetch(`${API_URL}/api/tiles`)
     .then(r => r.json())
     .then(data => {
-      TILE_CATALOG = data.tiles || [];
-      console.log(`Loaded ${TILE_CATALOG.length} tiles from server`);
+      if (Array.isArray(data.tiles) && data.tiles.length > 0) {
+        TILE_CATALOG = data.tiles;
+        console.log(`Loaded ${TILE_CATALOG.length} tiles from server`);
+      } else {
+        console.log(`Server tiles empty/missing, using local catalog (${TILE_CATALOG.length} tiles)`);
+      }
     })
     .catch(error => {
-      console.error('Error loading tile catalog:', error);
+      console.log(`Tile catalog fetch failed, using local catalog (${TILE_CATALOG.length} tiles)`);
     });
 }
 

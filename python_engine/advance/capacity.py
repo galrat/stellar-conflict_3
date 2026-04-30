@@ -1,6 +1,7 @@
 import copy
 from .discovery import find_contested_area
 from .finalize import finalize_advance
+from ..map_graph import build_graph
 
 
 def _find_overflow_areas(state, tile_key, player_id) -> list[dict]:
@@ -23,6 +24,18 @@ def _find_all_overflow_areas(state, tile_key) -> list[dict]:
             units = [t for t in area.get('troops', []) if t.get('player') == pid]
             if len(units) > capacity:
                 result.append({'area_idx': area_idx, 'player_id': pid, 'excess': len(units) - capacity})
+    return result
+
+
+def _find_all_overflow_areas_global(state) -> list[dict]:
+    result = []
+    for tk, tile in state.get('map', {}).items():
+        for area_idx, area in enumerate(tile.get('areas', [])):
+            capacity = area.get('capacity', 99)
+            for pid in (0, 1):
+                units = [t for t in area.get('troops', []) if t.get('player') == pid]
+                if len(units) > capacity:
+                    result.append({'tile_key': tk, 'area_idx': area_idx, 'player_id': pid, 'excess': len(units) - capacity})
     return result
 
 
@@ -54,12 +67,29 @@ def _resolve_post_moves(state, pa, player_id):
     ]
 
     if orbital_ships:
-        pa['step'] = 'orbital'
-        pa['orbital_ships'] = orbital_ships
-        pa['instruction'] = 'Выберите корабль и целевую планету для орбитального удара или пропустите.'
-    else:
-        pa['instruction'] = 'Движение завершено.'
-        finalize_advance(state, player_id)
+        game_map = state.get('map', {})
+        graph = build_graph(game_map, state.get('warpStorms', []))
+        opponent = 1 - player_id
+        enemy_planets = {
+            f"{tile_key}:{ai}"
+            for ai, area in enumerate(active_tile.get('areas', []))
+            if area.get('type') != 'space' and (
+                any(t.get('player') == opponent for t in area.get('troops', [])) or
+                any(s.get('player') == opponent for s in area.get('structures', []))
+            )
+        }
+        can_orbital = bool(enemy_planets) and any(
+            set(graph.get(f"{tile_key}:{si}", {}).get('neighbors', [])) & enemy_planets
+            for si in orbital_ships
+        )
+        if can_orbital:
+            pa['step'] = 'orbital'
+            pa['orbital_ships'] = orbital_ships
+            pa['instruction'] = 'Выберите корабль и целевую планету для орбитального удара или пропустите.'
+            return
+
+    pa['instruction'] = 'Движение завершено.'
+    finalize_advance(state, player_id)
 
 
 def advance_remove_overflow_unit(state, player_id, area_idx, unit_idx) -> dict:
@@ -75,7 +105,7 @@ def advance_remove_overflow_unit(state, player_id, area_idx, unit_idx) -> dict:
     if pa['step'] != 'capacity_overflow':
         raise ValueError(f"Удаление юнита доступно только на шаге capacity_overflow (текущий: {pa['step']})")
 
-    tile_key = pa['tile_key']
+    tile_key = pa.get('overflow_tile_key', pa['tile_key'])
     area = new_state['map'][tile_key]['areas'][area_idx]
     troops = area.get('troops', [])
 
@@ -89,18 +119,20 @@ def advance_remove_overflow_unit(state, player_id, area_idx, unit_idx) -> dict:
 
     overflow_context = pa.get('overflow_context', 'pre_combat')
     if overflow_context == 'post_retreat':
-        overflow_all = _find_all_overflow_areas(new_state, tile_key)
+        overflow_all = _find_all_overflow_areas_global(new_state)
         if overflow_all:
             first = overflow_all[0]
             pa['overflow_areas'] = [{'area_idx': first['area_idx'], 'excess': first['excess']}]
             pa['overflow_player'] = first['player_id']
+            pa['overflow_tile_key'] = first['tile_key']
             pa['instruction'] = 'Превышена вместимость. Выберите юнита для возврата в запас.'
         else:
             pa.pop('overflow_areas', None)
+            pa.pop('overflow_tile_key', None)
             pa['instruction'] = 'Отступление завершено. Advance окончен.'
             finalize_advance(new_state, pa['player_id'])
     else:
-        overflow = _find_overflow_areas(new_state, tile_key, overflow_player)
+        overflow = _find_overflow_areas(new_state, pa['tile_key'], overflow_player)
         if overflow:
             pa['overflow_areas'] = overflow
             pa['instruction'] = 'Превышена вместимость. Выберите юнита для возврата в запас.'

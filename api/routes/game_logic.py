@@ -378,8 +378,8 @@ async def init_game(request: InitGameRequest) -> GameStateResponse:
                         faction_color = f'#{faction_color}'
                     p['faction_color'] = faction_color
 
-                    p['hand_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value == -1]
-                    p['available_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value != -1]
+                    p['hand_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.tier == -1]
+                    p['available_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.tier != -1]
                     p['available_order_upgrades'] = [u.to_dict() for u in fac.order_upgrades]
                     p['available_event_cards'] = [e.to_dict() for e in fac.event_cards]
                     if 'hand_order_upgrades' not in p:
@@ -463,9 +463,9 @@ async def restore_game(request: InitGameRequest) -> GameStateResponse:
                     p['faction_color'] = faction_color
                     # Карты восстанавливаем только если их нет в сохранении
                     if 'hand_battle_cards' not in p:
-                        p['hand_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value == -1]
+                        p['hand_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.tier == -1]
                     if 'available_battle_cards' not in p:
-                        p['available_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.level.value != -1]
+                        p['available_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.tier != -1]
                     if 'available_order_upgrades' not in p:
                         p['available_order_upgrades'] = [u.to_dict() for u in fac.order_upgrades]
                     if 'available_event_cards' not in p:
@@ -518,8 +518,8 @@ async def get_faction_cards(faction_id: str):
     fac = FACTIONS[faction_id]
     return {
         "success": True,
-        "hand_battle_cards": [c.to_dict() for c in fac.battle_cards if c.level.value == -1],
-        "available_battle_cards": [c.to_dict() for c in fac.battle_cards if c.level.value != -1],
+        "hand_battle_cards": [c.to_dict() for c in fac.battle_cards if c.tier == -1],
+        "available_battle_cards": [c.to_dict() for c in fac.battle_cards if c.tier != -1],
         "hand_order_upgrades": [],
         "available_order_upgrades": [u.to_dict() for u in fac.order_upgrades],
         "hand_event_cards": [],

@@ -194,17 +194,21 @@ def get_reachable_planets_for_unit(
     virtual_areas,
     start_tile_type, start_area_idx,
     player_id,
+    full_areas=None,
 ) -> list[int]:
-    active_copy = copy.deepcopy(active_tile)
-    for idx, vdata in virtual_areas.items():
-        if idx < len(active_copy.get('areas', [])):
-            active_copy['areas'][idx]['troops'] = list(vdata.get('troops', []))
+    if full_areas is not None:
+        areas = full_areas
+    else:
+        active_copy = copy.deepcopy(active_tile)
+        for idx, vdata in virtual_areas.items():
+            if idx < len(active_copy.get('areas', [])):
+                active_copy['areas'][idx]['troops'] = list(vdata.get('troops', []))
 
-    mini_map = {active_tile_key: active_copy}
-    if source_tile and source_tile_key:
-        mini_map[source_tile_key] = source_tile
+        mini_map = {active_tile_key: active_copy}
+        if source_tile and source_tile_key:
+            mini_map[source_tile_key] = source_tile
 
-    areas = state_to_areas({'map': mini_map})
+        areas = state_to_areas({'map': mini_map})
     my_owner = player_id + 1
 
     area_meta = {}

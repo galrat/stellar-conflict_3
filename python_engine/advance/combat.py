@@ -187,21 +187,8 @@ def advance_fight(state, player_id) -> dict:
     result = roll_combat(new_state, tile_key, area_idx, player_id)
     new_state.setdefault('log', []).append({'message': result['log'], 'player_id': player_id})
 
-    active_tile = new_state['map'][tile_key]
-    orbital_ships = [
-        idx for idx, area in enumerate(active_tile.get('areas', []))
-        if area.get('type') == 'space' and
-           any(t.get('player') == player_id and t.get('unitType') == 'space'
-               for t in area.get('troops', []))
-    ]
-
-    if orbital_ships:
-        pa['step'] = 'orbital'
-        pa['orbital_ships'] = orbital_ships
-        pa['instruction'] = 'Выберите корабль и целевую планету для орбитального удара или пропустите.'
-    else:
-        pa['instruction'] = 'Бой завершён. Движение окончено.'
-        finalize_advance(new_state, player_id)
+    pa['instruction'] = 'Бой завершён. Движение окончено.'
+    finalize_advance(new_state, player_id)
 
     return new_state
 
@@ -233,7 +220,11 @@ def advance_declare_winner(state, player_id, winner_id) -> dict:
     retreat_info = _get_retreat_valid_areas(new_state, tile_key, contested_idx, loser)
     friendly_areas = retreat_info['friendly']
     neutral_areas = retreat_info['neutral']
-    retreat_areas = friendly_areas if friendly_areas else neutral_areas
+    defender = 1 - player_id
+    if loser == defender:
+        retreat_areas = friendly_areas if friendly_areas else neutral_areas
+    else:
+        retreat_areas = friendly_areas
 
     new_state.setdefault('log', []).append({
         'message': f'БОЙ в области {contested_idx} тайла {tile_key}: победил {winner_name}. {loser_name} отступает.',

@@ -157,8 +157,8 @@ def generate_game_state(game_state) -> dict:
 
         # ── Информация о картах из фракции ──────────────────────────────────
         faction = player.faction
-        hand_battle_cards = [c.to_dict() for c in faction.battle_cards if c.level.value == -1]
-        available_battle_cards = [c.to_dict() for c in faction.battle_cards if c.level.value != -1]
+        hand_battle_cards = [c.to_dict() for c in faction.battle_cards if c.tier == -1]
+        available_battle_cards = [c.to_dict() for c in faction.battle_cards if c.tier != -1]
         available_order_upgrades = [u.to_dict() for u in faction.order_upgrades]
         available_event_cards = [e.to_dict() for e in faction.event_cards]
 

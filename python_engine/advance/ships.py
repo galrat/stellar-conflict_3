@@ -1,4 +1,6 @@
 import copy
+import json
+import os
 import uuid
 from .discovery import (
     get_adjacent_tiles_with_units, get_available_units,
@@ -6,6 +8,39 @@ from .discovery import (
     validate_no_second_contest, get_reachable_planets_for_unit,
 )
 from .convert import state_to_areas, _UNROTATE
+
+
+def _compute_areas_with_moves(state_map, tile_key, source_tile_key, committed_moves):
+    map_copy = copy.deepcopy(state_map)
+    active_tile = map_copy.get(tile_key)
+    source_tile = map_copy.get(source_tile_key) if source_tile_key else None
+    for move in committed_moves:
+        origin = move['origin']
+        from_area_idx = move.get('from_area_idx')
+        to_area_idx = move['to_area_idx']
+        unit = copy.deepcopy(move['unit'])
+        uid = unit.get('_uid')
+        if origin == 'source' and source_tile and from_area_idx is not None:
+            troops = source_tile['areas'][from_area_idx]['troops']
+            for i, t in enumerate(troops):
+                if uid and t.get('_uid') == uid:
+                    troops.pop(i)
+                    break
+        elif origin == 'active' and active_tile and from_area_idx is not None:
+            troops = active_tile['areas'][from_area_idx]['troops']
+            for i, t in enumerate(troops):
+                if uid and t.get('_uid') == uid:
+                    troops.pop(i)
+                    break
+        if active_tile:
+            active_tile['areas'][to_area_idx]['troops'].append(unit)
+    return state_to_areas({'map': map_copy})
+
+
+def _save_advance_json(filename, areas):
+    os.makedirs('advance', exist_ok=True)
+    with open(f'advance/{filename}', 'w', encoding='utf-8') as f:
+        json.dump(areas, f, ensure_ascii=False, indent=2)
 
 
 def advance_play(state, player_id, tile_key) -> dict:
@@ -92,6 +127,8 @@ def advance_choose_source(state, player_id, source_tile_key) -> dict:
     pa['clickable_space_areas'] = clickable_space_areas
     pa['step'] = 'ships'
     pa['instruction'] = f'Переместите корабли в области космоса системы {tile_key}. Нажмите "Далее" для наземных юнитов.'
+
+    _save_advance_json('advance_state_1.json', state_to_areas(new_state))
 
     return new_state
 
@@ -189,6 +226,10 @@ def advance_move_ship(state, player_id, ship_id, to_area_idx) -> dict:
     if any(t.get('player') == 0 for t in dest_troops) and any(t.get('player') == 1 for t in dest_troops):
         pa['contest_area_idx'] = to_area_idx
 
+    areas = _compute_areas_with_moves(new_state['map'], tile_key, source_tile_key, pa['committed_moves'])
+    _save_advance_json('advance_state_1.json', areas)
+    _save_advance_json('advance_state_2.json', areas)
+
     return new_state
 
 
@@ -211,6 +252,9 @@ def advance_next_step(state, player_id) -> dict:
     source_tile_key = pa.get('source_tile')
     source_tile = new_state['map'].get(source_tile_key) if source_tile_key else None
 
+    full_areas = _compute_areas_with_moves(new_state['map'], tile_key, source_tile_key, pa['committed_moves'])
+    _save_advance_json('advance_state_2.json', full_areas)
+
     reachable_by_id = {}
     for ground in pa['available_ground_units']:
         gid = ground['ground_id']
@@ -224,6 +268,7 @@ def advance_next_step(state, player_id) -> dict:
             virtual_areas,
             start_tile_type, from_area_idx,
             player_id,
+            full_areas=full_areas,
         )
         reachable_by_id[gid] = reachable
 

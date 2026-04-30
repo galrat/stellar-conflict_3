@@ -288,7 +288,7 @@ class Faction:
 
     def cards_by_level(self, level: CardLevel) -> List[BattleCard]:
         """Все боевые карты указанного уровня."""
-        return [c for c in self.battle_cards if c.level == level]
+        return [c for c in self.battle_cards if c.tier == level.value]
 
     def upgrade_for(self, order_type: str) -> Optional[OrderUpgrade]:
         """Улучшение для конкретного типа приказа (None если нет)."""

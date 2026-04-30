@@ -1,5 +1,5 @@
 import copy
-from .capacity import _find_all_overflow_areas
+from .capacity import _find_all_overflow_areas_global
 from .finalize import finalize_advance
 
 
@@ -31,12 +31,13 @@ def retreat_attacker(state, player_id, retreat_tile_key, retreat_area_idx) -> di
         'player_id': player_id,
     })
 
-    overflow_all = _find_all_overflow_areas(state, retreat_tile_key)
+    overflow_all = _find_all_overflow_areas_global(state)
     if overflow_all:
         first = overflow_all[0]
         pa['step'] = 'capacity_overflow'
         pa['overflow_areas'] = [{'area_idx': first['area_idx'], 'excess': first['excess']}]
         pa['overflow_player'] = first['player_id']
+        pa['overflow_tile_key'] = first['tile_key']
         pa['overflow_context'] = 'post_retreat'
         pa['instruction'] = 'Превышена вместимость. Выберите юнита для возврата в запас.'
     else:
