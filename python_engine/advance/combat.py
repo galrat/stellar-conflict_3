@@ -3,7 +3,7 @@ import random
 from .discovery import get_tile_area_neighbors, get_adjacent_tile_keys
 from ..map_graph import build_graph
 from .finalize import finalize_advance
-from .capacity import _find_all_overflow_areas
+from .capacity import _find_all_overflow_areas, _find_all_overflow_areas_global
 from .retreat_defender import retreat_defender
 from .retreat_attacker import retreat_attacker
 from .retreat_defender_ships import is_ships_retreating, get_retreat_valid_areas_ships
@@ -176,8 +176,18 @@ def advance_fight(state, player_id) -> dict:
     result = roll_combat(new_state, tile_key, area_idx, player_id)
     new_state.setdefault('log', []).append({'message': result['log'], 'player_id': player_id})
 
-    pa['instruction'] = 'Бой завершён. Движение окончено.'
-    finalize_advance(new_state, player_id)
+    overflow_all = _find_all_overflow_areas_global(new_state)
+    if overflow_all:
+        first = overflow_all[0]
+        pa['step'] = 'capacity_overflow'
+        pa['overflow_areas'] = [{'area_idx': first['area_idx'], 'excess': first['excess']}]
+        pa['overflow_player'] = first['player_id']
+        pa['overflow_tile_key'] = first['tile_key']
+        pa['overflow_context'] = 'post_retreat'
+        pa['instruction'] = 'Превышена вместимость. Выберите юнита для возврата в запас.'
+    else:
+        pa['instruction'] = 'Бой завершён. Движение окончено.'
+        finalize_advance(new_state, player_id)
 
     return new_state
 
@@ -240,8 +250,18 @@ def advance_declare_winner(state, player_id, winner_id) -> dict:
             'message': f'{loser_name} не имеет куда отступить — юниты уничтожены.',
             'player_id': player_id,
         })
-        pa['instruction'] = 'Бой завершён. Advance окончен.'
-        finalize_advance(new_state, player_id)
+        overflow_all = _find_all_overflow_areas_global(new_state)
+        if overflow_all:
+            first = overflow_all[0]
+            pa['step'] = 'capacity_overflow'
+            pa['overflow_areas'] = [{'area_idx': first['area_idx'], 'excess': first['excess']}]
+            pa['overflow_player'] = first['player_id']
+            pa['overflow_tile_key'] = first['tile_key']
+            pa['overflow_context'] = 'post_retreat'
+            pa['instruction'] = 'Превышена вместимость. Выберите юнита для возврата в запас.'
+        else:
+            pa['instruction'] = 'Бой завершён. Advance окончен.'
+            finalize_advance(new_state, player_id)
     else:
         pa['step'] = 'combat_retreat'
         pa['retreat_valid_areas'] = retreat_areas

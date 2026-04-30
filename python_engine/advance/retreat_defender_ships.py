@@ -60,4 +60,4 @@ def get_retreat_valid_areas_ships(state, tile_key, contested_idx, loser):
     print(f"[RETREAT SHIPS] allowed_tiles={allowed_tiles}")
     print(f"[RETREAT SHIPS] friendly={friendly}, neutral={neutral}")
 
-    return {'friendly': friendly, 'neutral': neutral}
+    return {'friendly': friendly, 'neutral': neutral if not friendly else []}

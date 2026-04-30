@@ -440,19 +440,11 @@
       "faction": "chaos",
       "pool": [
         {
-          "id": 11,
+          "id": 12,
           "player": 1,
           "unitType": "ground",
-          "tier": 0,
-          "unit_status": "active",
-          "_uid": "af55ca4f-2057-4043-af04-2fdd1821cffe"
-        },
-        {
-          "unitType": "ground",
-          "tier": 0,
-          "player": 1,
-          "unit_status": "active",
-          "_uid": "595c7256-30e3-4f8c-b5e4-b1a78f04c8ee"
+          "tier": 1,
+          "unit_status": "active"
         }
       ],
       "hand": [
@@ -914,14 +906,7 @@
           "discount": 1,
           "forge": 0,
           "joker": 1,
-          "troops": [
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": [
             {
               "type": "city",
@@ -963,7 +948,7 @@
               "unitType": "space",
               "tier": 0,
               "player": 0,
-              "unit_status": "routed"
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -978,15 +963,7 @@
           "discount": 1,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 4,
-              "player": 0,
-              "unitType": "space",
-              "tier": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": []
         }
       ],
@@ -1019,10 +996,16 @@
           "joker": 1,
           "troops": [
             {
-              "id": 12,
-              "player": 1,
+              "id": 3,
+              "player": 0,
               "unitType": "ground",
               "tier": 1,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 0,
+              "player": 0,
               "unit_status": "active"
             }
           ],
@@ -1038,15 +1021,7 @@
           "discount": 1,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 3,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 1,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": []
         },
         {
@@ -1061,11 +1036,17 @@
           "joker": 0,
           "troops": [
             {
-              "id": 14,
-              "player": 1,
+              "id": 4,
+              "player": 0,
               "unitType": "space",
               "tier": 0,
               "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "routed"
             }
           ],
           "structures": []
@@ -1082,9 +1063,16 @@
           "joker": 0,
           "troops": [
             {
+              "id": 14,
+              "player": 1,
               "unitType": "space",
               "tier": 0,
-              "player": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 1,
               "unit_status": "active"
             }
           ],
@@ -1203,7 +1191,13 @@
               "player": 1,
               "unitType": "ground",
               "tier": 1,
-              "unit_status": "routed"
+              "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 0,
+              "player": 1,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -1237,14 +1231,7 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "unitType": "space",
-              "tier": 0,
-              "player": 1,
-              "unit_status": "routed"
-            }
-          ],
+          "troops": [],
           "structures": []
         },
         {
@@ -1257,7 +1244,15 @@
           "discount": 1,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 11,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": [
             {
               "type": "city",
@@ -1662,23 +1657,15 @@
       "player_id": 0
     },
     {
-      "message": "БОЙ в области 1 тайла 1,0: победил Alpha. Omega отступает.",
-      "player_id": 0
-    },
-    {
-      "message": "Omega (защитник) отступил в область 0 (1 юн.). Статус: разбит.",
-      "player_id": 0
-    },
-    {
       "message": "Приказ 'Advance' разыгран",
       "player_id": 1
     },
     {
-      "message": "БОЙ в области 3 тайла 1,0: победил Alpha. Omega отступает.",
+      "message": "БОЙ в области 3 тайла 1,0: победил Omega. Alpha отступает.",
       "player_id": 1
     },
     {
-      "message": "Omega (нападавший, корабли) отступил в 2,0:2 (1 юн.). Статус: разбит.",
+      "message": "Alpha (защитник) отступил в область 2 (1 юн.). Статус: разбит.",
       "player_id": 1
     },
     {
@@ -1686,11 +1673,11 @@
       "player_id": 0
     },
     {
-      "message": "БОЙ в области 2 тайла 1,0: победил Omega. Alpha отступает.",
+      "message": "БОЙ в области 0 тайла 1,0: победил Alpha. Omega отступает.",
       "player_id": 0
     },
     {
-      "message": "Alpha (нападавший, корабли) отступил в 0,0:2 (1 юн.). Статус: разбит.",
+      "message": "Omega не имеет куда отступить — юниты уничтожены.",
       "player_id": 0
     }
   ],
