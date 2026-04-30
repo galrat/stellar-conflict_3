@@ -6,6 +6,8 @@ from .finalize import finalize_advance
 from .capacity import _find_all_overflow_areas
 from .retreat_defender import retreat_defender
 from .retreat_attacker import retreat_attacker
+from .retreat_defender_ships import is_ships_retreating, get_retreat_valid_areas_ships
+from .retreat_attacker_ships import get_retreat_valid_areas_attacker_ships, retreat_attacker_ships
 
 
 def roll_combat(state, active_tile_key, area_idx, player_id):
@@ -68,77 +70,64 @@ def _get_retreat_valid_areas(state, tile_key, contested_idx, loser) -> dict:
     areas_list = active_tile.get('areas', [])
     opponent = 1 - loser
 
-    contested_type = areas_list[contested_idx].get('type') if contested_idx < len(areas_list) else 'space'
-    print(f"\n[RETREAT] Место битвы: {tile_key}:{contested_idx}, тип: {contested_type}, проигравший: игрок {loser}")
+    print(f"\n[RETREAT] Место битвы: {tile_key}:{contested_idx}, проигравший: игрок {loser}")
 
     graph = build_graph(game_map, state.get('warpStorms', []))
     start_id = f"{tile_key}:{contested_idx}"
     allowed_tiles = {tile_key} | set(get_adjacent_tile_keys(tile_key))
     print(f"[RETREAT] Разрешённые системы: {allowed_tiles}")
 
-    if contested_type == 'space':
-        # Космос: любая космическая область в активной или соседней системе
-        candidates = [
-            (node['tile_key'], node['area_idx'])
-            for nid, node in graph.items()
-            if node['tile_key'] in allowed_tiles
-            and node['type'] == 'space'
-            and nid != start_id
-        ]
-        print(f"[RETREAT] Космос — кандидаты ({len(candidates)}): {candidates}")
-    else:
-        # Планета: BFS из места битвы через дружественные области
-        visited = {start_id}
-        queue = [start_id]
-        while queue:
-            current = queue.pop(0)
-            node = graph.get(current)
-            if not node:
+    # Планета: BFS из места битвы через дружественные области
+    visited = {start_id}
+    queue = [start_id]
+    while queue:
+        current = queue.pop(0)
+        node = graph.get(current)
+        if not node:
+            continue
+        for nb_id in node['neighbors']:
+            if nb_id in visited:
                 continue
+            nb_node = graph.get(nb_id)
+            if not nb_node:
+                continue
+            if nb_node['tile_key'] not in allowed_tiles:
+                continue
+            nb_areas = game_map.get(nb_node['tile_key'], {}).get('areas', [])
+            nb_area = nb_areas[nb_node['area_idx']] if nb_node['area_idx'] < len(nb_areas) else {}
+            has_loser = (
+                any(t.get('player') == loser for t in nb_node['troops']) or
+                any(s.get('player') == loser for s in nb_area.get('structures', []))
+            )
+            if has_loser:
+                visited.add(nb_id)
+                queue.append(nb_id)
+
+    reachable = visited - {start_id}
+    print(f"[RETREAT] Планета — достижимые через дружественные ({len(reachable)}): {reachable}")
+
+    # Кандидаты: дружественные планетные области + планеты соседние с кораблями
+    candidate_set = set()
+    for nid in visited:
+        if nid == start_id:
+            continue
+        node = graph.get(nid)
+        if not node:
+            continue
+        if node['type'] != 'space':
+            candidate_set.add((node['tile_key'], node['area_idx']))
+        else:
             for nb_id in node['neighbors']:
-                if nb_id in visited:
-                    continue
                 nb_node = graph.get(nb_id)
-                if not nb_node:
+                if not nb_node or nb_id == start_id:
                     continue
                 if nb_node['tile_key'] not in allowed_tiles:
                     continue
-                nb_areas = game_map.get(nb_node['tile_key'], {}).get('areas', [])
-                nb_area = nb_areas[nb_node['area_idx']] if nb_node['area_idx'] < len(nb_areas) else {}
-                has_loser = (
-                    any(t.get('player') == loser for t in nb_node['troops']) or
-                    any(s.get('player') == loser for s in nb_area.get('structures', []))
-                )
-                if has_loser:
-                    visited.add(nb_id)
-                    queue.append(nb_id)
+                if nb_node['type'] != 'space':
+                    candidate_set.add((nb_node['tile_key'], nb_node['area_idx']))
 
-        reachable = visited - {start_id}
-        print(f"[RETREAT] Планета — достижимые через дружественные ({len(reachable)}): {reachable}")
-
-        # Кандидаты: дружественные планетные области + планеты соседние с кораблями
-        candidate_set = set()
-        for nid in visited:
-            if nid == start_id:
-                continue
-            node = graph.get(nid)
-            if not node:
-                continue
-            if node['type'] != 'space':
-                candidate_set.add((node['tile_key'], node['area_idx']))
-            else:
-                # Из космической области с кораблями достижимы соседние планеты
-                for nb_id in node['neighbors']:
-                    nb_node = graph.get(nb_id)
-                    if not nb_node or nb_id == start_id:
-                        continue
-                    if nb_node['tile_key'] not in allowed_tiles:
-                        continue
-                    if nb_node['type'] != 'space':
-                        candidate_set.add((nb_node['tile_key'], nb_node['area_idx']))
-
-        candidates = list(candidate_set)
-        print(f"[RETREAT] Планета — кандидаты без космоса ({len(candidates)}): {candidates}")
+    candidates = list(candidate_set)
+    print(f"[RETREAT] Планета — кандидаты без космоса ({len(candidates)}): {candidates}")
 
     # Делим на дружественные / нейтральные, исключаем занятые врагом
     friendly = []
@@ -217,14 +206,24 @@ def advance_declare_winner(state, player_id, winner_id) -> dict:
     contested_idx = pa['contest_area_idx']
     active_tile = new_state['map'][tile_key]
 
-    retreat_info = _get_retreat_valid_areas(new_state, tile_key, contested_idx, loser)
-    friendly_areas = retreat_info['friendly']
-    neutral_areas = retreat_info['neutral']
     defender = 1 - player_id
-    if loser == defender:
-        retreat_areas = friendly_areas if friendly_areas else neutral_areas
+
+    if is_ships_retreating(new_state, tile_key, contested_idx, loser):
+        if loser == defender:
+            retreat_info = get_retreat_valid_areas_ships(new_state, tile_key, contested_idx, loser)
+        else:
+            retreat_info = get_retreat_valid_areas_attacker_ships(new_state, tile_key, contested_idx, loser)
+        friendly_areas = retreat_info['friendly']
+        neutral_areas = retreat_info['neutral']
+        retreat_areas = friendly_areas + neutral_areas if friendly_areas else neutral_areas
     else:
-        retreat_areas = friendly_areas
+        retreat_info = _get_retreat_valid_areas(new_state, tile_key, contested_idx, loser)
+        friendly_areas = retreat_info['friendly']
+        neutral_areas = retreat_info['neutral']
+        if loser == defender:
+            retreat_areas = friendly_areas if friendly_areas else neutral_areas
+        else:
+            retreat_areas = friendly_areas
 
     new_state.setdefault('log', []).append({
         'message': f'БОЙ в области {contested_idx} тайла {tile_key}: победил {winner_name}. {loser_name} отступает.',
@@ -265,7 +264,12 @@ def advance_retreat(state, player_id, retreat_tile_key, retreat_area_idx) -> dic
     loser = pa['combat_loser']
     opponent = 1 - player_id
 
+    tile_key = pa['tile_key']
+    contested_idx = pa['contest_area_idx']
+
     if loser == opponent:
         return retreat_defender(new_state, player_id, retreat_tile_key, retreat_area_idx)
+    elif is_ships_retreating(new_state, tile_key, contested_idx, loser):
+        return retreat_attacker_ships(new_state, player_id, retreat_tile_key, retreat_area_idx)
     else:
         return retreat_attacker(new_state, player_id, retreat_tile_key, retreat_area_idx)
