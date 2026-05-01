@@ -78,6 +78,7 @@ class OrderUpgrade:
     id:         str = ""  # уникальный идентификатор улучшения (опционально)
     tier:       int = 0   # уровень улучшения (опционально)
     cost:       int = 0   # стоимость улучшения (опционально)
+    image:      str = ""  # путь к изображению карты (опционально)
 
     def to_dict(self) -> dict:
         return {
@@ -88,6 +89,7 @@ class OrderUpgrade:
             "cost":       self.cost,
             "primary":    self.primary,
             "secondary":  self.secondary,
+            "image":      self.image,
         }
 
 
@@ -103,6 +105,7 @@ class EventCard:
     warp_storm_move:  str   # направление движения вихря деформации
     card_type:        str   # "Scheme" | "Tactic"
     effect:           str   # описание эффекта карты
+    image:            str = ""
 
     def to_dict(self) -> dict:
         return {
@@ -110,6 +113,7 @@ class EventCard:
             "warp_storm_move":  self.warp_storm_move,
             "card_type":        self.card_type,
             "effect":           self.effect,
+            "image":            self.image,
         }
 
 

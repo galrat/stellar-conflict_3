@@ -473,6 +473,18 @@ async def restore_game(request: InitGameRequest) -> GameStateResponse:
                             _fc = _card_by_name.get(_card.get('name'))
                             if _fc and _fc.image:
                                 _card['image'] = _fc.image
+                    _upgrade_by_name = {u.name: u for u in fac.order_upgrades}
+                    for _upg in p.get('available_order_upgrades', []) + p.get('hand_order_upgrades', []):
+                        if isinstance(_upg, dict) and not _upg.get('image'):
+                            _fu = _upgrade_by_name.get(_upg.get('name'))
+                            if _fu and _fu.image:
+                                _upg['image'] = _fu.image
+                    _event_by_name = {e.name: e for e in fac.event_cards}
+                    for _ev in p.get('available_event_cards', []) + p.get('hand_event_cards', []):
+                        if isinstance(_ev, dict) and not _ev.get('image'):
+                            _fe = _event_by_name.get(_ev.get('name'))
+                            if _fe and _fe.image:
+                                _ev['image'] = _fe.image
                     if 'available_order_upgrades' not in p:
                         p['available_order_upgrades'] = [u.to_dict() for u in fac.order_upgrades]
                     if 'available_event_cards' not in p:

@@ -464,20 +464,34 @@
           "id": "strategize_1_1_r2",
           "type": "strategize",
           "owner": 1
-        },
-        {
-          "id": "strategize_1_0_r2",
-          "type": "strategize",
-          "owner": 1
         }
       ],
-      "credits": 5,
+      "credits": 7,
       "tokens": {
         "support": 1,
         "discount": 0,
         "forge": 0
       },
       "hand_battle_cards": [
+        {
+          "name": "Dark Faith",
+          "tier": -1,
+          "cost": 0,
+          "icons": {
+            "G": 0,
+            "S": 0,
+            "M": 1
+          },
+          "primary": "Gain 1 [M].",
+          "secondary": {
+            "requires": [
+              "Cultist",
+              "Iconoclast"
+            ],
+            "effect": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."
+          },
+          "image": "faction_defs/chaos_data/battle/Dark Faith.jpg"
+        },
         {
           "name": "Foul Worship",
           "tier": -1,
@@ -553,24 +567,6 @@
             "effect": "Gain 2 (g) or 2 (s)."
           },
           "image": "faction_defs/chaos_data/battle/Lure of Chaos.jpg"
-        },
-        {
-          "name": "Mark of Slaanesh",
-          "tier": 0,
-          "cost": 2,
-          "icons": {
-            "G": 1,
-            "S": 1,
-            "M": 0
-          },
-          "primary": "Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice.",
-          "secondary": {
-            "requires": [
-              "Marine"
-            ],
-            "effect": "If enemy has routed unit, place free Cultist on this world."
-          },
-          "image": "faction_defs/chaos_data/battle/Mark of Slaanesh.jpg"
         }
       ],
       "available_battle_cards": [
@@ -611,6 +607,24 @@
             "effect": "Enemy destroys 1 routed unit, otherwise gain 2 (s)."
           },
           "image": "faction_defs/chaos_data/battle/Mark of Nurgle.jpg"
+        },
+        {
+          "name": "Mark of Slaanesh",
+          "tier": 0,
+          "cost": 2,
+          "icons": {
+            "G": 1,
+            "S": 1,
+            "M": 0
+          },
+          "primary": "Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice.",
+          "secondary": {
+            "requires": [
+              "Marine"
+            ],
+            "effect": "If enemy has routed unit, place free Cultist on this world."
+          },
+          "image": "faction_defs/chaos_data/battle/Mark of Slaanesh.jpg"
         },
         {
           "name": "Mark of Tzeentch",
@@ -726,25 +740,6 @@
             "effect": "If more [M] than enemy, destroy 1 routed unit."
           },
           "image": "faction_defs/chaos_data/battle/Death and Despair.jpg"
-        },
-        {
-          "name": "Dark Faith",
-          "tier": -1,
-          "cost": 0,
-          "icons": {
-            "G": 0,
-            "S": 0,
-            "M": 1
-          },
-          "primary": "Gain 1 [M].",
-          "secondary": {
-            "requires": [
-              "Cultist",
-              "Iconoclast"
-            ],
-            "effect": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."
-          },
-          "image": "faction_defs/chaos_data/battle/Dark Faith.jpg"
         }
       ],
       "hand_order_upgrades": [],
@@ -756,7 +751,8 @@
           "tier": 0,
           "cost": 1,
           "primary": "Gain [?], spend 1 [M] to force any unit taking damage to rout.",
-          "secondary": ""
+          "secondary": "",
+          "image": "faction_defs/chaos_data/order/Fear from Above.jpg"
         },
         {
           "id": "",
@@ -765,7 +761,8 @@
           "tier": 1,
           "cost": 2,
           "primary": "Purchase 1 Tier 0–2 unit; reduce cost by 1 per Cultist in active system.",
-          "secondary": ""
+          "secondary": "",
+          "image": "faction_defs/chaos_data/order/Dread Ritual.jpg"
         },
         {
           "id": "",
@@ -774,7 +771,8 @@
           "tier": 1,
           "cost": 2,
           "primary": "Place 2 order tokens from play area onto top of event deck.",
-          "secondary": ""
+          "secondary": "",
+          "image": "faction_defs/chaos_data/order/Favour of the Dark Gods.jpg"
         },
         {
           "id": "",
@@ -783,7 +781,8 @@
           "tier": 1,
           "cost": 2,
           "primary": "Ships can move through Warp Storms.",
-          "secondary": ""
+          "secondary": "",
+          "image": "faction_defs/chaos_data/order/From the Warp.jpg"
         },
         {
           "id": "",
@@ -792,7 +791,8 @@
           "tier": 2,
           "cost": 3,
           "primary": "Bastions do not prevent orbital strike. Spend 2 [S] to force enemy to choose unit or structure to destroy",
-          "secondary": ""
+          "secondary": "",
+          "image": "faction_defs/chaos_data/order/Complete Destruction.jpg"
         }
       ],
       "hand_event_cards": [
@@ -800,7 +800,8 @@
           "name": "Prayer to the Dark Gods",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Scheme",
-          "effect": "When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction."
+          "effect": "When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction.",
+          "image": "faction_defs/chaos_data/event/Prayer to the Dark Gods.jpg"
         }
       ],
       "available_event_cards": [
@@ -808,43 +809,50 @@
           "name": "Blight of Nurgle",
           "warp_storm_move": "Across",
           "card_type": "Scheme",
-          "effect": "Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units."
+          "effect": "Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units.",
+          "image": "faction_defs/chaos_data/event/Blight of Nurgle.jpg"
         },
         {
           "name": "Incantation of Tzeentch",
           "warp_storm_move": "Across",
           "card_type": "Tactic",
-          "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move)."
+          "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move).",
+          "image": "faction_defs/chaos_data/event/Incantation of Tzeentch.jpg"
         },
         {
           "name": "Prophets and Signs",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Tactic",
-          "effect": "Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world."
+          "effect": "Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world.",
+          "image": "faction_defs/chaos_data/event/Prophets and Signs.jpg"
         },
         {
           "name": "Seduced by Chaos",
           "warp_storm_move": "Sideways",
           "card_type": "Scheme",
-          "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat."
+          "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat.",
+          "image": "faction_defs/chaos_data/event/Seduced by Chaos.jpg"
         },
         {
           "name": "Spoils of War",
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Tactic",
-          "effect": "Gain 1 (F) and 1 (R)."
+          "effect": "Gain 1 (F) and 1 (R).",
+          "image": "faction_defs/chaos_data/event/Spoils of War.jpg"
         },
         {
           "name": "Through the Warp",
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
-          "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start."
+          "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start.",
+          "image": "faction_defs/chaos_data/event/Through the Warp.jpg"
         },
         {
           "name": "Touched by the Warp",
           "warp_storm_move": "Sideways",
           "card_type": "Tactic",
-          "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system."
+          "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system.",
+          "image": "faction_defs/chaos_data/event/Touched by the Warp.jpg"
         }
       ],
       "boughtUpgrades": [],
@@ -1464,6 +1472,14 @@
       "revealed": false
     },
     {
+      "id": "strategize_1_0_r2",
+      "type": "strategize",
+      "owner": 1,
+      "tile": "1,-1",
+      "position": 0,
+      "revealed": false
+    },
+    {
       "id": "strategize_0_0_r2",
       "type": "strategize",
       "owner": 0,
@@ -1729,10 +1745,6 @@
     {
       "message": "Игра загружена",
       "player_id": -1
-    },
-    {
-      "message": "Приказ 'Strategize' разыгран",
-      "player_id": 1
     }
   ],
   "event_cards_offered": [
@@ -1756,10 +1768,5 @@
     "can_place_order": false,
     "order_placed_this_turn": false,
     "order_played_this_turn": false
-  },
-  "pending_strategize": {
-    "player_id": 1,
-    "step": "buy_order_upgrade",
-    "player_level": 1
   }
 }

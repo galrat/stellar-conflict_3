@@ -1,17 +1,16 @@
-Task: сейчас описание боевых карт такое:
- battle_cards=[
-        BattleCard(
-            name="Dark Faith",
-            tier=-1,
-            cost=0,
-            icons={"G": 0, "S": 0, "M": 1},
-            primary="Gain 1 [M].",
-            secondary={"requires": ["Cultist", "Iconoclast"],
-                       "effect": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."},
+Task: сейчас описание карт улучшений приказов такое:
+order_upgrades = [
+        OrderUpgrade(
+            name       = "Fear from Above",
+            order_type = "advance",
+            tier       = 0,
+            cost       = 1,
+            primary   = "Gain [?], spend 1 [M] to force any unit taking damage to rout.",
+
         ),
-мне нужно добавить еще ссылку на изображение этой карты вида faction_defs/chaos_data/battle/Chaos United.jpg
+мне нужно добавить еще ссылку на изображение этой карты вида faction_defs/chaos_data/order/Complete Destruction.jpg
 когда пользователь нажимает на кнопку карты в верхнем блоке отображения он должен видеть не только название карты но и ее изображение
-внеси изменения пока только в одну фракцию chaos в прошлый раз ты сломал кнопку загрузить не делай так
+внеси изменения пока только в одну фракцию chaos посмотри как это реализовано для боевых карт и сделай также
 file: @faction_defs/chaos.py
 Покажи план → жди моего ОК → только потом делай.
 Если непонятно — спроси сразу.

@@ -49,8 +49,11 @@ function _renderOrderUpgrade(c) {
   const cost = c.cost ? `<span style="color:#ff8c00;margin-left:6px;">Стоимость: ${c.cost}</span>` : '';
   const e1 = c.effect_1 ? `<div style="color:#aaa;font-size:.78rem;margin-top:4px;">${c.effect_1}</div>` : '';
   const e2 = c.effect_2 ? `<div style="color:#888;font-size:.78rem;margin-top:2px;">${c.effect_2}</div>` : '';
+  const nameHtml = c.image
+    ? `<span onclick="_showCardImageOverlay('${c.image.replace(/ /g, '%20')}')" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;">${name}</span>`
+    : name;
   return `<div style="margin-bottom:8px;padding:8px;background:rgba(0,0,0,.4);border-left:3px solid rgba(0,188,212,.4);border-radius:4px;">
-    <div style="font-weight:bold;font-size:.9rem;">${name}${type}${cost}</div>${e1}${e2}
+    <div style="font-weight:bold;font-size:.9rem;">${nameHtml}${type}${cost}</div>${e1}${e2}
   </div>`;
 }
 
@@ -59,8 +62,11 @@ function _renderEventCard(c) {
   const ctype = c.card_type ? `<span style="color:#ab47bc;margin-left:6px;">[${c.card_type}]</span>` : '';
   const warp = c.warp_storm_move ? `<div style="color:#ff8c00;font-size:.78rem;margin-top:4px;">Warp: ${c.warp_storm_move}</div>` : '';
   const eff = c.effect ? `<div style="color:#aaa;font-size:.78rem;margin-top:2px;">${c.effect}</div>` : '';
+  const nameHtml = c.image
+    ? `<span onclick="_showCardImageOverlay('${c.image.replace(/ /g, '%20')}')" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;">${name}</span>`
+    : name;
   return `<div style="margin-bottom:8px;padding:8px;background:rgba(0,0,0,.4);border-left:3px solid rgba(171,71,188,.4);border-radius:4px;">
-    <div style="font-weight:bold;font-size:.9rem;">${name}${ctype}</div>${warp}${eff}
+    <div style="font-weight:bold;font-size:.9rem;">${nameHtml}${ctype}</div>${warp}${eff}
   </div>`;
 }
 
