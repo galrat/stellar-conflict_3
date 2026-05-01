@@ -231,16 +231,18 @@ BattleCard(
             image      = "faction_defs/chaos_data/order/Complete Destruction.jpg",
         ),
     ],
+
     event_cards = [
-        EventCard(name="Blight of Nurgle",        warp_storm_move="Across",           card_type="Scheme", effect="Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units.",        image="faction_defs/chaos_data/event/Blight of Nurgle.jpg"),
-        EventCard(name="Incantation of Tzeentch", warp_storm_move="Across",           card_type="Tactic", effect="Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move).",                    image="faction_defs/chaos_data/event/Incantation of Tzeentch.jpg"),
-        EventCard(name="Prayer to the Dark Gods", warp_storm_move="Top Rgt/Bot Left", card_type="Scheme", effect="When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction.",      image="faction_defs/chaos_data/event/Prayer to the Dark Gods.jpg"),
-        EventCard(name="Prophets and Signs",      warp_storm_move="Top Rgt/Bot Left", card_type="Tactic", effect="Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world.", image="faction_defs/chaos_data/event/Prophets and Signs.jpg"),
-        EventCard(name="Seduced by Chaos",        warp_storm_move="Sideways",         card_type="Scheme", effect="At end of assess damage in a Chaos combat, discard to rout 1 unit in combat.",                             image="faction_defs/chaos_data/event/Seduced by Chaos.jpg"),
-        EventCard(name="Spoils of War",           warp_storm_move="Top Left/Bot Rgt", card_type="Tactic", effect="Gain 1 (F) and 1 (R).",                                                                                    image="faction_defs/chaos_data/event/Spoils of War.jpg"),
-        EventCard(name="Through the Warp",        warp_storm_move="Top Left/Bot Rgt", card_type="Scheme", effect="When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start.", image="faction_defs/chaos_data/event/Through the Warp.jpg"),
-        EventCard(name="Touched by the Warp",     warp_storm_move="Sideways",         card_type="Tactic", effect="Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system.", image="faction_defs/chaos_data/event/Touched by the Warp.jpg"),
+        EventCard(name="Blight of Nurgle",        warp_storm_move="Across",           card_type="Scheme", effect="Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units.",        image="faction_defs/chaos_data/events/Blight of Nurgle.jpg"),
+        EventCard(name="Incantation of Tzeentch", warp_storm_move="Across",           card_type="Tactic", effect="Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move).",                    image="faction_defs/chaos_data/events/Incantation of Tzeentch.jpg"),
+        EventCard(name="Prayer to the Dark Gods", warp_storm_move="Top Rgt/Bot Left", card_type="Scheme", effect="When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction.",      image="faction_defs/chaos_data/events/Prayer to the Dark Gods.jpg"),
+        EventCard(name="Prophets and Signs",      warp_storm_move="Top Rgt/Bot Left", card_type="Tactic", effect="Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world.", image="faction_defs/chaos_data/events/Prophets and Signs.jpg"),
+        EventCard(name="Seduced by Chaos",        warp_storm_move="Sideways",         card_type="Scheme", effect="At end of assess damage in a Chaos combat, discard to rout 1 unit in combat.",                             image="faction_defs/chaos_data/events/Seduced by Chaos.jpg"),
+        EventCard(name="Spoils of War",           warp_storm_move="Top Left/Bot Rgt", card_type="Tactic", effect="Gain 1 (F) and 1 (R).",                                                                                    image="faction_defs/chaos_data/events/Spoils of War.jpg"),
+        EventCard(name="Through the Warp",        warp_storm_move="Top Left/Bot Rgt", card_type="Scheme", effect="When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start.", image="faction_defs/chaos_data/events/Through the Warp.jpg"),
+        EventCard(name="Touched by the Warp",     warp_storm_move="Sideways",         card_type="Tactic", effect="Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system.", image="faction_defs/chaos_data/events/Touched by the Warp.jpg"),
     ],
+
     extra = {
         "homeworld":    "Терра Федерация",
         "color_scheme": "#4A90D9",

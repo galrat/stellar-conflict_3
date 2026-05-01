@@ -31,27 +31,37 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "dominate_0_0_r2",
+          "id": "p1_dominate_1",
           "type": "dominate",
           "owner": 0
         },
         {
-          "id": "deploy_0_0_r2",
+          "id": "p1_deploy_1",
           "type": "deploy",
           "owner": 0
         },
         {
-          "id": "advance_0_1_r2",
-          "type": "advance",
+          "id": "p1_strategize_1",
+          "type": "strategize",
           "owner": 0
         },
         {
-          "id": "strategize_0_1_r2",
+          "id": "p1_strategize_2",
           "type": "strategize",
+          "owner": 0
+        },
+        {
+          "id": "p1_dominate_2",
+          "type": "dominate",
+          "owner": 0
+        },
+        {
+          "id": "p1_deploy_2",
+          "type": "deploy",
           "owner": 0
         }
       ],
-      "credits": 10,
+      "credits": 1,
       "tokens": {
         "support": 0,
         "discount": 0,
@@ -73,7 +83,8 @@
               "-"
             ],
             "effect": "-"
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Command of the Autarch.jpg"
         },
         {
           "name": "Hit and Run",
@@ -91,7 +102,8 @@
               "Frigate"
             ],
             "effect": "Spend 1 [M] to move 1 unit to adjacent friendly or uncontrolled area."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Hit and Run.jpg"
         },
         {
           "name": "Howling Banshees",
@@ -109,7 +121,8 @@
               "Frigate"
             ],
             "effect": "Spend 1 [M] to force enemy to rout a unit of his choice."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Howling Banshees.jpg"
         },
         {
           "name": "Ranger Support",
@@ -126,7 +139,8 @@
               "-"
             ],
             "effect": "-"
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Ranger Support.jpg"
         },
         {
           "name": "Striking Scorpions",
@@ -144,7 +158,8 @@
               "Frigate"
             ],
             "effect": "Enemy loses 1 die of his choice."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Striking Scorpions.jpg"
         }
       ],
       "available_battle_cards": [
@@ -164,7 +179,8 @@
               "Frigate"
             ],
             "effect": "Gain 2 (s)."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Fire Dragon's Vengeance.jpg"
         },
         {
           "name": "Swooping Hawks",
@@ -182,7 +198,8 @@
               "Frigate"
             ],
             "effect": "Spend 1 [M] to gain 2 (g)."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Swooping Hawks.jpg"
         },
         {
           "name": "Wraithguard Advance",
@@ -201,7 +218,8 @@
               "Stalker"
             ],
             "effect": "Enemy spends 1 [M] or routs unit of his choosing."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Wraithguard Advance.jpg"
         },
         {
           "name": "Wraithguard Support",
@@ -220,7 +238,8 @@
               "Stalker"
             ],
             "effect": "Spend 1 [M] to rally 1 unit."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Wraithguard Support.jpg"
         },
         {
           "name": "Fire Prism",
@@ -238,7 +257,8 @@
               "Stalker"
             ],
             "effect": "If attacking, gain 2 (g). If defending, force enemy to lose 5(s)."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Fire Prism.jpg"
         },
         {
           "name": "Spiritseer's Guidance",
@@ -255,7 +275,8 @@
               "-"
             ],
             "effect": "-"
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Spiritseer's Guidance.jpg"
         },
         {
           "name": "Wave Serpent",
@@ -273,7 +294,8 @@
               "Stalker"
             ],
             "effect": "Spend 1 [M] to move any number of Tier 0 and Tier 1 units to an adjacent area - may start a new combat.Same area if card is played again."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Wave Serpent.jpg"
         },
         {
           "name": "Holofield Emitter",
@@ -291,7 +313,8 @@
               "Stalker"
             ],
             "effect": "Play 1 card from your hand - gain its combat icons but not its abilities."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Holofield Emitter.jpg"
         },
         {
           "name": "Psychic Lance",
@@ -309,7 +332,8 @@
               "Stalker"
             ],
             "effect": "Gain 4 (g) unless enemy discards 1 face up card of your choice."
-          }
+          },
+          "image": "faction_defs/eldar_data/battle/Psychic Lance.jpg"
         }
       ],
       "hand_order_upgrades": [],
@@ -360,20 +384,19 @@
           "secondary": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2."
         }
       ],
-      "hand_event_cards": [
-        {
-          "name": "Farsight",
-          "warp_storm_move": "Across",
-          "card_type": "Scheme",
-          "effect": "At start of assess damage, discard to take all units in this combat and place on any friendly area."
-        }
-      ],
+      "hand_event_cards": [],
       "available_event_cards": [
         {
           "name": "Exodite Colony",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Tactic",
           "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token."
+        },
+        {
+          "name": "Farsight",
+          "warp_storm_move": "Across",
+          "card_type": "Scheme",
+          "effect": "At start of assess damage, discard to take all units in this combat and place on any friendly area."
         },
         {
           "name": "Legacy of Vaul",
@@ -446,27 +469,37 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "dominate_1_0_r2",
+          "id": "p2_dominate_1",
           "type": "dominate",
           "owner": 1
         },
         {
-          "id": "deploy_1_1_r2",
+          "id": "p2_deploy_2",
           "type": "deploy",
           "owner": 1
         },
         {
-          "id": "advance_1_0_r2",
-          "type": "advance",
+          "id": "p2_strategize_1",
+          "type": "strategize",
           "owner": 1
         },
         {
-          "id": "strategize_1_1_r2",
+          "id": "p2_strategize_2",
           "type": "strategize",
+          "owner": 1
+        },
+        {
+          "id": "p2_dominate_2",
+          "type": "dominate",
+          "owner": 1
+        },
+        {
+          "id": "p2_deploy_1",
+          "type": "deploy",
           "owner": 1
         }
       ],
-      "credits": 7,
+      "credits": 1,
       "tokens": {
         "support": 1,
         "discount": 0,
@@ -795,15 +828,7 @@
           "image": "faction_defs/chaos_data/order/Complete Destruction.jpg"
         }
       ],
-      "hand_event_cards": [
-        {
-          "name": "Prayer to the Dark Gods",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Scheme",
-          "effect": "When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction.",
-          "image": "faction_defs/chaos_data/event/Prayer to the Dark Gods.jpg"
-        }
-      ],
+      "hand_event_cards": [],
       "available_event_cards": [
         {
           "name": "Blight of Nurgle",
@@ -818,6 +843,13 @@
           "card_type": "Tactic",
           "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move).",
           "image": "faction_defs/chaos_data/event/Incantation of Tzeentch.jpg"
+        },
+        {
+          "name": "Prayer to the Dark Gods",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Scheme",
+          "effect": "When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction.",
+          "image": "faction_defs/chaos_data/event/Prayer to the Dark Gods.jpg"
         },
         {
           "name": "Prophets and Signs",
@@ -862,9 +894,9 @@
   ],
   "phase": "execution",
   "curP": 1,
-  "round": 2,
+  "round": 1,
   "totalRounds": 8,
-  "firstPlayer": 1,
+  "firstPlayer": 0,
   "map": {
     "0,0": {
       "key": "0,0",
@@ -1456,67 +1488,35 @@
   "targetMarkers": [],
   "orders": [
     {
-      "id": "deploy_1_0_r2",
-      "type": "deploy",
-      "owner": 1,
-      "tile": "2,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "deploy_0_1_r2",
-      "type": "deploy",
-      "owner": 0,
-      "tile": "0,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "strategize_1_0_r2",
-      "type": "strategize",
-      "owner": 1,
-      "tile": "1,-1",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "strategize_0_0_r2",
-      "type": "strategize",
-      "owner": 0,
-      "tile": "0,-1",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "advance_1_1_r2",
-      "type": "advance",
-      "owner": 1,
-      "tile": "1,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "advance_0_0_r2",
+      "id": "p1_advance_1",
       "type": "advance",
       "owner": 0,
       "tile": "1,0",
-      "position": 1,
+      "position": 0,
       "revealed": false
     },
     {
-      "id": "dominate_1_1_r2",
-      "type": "dominate",
+      "id": "p2_advance_1",
+      "type": "advance",
       "owner": 1,
-      "tile": "2,0",
+      "tile": "1,0",
       "position": 1,
       "revealed": false
     },
     {
-      "id": "dominate_0_1_r2",
-      "type": "dominate",
+      "id": "p1_advance_2",
+      "type": "advance",
       "owner": 0,
-      "tile": "0,0",
-      "position": 1,
+      "tile": "1,0",
+      "position": 2,
+      "revealed": false
+    },
+    {
+      "id": "p2_advance_2",
+      "type": "advance",
+      "owner": 1,
+      "tile": "1,0",
+      "position": 3,
       "revealed": false
     }
   ],
@@ -1709,42 +1709,6 @@
     {
       "message": "Игра загружена",
       "player_id": -1
-    },
-    {
-      "message": "Приказ 'Advance' сброшен",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Advance' сброшен",
-      "player_id": 0
-    },
-    {
-      "message": "Приказ 'Advance' сброшен",
-      "player_id": 1
-    },
-    {
-      "message": "Приказ 'Advance' сброшен",
-      "player_id": 0
-    },
-    {
-      "message": "Alpha: доход +9 (итого 10 кредитов)",
-      "player_id": 0
-    },
-    {
-      "message": "Omega: доход +6 (итого 7 кредитов)",
-      "player_id": 1
-    },
-    {
-      "message": "Alpha взял карту события: Farsight",
-      "player_id": 0
-    },
-    {
-      "message": "Omega взял карту события: Prayer to the Dark Gods",
-      "player_id": 1
-    },
-    {
-      "message": "Игра загружена",
-      "player_id": -1
     }
   ],
   "event_cards_offered": [
@@ -1756,15 +1720,12 @@
     false
   ],
   "ui": {
-    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Omega: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 4",
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Omega: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 2",
     "buttons": [],
     "playable_order_ids": [
-      "dominate_1_1_r2",
-      "strategize_1_0_r2"
+      "p2_advance_2"
     ],
-    "blocked_tiles": [
-      "1,0"
-    ],
+    "blocked_tiles": [],
     "can_place_order": false,
     "order_placed_this_turn": false,
     "order_played_this_turn": false
