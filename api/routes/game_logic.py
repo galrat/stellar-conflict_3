@@ -466,6 +466,13 @@ async def restore_game(request: InitGameRequest) -> GameStateResponse:
                         p['hand_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.tier == -1]
                     if 'available_battle_cards' not in p:
                         p['available_battle_cards'] = [c.to_dict() for c in fac.battle_cards if c.tier != -1]
+                    # Дообогащаем image для карт из старых сохранений
+                    _card_by_name = {c.name: c for c in fac.battle_cards}
+                    for _card in p.get('hand_battle_cards', []) + p.get('available_battle_cards', []):
+                        if isinstance(_card, dict) and not _card.get('image'):
+                            _fc = _card_by_name.get(_card.get('name'))
+                            if _fc and _fc.image:
+                                _card['image'] = _fc.image
                     if 'available_order_upgrades' not in p:
                         p['available_order_upgrades'] = [u.to_dict() for u in fac.order_upgrades]
                     if 'available_event_cards' not in p:

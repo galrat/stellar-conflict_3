@@ -65,6 +65,7 @@ Death and Despair
             primary="Gain 1 [M].",
             secondary={"requires": ["Cultist", "Iconoclast"],
                        "effect": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."},
+            image="faction_defs/chaos_data/battle/Dark Faith.jpg",
         ),
         BattleCard(
             name="Foul Worship",
@@ -74,6 +75,7 @@ Death and Despair
             primary="Gain 1 [?].",
             secondary={"requires": ["Cultist", "Iconoclast"],
                        "effect": "If enemy has routed unit, gain 1 (s) per unrouted Cultist or Iconoclast."},
+            image="faction_defs/chaos_data/battle/Foul Worship.jpg",
         ),
         BattleCard(
             name="Impure Zeal",
@@ -83,6 +85,7 @@ Death and Despair
             primary="If more [M] than enemy, rally 1 unit.",
             secondary={"requires": ["Cultist", "Iconoclast"],
                        "effect": "Enemy routs 1 unit, or you gain 1 (g) per unrouted Cultist or Iconoclast."},
+            image="faction_defs/chaos_data/battle/Impure Zeal.jpg",
         ),
         BattleCard(
             name="Khorne's Rage",
@@ -92,6 +95,7 @@ Death and Despair
             primary="Spend 1 [G] to gain 3 (g).",
             secondary={"requires": ["Marine", "Iconoclast"],
                        "effect": "Enemy spends 1 [S] or routs unit of his choosing."},
+            image="faction_defs/chaos_data/battle/Khorne's Rage.jpg",
         ),
         BattleCard(
             name="Lure of Chaos",
@@ -99,8 +103,9 @@ Death and Despair
             cost=0,
             icons={"G": 0, "S": 0, "M": 1},
             primary="Enemy may choose a unit to rout to gain 1 [?]. Otherwise, place a free Cultist or Iconoclast in the area.",
-        secondary = {"requires": ["Cultist", "Iconoclast"], "effect": "Gain 2 (g) or 2 (s)."},
-),
+            secondary={"requires": ["Cultist", "Iconoclast"], "effect": "Gain 2 (g) or 2 (s)."},
+            image="faction_defs/chaos_data/battle/Lure of Chaos.jpg",
+        ),
 BattleCard(
     name="Mark of Khorne",
     tier=0,
@@ -108,6 +113,7 @@ BattleCard(
     icons={"G": 2, "S": 0, "M": 0},
     primary="Spend 1 [G] or 1 [M] to gain 3 (g).",
     secondary={"requires": ["Marine", "Iconoclast"], "effect": "Enemy spends 1 [S] or destroys 1 routed unit."},
+    image="faction_defs/chaos_data/battle/Mark of Khorne.jpg",
 ),
 BattleCard(
     name="Mark of Nurgle",
@@ -116,6 +122,7 @@ BattleCard(
     icons={"G": 0, "S": 2, "M": 0},
     primary="Spend 1 [S] or 1 [M] to gain 3 (s).",
     secondary={"requires": ["Marine", "Iconoclast"], "effect": "Enemy destroys 1 routed unit, otherwise gain 2 (s)."},
+    image="faction_defs/chaos_data/battle/Mark of Nurgle.jpg",
 ),
 BattleCard(
     name="Mark of Slaanesh",
@@ -124,6 +131,7 @@ BattleCard(
     icons={"G": 1, "S": 1, "M": 0},
     primary="Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice.",
     secondary={"requires": ["Marine"], "effect": "If enemy has routed unit, place free Cultist on this world."},
+    image="faction_defs/chaos_data/battle/Mark of Slaanesh.jpg",
 ),
 BattleCard(
     name="Mark of Tzeentch",
@@ -131,7 +139,8 @@ BattleCard(
     cost=2,
     icons={"G": 0, "S": 0, "M": 2},
     primary="Gain 1 [M]. If more [M] than enemy, upgrade 1 Cultist / (R) to Chaos Marine.",
-    secondary = {"requires": ["Marine", "Iconoclast"], "effect": "Convert up to 2 [M] to [G] and/or [S]."},
+    secondary={"requires": ["Marine", "Iconoclast"], "effect": "Convert up to 2 [M] to [G] and/or [S]."},
+    image="faction_defs/chaos_data/battle/Mark of Tzeentch.jpg",
 ),
 BattleCard(
     name="Chaos United",
@@ -140,6 +149,7 @@ BattleCard(
     icons={"G": 1, "S": 1, "M": 1},
     primary="Enemy may rout 1 of its units.  If not, gain a die of your choice.",
     secondary={"requires": ["Cultist", "Marine", "Helbrute"], "effect": "Take 1 unit from any world and place it on this world.Command level cannot exceed number of Cultists in this system."},
+    image="faction_defs/chaos_data/battle/Chaos United.jpg",
 ),
 BattleCard(
     name="Daemonic Resilience",
@@ -148,6 +158,7 @@ BattleCard(
     icons={"G": 0, "S": 2, "M": 1},
     primary="Gain 1 [M] or 1 [S].",
     secondary={"requires": ["Helbrute", "Cruiser"], "effect": "Gain 4 (s) unless enemy destroys 1 unit of his choice."},
+    image="faction_defs/chaos_data/battle/Daemonic Resilience.jpg",
 ),
 BattleCard(
     name="Inhuman Strength",
@@ -156,6 +167,7 @@ BattleCard(
     icons={"G": 2, "S": 0, "M": 1},
     primary="Gain 1 [G] or 1 [M].",
     secondary={"requires": ["Helbrute", "Cruiser"], "effect": "Destroy 1 unit to gain 4 (g)."},
+    image="faction_defs/chaos_data/battle/Inhuman Strength.jpg",
 ),
 BattleCard(
     name="Chaos Victorious",
@@ -164,6 +176,7 @@ BattleCard(
     icons={"G": 1, "S": 1, "M": 1},
     primary="Gain 2 [?]. If more [M] than enemy, rout all his Tier 0 units.",
     secondary={"requires": ["Titan", "Cruiser"], "effect": "Rout 1 enemy unit."},
+    image="faction_defs/chaos_data/battle/Chaos Victorious.jpg",
 ),
 BattleCard(
     name="Death and Despair",
@@ -172,6 +185,7 @@ BattleCard(
     icons={"G": 2, "S": 0, "M": 1},
     primary="Gain 2 [G] or 2 [M]. Spend any [M], each destroys 1 Tier 0 unit.",
     secondary={"requires": ["Titan", "Cruiser"], "effect": "If more [M] than enemy, destroy 1 routed unit."},
+    image="faction_defs/chaos_data/battle/Death and Despair.jpg",
 ),
 ]
 ,

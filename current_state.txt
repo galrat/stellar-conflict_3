@@ -31,47 +31,27 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "p1_dominate_1",
+          "id": "dominate_0_0_r2",
           "type": "dominate",
           "owner": 0
         },
         {
-          "id": "p1_deploy_1",
+          "id": "deploy_0_0_r2",
           "type": "deploy",
           "owner": 0
         },
         {
-          "id": "p1_strategize_1",
-          "type": "strategize",
-          "owner": 0
-        },
-        {
-          "id": "p1_strategize_2",
-          "type": "strategize",
-          "owner": 0
-        },
-        {
-          "id": "p1_dominate_2",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "p1_deploy_2",
-          "type": "deploy",
-          "owner": 0
-        },
-        {
-          "id": "p1_advance_2",
+          "id": "advance_0_1_r2",
           "type": "advance",
           "owner": 0
         },
         {
-          "id": "p1_advance_1",
-          "type": "advance",
+          "id": "strategize_0_1_r2",
+          "type": "strategize",
           "owner": 0
         }
       ],
-      "credits": 1,
+      "credits": 10,
       "tokens": {
         "support": 0,
         "discount": 0,
@@ -380,19 +360,20 @@
           "secondary": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2."
         }
       ],
-      "hand_event_cards": [],
+      "hand_event_cards": [
+        {
+          "name": "Farsight",
+          "warp_storm_move": "Across",
+          "card_type": "Scheme",
+          "effect": "At start of assess damage, discard to take all units in this combat and place on any friendly area."
+        }
+      ],
       "available_event_cards": [
         {
           "name": "Exodite Colony",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Tactic",
           "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token."
-        },
-        {
-          "name": "Farsight",
-          "warp_storm_move": "Across",
-          "card_type": "Scheme",
-          "effect": "At start of assess damage, discard to take all units in this combat and place on any friendly area."
         },
         {
           "name": "Legacy of Vaul",
@@ -438,15 +419,7 @@
     {
       "name": "Omega",
       "faction": "chaos",
-      "pool": [
-        {
-          "id": 12,
-          "player": 1,
-          "unitType": "ground",
-          "tier": 1,
-          "unit_status": "active"
-        }
-      ],
+      "pool": [],
       "hand": [
         {
           "handIdx": 0,
@@ -473,71 +446,38 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "p2_dominate_1",
+          "id": "dominate_1_0_r2",
           "type": "dominate",
           "owner": 1
         },
         {
-          "id": "p2_deploy_2",
+          "id": "deploy_1_1_r2",
           "type": "deploy",
           "owner": 1
         },
         {
-          "id": "p2_strategize_1",
-          "type": "strategize",
-          "owner": 1
-        },
-        {
-          "id": "p2_strategize_2",
-          "type": "strategize",
-          "owner": 1
-        },
-        {
-          "id": "p2_dominate_2",
-          "type": "dominate",
-          "owner": 1
-        },
-        {
-          "id": "p2_deploy_1",
-          "type": "deploy",
-          "owner": 1
-        },
-        {
-          "id": "p2_advance_2",
+          "id": "advance_1_0_r2",
           "type": "advance",
           "owner": 1
         },
         {
-          "id": "p2_advance_1",
-          "type": "advance",
+          "id": "strategize_1_1_r2",
+          "type": "strategize",
+          "owner": 1
+        },
+        {
+          "id": "strategize_1_0_r2",
+          "type": "strategize",
           "owner": 1
         }
       ],
-      "credits": 1,
+      "credits": 5,
       "tokens": {
         "support": 1,
         "discount": 0,
         "forge": 0
       },
       "hand_battle_cards": [
-        {
-          "name": "Dark Faith",
-          "tier": -1,
-          "cost": 0,
-          "icons": {
-            "G": 0,
-            "S": 0,
-            "M": 1
-          },
-          "primary": "Gain 1 [M].",
-          "secondary": {
-            "requires": [
-              "Cultist",
-              "Iconoclast"
-            ],
-            "effect": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."
-          }
-        },
         {
           "name": "Foul Worship",
           "tier": -1,
@@ -554,7 +494,8 @@
               "Iconoclast"
             ],
             "effect": "If enemy has routed unit, gain 1 (s) per unrouted Cultist or Iconoclast."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Foul Worship.jpg"
         },
         {
           "name": "Impure Zeal",
@@ -572,7 +513,8 @@
               "Iconoclast"
             ],
             "effect": "Enemy routs 1 unit, or you gain 1 (g) per unrouted Cultist or Iconoclast."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Impure Zeal.jpg"
         },
         {
           "name": "Khorne's Rage",
@@ -590,7 +532,8 @@
               "Iconoclast"
             ],
             "effect": "Enemy spends 1 [S] or routs unit of his choosing."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Khorne's Rage.jpg"
         },
         {
           "name": "Lure of Chaos",
@@ -608,7 +551,26 @@
               "Iconoclast"
             ],
             "effect": "Gain 2 (g) or 2 (s)."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Lure of Chaos.jpg"
+        },
+        {
+          "name": "Mark of Slaanesh",
+          "tier": 0,
+          "cost": 2,
+          "icons": {
+            "G": 1,
+            "S": 1,
+            "M": 0
+          },
+          "primary": "Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice.",
+          "secondary": {
+            "requires": [
+              "Marine"
+            ],
+            "effect": "If enemy has routed unit, place free Cultist on this world."
+          },
+          "image": "faction_defs/chaos_data/battle/Mark of Slaanesh.jpg"
         }
       ],
       "available_battle_cards": [
@@ -628,7 +590,8 @@
               "Iconoclast"
             ],
             "effect": "Enemy spends 1 [S] or destroys 1 routed unit."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Mark of Khorne.jpg"
         },
         {
           "name": "Mark of Nurgle",
@@ -646,24 +609,8 @@
               "Iconoclast"
             ],
             "effect": "Enemy destroys 1 routed unit, otherwise gain 2 (s)."
-          }
-        },
-        {
-          "name": "Mark of Slaanesh",
-          "tier": 0,
-          "cost": 2,
-          "icons": {
-            "G": 1,
-            "S": 1,
-            "M": 0
           },
-          "primary": "Gain 1 [?]. If more [M] than enemy, he routs 1 unit of his choice.",
-          "secondary": {
-            "requires": [
-              "Marine"
-            ],
-            "effect": "If enemy has routed unit, place free Cultist on this world."
-          }
+          "image": "faction_defs/chaos_data/battle/Mark of Nurgle.jpg"
         },
         {
           "name": "Mark of Tzeentch",
@@ -681,7 +628,8 @@
               "Iconoclast"
             ],
             "effect": "Convert up to 2 [M] to [G] and/or [S]."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Mark of Tzeentch.jpg"
         },
         {
           "name": "Chaos United",
@@ -700,7 +648,8 @@
               "Helbrute"
             ],
             "effect": "Take 1 unit from any world and place it on this world.Command level cannot exceed number of Cultists in this system."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Chaos United.jpg"
         },
         {
           "name": "Daemonic Resilience",
@@ -718,7 +667,8 @@
               "Cruiser"
             ],
             "effect": "Gain 4 (s) unless enemy destroys 1 unit of his choice."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Daemonic Resilience.jpg"
         },
         {
           "name": "Inhuman Strength",
@@ -736,7 +686,8 @@
               "Cruiser"
             ],
             "effect": "Destroy 1 unit to gain 4 (g)."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Inhuman Strength.jpg"
         },
         {
           "name": "Chaos Victorious",
@@ -754,7 +705,8 @@
               "Cruiser"
             ],
             "effect": "Rout 1 enemy unit."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Chaos Victorious.jpg"
         },
         {
           "name": "Death and Despair",
@@ -772,7 +724,27 @@
               "Cruiser"
             ],
             "effect": "If more [M] than enemy, destroy 1 routed unit."
-          }
+          },
+          "image": "faction_defs/chaos_data/battle/Death and Despair.jpg"
+        },
+        {
+          "name": "Dark Faith",
+          "tier": -1,
+          "cost": 0,
+          "icons": {
+            "G": 0,
+            "S": 0,
+            "M": 1
+          },
+          "primary": "Gain 1 [M].",
+          "secondary": {
+            "requires": [
+              "Cultist",
+              "Iconoclast"
+            ],
+            "effect": "If more [M] than enemy, place free Cultist on another friendly or uncontrolled world in system."
+          },
+          "image": "faction_defs/chaos_data/battle/Dark Faith.jpg"
         }
       ],
       "hand_order_upgrades": [],
@@ -823,7 +795,14 @@
           "secondary": ""
         }
       ],
-      "hand_event_cards": [],
+      "hand_event_cards": [
+        {
+          "name": "Prayer to the Dark Gods",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Scheme",
+          "effect": "When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction."
+        }
+      ],
       "available_event_cards": [
         {
           "name": "Blight of Nurgle",
@@ -836,12 +815,6 @@
           "warp_storm_move": "Across",
           "card_type": "Tactic",
           "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move)."
-        },
-        {
-          "name": "Prayer to the Dark Gods",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Scheme",
-          "effect": "When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction."
         },
         {
           "name": "Prophets and Signs",
@@ -880,10 +853,10 @@
     }
   ],
   "phase": "execution",
-  "curP": 0,
-  "round": 1,
+  "curP": 1,
+  "round": 2,
   "totalRounds": 8,
-  "firstPlayer": 0,
+  "firstPlayer": 1,
   "map": {
     "0,0": {
       "key": "0,0",
@@ -906,7 +879,22 @@
           "discount": 1,
           "forge": 0,
           "joker": 1,
-          "troops": [],
+          "troops": [
+            {
+              "id": 3,
+              "player": 0,
+              "unitType": "ground",
+              "tier": 1,
+              "ready_to_move": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": [
             {
               "type": "city",
@@ -945,6 +933,14 @@
           "joker": 0,
           "troops": [
             {
+              "id": 5,
+              "player": 0,
+              "unitType": "space",
+              "tier": 0,
+              "ready_to_move": 0,
+              "unit_status": "active"
+            },
+            {
               "unitType": "space",
               "tier": 0,
               "player": 0,
@@ -963,7 +959,16 @@
           "discount": 1,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 4,
+              "player": 0,
+              "unitType": "space",
+              "tier": 0,
+              "ready_to_move": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": []
         }
       ],
@@ -996,16 +1001,11 @@
           "joker": 1,
           "troops": [
             {
-              "id": 3,
-              "player": 0,
+              "id": 12,
+              "player": 1,
               "unitType": "ground",
               "tier": 1,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 0,
+              "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
@@ -1034,21 +1034,7 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 4,
-              "player": 0,
-              "unitType": "space",
-              "tier": 0,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "space",
-              "tier": 0,
-              "player": 0,
-              "unit_status": "routed"
-            }
-          ],
+          "troops": [],
           "structures": []
         },
         {
@@ -1061,21 +1047,7 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 14,
-              "player": 1,
-              "unitType": "space",
-              "tier": 0,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "space",
-              "tier": 0,
-              "player": 1,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": []
         }
       ],
@@ -1191,6 +1163,7 @@
               "player": 1,
               "unitType": "ground",
               "tier": 1,
+              "ready_to_move": 0,
               "unit_status": "active"
             },
             {
@@ -1231,7 +1204,22 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 14,
+              "player": 1,
+              "unitType": "space",
+              "tier": 0,
+              "ready_to_move": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 1,
+              "unit_status": "active"
+            }
+          ],
           "structures": []
         },
         {
@@ -1250,6 +1238,7 @@
               "player": 1,
               "unitType": "ground",
               "tier": 0,
+              "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
@@ -1457,7 +1446,64 @@
     true
   ],
   "targetMarkers": [],
-  "orders": [],
+  "orders": [
+    {
+      "id": "deploy_1_0_r2",
+      "type": "deploy",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "deploy_0_1_r2",
+      "type": "deploy",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "strategize_0_0_r2",
+      "type": "strategize",
+      "owner": 0,
+      "tile": "0,-1",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "advance_1_1_r2",
+      "type": "advance",
+      "owner": 1,
+      "tile": "1,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "advance_0_0_r2",
+      "type": "advance",
+      "owner": 0,
+      "tile": "1,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_1_1_r2",
+      "type": "dominate",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_0_1_r2",
+      "type": "dominate",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 1,
+      "revealed": false
+    }
+  ],
   "ordersPlaced": [
     4,
     4
@@ -1468,8 +1514,8 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    true,
-    true
+    false,
+    false
   ],
   "log": [
     {
@@ -1649,36 +1695,44 @@
       "player_id": -1
     },
     {
-      "message": "Приказ 'Advance' разыгран",
+      "message": "Приказ 'Advance' сброшен",
       "player_id": 1
     },
     {
-      "message": "Приказ 'Advance' разыгран",
+      "message": "Приказ 'Advance' сброшен",
       "player_id": 0
     },
     {
-      "message": "Приказ 'Advance' разыгран",
+      "message": "Приказ 'Advance' сброшен",
       "player_id": 1
     },
     {
-      "message": "БОЙ в области 3 тайла 1,0: победил Omega. Alpha отступает.",
+      "message": "Приказ 'Advance' сброшен",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha: доход +9 (итого 10 кредитов)",
+      "player_id": 0
+    },
+    {
+      "message": "Omega: доход +6 (итого 7 кредитов)",
       "player_id": 1
     },
     {
-      "message": "Alpha (защитник) отступил в область 2 (1 юн.). Статус: разбит.",
+      "message": "Alpha взял карту события: Farsight",
+      "player_id": 0
+    },
+    {
+      "message": "Omega взял карту события: Prayer to the Dark Gods",
       "player_id": 1
     },
     {
-      "message": "Приказ 'Advance' разыгран",
-      "player_id": 0
+      "message": "Игра загружена",
+      "player_id": -1
     },
     {
-      "message": "БОЙ в области 0 тайла 1,0: победил Alpha. Omega отступает.",
-      "player_id": 0
-    },
-    {
-      "message": "Omega не имеет куда отступить — юниты уничтожены.",
-      "player_id": 0
+      "message": "Приказ 'Strategize' разыгран",
+      "player_id": 1
     }
   ],
   "event_cards_offered": [
@@ -1690,14 +1744,22 @@
     false
   ],
   "ui": {
-    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Omega: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 2",
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Omega: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 4",
     "buttons": [],
     "playable_order_ids": [
-      "p2_advance_2"
+      "dominate_1_1_r2",
+      "strategize_1_0_r2"
     ],
-    "blocked_tiles": [],
+    "blocked_tiles": [
+      "1,0"
+    ],
     "can_place_order": false,
     "order_placed_this_turn": false,
     "order_played_this_turn": false
+  },
+  "pending_strategize": {
+    "player_id": 1,
+    "step": "buy_order_upgrade",
+    "player_level": 1
   }
 }

@@ -17,14 +17,29 @@ function _renderCardColumn(cards, title, color, renderFn) {
   return html;
 }
 
+function _showCardImageOverlay(src) {
+  let ov = document.getElementById('card-img-overlay');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'card-img-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:pointer;';
+    ov.onclick = () => ov.remove();
+    document.body.appendChild(ov);
+  }
+  ov.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:90vh;border-radius:6px;object-fit:contain;">`;
+}
+
 function _renderBattleCard(c) {
   const name = typeof c === 'string' ? c : c.name;
   const cost = c.cost ? `<span style="color:#ff8c00;margin-left:6px;">Стоимость: ${c.cost}</span>` : '';
   const tier = c.tier != null && c.tier >= 0 ? `<span style="color:var(--dim);margin-left:6px;">Tier ${c.tier}</span>` : '';
   const e1 = c.effect_1 ? `<div style="color:#aaa;font-size:.78rem;margin-top:4px;">${c.effect_1}</div>` : '';
   const e2 = c.effect_2 ? `<div style="color:#888;font-size:.78rem;margin-top:2px;">${c.effect_2}</div>` : '';
+  const nameHtml = c.image
+    ? `<span onclick="_showCardImageOverlay('${c.image.replace(/ /g, '%20')}')" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;">${name}</span>`
+    : name;
   return `<div style="margin-bottom:8px;padding:8px;background:rgba(0,0,0,.4);border-left:3px solid rgba(255,215,0,.4);border-radius:4px;">
-    <div style="font-weight:bold;font-size:.9rem;">${name}${cost}${tier}</div>${e1}${e2}
+    <div style="font-weight:bold;font-size:.9rem;">${nameHtml}${cost}${tier}</div>${e1}${e2}
   </div>`;
 }
 

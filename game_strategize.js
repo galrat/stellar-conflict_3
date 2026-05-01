@@ -47,10 +47,13 @@ function _renderSelectableBattleCard(card, isSelected, isDisabled, onclickExpr) 
   const border = _cardBorder(isSelected, isDisabled, 'rgba(255,215,0,.4)');
   const extra  = isSelected ? 'box-shadow:0 0 0 1px #4caf50;' : '';
   const onClick = (!isDisabled && onclickExpr) ? `onclick="${onclickExpr}"` : '';
+  const nameHtml = card.image
+    ? `<span onclick="event.stopPropagation();_showCardImageOverlay('${card.image.replace(/ /g, '%20')}')" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;">${card.name}</span>`
+    : card.name;
   return `<div ${onClick}
     style="margin-bottom:8px;padding:8px;background:${bg};border-left:3px solid ${border};
     border-radius:4px;opacity:${isDisabled ? .45 : 1};cursor:${isDisabled ? 'not-allowed' : 'pointer'};${extra}">
-    <div style="font-weight:bold;font-size:.9rem;">${card.name}${cost}${tier}</div>${e1}${e2}
+    <div style="font-weight:bold;font-size:.9rem;">${nameHtml}${cost}${tier}</div>${e1}${e2}
   </div>`;
 }
 

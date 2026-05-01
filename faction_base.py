@@ -49,6 +49,7 @@ class BattleCard:
     icons:     Dict[str, int]  # {"G": X, "S": Y, "M": Z}
     primary:   str   # первичный эффект
     secondary: Dict  # {"requires": list, "effect": str}
+    image:     str = ""
 
     def to_dict(self) -> dict:
         return {
@@ -58,6 +59,7 @@ class BattleCard:
             "icons":     self.icons,
             "primary":   self.primary,
             "secondary": self.secondary,
+            "image":     self.image,
         }
 
 
