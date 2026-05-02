@@ -65,6 +65,13 @@ from python_engine.strategize import (
     strategize_buy_combat_card,
     strategize_buy_order_upgrade,
 )
+from python_engine.warp_storm import (
+    get_storm_valid_positions,
+    get_moveable_storms,
+    do_move_storm,
+    do_pass_warp_turn,
+    _to_canonical,
+)
 
 
 # ── Models ──────────────────────────────────────────────────────────────────
@@ -103,6 +110,21 @@ class CancelOrderRequest(BaseModel):
 class PassTurnRequest(BaseModel):
     """Передача хода"""
     player_id: int
+
+
+class WarpStormMovesRequest(BaseModel):
+    """Запрос допустимых ходов варп-шторма"""
+    storm_idx: int
+    direction: str
+
+
+class MoveWarpStormRequest(BaseModel):
+    """Перемещение варп-шторма"""
+    player_id: int
+    storm_idx: int
+    direction: str
+    tile_key: str
+    side: str
 
 
 class UndoRequest(BaseModel):
@@ -333,8 +355,17 @@ def compute_ui_hints(state: dict) -> dict:
         total_rounds = state.get('totalRounds', 8)
         selection_done = state.get('event_selection_done', [False, False])
         cp_name = state.get('players', [{}, {}])[cur_p].get('name', f'P{cur_p}')
+        pending_warp = state.get('pending_warp_move')
 
-        if not all(selection_done):
+        if pending_warp and pending_warp.get('player_id') == cur_p:
+            direction = pending_warp.get('direction', '')
+            ui['instruction'] = (
+                f'<strong>КОНЕЦ РАУНДА {round_num}/{total_rounds}</strong><br>'
+                f'{cp_name}: переместите варп-шторм ({direction})'
+            )
+            ui['buttons'] = []
+            ui['pending_warp_move'] = pending_warp
+        elif not all(selection_done):
             # Ожидаем выбор карты событий
             offered = state.get('event_cards_offered', [[], []])
             cards = offered[cur_p] if cur_p < len(offered) else []
@@ -947,6 +978,8 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                 run_end_of_round(active_game, dropped_counts)
 
                 active_game['phase'] = 'end-round'
+                # Выбор карт событий начинает игрок, который не ходит первым в приказах
+                active_game['curP'] = 1 - active_game.get('firstPlayer', 0)
                 print(f"✅ {next_info['message']}")
 
             save_current_state()
@@ -1011,13 +1044,11 @@ async def select_event_card_endpoint(request: Request) -> GameStateResponse:
                     'player_id': player_id
                 })
 
-            # Отметить выбор
-            active_game['event_selection_done'][player_id] = True
-
-            # Если второй игрок ещё не выбирал — передать ход ему
-            other = 1 - player_id
-            if not active_game['event_selection_done'][other]:
-                active_game['curP'] = other
+            # Сохранить направление варп-шторма — игрок должен его переместить
+            active_game['pending_warp_move'] = {
+                'player_id': player_id,
+                'direction': card.get('warp_storm_move', ''),
+            }
 
             save_current_state()
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
@@ -1050,6 +1081,9 @@ async def next_round_endpoint(request: PassTurnRequest) -> GameStateResponse:
             active_game['dropped_orders'] = []
             active_game['event_cards_offered'] = [[], []]
             active_game['event_selection_done'] = [False, False]
+            active_game['warp_storm_phase_done'] = [False, False]
+            active_game['moved_storm_indices'] = []
+            active_game.pop('pending_warp_move', None)
 
             # Следующий раунд
             current_round = active_game.get('round', 1)
@@ -1748,4 +1782,122 @@ async def strategize_skip_order_upgrade_endpoint(request: StrategyzeSkipRequest)
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
         except Exception as e:
             import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+class WarpStormAllMovesRequest(BaseModel):
+    direction: str
+
+
+class SkipWarpMoveRequest(BaseModel):
+    player_id: int
+
+
+@app.post('/api/game/warp-storm-all-moves')
+async def warp_storm_all_moves_endpoint(request: WarpStormAllMovesRequest):
+    """Все допустимые ходы для всех штормов в данном направлении (исключая уже перемещённые)."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return {'success': False, 'error': 'Игра не инициализирована'}
+        try:
+            moved_indices = set(active_game.get('moved_storm_indices', []))
+            moveable = get_moveable_storms(active_game, request.direction)
+            all_moves = []
+            for idx in moveable:
+                if idx in moved_indices:
+                    continue
+                positions = get_storm_valid_positions(active_game, idx, request.direction)
+                for pos in positions:
+                    all_moves.append({'storm_idx': idx, 'tileKey': pos['tileKey'], 'side': pos['side']})
+            return {'success': True, 'moves': all_moves}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+
+
+@app.post('/api/game/skip-warp-move')
+async def skip_warp_move_endpoint(request: SkipWarpMoveRequest) -> GameStateResponse:
+    """Пропустить перемещение варп-шторма (когда нет доступных ходов)."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error='Игра не инициализирована')
+        try:
+            pending = active_game.get('pending_warp_move')
+            if not pending or pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error='Нет ожидающего перемещения варп-шторма')
+
+            do_pass_warp_turn(active_game, request.player_id)
+            active_game['event_selection_done'][request.player_id] = True
+            active_game.pop('pending_warp_move', None)
+
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/warp-storm-moves')
+async def warp_storm_moves_endpoint(request: WarpStormMovesRequest) -> GameStateResponse:
+    """Вернуть список допустимых позиций для перемещения варп-шторма."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            moves = get_storm_valid_positions(active_game, request.storm_idx, request.direction)
+            return GameStateResponse(success=True, state={'moves': moves})
+        except Exception as e:
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/move-warp-storm')
+async def move_warp_storm_endpoint(request: MoveWarpStormRequest) -> GameStateResponse:
+    """Переместить варп-шторм на новую позицию (фаза end-round)."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            if active_game.get('phase') != 'end-round':
+                return GameStateResponse(success=False, error="Перемещение варп-шторма доступно только в фазе end-round")
+
+            # Нельзя двигать уже перемещённый в этом раунде шторм
+            moved_indices = active_game.get('moved_storm_indices', [])
+            if request.storm_idx in moved_indices:
+                return GameStateResponse(success=False, error="Этот варп-шторм уже был перемещён в этом раунде")
+
+            # Проверить pending_warp_move
+            pending_warp = active_game.get('pending_warp_move')
+            if pending_warp:
+                if pending_warp.get('player_id') != request.player_id:
+                    return GameStateResponse(success=False, error="Это не ваш ход перемещения варп-шторма")
+                effective_direction = pending_warp.get('direction', request.direction)
+            else:
+                effective_direction = request.direction
+
+            valid_moves = get_storm_valid_positions(active_game, request.storm_idx, effective_direction)
+            dest_canon = _to_canonical(request.tile_key, request.side)
+            valid_canons = [_to_canonical(m['tileKey'], m['side']) for m in valid_moves]
+            if dest_canon not in valid_canons:
+                return GameStateResponse(success=False, error="Недопустимый ход для варп-шторма")
+
+            # В event-контексте snapshot уже сохранён в select-event-card; не дублируем
+            if not (pending_warp and pending_warp.get('player_id') == request.player_id):
+                save_temp_snapshot()
+            do_move_storm(active_game, request.storm_idx, request.tile_key, request.side, request.player_id)
+
+            # Отметить шторм как перемещённый в этом раунде
+            if 'moved_storm_indices' not in active_game:
+                active_game['moved_storm_indices'] = []
+            active_game['moved_storm_indices'].append(request.storm_idx)
+
+            # Завершить шаг event card — отметить выбор и передать ход
+            if pending_warp and pending_warp.get('player_id') == request.player_id:
+                active_game['event_selection_done'][request.player_id] = True
+                active_game.pop('pending_warp_move', None)
+
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
             return GameStateResponse(success=False, error=str(e))

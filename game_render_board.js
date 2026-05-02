@@ -438,21 +438,50 @@ function renderBoard() {
       el.appendChild(orderEl);
     });
 
-    // Варп-штормы: визуализация + кликабельные границы в фазе warp-storm
+    // Варп-штормы: визуализация + кликабельные границы
     ['top','bottom','left','right'].forEach(side => {
       const isH = side === 'top' || side === 'bottom';
-      const hasWS = G.warpStorms.some(ws => ws && ws.tileKey === tile.key && ws.side === side);
+      const wsIdx = G.warpStorms.findIndex(ws => ws && ws.tileKey === tile.key && ws.side === side);
+      const hasWS = wsIdx !== -1;
+
       if (hasWS) {
         const ws = document.createElement('div');
         ws.className = `warp-storm warp-storm-${side} ${isH ? 'warp-storm-h' : 'warp-storm-v'}`;
+
+        if (_warpMoveState?.step === 'select_storm') {
+          const isMoveable = _warpMoveState.moves.some(m => m.storm_idx === wsIdx);
+          if (isMoveable) {
+            ws.classList.add('ws-selectable');
+            ws.onclick = (e) => { e.stopPropagation(); _warpSelectStorm(wsIdx); };
+          }
+        }
+        if (_warpMoveState?.step === 'select_dest' && _warpMoveState.storm_idx === wsIdx) {
+          ws.classList.add('ws-selected');
+          ws.onclick = (e) => { e.stopPropagation(); _warpSelectStorm(wsIdx); };
+        }
+
         el.appendChild(ws);
       }
+
       const canPlaceWS = G.phase === 'warp-storm' && !hasWS && !G.warpStorms[G.curP] && !G.warpConfirmed[G.curP];
       if (canPlaceWS) {
         const border = document.createElement('div');
         border.className = `ws-border ws-border-${isH ? 'h' : 'v'} warp-storm-${side}`;
         border.onclick = (e) => { e.stopPropagation(); placeWarpStorm(tile.key, side); };
         el.appendChild(border);
+      }
+
+      if (_warpMoveState?.step === 'select_dest' && !hasWS) {
+        const isDest = _warpMoveState.validDests.some(d => d.tileKey === tile.key && d.side === side);
+        if (isDest) {
+          const border = document.createElement('div');
+          border.className = `ws-border ws-border-${isH ? 'h' : 'v'} warp-storm-${side} ws-dest`;
+          border.onclick = (e) => {
+            e.stopPropagation();
+            doMoveWarpStorm(_warpMoveState.storm_idx, tile.key, side);
+          };
+          el.appendChild(border);
+        }
       }
     });
 

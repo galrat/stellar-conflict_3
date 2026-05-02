@@ -1,133 +1,144 @@
 """
-python_engine/warp_storm.py — Логика перемещения варп-штормов (конец раунда).
+warp_storm.py — Логика перемещения варп-штормов (Stellar Conflict)
 
-Направления на картах событий:
-  Across           — через тайл на противоположную сторону
-  Sideways         — параллельное перемещение к соседнему тайлу
-  Top Rgt/Bot Left — по часовой стрелке
-  Top Left/Bot Rgt — против часовой стрелки
+Варп-шторм занимает границу между тайлами: {tileKey, side}.
+Внутреннее представление — канонические рёбра сетки:
+  H(c, r) — горизонтальное ребро между строкой r-1 и строкой r, столбец c
+  V(c, r) — вертикальное ребро между столбцом c-1 и столбцом c, строка r
+
+4 направления из карты событий, у каждого до 2 допустимых ходов:
+  Across           — перпендикулярно, через соседний тайл или на другую границу текущего тайла
+  Sideways         — параллельно, на соседний тайл влево или вправо
+  Top Rgt/Bot Left — диагональ / (clockwise) в две стороны то есть диагональ внутри тайла или на соседний тайл
+  Top Left/Bot Rgt — диагональ \\ (counterclockwise) то есть диагональ внутри тайла или на соседний тайл
 """
 
-_OPPOSITE = {'top': 'bottom', 'bottom': 'top', 'left': 'right', 'right': 'left'}
-_CW  = {'top': 'right',  'right': 'bottom', 'bottom': 'left',  'left': 'top'}
-_CCW = {'top': 'left',   'left':  'bottom', 'bottom': 'right', 'right': 'top'}
+# ── Canonical edge helpers ────────────────────────────────────────────────────
+
+def _to_canonical(tile_key: str, side: str) -> tuple:
+    """(tileKey, side) → ('h'|'v', c, r) canonical edge form."""
+    c, r = map(int, tile_key.split(','))
+    if side == 'top':    return ('h', c, r)
+    if side == 'bottom': return ('h', c, r + 1)
+    if side == 'left':   return ('v', c, r)
+    if side == 'right':  return ('v', c + 1, r)
+    raise ValueError(f"Unknown side: {side}")
 
 
-def _adj_tile(tile_key: str, side: str) -> str:
-    col, row = map(int, tile_key.split(','))
-    if side == 'top':    return f'{col},{row - 1}'
-    if side == 'bottom': return f'{col},{row + 1}'
-    if side == 'left':   return f'{col - 1},{row}'
-    return f'{col + 1},{row}'  # right
+def _from_canonical(orient: str, c: int, r: int, map_data: dict):
+    """('h'|'v', c, r) → (tile_key, side) using first existing tile, or None if off-map."""
+    if orient == 'h':
+        if f'{c},{r}' in map_data:
+            return (f'{c},{r}', 'top')
+        if f'{c},{r - 1}' in map_data:
+            return (f'{c},{r - 1}', 'bottom')
+    else:  # 'v'
+        if f'{c},{r}' in map_data:
+            return (f'{c},{r}', 'left')
+        if f'{c - 1},{r}' in map_data:
+            return (f'{c - 1},{r}', 'right')
+    return None
 
 
-def _normalize_border(tile_key: str, side: str) -> tuple:
-    """Canonical border representation — one form for each physical border."""
-    col, row = map(int, tile_key.split(','))
-    if side == 'top':  return (f'{col},{row - 1}', 'bottom')
-    if side == 'left': return (f'{col - 1},{row}', 'right')
-    return (tile_key, side)
+# ── Movement tables ───────────────────────────────────────────────────────────
+# Each delta: (new_orient, dc, dr) → destination canonical = (new_orient, c+dc, r+dr)
+#
+# Derivation (for horizontal border H(c,r)):
+#   Across:           through tile above → H(c,r-1); through tile below → H(c,r+1)
+#   Sideways:         slide left → H(c-1,r); slide right → H(c+1,r)
+#   Top Rgt/Bot Left: upper-right corner → V(c+1,r-1); lower-left corner → V(c,r)
+#   Top Left/Bot Rgt: upper-left corner → V(c,r-1);   lower-right corner → V(c+1,r)
+#
+# Verification: each destination shares exactly one vertex with H(c,r), except Across
+# which hops over one tile (2-step in edge distance).
+
+_DELTAS = {
+    'Across': {
+        'h': [('h',  0, -1), ('h',  0, +1)],
+        'v': [('v', -1,  0), ('v', +1,  0)],
+    },
+    'Sideways': {
+        'h': [('h', -1,  0), ('h', +1,  0)],
+        'v': [('v',  0, -1), ('v',  0, +1)],
+    },
+    'Top Rgt/Bot Left': {
+        'h': [('v', +1, -1), ('v',  0,  0)],
+        'v': [('h',  0,  0), ('h', -1, +1)],
+    },
+    'Top Left/Bot Rgt': {
+        'h': [('v',  0, -1), ('v', +1,  0)],
+        'v': [('h', -1,  0), ('h',  0, +1)],
+    },
+}
 
 
-def _compute_move_targets(tile_key: str, side: str, direction: str) -> list:
-    """Returns [(tile_key, side)] candidate positions for the given direction."""
-    if not tile_key or ',' not in tile_key:
-        return []
-    adj = _adj_tile(tile_key, side)
-
-    if direction == 'Across':
-        return [(tile_key, _OPPOSITE[side]), (adj, side)]
-
-    if direction == 'Sideways':
-        col, row = map(int, tile_key.split(','))
-        if side in ('top', 'bottom'):
-            return [(f'{col - 1},{row}', side), (f'{col + 1},{row}', side)]
-        else:
-            return [(f'{col},{row - 1}', side), (f'{col},{row + 1}', side)]
-
-    if direction == 'Top Rgt/Bot Left':  # clockwise
-        return [(tile_key, _CW[side]), (tile_key, _CCW[side])]
-
-    if direction == 'Top Left/Bot Rgt':  # counterclockwise
-        return [(adj, _CW[_OPPOSITE[side]]), (adj, _CCW[_OPPOSITE[side]])]
-
-    return []
-
-
-def _is_valid_border(state: dict, tile_key: str, side: str) -> bool:
-    """Border is valid if both adjacent tiles exist in the map."""
-    if not tile_key or ',' not in tile_key:
-        return False
-    game_map = state.get('map', {})
-    return tile_key in game_map and _adj_tile(tile_key, side) in game_map
-
-
-def _occupied_borders(state: dict, exclude_idx: int = None) -> set:
-    """Set of normalized borders occupied by warp storms (optionally excluding one)."""
-    result = set()
-    for i, storm in enumerate(state.get('warpStorms', [])):
-        if storm and (exclude_idx is None or i != exclude_idx):
-            tk = storm.get('tileKey', '')
-            sd = storm.get('side', '')
-            if tk and sd:
-                result.add(_normalize_border(tk, sd))
-    return result
-
-
-def get_moveable_storms(state: dict, direction: str) -> list:
-    """
-    Returns indices of warp storms that can be moved in the given direction.
-    A storm is moveable if it is active, not yet moved this round,
-    and has at least one valid target position.
-    """
-    if not direction:
-        return []
-    result = []
-    for i, storm in enumerate(state.get('warpStorms', [])):
-        if not storm:
-            continue
-        if storm.get('status') != 'active':
-            continue
-        occupied = _occupied_borders(state, exclude_idx=i)
-        tk, sd = storm.get('tileKey', ''), storm.get('side', '')
-        for t_tile, t_side in _compute_move_targets(tk, sd, direction):
-            if _is_valid_border(state, t_tile, t_side) and _normalize_border(t_tile, t_side) not in occupied:
-                result.append(i)
-                break
-    return result
-
+# ── Public API ────────────────────────────────────────────────────────────────
 
 def get_storm_valid_positions(state: dict, storm_idx: int, direction: str) -> list:
-    """Returns valid target positions [{tileKey, side}] for the selected storm."""
+    """
+    Returns valid target positions [{tileKey, side}] for the selected storm.
+
+    storm_idx: index into state['warpStorms']
+    direction: 'Across' | 'Sideways' | 'Top Rgt/Bot Left' | 'Top Left/Bot Rgt'
+    """
     storms = state.get('warpStorms', [])
     if storm_idx >= len(storms) or not storms[storm_idx]:
         return []
+
     storm = storms[storm_idx]
-    occupied = _occupied_borders(state, exclude_idx=storm_idx)
-    result = []
-    for t_tile, t_side in _compute_move_targets(storm.get('tileKey', ''), storm.get('side', ''), direction):
-        if _is_valid_border(state, t_tile, t_side) and _normalize_border(t_tile, t_side) not in occupied:
-            result.append({'tileKey': t_tile, 'side': t_side})
-    return result
+    map_data = state.get('map', {})
+    orient, c, r = _to_canonical(storm['tileKey'], storm['side'])
+    src_canon = (orient, c, r)
+
+    # Canonical positions occupied by other storms
+    other_canon = set()
+    for i, s in enumerate(storms):
+        if s and i != storm_idx:
+            other_canon.add(_to_canonical(s['tileKey'], s['side']))
+
+    results = []
+    for (new_orient, dc, dr) in _DELTAS.get(direction, {}).get(orient, []):
+        dest_canon = (new_orient, c + dc, r + dr)
+        if dest_canon == src_canon or dest_canon in other_canon:
+            continue
+        result = _from_canonical(new_orient, c + dc, r + dr, map_data)
+        if result is None:
+            continue
+        results.append({'tileKey': result[0], 'side': result[1]})
+
+    return results
+
+
+def get_moveable_storms(state: dict, direction: str) -> list:
+    """Returns indices of warp storms that have at least one valid move in the given direction."""
+    if not direction:
+        return []
+    return [
+        i for i, storm in enumerate(state.get('warpStorms', []))
+        if storm and get_storm_valid_positions(state, i, direction)
+    ]
 
 
 def do_move_storm(state: dict, storm_idx: int, new_tile: str, new_side: str, player_id: int) -> dict:
-    """Move a warp storm to the new position and advance the warp turn to the other player."""
+    """Move a warp storm to the new position. Mutates state in place."""
     storms = state.get('warpStorms', [])
     if storm_idx < len(storms) and storms[storm_idx]:
         storms[storm_idx]['tileKey'] = new_tile
         storms[storm_idx]['side'] = new_side
         storms[storm_idx]['moved_by'] = player_id
+    state.get('log', []).append({
+        'message': f'{state["players"][player_id].get("name", f"P{player_id}")} переместил варп-шторм → [{new_tile}] {new_side}',
+        'player_id': player_id,
+    })
     do_pass_warp_turn(state, player_id)
     return state
 
 
 def do_pass_warp_turn(state: dict, player_id: int) -> dict:
-    """Mark player's warp storm turn as done and advance curP."""
+    """Mark player's warp storm turn as done and advance curP if needed."""
     done = state.setdefault('warp_storm_phase_done', [False, False])
     done[player_id] = True
     other = 1 - player_id
-    selection_done = state.get('event_selection_done', [False, False])
-    if not selection_done[other] or not done[other]:
+    if not done[other]:
         state['curP'] = other
     return state
