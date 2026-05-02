@@ -1723,6 +1723,23 @@ async def strategize_skip_order_upgrade_endpoint(request: StrategyzeSkipRequest)
                 return GameStateResponse(success=False, error=f"Шаг buy_order_upgrade недоступен")
 
             new_state = copy.deepcopy(active_game)
+            pending = new_state.get('pending_strategize', {})
+            order_id = pending.get('order_id')
+            order_type = pending.get('order_type', 'strategize')
+            pid = request.player_id
+            if order_id is not None:
+                new_state['players'][pid]['hand_orders'] = [
+                    o for o in new_state['players'][pid].get('hand_orders', [])
+                    if o.get('id') != order_id
+                ]
+                if 'dropped_orders' not in new_state:
+                    new_state['dropped_orders'] = []
+                new_state['dropped_orders'] = list(new_state['dropped_orders'])
+                new_state['dropped_orders'].append({
+                    'id': order_id,
+                    'type': order_type,
+                    'owner': pid,
+                })
             del new_state['pending_strategize']
             active_game.clear()
             active_game.update(new_state)

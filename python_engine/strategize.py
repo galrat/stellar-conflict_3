@@ -32,10 +32,14 @@ def strategize_play(active_game, player_id, order_tile):
     new_state = copy.deepcopy(active_game)
     player_level = _count_player_cities(active_game, player_id)
 
+    order_id = order_tile.get('id') if isinstance(order_tile, dict) else order_tile
+    order_type = order_tile.get('type', 'strategize') if isinstance(order_tile, dict) else 'strategize'
     new_state['pending_strategize'] = {
         'player_id': player_id,
         'step': 'buy_combat_card',
         'player_level': player_level,
+        'order_id': order_id,
+        'order_type': order_type,
     }
     return new_state
 
@@ -134,7 +138,24 @@ def strategize_buy_order_upgrade(active_game, player_id, upgrade_name):
     player['hand_order_upgrades'].append(copy.deepcopy(upgrade_to_buy))
     player['credits'] = credits - cost
 
-    # Завершить приказ
+    # Переместить приказ в dropped_orders
+    pending = new_state.get('pending_strategize', {})
+    order_id = pending.get('order_id')
+    order_type = pending.get('order_type', 'strategize')
+    if order_id is not None:
+        new_state['players'][player_id]['hand_orders'] = [
+            o for o in new_state['players'][player_id].get('hand_orders', [])
+            if o.get('id') != order_id
+        ]
+        if 'dropped_orders' not in new_state:
+            new_state['dropped_orders'] = []
+        new_state['dropped_orders'] = list(new_state['dropped_orders'])
+        new_state['dropped_orders'].append({
+            'id': order_id,
+            'type': order_type,
+            'owner': player_id,
+        })
+
     del new_state['pending_strategize']
 
     return True, None, new_state
