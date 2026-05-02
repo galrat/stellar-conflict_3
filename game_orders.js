@@ -139,10 +139,13 @@ async function playOrderViaAPI(orderId) {
       applyState(res.state);
       console.log('applyState выполнена, G.pending_deploy=' + !!G.pending_deploy);
       addLog(`${G.players[G.curP]?.name || 'Игрок'}: приказ "${orderName}" разыгран`, G.curP);
-      // Check if dominate produced a joker choice
+      // Check if dominate produced a joker or chaos ability
       if (res.state?.pending_joker_choice) {
         console.log('→ Joker choice');
         _showJokerChoiceUI(res.state.pending_joker_choice);
+      } else if (res.state?.pending_chaos_dominate) {
+        console.log('→ Chaos dominate ability');
+        _showChaosDominateUI(res.state.pending_chaos_dominate);
       } else if (res.state?.pending_deploy) {
         console.log('→ Deploy UI (pending_deploy есть)');
         setPhase('execution');
@@ -192,9 +195,120 @@ async function _resolveJoker(playerId, choiceType) {
     if (res.success) {
       applyState(res.state);
       addLog(`Джокер → ${choiceType}`, playerId);
-      setPhase('execution');
+      if (res.state?.pending_chaos_dominate) {
+        _showChaosDominateUI(res.state.pending_chaos_dominate);
+      } else {
+        setPhase('execution');
+      }
     } else {
       showMsg('Ошибка', res.error || 'Не удалось разрешить джокер');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+function _showChaosDominateUI(pending) {
+  const pid     = pending.player_id;
+  const targets = pending.valid_targets || [];
+
+  const targetBtns = targets.map(t =>
+    `<button class="abtn bp" onclick="_chaosDominateChoose(${pid},'${t.tile_key}',${t.area_idx})"
+       style="margin:4px 2px;">
+       Система ${t.tile_key} · Планета ${t.area_idx}
+     </button>`
+  ).join('');
+
+  const html = `
+    <div style="margin-bottom:10px;color:#aaa;">
+      Переместите культиста в нейтральную или дружественную планету соседней системы:
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:14px;">
+      ${targetBtns}
+    </div>
+    <div style="text-align:center;">
+      <button class="abtn" onclick="_chaosDominateSkip(${pid})"
+        style="padding:8px 24px;">Пропустить</button>
+    </div>`;
+  showMsg('⬡ Хаос: особое свойство доминации', html);
+}
+
+async function _chaosDominateChoose(playerId, tileKey, areaIdx) {
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/dominate-chaos-choose', {
+      player_id: playerId,
+      tile_key:  tileKey,
+      area_idx:  areaIdx,
+    });
+    if (res.success) {
+      applyState(res.state);
+      addLog(`Хаос: культист → система ${tileKey}, область ${areaIdx}`, playerId);
+      if (res.state?.pending_chaos_retreat) {
+        _showChaosRetreatUI(res.state.pending_chaos_retreat);
+      } else {
+        setPhase('execution');
+      }
+    } else {
+      showMsg('Ошибка', res.error || '');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+function _showChaosRetreatUI(pending) {
+  const pid      = pending.player_id;
+  const tileKey  = pending.tile_key;
+  const areaIdx  = pending.area_idx;
+  const capacity = pending.capacity;
+  const units    = pending.units || [];
+
+  const unitBtns = units.map(u => {
+    const label = u.player === pid ? `Ваш: ${u.unitType} tier${u.tier}` : `Соперник: ${u.unitType} tier${u.tier}`;
+    return `<button class="abtn bp" onclick="_chaosRetreatChoose(${pid},'${tileKey}',${areaIdx},${u.troop_idx})"
+      style="margin:4px 2px;display:block;width:100%;">${label}</button>`;
+  }).join('');
+
+  const html = `
+    <div style="margin-bottom:10px;color:#aaa;">
+      Область переполнена (capacity=${capacity}). Выберите юнита для удаления:
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;">${unitBtns}</div>`;
+  showMsg('⬡ Хаос: выберите юнита для удаления', html);
+}
+
+async function _chaosRetreatChoose(playerId, tileKey, areaIdx, troopIdx) {
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/dominate-chaos-retreat', {
+      player_id: playerId,
+      tile_key:  tileKey,
+      area_idx:  areaIdx,
+      troop_idx: troopIdx,
+    });
+    if (res.success) {
+      applyState(res.state);
+      addLog(`Хаос: юнит удалён из ${tileKey}/${areaIdx}`, playerId);
+      setPhase('execution');
+    } else {
+      showMsg('Ошибка', res.error || '');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+async function _chaosDominateSkip(playerId) {
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/dominate-chaos-skip', { player_id: playerId });
+    if (res.success) {
+      applyState(res.state);
+      addLog('Хаос: особое свойство пропущено', playerId);
+      setPhase('execution');
+    } else {
+      showMsg('Ошибка', res.error || '');
     }
   } catch(e) {
     showMsg('Ошибка сервера', e.message);

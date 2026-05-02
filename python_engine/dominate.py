@@ -6,7 +6,7 @@ python_engine/dominate.py — логика приказа Dominate
   2. Собрать ценные ресурсы: support, discount, forge, joker
   3. Если есть joker — выбор игрока (через pending_joker_choice)
   4. Применить к токенам игрока (cap: не более 3 каждого, Tyranids — 4)
-  5. Факционное особое свойство (MVP: только Chaos, остальные — заглушка)
+  5. Факционное особое свойство: Chaos — переместить культиста в соседнюю систему
 
 Токены (единый стандарт):
   area.support  → player.tokens.support  (жетон поддержки)
@@ -15,6 +15,12 @@ python_engine/dominate.py — логика приказа Dominate
   area.joker    → игрок выбирает один из трёх типов
 """
 import copy
+
+from faction_defs.chaos_data.dominate import (
+    maybe_start_chaos_dominate,
+    chaos_dominate_move,
+    chaos_retreat_unit,
+)
 
 TOKEN_CAP_DEFAULT  = 3
 TOKEN_CAP_TYRANIDS = 4  # Tyranids: "up to 4 of each"
@@ -73,6 +79,9 @@ def dominate_order(state, player_id, tile_key):
     # 3. Применить собранные ресурсы
     _apply_tokens(new_state, player_id, collected)
 
+    # 4. Faction special: Chaos
+    maybe_start_chaos_dominate(new_state, player_id, tile_key)
+
     msg = _build_log(player_id, collected, joker_resolved=None)
     new_state.setdefault('log', []).append({'message': msg, 'player_id': player_id})
     return True, msg, new_state
@@ -100,6 +109,9 @@ def dominate_resolve_joker(state, player_id, joker_choices):
         collected[ch] += 1
 
     _apply_tokens(new_state, player_id, collected)
+
+    # Faction special: Chaos (after joker resolved)
+    maybe_start_chaos_dominate(new_state, player_id, pending['tile_key'])
 
     msg = _build_log(player_id, collected, joker_resolved=joker_choices)
     new_state.setdefault('log', []).append({'message': msg, 'player_id': player_id})

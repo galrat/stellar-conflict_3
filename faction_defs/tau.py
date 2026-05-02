@@ -33,12 +33,12 @@ TAU = Faction(
         credits=6, support_tokens=0, discount_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов ───────────────────────────────────────────
         unit_stats={
-            "infantry":   dict(name="Fire Warriors",                    cost=2,               combat_strength=2, health=1, morale=2, max_count=6),
-            "marines":    dict(name="XV8 Crisis Battlesuits",           cost=3,               combat_strength=3, health=3, morale=2, max_count=6),
-            "mechanized": dict(name="TX7 Hammerhead Gunships",          cost=4,               combat_strength=4, health=4, morale=2, max_count=3),
+            "infantry":   dict(name="Fire Warrior",                    cost=2,               combat_strength=2, health=1, morale=2, max_count=6),
+            "marines":    dict(name="XV8 Crisis Battlesuit",           cost=3,               combat_strength=3, health=3, morale=2, max_count=6),
+            "mechanized": dict(name="TX7 Hammerhead Gunship",          cost=4,               combat_strength=4, health=4, morale=2, max_count=3),
             "elite":      dict(name="KX139 Supremacy Armour",           cost=5, cost_forge=1, combat_strength=4, health=5, morale=3, max_count=3),
-            "fighter":    dict(name="Protector Cruisers",               cost=2,               combat_strength=3, health=1, morale=2, max_count=2),
-            "destroyer":  dict(name="Custodian Carriers",               cost=5, cost_forge=1, combat_strength=5, health=4, morale=4, max_count=2),
+            "fighter":    dict(name="Protector Cruiser",               cost=2,               combat_strength=3, health=1, morale=2, max_count=2),
+            "destroyer":  dict(name="Custodian Carrier",               cost=5, cost_forge=1, combat_strength=5, health=4, morale=4, max_count=2),
         },
         # ── Стартовая колода боевых карт ──────────────────────────────────────
         battle_card_deck = [

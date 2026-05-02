@@ -32,10 +32,10 @@ ORKS = Faction(
             # name — отображаемое название; cost — стоимость; max_count — максимальный резерв
             "infantry":   dict(name="Ork Boyz",                  cost=2,               combat_strength=2, health=2, morale=1, max_count=9),
             "marines":    dict(name="Nobz",                      cost=3,               combat_strength=2, health=4, morale=2, max_count=6),
-            "mechanized": dict(name="Battlewagons",              cost=4,               combat_strength=3, health=5, morale=3, max_count=3),
-            "elite":      dict(name="Gargants",                  cost=5, cost_forge=1, combat_strength=3, health=6, morale=3, max_count=3),
-            "fighter":    dict(name="Onslaught Attack Ships",    cost=2,               combat_strength=1, health=3, morale=2, max_count=3),
-            "destroyer":  dict(name="Kill Kroozers",             cost=4, cost_forge=1, combat_strength=3, health=6, morale=4, max_count=3),
+            "mechanized": dict(name="Battlewagon",              cost=4,               combat_strength=3, health=5, morale=3, max_count=3),
+            "elite":      dict(name="Gargant",                  cost=5, cost_forge=1, combat_strength=3, health=6, morale=3, max_count=3),
+            "fighter":    dict(name="Onslaught Attack Ship",    cost=2,               combat_strength=1, health=3, morale=2, max_count=3),
+            "destroyer":  dict(name="Kill Kroozer",             cost=4, cost_forge=1, combat_strength=3, health=6, morale=4, max_count=3),
         },
         # ── Стартовая колода боевых карт ──────────────────────────────────────
         battle_card_deck = ''''Ard Boyz

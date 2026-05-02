@@ -138,6 +138,26 @@ class DominateJokerRequest(BaseModel):
     choice: str  # 'support' | 'discount' | 'forge'
 
 
+class DominateChaosChooseRequest(BaseModel):
+    """Выбор планеты для культиста Хаоса после Dominate"""
+    player_id: int
+    tile_key: str
+    area_idx: int
+
+
+class DominateChaosSkipRequest(BaseModel):
+    """Пропустить особое свойство Хаоса после Dominate"""
+    player_id: int
+
+
+class DominateChaosRetreatRequest(BaseModel):
+    """Удалить юнита из переполненной области после перемещения культиста"""
+    player_id: int
+    tile_key: str
+    area_idx: int
+    troop_idx: int
+
+
 class DeployConfirmBasketRequest(BaseModel):
     """Подтверждение корзины юнитов при Deploy"""
     player_id: int
@@ -284,6 +304,17 @@ def compute_ui_hints(state: dict) -> dict:
         ui['buttons'] = ['btn-pass']
 
     elif phase == 'execution':
+        # Если ожидается особое свойство Хаоса
+        pc = state.get('pending_chaos_dominate')
+        if pc and pc.get('player_id') == cur_p:
+            ui['instruction'] = (
+                f'<strong>ХАОС: Особое свойство доминации</strong><br>'
+                f'{cp_name}: переместите культиста в соседнюю систему (или пропустите)'
+            )
+            ui['buttons'] = ['btn-undo-order']
+            ui['chaos_dominate_targets'] = pc.get('valid_targets', [])
+            return ui
+
         # Если идёт выполнение приказа Deploy
         pd = state.get('pending_deploy')
         if pd:
@@ -738,6 +769,10 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             if active_game.get('pending_joker_choice'):
                 return GameStateResponse(success=False, error="Сначала разрешите выбор джокера (Dominate)")
 
+            # Нельзя играть если ожидается особое свойство Хаоса
+            if active_game.get('pending_chaos_dominate'):
+                return GameStateResponse(success=False, error="Сначала завершите особое свойство Хаоса (Dominate)")
+
             # Нельзя играть если уже совершено действие в этом ходу (сброс или розыгрыш)
             played_flag = active_game.get('execution_order_played', [False, False])
             if played_flag[current_player]:
@@ -920,6 +955,84 @@ async def dominate_joker_endpoint(request: DominateJokerRequest) -> GameStateRes
             return GameStateResponse(success=False, error=str(e))
 
 
+@app.post('/api/game/dominate-chaos-choose')
+async def dominate_chaos_choose_endpoint(request: DominateChaosChooseRequest) -> GameStateResponse:
+    """Переместить культиста Хаоса в выбранную планету после Dominate"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from python_engine.dominate import chaos_dominate_move
+            pending = active_game.get('pending_chaos_dominate', {})
+            if not pending:
+                return GameStateResponse(success=False, error="Нет ожидающей способности Хаоса")
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Это не ваша способность")
+
+            success, message, new_state = chaos_dominate_move(
+                active_game, request.player_id, request.tile_key, request.area_idx
+            )
+            if not success:
+                return GameStateResponse(success=False, error=message)
+
+            active_game.clear()
+            active_game.update(new_state)
+            print(f"⬡ {message}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-chaos-skip')
+async def dominate_chaos_skip_endpoint(request: DominateChaosSkipRequest) -> GameStateResponse:
+    """Пропустить особое свойство Хаоса после Dominate"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pending = active_game.get('pending_chaos_dominate', {})
+            if not pending:
+                return GameStateResponse(success=False, error="Нет ожидающей способности Хаоса")
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Это не ваша способность")
+
+            del active_game['pending_chaos_dominate']
+            print(f"⬡ Хаос: особое свойство доминации пропущено")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            print(f"❌ Ошибка: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-chaos-retreat')
+async def dominate_chaos_retreat_endpoint(request: DominateChaosRetreatRequest) -> GameStateResponse:
+    """Удалить юнита из переполненной области после перемещения культиста Хаоса"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from faction_defs.chaos_data.dominate import chaos_retreat_unit
+            success, message, new_state = chaos_retreat_unit(
+                active_game, request.player_id, request.tile_key, request.area_idx, request.troop_idx
+            )
+            if not success:
+                return GameStateResponse(success=False, error=message)
+            active_game.clear()
+            active_game.update(new_state)
+            print(f"⬡ {message}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
 @app.post('/api/game/pass-turn-order-play')
 async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateResponse:
     """Передать ход на этапе розыгрыша приказов"""
@@ -941,6 +1054,8 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                 return GameStateResponse(success=False, error="Сначала завершите приказ Deploy")
             if active_game.get('pending_advance'):
                 return GameStateResponse(success=False, error="Сначала завершите приказ Advance")
+            if active_game.get('pending_chaos_dominate'):
+                return GameStateResponse(success=False, error="Сначала завершите особое свойство Хаоса (Dominate)")
 
             # Проверить: если у игрока есть разыгрываемые приказы — обязан сыграть
             playable = get_available_orders(active_game, current_player)

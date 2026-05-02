@@ -31,12 +31,12 @@ TYRANIDS = Faction(
         credits=6, support_tokens=1, discount_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов ───────────────────────────────────────────
         unit_stats={
-            "infantry":   dict(name="Gaunts",                   cost=2,               combat_strength=1, health=1, morale=3, max_count=6),
-            "marines":    dict(name="Warriors",                 cost=3,               combat_strength=3, health=2, morale=3, max_count=6),
-            "mechanized": dict(name="Carnifexes",               cost=4,               combat_strength=4, health=3, morale=3, max_count=3),
-            "elite":      dict(name="Hierophant Bio-Titans",    cost=5, cost_forge=1, combat_strength=5, health=4, morale=3, max_count=3),
-            "fighter":    dict(name="Devourer Bio-Ships",       cost=2,               combat_strength=1, health=2, morale=3, max_count=6),
-            "destroyer":  dict(name="Leviathan Hive Ships",     cost=5, cost_forge=1, combat_strength=3, health=6, morale=4, max_count=3),
+            "infantry":   dict(name="Gaunt",                   cost=2,               combat_strength=1, health=1, morale=3, max_count=6),
+            "marines":    dict(name="Warrior",                 cost=3,               combat_strength=3, health=2, morale=3, max_count=6),
+            "mechanized": dict(name="Carnifex",               cost=4,               combat_strength=4, health=3, morale=3, max_count=3),
+            "elite":      dict(name="Hierophant Bio-Titan",    cost=5, cost_forge=1, combat_strength=5, health=4, morale=3, max_count=3),
+            "fighter":    dict(name="Devourer Bio-Ship",       cost=2,               combat_strength=1, health=2, morale=3, max_count=6),
+            "destroyer":  dict(name="Leviathan Hive Ship",     cost=5, cost_forge=1, combat_strength=3, health=6, morale=4, max_count=3),
         },
         # ── Стартовая колода боевых карт ──────────────────────────────────────
         battle_card_deck = [

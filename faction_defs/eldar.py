@@ -32,12 +32,12 @@ ELDAR = Faction(
         # Эльдары: хрупкие, но с высокой моралью и точностью. Истребители — ударная сила.
         unit_stats={
             # name — отображаемое название; cost — стоимость; max_count — максимальный резерв
-            "infantry":   dict(name="Aspect Warriors",    cost=2,               combat_strength=2, health=1, morale=2, max_count=6),
+            "infantry":   dict(name="Aspect Warrior",    cost=2,               combat_strength=2, health=1, morale=2, max_count=6),
             "marines":    dict(name="Wraithguard",        cost=3,               combat_strength=2, health=4, morale=2, max_count=3),
             "mechanized": dict(name="Falcons",            cost=4,               combat_strength=3, health=4, morale=3, max_count=3),
             "elite":      dict(name="Warlock Titans",     cost=5, cost_forge=1, combat_strength=4, health=5, morale=3, max_count=3),
-            "fighter":    dict(name="Hellebore Frigates", cost=2,               combat_strength=3, health=2, morale=1, max_count=6),
-            "destroyer":  dict(name="Void Stalkers",      cost=4, cost_forge=1, combat_strength=4, health=5, morale=4, max_count=3),
+            "fighter":    dict(name="Hellebore Frigate", cost=2,               combat_strength=3, health=2, morale=1, max_count=6),
+            "destroyer":  dict(name="Void Stalker",      cost=4, cost_forge=1, combat_strength=4, health=5, morale=4, max_count=3),
         },
         # ── Стартовая колода боевых карт ──────────────────────────────────────
         battle_card_deck = '''Command of the Autarch

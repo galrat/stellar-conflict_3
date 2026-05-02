@@ -34,11 +34,11 @@ IMPERIAL_GUARD = Faction(
         # ── Характеристики юнитов ───────────────────────────────────────────
         unit_stats={
             "infantry":   dict(name="Guardsmen",                    cost=2,               combat_strength=1, health=1, morale=2, max_count=12),
-            "marines":    dict(name="Ogryns",                       cost=3,               combat_strength=2, health=4, morale=2, max_count=6),
-            "mechanized": dict(name="Leman Russ Battle Tanks",      cost=4,               combat_strength=3, health=4, morale=3, max_count=6),
-            "elite":      dict(name="Warhound Titans",              cost=5, cost_forge=1, combat_strength=3, health=5, morale=4, max_count=3),
-            "fighter":    dict(name="Lunar-Class Cruisers",         cost=2,               combat_strength=2, health=2, morale=2, max_count=3),
-            "destroyer":  dict(name="Emperor-Class Battleships",    cost=5, cost_forge=1, combat_strength=4, health=6, morale=3, max_count=3),
+            "marines":    dict(name="Ogryn",                       cost=3,               combat_strength=2, health=4, morale=2, max_count=6),
+            "mechanized": dict(name="Leman Russ Battle Tank",      cost=4,               combat_strength=3, health=4, morale=3, max_count=6),
+            "elite":      dict(name="Warhound Titan",              cost=5, cost_forge=1, combat_strength=3, health=5, morale=4, max_count=3),
+            "fighter":    dict(name="Lunar-Class Cruiser",         cost=2,               combat_strength=2, health=2, morale=2, max_count=3),
+            "destroyer":  dict(name="Emperor-Class Battleship",    cost=5, cost_forge=1, combat_strength=4, health=6, morale=3, max_count=3),
         },
         # ── Стартовая колода боевых карт ──────────────────────────────────────
         battle_card_deck = [

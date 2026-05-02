@@ -31,12 +31,12 @@ NECRONS = Faction(
         credits=6, support_tokens=0, discount_tokens=0, forge_tokens=0,
         # ── Характеристики юнитов ───────────────────────────────────────────
         unit_stats={
-            "infantry":   dict(name="Warriors",                   cost=2,               combat_strength=2, health=3, morale=0, max_count=4),
-            "marines":    dict(name="Immortals",                  cost=3,               combat_strength=3, health=4, morale=1, max_count=3),
-            "mechanized": dict(name="Monoliths",                  cost=4,               combat_strength=3, health=5, morale=2, max_count=2),
+            "infantry":   dict(name="Warrior",                   cost=2,               combat_strength=2, health=3, morale=0, max_count=4),
+            "marines":    dict(name="Immortal",                  cost=3,               combat_strength=3, health=4, morale=1, max_count=3),
+            "mechanized": dict(name="Monolith",                  cost=4,               combat_strength=3, health=5, morale=2, max_count=2),
             "elite":      dict(name="C'tan Star God Shard",       cost=5, cost_forge=1, combat_strength=3, health=6, morale=3, max_count=1),
-            "fighter":    dict(name="Scythe-Class Harvest Ships", cost=2,               combat_strength=2, health=3, morale=1, max_count=2),
-            "destroyer":  dict(name="Cairn-Class Tomb Ships",     cost=5, cost_forge=1, combat_strength=3, health=6, morale=4, max_count=2),
+            "fighter":    dict(name="Scythe-Class Harvest Ship", cost=2,               combat_strength=2, health=3, morale=1, max_count=2),
+            "destroyer":  dict(name="Cairn-Class Tomb Ship",     cost=5, cost_forge=1, combat_strength=3, health=6, morale=4, max_count=2),
         },
         # ── Стартовая колода боевых карт ──────────────────────────────────────
         battle_card_deck = [
