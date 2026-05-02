@@ -8,6 +8,7 @@ from .retreat_defender import retreat_defender
 from .retreat_attacker import retreat_attacker
 from .retreat_defender_ships import is_ships_retreating, get_retreat_valid_areas_ships
 from .retreat_attacker_ships import get_retreat_valid_areas_attacker_ships, retreat_attacker_ships
+from .retreat_attacker_ground import get_retreat_valid_areas_attacker_ground
 
 
 def roll_combat(state, active_tile_key, area_idx, player_id):
@@ -227,13 +228,16 @@ def advance_declare_winner(state, player_id, winner_id) -> dict:
         neutral_areas = retreat_info['neutral']
         retreat_areas = friendly_areas + neutral_areas if friendly_areas else neutral_areas
     else:
-        retreat_info = _get_retreat_valid_areas(new_state, tile_key, contested_idx, loser)
-        friendly_areas = retreat_info['friendly']
-        neutral_areas = retreat_info['neutral']
         if loser == defender:
+            retreat_info = _get_retreat_valid_areas(new_state, tile_key, contested_idx, loser)
+            friendly_areas = retreat_info['friendly']
+            neutral_areas = retreat_info['neutral']
             retreat_areas = friendly_areas if friendly_areas else neutral_areas
         else:
-            retreat_areas = friendly_areas
+            retreat_info = get_retreat_valid_areas_attacker_ground(new_state, tile_key, contested_idx, loser)
+            friendly_areas = retreat_info['friendly']
+            neutral_areas = retreat_info['neutral']
+            retreat_areas = friendly_areas if friendly_areas else neutral_areas
 
     new_state.setdefault('log', []).append({
         'message': f'БОЙ в области {contested_idx} тайла {tile_key}: победил {winner_name}. {loser_name} отступает.',

@@ -59,9 +59,19 @@
           "id": "p1_deploy_2",
           "type": "deploy",
           "owner": 0
+        },
+        {
+          "id": "p1_advance_2",
+          "type": "advance",
+          "owner": 0
+        },
+        {
+          "id": "p1_advance_1",
+          "type": "advance",
+          "owner": 0
         }
       ],
-      "credits": 1,
+      "credits": 11,
       "tokens": {
         "support": 0,
         "discount": 0,
@@ -345,7 +355,8 @@
           "tier": 0,
           "cost": 1,
           "primary": "Orbital Strike, once per round. Gain 1 [?].",
-          "secondary": "Spend 1 [M] to choose enemy unit on the world — this must suffer damage first."
+          "secondary": "Spend 1 [M] to choose enemy unit on the world — this must suffer damage first.",
+          "image": "faction_defs/eldar_data/order/Tactical Strikes.jpg"
         },
         {
           "id": "",
@@ -354,7 +365,8 @@
           "tier": 1,
           "cost": 2,
           "primary": "When purchasing structure, may place it on world containing exactly 1 different structure. Once per round.",
-          "secondary": "Command Level 1."
+          "secondary": "Command Level 1.",
+          "image": "faction_defs/eldar_data/order/Wraithbone Singers.jpg"
         },
         {
           "id": "",
@@ -363,7 +375,8 @@
           "tier": 1,
           "cost": 2,
           "primary": "This order can be resolved even if there are no units in the active system. Once per round.",
-          "secondary": "Command Level 1."
+          "secondary": "Command Level 1.",
+          "image": "faction_defs/eldar_data/order/Farseer.jpg"
         },
         {
           "id": "",
@@ -372,7 +385,8 @@
           "tier": 1,
           "cost": 2,
           "primary": "After resolving a combat with this order, you may perform 1 orbital strike in the active system. Once per round.",
-          "secondary": "Command Level 1."
+          "secondary": "Command Level 1.",
+          "image": "faction_defs/eldar_data/order/Corsair Raid.jpg"
         },
         {
           "id": "",
@@ -381,58 +395,68 @@
           "tier": 2,
           "cost": 3,
           "primary": "Orbital Strike, once per round. Bastions do not prevent orbital strike.",
-          "secondary": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2."
+          "secondary": "Spend 1 [S] to move any ships in active system to friendly or empty voids in adjacent system. Command Level 2.",
+          "image": "faction_defs/eldar_data/order/Strafing Run.jpg"
         }
       ],
-      "hand_event_cards": [],
-      "available_event_cards": [
+      "hand_event_cards": [
         {
           "name": "Exodite Colony",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Tactic",
-          "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token."
-        },
+          "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token.",
+          "image": "faction_defs/eldar_data/events/Exodite Colony.jpg"
+        }
+      ],
+      "available_event_cards": [
         {
           "name": "Farsight",
           "warp_storm_move": "Across",
           "card_type": "Scheme",
-          "effect": "At start of assess damage, discard to take all units in this combat and place on any friendly area."
+          "effect": "At start of assess damage, discard to take all units in this combat and place on any friendly area.",
+          "image": "faction_defs/eldar_data/events/Farsight.jpg"
         },
         {
           "name": "Legacy of Vaul",
           "warp_storm_move": "Sideways",
           "card_type": "Tactic",
-          "effect": "Gain 2 (F)."
+          "effect": "Gain 2 (F).",
+          "image": "faction_defs/eldar_data/events/Legacy of Vaul.jpg"
         },
         {
           "name": "Outcasts Returned",
           "warp_storm_move": "Across",
           "card_type": "Tactic",
-          "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void."
+          "effect": "Either place 1 free Frigate in any uncontrolled void, or take 1 Frigate from any void and place it in any uncontrolled void.",
+          "image": "faction_defs/eldar_data/events/Outcasts Returned.jpg"
         },
         {
           "name": "Outmanoeuvre",
           "warp_storm_move": "Sideways",
           "card_type": "Scheme",
-          "effect": "At end of Planning Phase, discard to look at 1 of your order tokens anywhere in a stack. Then place on top or bottom of the stack."
+          "effect": "At end of Planning Phase, discard to look at 1 of your order tokens anywhere in a stack. Then place on top or bottom of the stack.",
+          "image": "faction_defs/eldar_data/events/Outmanoeuvre.jpg"
         },
         {
           "name": "Path of the Warrior",
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Tactic",
-          "effect": "Purchase 1 combat upgrade, reducing its cost by 1 per friendly world with a city."
+          "effect": "Purchase 1 combat upgrade, reducing its cost by 1 per friendly world with a city.",
+          "image": "faction_defs/eldar_data/events/Path of the Warrior.jpg"
         },
         {
           "name": "Vicious Raids",
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
-          "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice."
+          "effect": "When resolving an orbital strike, discard to reroll any dice, then gain 1 die of your choice.",
+          "image": "faction_defs/eldar_data/events/Vicious Raids.jpg"
         },
         {
           "name": "Warp Gate",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Scheme",
-          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled)."
+          "effect": "Instead of revealing Order, discard to take any units from 1 area and place on any 1 area (friendly or uncontrolled).",
+          "image": "faction_defs/eldar_data/events/Warp Gate.jpg"
         }
       ],
       "boughtUpgrades": [],
@@ -497,9 +521,19 @@
           "id": "p2_deploy_1",
           "type": "deploy",
           "owner": 1
+        },
+        {
+          "id": "p2_advance_2",
+          "type": "advance",
+          "owner": 1
+        },
+        {
+          "id": "p2_advance_1",
+          "type": "advance",
+          "owner": 1
         }
       ],
-      "credits": 1,
+      "credits": 7,
       "tokens": {
         "support": 1,
         "discount": 0,
@@ -828,63 +862,64 @@
           "image": "faction_defs/chaos_data/order/Complete Destruction.jpg"
         }
       ],
-      "hand_event_cards": [],
+      "hand_event_cards": [
+        {
+          "name": "Seduced by Chaos",
+          "warp_storm_move": "Sideways",
+          "card_type": "Scheme",
+          "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat.",
+          "image": "faction_defs/chaos_data/events/Seduced by Chaos.jpg"
+        }
+      ],
       "available_event_cards": [
         {
           "name": "Blight of Nurgle",
           "warp_storm_move": "Across",
           "card_type": "Scheme",
           "effect": "Instead of playing an order, discard to rout an enemy unit in a system containing 1+ of your units.",
-          "image": "faction_defs/chaos_data/event/Blight of Nurgle.jpg"
+          "image": "faction_defs/chaos_data/events/Blight of Nurgle.jpg"
         },
         {
           "name": "Incantation of Tzeentch",
           "warp_storm_move": "Across",
           "card_type": "Tactic",
           "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move).",
-          "image": "faction_defs/chaos_data/event/Incantation of Tzeentch.jpg"
+          "image": "faction_defs/chaos_data/events/Incantation of Tzeentch.jpg"
         },
         {
           "name": "Prayer to the Dark Gods",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Scheme",
           "effect": "When a player moves a Warp Storm, discard to prevent this, and move the Warp Storm in any direction.",
-          "image": "faction_defs/chaos_data/event/Prayer to the Dark Gods.jpg"
+          "image": "faction_defs/chaos_data/events/Prayer to the Dark Gods.jpg"
         },
         {
           "name": "Prophets and Signs",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Tactic",
           "effect": "Place 2 free Cultists on friendly world not containing Cultists, or 1 free Cultist on any friendly world.",
-          "image": "faction_defs/chaos_data/event/Prophets and Signs.jpg"
-        },
-        {
-          "name": "Seduced by Chaos",
-          "warp_storm_move": "Sideways",
-          "card_type": "Scheme",
-          "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat.",
-          "image": "faction_defs/chaos_data/event/Seduced by Chaos.jpg"
+          "image": "faction_defs/chaos_data/events/Prophets and Signs.jpg"
         },
         {
           "name": "Spoils of War",
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Tactic",
           "effect": "Gain 1 (F) and 1 (R).",
-          "image": "faction_defs/chaos_data/event/Spoils of War.jpg"
+          "image": "faction_defs/chaos_data/events/Spoils of War.jpg"
         },
         {
           "name": "Through the Warp",
           "warp_storm_move": "Top Left/Bot Rgt",
           "card_type": "Scheme",
           "effect": "When resolving Advance Order, discard to allow units to move through Warp Storms. If combat occurs, gain 1 [M] at start.",
-          "image": "faction_defs/chaos_data/event/Through the Warp.jpg"
+          "image": "faction_defs/chaos_data/events/Through the Warp.jpg"
         },
         {
           "name": "Touched by the Warp",
           "warp_storm_move": "Sideways",
           "card_type": "Tactic",
           "effect": "Destroy 1 Cultist to gain 1 upgrade card. Tier cannot exceed number of Warp Storms bordering the system.",
-          "image": "faction_defs/chaos_data/event/Touched by the Warp.jpg"
+          "image": "faction_defs/chaos_data/events/Touched by the Warp.jpg"
         }
       ],
       "boughtUpgrades": [],
@@ -892,7 +927,7 @@
       "collected_objectives": 0
     }
   ],
-  "phase": "execution",
+  "phase": "end-round",
   "curP": 1,
   "round": 1,
   "totalRounds": 8,
@@ -925,13 +960,6 @@
               "player": 0,
               "unitType": "ground",
               "tier": 1,
-              "ready_to_move": 0,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 0,
               "unit_status": "active"
             }
           ],
@@ -977,7 +1005,6 @@
               "player": 0,
               "unitType": "space",
               "tier": 0,
-              "ready_to_move": 0,
               "unit_status": "active"
             },
             {
@@ -1005,7 +1032,6 @@
               "player": 0,
               "unitType": "space",
               "tier": 0,
-              "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
@@ -1061,7 +1087,14 @@
           "discount": 1,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "unitType": "ground",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": []
         },
         {
@@ -1486,40 +1519,7 @@
     true
   ],
   "targetMarkers": [],
-  "orders": [
-    {
-      "id": "p1_advance_1",
-      "type": "advance",
-      "owner": 0,
-      "tile": "1,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "p2_advance_1",
-      "type": "advance",
-      "owner": 1,
-      "tile": "1,0",
-      "position": 1,
-      "revealed": false
-    },
-    {
-      "id": "p1_advance_2",
-      "type": "advance",
-      "owner": 0,
-      "tile": "1,0",
-      "position": 2,
-      "revealed": false
-    },
-    {
-      "id": "p2_advance_2",
-      "type": "advance",
-      "owner": 1,
-      "tile": "1,0",
-      "position": 3,
-      "revealed": false
-    }
-  ],
+  "orders": [],
   "ordersPlaced": [
     4,
     4
@@ -1530,8 +1530,8 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    false,
-    false
+    true,
+    true
   ],
   "log": [
     {
@@ -1709,15 +1709,82 @@
     {
       "message": "Игра загружена",
       "player_id": -1
+    },
+    {
+      "message": "Приказ 'Advance' сброшен",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Advance' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Advance' сброшен",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Advance' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "БОЙ в области 0 тайла 1,0: победил Omega. Alpha отступает.",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha (нападавший) отступил в область 0 (1 юн.). Статус: разбит.",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha: доход +10 (итого 11 кредитов)",
+      "player_id": 0
+    },
+    {
+      "message": "Omega: доход +6 (итого 7 кредитов)",
+      "player_id": 1
+    },
+    {
+      "message": "Alpha: восстановлено 1 войск",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha взял карту события: Exodite Colony",
+      "player_id": 0
+    },
+    {
+      "message": "Omega взял карту события: Seduced by Chaos",
+      "player_id": 1
     }
   ],
   "event_cards_offered": [
-    [],
-    []
+    [
+      {
+        "name": "Exodite Colony",
+        "warp_storm_move": "Top Rgt/Bot Left",
+        "card_type": "Tactic",
+        "effect": "Spend 1 materiel to place 1 free city on a friendly or uncontrolled world not containing a structure or Eldar objective token.",
+        "image": "faction_defs/eldar_data/events/Exodite Colony.jpg"
+      }
+    ],
+    [
+      {
+        "name": "Incantation of Tzeentch",
+        "warp_storm_move": "Across",
+        "card_type": "Tactic",
+        "effect": "Draw 3 cards from Event Deck, choose 1 and resolve its ability (not Warp Storm move).",
+        "image": "faction_defs/chaos_data/events/Incantation of Tzeentch.jpg"
+      },
+      {
+        "name": "Seduced by Chaos",
+        "warp_storm_move": "Sideways",
+        "card_type": "Scheme",
+        "effect": "At end of assess damage in a Chaos combat, discard to rout 1 unit in combat.",
+        "image": "faction_defs/chaos_data/events/Seduced by Chaos.jpg"
+      }
+    ]
   ],
   "event_selection_done": [
-    false,
-    false
+    true,
+    true
   ],
   "ui": {
     "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Omega: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 2",
