@@ -54,12 +54,22 @@
           "id": "p1_dominate_1",
           "type": "dominate",
           "owner": 0
+        },
+        {
+          "id": "p1_dominate_2",
+          "type": "dominate",
+          "owner": 0
+        },
+        {
+          "id": "p1_deploy_1",
+          "type": "deploy",
+          "owner": 0
         }
       ],
-      "credits": 6,
+      "credits": 0,
       "tokens": {
         "support": 0,
-        "discount": 1,
+        "discount": 0,
         "forge": 1
       },
       "hand_battle_cards": [
@@ -347,12 +357,22 @@
           "id": "p2_dominate_1",
           "type": "dominate",
           "owner": 1
+        },
+        {
+          "id": "p2_dominate_2",
+          "type": "dominate",
+          "owner": 1
+        },
+        {
+          "id": "p2_deploy_1",
+          "type": "deploy",
+          "owner": 1
         }
       ],
-      "credits": 6,
+      "credits": 1,
       "tokens": {
-        "support": 1,
-        "discount": 1,
+        "support": 2,
+        "discount": 0,
         "forge": 0
       },
       "hand_battle_cards": [
@@ -589,7 +609,7 @@
     }
   ],
   "phase": "execution",
-  "curP": 1,
+  "curP": 0,
   "round": 1,
   "totalRounds": 8,
   "firstPlayer": 0,
@@ -664,6 +684,12 @@
               "tier": 0,
               "ready_to_move": 0,
               "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -686,9 +712,26 @@
               "tier": 1,
               "ready_to_move": 0,
               "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 1,
+              "player": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "active"
             }
           ],
-          "structures": []
+          "structures": [
+            {
+              "type": "city",
+              "player": 0
+            }
+          ]
         }
       ],
       "needsObjective": true,
@@ -893,6 +936,12 @@
               "tier": 1,
               "ready_to_move": 0,
               "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 0,
+              "player": 1,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -917,7 +966,12 @@
               "unit_status": "active"
             }
           ],
-          "structures": []
+          "structures": [
+            {
+              "type": "city",
+              "player": 1
+            }
+          ]
         },
         {
           "area_place": 2,
@@ -936,6 +990,18 @@
               "unitType": "space",
               "tier": 0,
               "ready_to_move": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 1,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "space",
+              "tier": 0,
+              "player": 1,
               "unit_status": "active"
             }
           ],
@@ -1150,38 +1216,6 @@
   "targetMarkers": [],
   "orders": [
     {
-      "id": "p1_deploy_1",
-      "type": "deploy",
-      "owner": 0,
-      "tile": "0,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "p2_deploy_1",
-      "type": "deploy",
-      "owner": 1,
-      "tile": "2,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "p2_dominate_2",
-      "type": "dominate",
-      "owner": 1,
-      "tile": "2,0",
-      "position": 1,
-      "revealed": false
-    },
-    {
-      "id": "p1_dominate_2",
-      "type": "dominate",
-      "owner": 0,
-      "tile": "0,-1",
-      "position": 0,
-      "revealed": false
-    },
-    {
       "id": "p1_advance_2",
       "type": "advance",
       "owner": 0,
@@ -1208,7 +1242,7 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    true,
+    false,
     true
   ],
   "log": [
@@ -1393,10 +1427,6 @@
       "player_id": -1
     },
     {
-      "message": "Игра загружена",
-      "player_id": -1
-    },
-    {
       "message": "Приказ 'Dominate' разыгран",
       "player_id": 0
     },
@@ -1411,6 +1441,38 @@
     {
       "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
       "player_id": 1
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Игрок 0: Dominate — получено: 1 discount, 1 forge",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
+      "player_id": 1
+    },
+    {
+      "message": "Игра загружена",
+      "player_id": -1
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Игра загружена",
+      "player_id": -1
     }
   ],
   "event_cards_offered": [
@@ -1422,12 +1484,11 @@
     false
   ],
   "ui": {
-    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 4",
-    "buttons": [],
-    "playable_order_ids": [
-      "p1_dominate_1",
-      "p1_dominate_2"
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Alpha: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 1",
+    "buttons": [
+      "btn-pass"
     ],
+    "playable_order_ids": [],
     "blocked_tiles": [
       "1,0"
     ],
@@ -1435,28 +1496,5 @@
     "order_placed_this_turn": false,
     "order_played_this_turn": false
   },
-  "pending_deploy": null,
-  "pending_advance": null,
-  "pending_chaos_dominate": {
-    "player_id": 1,
-    "source_tile_key": "2,0",
-    "valid_targets": [
-      {
-        "tile_key": "2,-1",
-        "area_idx": 1
-      },
-      {
-        "tile_key": "2,-1",
-        "area_idx": 2
-      },
-      {
-        "tile_key": "1,0",
-        "area_idx": 0
-      },
-      {
-        "tile_key": "1,0",
-        "area_idx": 1
-      }
-    ]
-  }
+  "pending_advance": null
 }
