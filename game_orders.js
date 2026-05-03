@@ -146,6 +146,9 @@ async function playOrderViaAPI(orderId) {
       } else if (res.state?.pending_chaos_dominate) {
         console.log('→ Chaos dominate ability');
         _showChaosDominateUI(res.state.pending_chaos_dominate);
+      } else if (res.state?.pending_eldar_dominate) {
+        console.log('→ Eldar dominate ability');
+        renderSide(); renderBoard();
       } else if (res.state?.pending_deploy) {
         console.log('→ Deploy UI (pending_deploy есть)');
         setPhase('execution');
@@ -197,6 +200,8 @@ async function _resolveJoker(playerId, choiceType) {
       addLog(`Джокер → ${choiceType}`, playerId);
       if (res.state?.pending_chaos_dominate) {
         _showChaosDominateUI(res.state.pending_chaos_dominate);
+      } else if (res.state?.pending_eldar_dominate) {
+        renderSide(); renderBoard();
       } else {
         setPhase('execution');
       }

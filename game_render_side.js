@@ -45,6 +45,7 @@ function renderSide() {
   if (G.phase === 'end-round')       return _renderEndRoundPhase();
 
   if (G.phase === 'execution') {
+    if (G.pending_eldar_dominate)                                 return _renderEldarDominatePhase();
     if (G.pending_deploy?.step === 'place_units')                 return _renderDeployPlaceUnitsPhase();
     if (G.pending_deploy?.step === 'buy_building')                return _renderDeployBuyBuildingPhase();
     if (G.pending_advance?.step === 'choose_source')              return _renderAdvanceChooseSourcePhase();
@@ -131,6 +132,28 @@ function _renderTroopPhase() {
   } else {
     structSection.style.display = 'none';
   }
+}
+
+function _renderEldarDominatePhase() {
+  const poolEl = _resetPanels();
+  const pe = G.pending_eldar_dominate;
+
+  poolEl.appendChild(_mkPtitle('ELDAR: особое свойство доминации'));
+
+  if (!_eldarSelectedUnit) {
+    poolEl.appendChild(_mkDiv('font-size:.72rem;color:var(--dim);margin-bottom:12px;',
+      'Кликните на наземного юнита в активной системе для перемещения'));
+  } else {
+    poolEl.appendChild(_mkDiv('font-size:.72rem;color:var(--dim);margin-bottom:12px;',
+      `Юнит выбран (область ${_eldarSelectedUnit.area_idx}). Кликните на дружественную планету`));
+  }
+
+  const skipBtn = document.createElement('button');
+  skipBtn.className = 'abtn';
+  skipBtn.style.cssText = 'width:100%;padding:8px;margin-top:8px;';
+  skipBtn.textContent = 'Пропустить';
+  skipBtn.onclick = eldarDominateSkip;
+  poolEl.appendChild(skipBtn);
 }
 
 function _renderEndRoundPhase() {

@@ -30,6 +30,8 @@ function applyState(newState) {
   if (!('pending_joker_choice' in newState)) G.pending_joker_choice = null;
   if (!('pending_advance' in newState)) G.pending_advance = null;
   if (!('pending_strategize' in newState)) G.pending_strategize = null;
+  if (!('pending_chaos_dominate' in newState)) G.pending_chaos_dominate = null;
+  if (!('pending_eldar_dominate' in newState)) G.pending_eldar_dominate = null;
   uiFields.forEach(k => { G[k] = saved[k]; });
   // Сбросить выбранный приказ при смене игрока
   if (G.curP !== prevPlayer) _selectedOrderForPlay = null;

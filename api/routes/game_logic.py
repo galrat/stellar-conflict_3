@@ -139,10 +139,12 @@ class DominateJokerRequest(BaseModel):
 
 
 class DominateChaosChooseRequest(BaseModel):
-    """Выбор планеты для культиста Хаоса после Dominate"""
+    """Выбор юнита и планеты для культиста Хаоса после Dominate"""
     player_id: int
-    tile_key: str
-    area_idx: int
+    src_area_idx: int
+    src_troop_idx: int
+    target_tile_key: str
+    target_area_idx: int
 
 
 class DominateChaosSkipRequest(BaseModel):
@@ -152,6 +154,28 @@ class DominateChaosSkipRequest(BaseModel):
 
 class DominateChaosRetreatRequest(BaseModel):
     """Удалить юнита из переполненной области после перемещения культиста"""
+    player_id: int
+    tile_key: str
+    area_idx: int
+    troop_idx: int
+
+
+class DominateEldarChooseRequest(BaseModel):
+    """Выбор юнита и цели для способности Eldar после Dominate"""
+    player_id: int
+    src_area_idx: int
+    src_troop_idx: int
+    target_tile_key: str
+    target_area_idx: int
+
+
+class DominateEldarSkipRequest(BaseModel):
+    """Пропустить особое свойство Eldar после Dominate"""
+    player_id: int
+
+
+class DominateEldarRetreatRequest(BaseModel):
+    """Удалить юнита из переполненной области после перемещения Eldar"""
     player_id: int
     tile_key: str
     area_idx: int
@@ -313,6 +337,17 @@ def compute_ui_hints(state: dict) -> dict:
             )
             ui['buttons'] = ['btn-undo-order']
             ui['chaos_dominate_targets'] = pc.get('valid_targets', [])
+            return ui
+
+        # Если ожидается особое свойство Eldar
+        pe = state.get('pending_eldar_dominate')
+        if pe and pe.get('player_id') == cur_p:
+            ui['instruction'] = (
+                f'<strong>ELDAR: Особое свойство доминации</strong><br>'
+                f'{cp_name}: переместите наземного юнита на дружественную планету (или пропустите)'
+            )
+            ui['buttons'] = ['btn-undo-order']
+            ui['eldar_dominate_pending'] = pe
             return ui
 
         # Если идёт выполнение приказа Deploy
@@ -773,6 +808,10 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             if active_game.get('pending_chaos_dominate'):
                 return GameStateResponse(success=False, error="Сначала завершите особое свойство Хаоса (Dominate)")
 
+            # Нельзя играть если ожидается особое свойство Eldar
+            if active_game.get('pending_eldar_dominate'):
+                return GameStateResponse(success=False, error="Сначала завершите особое свойство Eldar (Dominate)")
+
             # Нельзя играть если уже совершено действие в этом ходу (сброс или розыгрыш)
             played_flag = active_game.get('execution_order_played', [False, False])
             if played_flag[current_player]:
@@ -963,15 +1002,17 @@ async def dominate_chaos_choose_endpoint(request: DominateChaosChooseRequest) ->
         if active_game is None:
             return GameStateResponse(success=False, error="Игра не инициализирована")
         try:
-            from python_engine.dominate import chaos_dominate_move
+            from python_engine.dominate import get_faction_module
             pending = active_game.get('pending_chaos_dominate', {})
             if not pending:
                 return GameStateResponse(success=False, error="Нет ожидающей способности Хаоса")
             if pending.get('player_id') != request.player_id:
                 return GameStateResponse(success=False, error="Это не ваша способность")
 
-            success, message, new_state = chaos_dominate_move(
-                active_game, request.player_id, request.tile_key, request.area_idx
+            success, message, new_state = get_faction_module('chaos').handle_move(
+                active_game, request.player_id,
+                request.src_area_idx, request.src_troop_idx,
+                request.target_tile_key, request.target_area_idx,
             )
             if not success:
                 return GameStateResponse(success=False, error=message)
@@ -1017,8 +1058,88 @@ async def dominate_chaos_retreat_endpoint(request: DominateChaosRetreatRequest) 
         if active_game is None:
             return GameStateResponse(success=False, error="Игра не инициализирована")
         try:
-            from faction_defs.chaos_data.dominate import chaos_retreat_unit
-            success, message, new_state = chaos_retreat_unit(
+            from python_engine.dominate import get_faction_module
+            success, message, new_state = get_faction_module('chaos').handle_retreat(
+                active_game, request.player_id, request.tile_key, request.area_idx, request.troop_idx
+            )
+            if not success:
+                return GameStateResponse(success=False, error=message)
+            active_game.clear()
+            active_game.update(new_state)
+            print(f"⬡ {message}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-eldar-choose')
+async def dominate_eldar_choose_endpoint(request: DominateEldarChooseRequest) -> GameStateResponse:
+    """Переместить юнита Eldar на выбранную планету после Dominate"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from python_engine.dominate import get_faction_module
+            pending = active_game.get('pending_eldar_dominate', {})
+            if not pending:
+                return GameStateResponse(success=False, error="Нет ожидающей способности Eldar")
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Это не ваша способность")
+
+            success, message, new_state = get_faction_module('eldar').handle_move(
+                active_game, request.player_id,
+                request.src_area_idx, request.src_troop_idx,
+                request.target_tile_key, request.target_area_idx,
+            )
+            if not success:
+                return GameStateResponse(success=False, error=message)
+
+            active_game.clear()
+            active_game.update(new_state)
+            print(f"⬡ {message}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-eldar-skip')
+async def dominate_eldar_skip_endpoint(request: DominateEldarSkipRequest) -> GameStateResponse:
+    """Пропустить особое свойство Eldar после Dominate"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pending = active_game.get('pending_eldar_dominate', {})
+            if not pending:
+                return GameStateResponse(success=False, error="Нет ожидающей способности Eldar")
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Это не ваша способность")
+
+            del active_game['pending_eldar_dominate']
+            print(f"⬡ Eldar: особое свойство доминации пропущено")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            print(f"❌ Ошибка: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-eldar-retreat')
+async def dominate_eldar_retreat_endpoint(request: DominateEldarRetreatRequest) -> GameStateResponse:
+    """Удалить юнита из переполненной области после перемещения Eldar"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from python_engine.dominate import get_faction_module
+            success, message, new_state = get_faction_module('eldar').handle_retreat(
                 active_game, request.player_id, request.tile_key, request.area_idx, request.troop_idx
             )
             if not success:
@@ -1056,6 +1177,8 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                 return GameStateResponse(success=False, error="Сначала завершите приказ Advance")
             if active_game.get('pending_chaos_dominate'):
                 return GameStateResponse(success=False, error="Сначала завершите особое свойство Хаоса (Dominate)")
+            if active_game.get('pending_eldar_dominate'):
+                return GameStateResponse(success=False, error="Сначала завершите особое свойство Eldar (Dominate)")
 
             # Проверить: если у игрока есть разыгрываемые приказы — обязан сыграть
             playable = get_available_orders(active_game, current_player)

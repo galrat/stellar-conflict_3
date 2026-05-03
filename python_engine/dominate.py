@@ -15,12 +15,18 @@ python_engine/dominate.py — логика приказа Dominate
   area.joker    → игрок выбирает один из трёх типов
 """
 import copy
+import importlib
 
-from faction_defs.chaos_data.dominate import (
-    maybe_start_chaos_dominate,
-    chaos_dominate_move,
-    chaos_retreat_unit,
-)
+_FACTION_MODULES = {
+    'chaos':          'faction_defs.chaos_data.dominate',
+    'eldar':          'faction_defs.eldar_data.dominate',
+    'imperial_guard': 'faction_defs.imperial_guard_data.dominate',
+    'marine':         'faction_defs.marine_data.dominate',
+    'necrons':        'faction_defs.necrons_data.dominate',
+    'orks':           'faction_defs.orks_data.dominate',
+    'tau':            'faction_defs.tau_data.dominate',
+    'tyranids':       'faction_defs.tyranids_data.dominate',
+}
 
 TOKEN_CAP_DEFAULT  = 3
 TOKEN_CAP_TYRANIDS = 4  # Tyranids: "up to 4 of each"
@@ -34,6 +40,19 @@ def _is_friendly_planet(area, player_id):
     has_unit      = any(t.get('player') == player_id for t in area.get('troops', []))
     has_structure = any(s.get('player') == player_id for s in area.get('structures', []))
     return has_unit or has_structure
+
+
+def get_faction_module(faction_id):
+    """Вернуть модуль с faction-специфичной логикой Dominate или None."""
+    path = _FACTION_MODULES.get(faction_id)
+    return importlib.import_module(path) if path else None
+
+
+def _call_maybe_start(state, player_id, tile_key):
+    faction_id = state['players'][player_id].get('faction', '')
+    mod = get_faction_module(faction_id)
+    if mod and hasattr(mod, 'maybe_start'):
+        mod.maybe_start(state, player_id, tile_key)
 
 
 def _get_token_cap(state, player_id):
@@ -80,7 +99,7 @@ def dominate_order(state, player_id, tile_key):
     _apply_tokens(new_state, player_id, collected)
 
     # 4. Faction special: Chaos
-    maybe_start_chaos_dominate(new_state, player_id, tile_key)
+    _call_maybe_start(new_state, player_id, tile_key)
 
     msg = _build_log(player_id, collected, joker_resolved=None)
     new_state.setdefault('log', []).append({'message': msg, 'player_id': player_id})
@@ -110,8 +129,8 @@ def dominate_resolve_joker(state, player_id, joker_choices):
 
     _apply_tokens(new_state, player_id, collected)
 
-    # Faction special: Chaos (after joker resolved)
-    maybe_start_chaos_dominate(new_state, player_id, pending['tile_key'])
+    # Faction special
+    _call_maybe_start(new_state, player_id, pending['tile_key'])
 
     msg = _build_log(player_id, collected, joker_resolved=joker_choices)
     new_state.setdefault('log', []).append({'message': msg, 'player_id': player_id})

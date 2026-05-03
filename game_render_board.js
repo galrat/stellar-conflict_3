@@ -53,7 +53,7 @@ function _drawAreaTroops(ae, tile, area, realIdx) {
   const skip = { ...movedOut };
 
   // Real troops
-  area.troops.forEach(u => {
+  area.troops.forEach((u, troopIdx) => {
     const k = `${u.unitType}${u.tier ?? 0}`;
     if (u.player === G.curP && skip[k] > 0) { skip[k]--; return; }
 
@@ -68,6 +68,20 @@ function _drawAreaTroops(ae, tile, area, realIdx) {
         (advStep === 'ships'  && u.unitType === 'space') ||
         (advStep === 'ground' && u.unitType === 'ground');
       if (show) { opts.outline = `2px dashed ${color}`; opts.opacity = '0.9'; }
+    }
+
+    const ped = G.pending_eldar_dominate;
+    if (ped && ped.player_id === G.curP && tile.key === ped.source_tile_key
+        && u.player === G.curP && u.unitType === 'ground') {
+      const movable = (ped.movable_units || []).find(
+        m => m.area_idx === realIdx && m.troop_idx === troopIdx
+      );
+      if (movable) {
+        const isSel = _eldarSelectedUnit?.area_idx === realIdx && _eldarSelectedUnit?.troop_idx === troopIdx;
+        opts.cursor = 'pointer';
+        opts.boxShadow = `0 0 6px ${color}`;
+        if (isSel) opts.outline = `2px solid ${color}`;
+      }
     }
 
     if (paAdv && u.player === G.curP && (isAdvActive || isAdvSource)) {
@@ -155,6 +169,24 @@ function _getAreaClass(tile, area, realIdx, displayIdx) {
       if (cnt > area.capacity) return 'ano';
     }
     return null;
+  }
+
+  const ped = G.pending_eldar_dominate;
+  if (ped && ped.player_id === G.curP) {
+    if (!_eldarSelectedUnit) {
+      if (tile.key === ped.source_tile_key) {
+        const hasMovable = (ped.movable_units || []).some(m => m.area_idx === realIdx);
+        return hasMovable ? 'aok' : null;
+      }
+      return null;
+    } else {
+      if (tile.key === ped.source_tile_key
+          && _eldarSelectedUnit.area_idx === realIdx) return 'aok';
+      const isTarget = (ped.valid_targets || []).some(
+        t => t.tile_key === tile.key && t.area_idx === realIdx
+      );
+      return isTarget ? 'aok' : 'ano';
+    }
   }
 
   const pa = G.pending_advance;
@@ -379,7 +411,10 @@ function _drawTile(tile, px) {
       ae.appendChild(m);
     }
 
-    ae.onclick = () => areaClick(tile.key, displayIdx);
+    ae.onclick = () => {
+      if (G.pending_eldar_dominate) { eldarDominateAreaClick(tile.key, realIdx); return; }
+      areaClick(tile.key, displayIdx);
+    };
     inner.appendChild(ae);
   });
 
