@@ -46,6 +46,7 @@ function renderSide() {
 
   if (G.phase === 'execution') {
     if (G.pending_eldar_dominate)                                 return _renderEldarDominatePhase();
+    if (G.pending_chaos_dominate)                                 return _renderChaosDominatePhase();
     if (G.pending_deploy?.step === 'place_units')                 return _renderDeployPlaceUnitsPhase();
     if (G.pending_deploy?.step === 'buy_building')                return _renderDeployBuyBuildingPhase();
     if (G.pending_advance?.step === 'choose_source')              return _renderAdvanceChooseSourcePhase();
@@ -153,6 +154,26 @@ function _renderEldarDominatePhase() {
   skipBtn.style.cssText = 'width:100%;padding:8px;margin-top:8px;';
   skipBtn.textContent = 'Пропустить';
   skipBtn.onclick = eldarDominateSkip;
+  poolEl.appendChild(skipBtn);
+}
+
+function _renderChaosDominatePhase() {
+  const poolEl = _resetPanels();
+  poolEl.appendChild(_mkPtitle('ХАОС: особое свойство доминации'));
+
+  if (!_chaosSelectedUnit) {
+    poolEl.appendChild(_mkDiv('font-size:.72rem;color:var(--dim);margin-bottom:12px;',
+      'Кликните на культиста в активной системе для перемещения'));
+  } else {
+    poolEl.appendChild(_mkDiv('font-size:.72rem;color:var(--dim);margin-bottom:12px;',
+      `Культист выбран (область ${_chaosSelectedUnit.area_idx}). Кликните на планету соседней системы`));
+  }
+
+  const skipBtn = document.createElement('button');
+  skipBtn.className = 'abtn';
+  skipBtn.style.cssText = 'width:100%;padding:8px;margin-top:8px;';
+  skipBtn.textContent = 'Пропустить';
+  skipBtn.onclick = chaosDominateSkip;
   poolEl.appendChild(skipBtn);
 }
 

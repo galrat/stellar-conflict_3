@@ -11,10 +11,14 @@ function eldarDominateAreaClick(tileKey, realIdx) {
 
   if (!_eldarSelectedUnit) {
     if (tileKey !== pe.source_tile_key) return;
-    const unit = (pe.movable_units || []).find(u => u.area_idx === realIdx);
-    if (!unit) return;
-    _eldarSelectedUnit = unit;
-    renderBoard();
+    const unitsInArea = (pe.movable_units || []).filter(u => u.area_idx === realIdx);
+    if (!unitsInArea.length) return;
+    if (unitsInArea.length === 1) {
+      _eldarSelectedUnit = unitsInArea[0];
+      renderBoard();
+    } else {
+      _showEldarUnitPickModal(unitsInArea);
+    }
   } else {
     const isTarget = (pe.valid_targets || []).some(
       t => t.tile_key === tileKey && t.area_idx === realIdx
@@ -32,6 +36,23 @@ function eldarDominateAreaClick(tileKey, realIdx) {
       realIdx,
     );
   }
+}
+
+function _showEldarUnitPickModal(units) {
+  const btns = units.map(u =>
+    `<button class="abtn bp" onclick="_eldarPickUnit(${u.area_idx},${u.troop_idx},'${u.unitType}',${u.tier})"
+      style="margin:4px 2px;display:block;width:100%;">${u.unitType} tier${u.tier}</button>`
+  ).join('');
+  showMsg('⬡ Eldar: выберите юнита для перемещения', `
+    <div style="margin-bottom:10px;color:#aaa;">На планете несколько юнитов. Выберите, кого переместить:</div>
+    <div style="display:flex;flex-direction:column;gap:4px;">${btns}</div>
+  `);
+}
+
+function _eldarPickUnit(areaIdx, troopIdx, unitType, tier) {
+  closeMsg();
+  _eldarSelectedUnit = { area_idx: areaIdx, troop_idx: troopIdx, unitType, tier };
+  renderBoard();
 }
 
 async function _eldarDominateExecuteMove(playerId, srcAreaIdx, srcTroopIdx, targetTileKey, targetAreaIdx) {

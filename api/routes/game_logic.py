@@ -827,7 +827,7 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             order_tile = played_order.get('tile') if played_order else None
 
             # Для deploy/advance/strategize сохраняем snapshot ДО розыгрыша — чтобы undo вернул приказ на доску
-            if order_type in ('deploy', 'advance', 'strategize'):
+            if order_type in ('deploy', 'advance', 'strategize', 'dominate'):
                 clear_temp_snapshots()
                 save_temp_snapshot()
 

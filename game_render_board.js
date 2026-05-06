@@ -189,6 +189,21 @@ function _getAreaClass(tile, area, realIdx, displayIdx) {
     }
   }
 
+  const pcd = G.pending_chaos_dominate;
+  if (pcd && pcd.player_id === G.curP) {
+    if (!_chaosSelectedUnit) {
+      if (tile.key === pcd.source_tile_key) {
+        const hasMovable = (pcd.movable_units || []).some(m => m.area_idx === realIdx);
+        return hasMovable ? 'aok' : null;
+      }
+      return null;
+    } else {
+      if (tile.key === pcd.source_tile_key && _chaosSelectedUnit.area_idx === realIdx) return 'aok';
+      const isTarget = (pcd.valid_targets || []).some(t => t.tile_key === tile.key && t.area_idx === realIdx);
+      return isTarget ? 'aok' : 'ano';
+    }
+  }
+
   const pa = G.pending_advance;
   if (!pa) return null;
 
@@ -412,7 +427,8 @@ function _drawTile(tile, px) {
     }
 
     ae.onclick = () => {
-      if (G.pending_eldar_dominate) { eldarDominateAreaClick(tile.key, realIdx); return; }
+      if (G.pending_eldar_dominate?.player_id != null) { eldarDominateAreaClick(tile.key, realIdx); return; }
+      if (G.pending_chaos_dominate?.player_id != null) { chaosDominateAreaClick(tile.key, realIdx); return; }
       areaClick(tile.key, displayIdx);
     };
     inner.appendChild(ae);

@@ -11,10 +11,14 @@ function chaosDominateAreaClick(tileKey, realIdx) {
 
   if (!_chaosSelectedUnit) {
     if (tileKey !== pc.source_tile_key) return;
-    const unit = (pc.movable_units || []).find(u => u.area_idx === realIdx);
-    if (!unit) return;
-    _chaosSelectedUnit = unit;
-    renderBoard();
+    const unitsInArea = (pc.movable_units || []).filter(u => u.area_idx === realIdx);
+    if (!unitsInArea.length) return;
+    if (unitsInArea.length === 1) {
+      _chaosSelectedUnit = unitsInArea[0];
+      renderBoard();
+    } else {
+      _showChaosUnitPickModal(unitsInArea);
+    }
   } else {
     const isTarget = (pc.valid_targets || []).some(
       t => t.tile_key === tileKey && t.area_idx === realIdx
@@ -32,6 +36,23 @@ function chaosDominateAreaClick(tileKey, realIdx) {
       realIdx,
     );
   }
+}
+
+function _showChaosUnitPickModal(units) {
+  const btns = units.map(u =>
+    `<button class="abtn bp" onclick="_chaosPickUnit(${u.area_idx},${u.troop_idx},'${u.unitType}',${u.tier})"
+      style="margin:4px 2px;display:block;width:100%;">${u.unitType} tier${u.tier}</button>`
+  ).join('');
+  showMsg('⬡ Хаос: выберите культиста для перемещения', `
+    <div style="margin-bottom:10px;color:#aaa;">На области несколько культистов. Выберите, кого переместить:</div>
+    <div style="display:flex;flex-direction:column;gap:4px;">${btns}</div>
+  `);
+}
+
+function _chaosPickUnit(areaIdx, troopIdx, unitType, tier) {
+  closeMsg();
+  _chaosSelectedUnit = { area_idx: areaIdx, troop_idx: troopIdx, unitType, tier };
+  renderBoard();
 }
 
 async function _chaosDominateExecuteMove(playerId, srcAreaIdx, srcTroopIdx, targetTileKey, targetAreaIdx) {

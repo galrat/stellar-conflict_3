@@ -54,6 +54,11 @@
           "id": "p1_dominate_2",
           "type": "dominate",
           "owner": 0
+        },
+        {
+          "id": "p1_advance_2",
+          "type": "advance",
+          "owner": 0
         }
       ],
       "credits": 6,
@@ -344,6 +349,11 @@
           "owner": 1
         },
         {
+          "id": "p2_advance_1",
+          "type": "advance",
+          "owner": 1
+        },
+        {
           "id": "p2_dominate_1",
           "type": "dominate",
           "owner": 1
@@ -351,7 +361,7 @@
       ],
       "credits": 6,
       "tokens": {
-        "support": 1,
+        "support": 0,
         "discount": 1,
         "forge": 0
       },
@@ -615,16 +625,7 @@
           "discount": 0,
           "forge": 1,
           "joker": 1,
-          "troops": [
-            {
-              "id": 2,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 0,
-              "ready_to_move": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": [
             {
               "id": 6,
@@ -643,16 +644,7 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 4,
-              "player": 0,
-              "unitType": "space",
-              "tier": 0,
-              "ready_to_move": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": []
         },
         {
@@ -671,7 +663,6 @@
               "player": 0,
               "unitType": "space",
               "tier": 0,
-              "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
@@ -693,7 +684,6 @@
               "player": 0,
               "unitType": "ground",
               "tier": 1,
-              "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
@@ -727,7 +717,15 @@
           "discount": 0,
           "forge": 1,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 2,
+              "player": 0,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": []
         },
         {
@@ -746,7 +744,6 @@
               "player": 1,
               "unitType": "ground",
               "tier": 1,
-              "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
@@ -762,7 +759,15 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 4,
+              "player": 0,
+              "unitType": "space",
+              "tier": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": []
         },
         {
@@ -891,8 +896,14 @@
               "player": 1,
               "unitType": "ground",
               "tier": 1,
-              "ready_to_move": 0,
               "unit_status": "active"
+            },
+            {
+              "id": 11,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "routed"
             }
           ],
           "structures": []
@@ -926,7 +937,6 @@
               "player": 1,
               "unitType": "space",
               "tier": 0,
-              "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
@@ -1089,14 +1099,6 @@
               "tier": 0,
               "ready_to_move": 0,
               "unit_status": "active"
-            },
-            {
-              "id": 11,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 0,
-              "ready_to_move": 0,
-              "unit_status": "active"
             }
           ],
           "structures": []
@@ -1177,22 +1179,6 @@
       "type": "dominate",
       "owner": 1,
       "tile": "2,0",
-      "position": 1,
-      "revealed": false
-    },
-    {
-      "id": "p1_advance_2",
-      "type": "advance",
-      "owner": 0,
-      "tile": "1,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "p2_advance_1",
-      "type": "advance",
-      "owner": 1,
-      "tile": "1,0",
       "position": 1,
       "revealed": false
     }
@@ -1404,7 +1390,23 @@
       "player_id": 0
     },
     {
-      "message": "Eldar: юнит перемещён в систему 0,0, область 0",
+      "message": "Eldar: юнит перемещён в систему 0,0, область 3",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Advance' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Advance' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "БОЙ в области 0 тайла 1,0: победил Alpha. Omega отступает.",
+      "player_id": 0
+    },
+    {
+      "message": "Omega (защитник) отступил в область 0 (1 юн.). Статус: разбит.",
       "player_id": 0
     },
     {
@@ -1412,11 +1414,7 @@
       "player_id": 1
     },
     {
-      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
-      "player_id": 1
-    },
-    {
-      "message": "Хаос: культист перемещён в систему 2,-1, область 2",
+      "message": "Игрок 1: Dominate — получено: 1 discount",
       "player_id": 1
     }
   ],
@@ -1443,6 +1441,5 @@
     "order_played_this_turn": false
   },
   "pending_deploy": null,
-  "pending_joker_choice": null,
-  "pending_advance": null
+  "pending_joker_choice": null
 }

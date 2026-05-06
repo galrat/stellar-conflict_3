@@ -16,7 +16,7 @@ def _collect_movable_units(state, player_id, tile_key):
         for troop_idx, t in enumerate(area.get('troops', [])):
             if (t.get('player') == player_id
                     and t.get('unitType') == 'ground'
-                    and t.get('status', 'active') != 'routed'):
+                    and t.get('unit_status') != 'routed'):
                 units.append({
                     'area_idx':  area_idx,
                     'troop_idx': troop_idx,
@@ -79,6 +79,9 @@ def handle_move(state, player_id, src_area_idx, src_troop_idx, target_tile_key, 
     if src_troop_idx < 0 or src_troop_idx >= len(troops):
         return False, "Неверный индекс юнита", None
 
+    troop = troops[src_troop_idx]
+    if troop.get('unit_status') == 'routed':
+        return False, "Нельзя перемещать routed юнита", None
     troop = troops.pop(src_troop_idx)
 
     target_area   = new_state['map'][target_tile_key]['areas'][target_area_idx]

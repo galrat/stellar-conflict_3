@@ -42,6 +42,7 @@
 - `faction_defs/` — данные фракций
 - `game_serializer.py` — сериализация state
 - `tiles.py` — каталог тайлов (Python)
+- **undo/снапшоты** → `api/routes/game_logic.py` (ищи `save_temp_snapshot`, `clear_temp_snapshots`). Снапшот нужно сохранять ДО розыгрыша приказа — иначе кнопка "Вернуть приказ" вернёт "Нечего отменять".
 
 ### НЕ читать без явного запроса
 - `factions_data.json` (74 КБ)
