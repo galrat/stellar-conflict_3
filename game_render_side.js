@@ -47,6 +47,7 @@ function renderSide() {
   if (G.phase === 'execution') {
     if (G.pending_eldar_dominate)                                 return _renderEldarDominatePhase();
     if (G.pending_chaos_dominate)                                 return _renderChaosDominatePhase();
+    if (G.pending_marine_dominate)                                return _renderMarineDominatePhase();
     if (G.pending_deploy?.step === 'place_units')                 return _renderDeployPlaceUnitsPhase();
     if (G.pending_deploy?.step === 'buy_building')                return _renderDeployBuyBuildingPhase();
     if (G.pending_advance?.step === 'choose_source')              return _renderAdvanceChooseSourcePhase();
@@ -174,6 +175,26 @@ function _renderChaosDominatePhase() {
   skipBtn.style.cssText = 'width:100%;padding:8px;margin-top:8px;';
   skipBtn.textContent = 'Пропустить';
   skipBtn.onclick = chaosDominateSkip;
+  poolEl.appendChild(skipBtn);
+}
+
+function _renderMarineDominatePhase() {
+  const poolEl = _resetPanels();
+  poolEl.appendChild(_mkPtitle('MARINE: особое свойство доминации'));
+
+  if (!_marineSelectedUnit) {
+    poolEl.appendChild(_mkDiv('font-size:.72rem;color:var(--dim);margin-bottom:12px;',
+      'Кликните на юнита tier0/tier1 в активной системе для улучшения'));
+  } else {
+    poolEl.appendChild(_mkDiv('font-size:.72rem;color:var(--dim);margin-bottom:12px;',
+      `Юнит выбран (область ${_marineSelectedUnit.area_idx}, tier${_marineSelectedUnit.tier})`));
+  }
+
+  const skipBtn = document.createElement('button');
+  skipBtn.className = 'abtn';
+  skipBtn.style.cssText = 'width:100%;padding:8px;margin-top:8px;';
+  skipBtn.textContent = 'Пропустить';
+  skipBtn.onclick = marineDominateSkip;
   poolEl.appendChild(skipBtn);
 }
 

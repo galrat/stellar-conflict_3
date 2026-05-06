@@ -32,6 +32,7 @@ function applyState(newState) {
   if (!('pending_strategize' in newState)) G.pending_strategize = null;
   if (!('pending_chaos_dominate' in newState)) G.pending_chaos_dominate = null;
   if (!('pending_eldar_dominate' in newState)) G.pending_eldar_dominate = null;
+  if (!('pending_marine_dominate' in newState)) G.pending_marine_dominate = null;
   uiFields.forEach(k => { G[k] = saved[k]; });
   // Сбросить выбранный приказ при смене игрока
   if (G.curP !== prevPlayer) _selectedOrderForPlay = null;

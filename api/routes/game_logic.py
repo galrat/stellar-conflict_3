@@ -182,6 +182,18 @@ class DominateEldarRetreatRequest(BaseModel):
     troop_idx: int
 
 
+class DominateMarineChooseRequest(BaseModel):
+    """Выбор юнита для улучшения Marine после Dominate"""
+    player_id: int
+    area_idx: int
+    troop_idx: int
+
+
+class DominateMarineSkipRequest(BaseModel):
+    """Пропустить особое свойство Marine после Dominate"""
+    player_id: int
+
+
 class DeployConfirmBasketRequest(BaseModel):
     """Подтверждение корзины юнитов при Deploy"""
     player_id: int
@@ -348,6 +360,17 @@ def compute_ui_hints(state: dict) -> dict:
             )
             ui['buttons'] = ['btn-undo-order']
             ui['eldar_dominate_pending'] = pe
+            return ui
+
+        # Если ожидается особое свойство Marine
+        pm = state.get('pending_marine_dominate')
+        if pm and pm.get('player_id') == cur_p:
+            ui['instruction'] = (
+                f'<strong>MARINE: Особое свойство доминации</strong><br>'
+                f'{cp_name}: выберите юнита для улучшения (или пропустите)'
+            )
+            ui['buttons'] = ['btn-undo-order']
+            ui['marine_dominate_pending'] = pm
             return ui
 
         # Если идёт выполнение приказа Deploy
@@ -1154,6 +1177,69 @@ async def dominate_eldar_retreat_endpoint(request: DominateEldarRetreatRequest) 
             return GameStateResponse(success=False, error=str(e))
 
 
+@app.post('/api/game/dominate-marine-choose')
+async def dominate_marine_choose_endpoint(request: DominateMarineChooseRequest) -> GameStateResponse:
+    """Улучшить юнита Marine после Dominate"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from python_engine.dominate import get_faction_module
+            pending = active_game.get('pending_marine_dominate', {})
+            if not pending:
+                return GameStateResponse(success=False, error="Нет ожидающей способности Marine")
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Это не ваша способность")
+
+            success, message, new_state = get_faction_module('marine').handle_upgrade(
+                active_game, request.player_id,
+                request.area_idx, request.troop_idx,
+            )
+            if not success:
+                return GameStateResponse(success=False, error=message)
+
+            active_game.clear()
+            active_game.update(new_state)
+            print(f"◈ {message}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-marine-skip')
+async def dominate_marine_skip_endpoint(request: DominateMarineSkipRequest) -> GameStateResponse:
+    """Пропустить особое свойство Marine после Dominate"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from python_engine.dominate import get_faction_module
+            pending = active_game.get('pending_marine_dominate', {})
+            if not pending:
+                return GameStateResponse(success=False, error="Нет ожидающей способности Marine")
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Это не ваша способность")
+
+            success, message, new_state = get_faction_module('marine').handle_skip(
+                active_game, request.player_id,
+            )
+            if not success:
+                return GameStateResponse(success=False, error=message)
+
+            active_game.clear()
+            active_game.update(new_state)
+            print(f"◈ {message}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            print(f"❌ Ошибка: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
 @app.post('/api/game/pass-turn-order-play')
 async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateResponse:
     """Передать ход на этапе розыгрыша приказов"""
@@ -1179,6 +1265,8 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                 return GameStateResponse(success=False, error="Сначала завершите особое свойство Хаоса (Dominate)")
             if active_game.get('pending_eldar_dominate'):
                 return GameStateResponse(success=False, error="Сначала завершите особое свойство Eldar (Dominate)")
+            if active_game.get('pending_marine_dominate'):
+                return GameStateResponse(success=False, error="Сначала завершите особое свойство Marine (Dominate)")
 
             # Проверить: если у игрока есть разыгрываемые приказы — обязан сыграть
             playable = get_available_orders(active_game, current_player)

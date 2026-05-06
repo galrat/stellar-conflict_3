@@ -429,6 +429,7 @@ function _drawTile(tile, px) {
     ae.onclick = () => {
       if (G.pending_eldar_dominate?.player_id != null) { eldarDominateAreaClick(tile.key, realIdx); return; }
       if (G.pending_chaos_dominate?.player_id != null) { chaosDominateAreaClick(tile.key, realIdx); return; }
+      if (G.pending_marine_dominate?.player_id != null) { marineDominateAreaClick(tile.key, realIdx); return; }
       areaClick(tile.key, displayIdx);
     };
     inner.appendChild(ae);
