@@ -162,11 +162,12 @@ function _showWarpMoveConfirm(hasMoved) {
     `<div style="padding:6px 0 14px;">${detail}<br>
      <span style="color:#888;font-size:.82rem;">Подтвердите или отмените выбор карты события.</span></div>
      <div style="display:flex;gap:10px;justify-content:center;">
-       <button onclick="closeMsg();_afterWarpMoveUi();"
+       <button onclick="closeMsg();"
                style="padding:7px 22px;background:rgba(0,160,80,.85);border:none;color:#fff;border-radius:4px;cursor:pointer;">Передать ход</button>
-       <button onclick="_undoWarpMove();"
+       <button onclick="_msgCb=null;_undoWarpMove();"
                style="padding:7px 22px;background:#444;border:none;color:#fff;border-radius:4px;cursor:pointer;">Отменить</button>
-     </div>`
+     </div>`,
+    _afterWarpMoveUi
   );
 }
 

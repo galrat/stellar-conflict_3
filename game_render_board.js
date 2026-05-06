@@ -122,6 +122,20 @@ function _drawAreaTroops(ae, tile, area, realIdx) {
     });
   }
 
+  // Pending orks dominate units (not yet in tile.areas)
+  const pod = G.pending_orks_dominate;
+  if (pod && tile.key === pod.tile_key && pod.placed) {
+    const color   = _facColor();
+    const catalog = pod.deploy_info?.unit_catalog || [];
+    pod.placed.filter(p => p.area_idx === realIdx).forEach(p => {
+      const u = catalog.find(c => c.unit_key === p.unit_key);
+      ae.appendChild(_mkTroop(u?.unitType || 'ground', u?.tier ?? 0, color, {
+        bgAlpha: 0.25, opacity: '0.7', outline: `2px dashed ${color}`,
+        title: `${u?.name || p.unit_key} (ожидает)`,
+      }));
+    });
+  }
+
   // Pending deploy units (not yet in tile.areas)
   const pd = G.pending_deploy;
   if (pd && tile.key === pd.tile_key && pd.placed) {
@@ -166,6 +180,21 @@ function _getAreaClass(tile, area, realIdx, displayIdx) {
       return new Set(info.available_planets || []).has(realIdx) ? 'aok' : 'ano';
     if (pd.step === 'resolve_overflow') {
       const cnt = (area.troops || []).length + (pd.placed || []).filter(p => p.area_idx === realIdx).length;
+      if (cnt > area.capacity) return 'ano';
+    }
+    return null;
+  }
+
+  const pod = G.pending_orks_dominate;
+  if (pod && pod.player_id === G.curP && tile.key === pod.tile_key) {
+    if (pod.step === 'place_unit' && _orksSelectedUnit) {
+      const _UT = { infantry:'ground', marines:'ground', mechanized:'ground', elite:'ground', fighter:'space', destroyer:'space' };
+      const expected  = _UT[_orksSelectedUnit] === 'ground' ? 'planet' : 'space';
+      const availIdxs = new Set((pod.deploy_info?.available_areas || []).map(a => a.idx));
+      return availIdxs.has(realIdx) && area.type === expected ? 'aok' : 'ano';
+    }
+    if (pod.step === 'resolve_overflow') {
+      const cnt = (area.troops || []).length + (pod.placed || []).filter(p => p.area_idx === realIdx).length;
       if (cnt > area.capacity) return 'ano';
     }
     return null;
@@ -430,6 +459,7 @@ function _drawTile(tile, px) {
       if (G.pending_eldar_dominate?.player_id != null) { eldarDominateAreaClick(tile.key, realIdx); return; }
       if (G.pending_chaos_dominate?.player_id != null) { chaosDominateAreaClick(tile.key, realIdx); return; }
       if (G.pending_marine_dominate?.player_id != null) { marineDominateAreaClick(tile.key, realIdx); return; }
+      if (G.pending_orks_dominate?.player_id != null) { orksAreaClick(tile.key, realIdx); return; }
       areaClick(tile.key, displayIdx);
     };
     inner.appendChild(ae);

@@ -48,6 +48,7 @@ function renderSide() {
     if (G.pending_eldar_dominate)                                 return _renderEldarDominatePhase();
     if (G.pending_chaos_dominate)                                 return _renderChaosDominatePhase();
     if (G.pending_marine_dominate)                                return _renderMarineDominatePhase();
+    if (G.pending_orks_dominate?.step === 'place_unit')           return _renderOrksDominatePhase();
     if (G.pending_deploy?.step === 'place_units')                 return _renderDeployPlaceUnitsPhase();
     if (G.pending_deploy?.step === 'buy_building')                return _renderDeployBuyBuildingPhase();
     if (G.pending_advance?.step === 'choose_source')              return _renderAdvanceChooseSourcePhase();
@@ -196,6 +197,56 @@ function _renderMarineDominatePhase() {
   skipBtn.textContent = 'Пропустить';
   skipBtn.onclick = marineDominateSkip;
   poolEl.appendChild(skipBtn);
+}
+
+function _renderOrksDominatePhase() {
+  const poolEl  = _resetPanels();
+  const po      = G.pending_orks_dominate;
+  const hand    = po.hand || [];
+  const placed  = po.placed || [];
+  const catalog = po.deploy_info?.unit_catalog || [];
+  const facColor = _facColor();
+
+  poolEl.appendChild(_mkPtitle('ORKS: размещение юнита'));
+  poolEl.appendChild(_mkCls('rs-hint', _orksSelectedUnit
+    ? `✓ Выбран: ${_orksSelectedUnit} — кликните область на карте`
+    : '← Выберите юнит, затем кликните область на тайле'));
+
+  const handRem = [...hand];
+  for (const p of placed) {
+    const i = handRem.indexOf(p.unit_key);
+    if (i >= 0) handRem.splice(i, 1);
+  }
+
+  const ukCounts = {};
+  handRem.forEach(uk => { ukCounts[uk] = (ukCounts[uk] || 0) + 1; });
+
+  if (Object.keys(ukCounts).length === 0) {
+    poolEl.appendChild(_mkDiv('color:var(--gold);font-size:.75rem;', '✓ Все войска размещены'));
+  } else {
+    Object.entries(ukCounts).forEach(([uk, cnt]) => {
+      const u          = catalog.find(c => c.unit_key === uk);
+      const isSelected = _orksSelectedUnit === uk;
+      const tok = document.createElement('div');
+      tok.className     = `ttok ${u?.unitType || 'ground'}${isSelected ? ' sel' : ''}`;
+      tok.style.background  = hexAlpha(facColor, isSelected ? 0.35 : 0.15);
+      tok.style.borderColor = facColor;
+      tok.style.color       = facColor;
+      tok.textContent = `T${u?.tier ?? 0}${cnt > 1 ? ' ×' + cnt : ''}`;
+      tok.title   = u?.name || uk;
+      tok.onclick = () => { _orksSelectedUnit = uk; renderSide(); renderBoard(); };
+      poolEl.appendChild(tok);
+    });
+  }
+
+  if (placed.length > 0) {
+    const undoBtn = document.createElement('button');
+    undoBtn.className = 'abtn bw';
+    undoBtn.style.cssText = 'width:100%;margin-top:8px;font-size:.75rem;';
+    undoBtn.textContent = '↩ Отменить последнее размещение';
+    undoBtn.onclick = _orksUndoPlace;
+    poolEl.appendChild(undoBtn);
+  }
 }
 
 function _renderEndRoundPhase() {

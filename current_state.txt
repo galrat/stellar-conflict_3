@@ -31,32 +31,27 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "p1_dominate_1",
-          "type": "dominate",
-          "owner": 0
-        },
-        {
-          "id": "p1_deploy_2",
+          "id": "deploy_0_0_r2",
           "type": "deploy",
           "owner": 0
         },
         {
-          "id": "p1_advance_1",
+          "id": "advance_0_0_r2",
           "type": "advance",
           "owner": 0
         },
         {
-          "id": "p1_strategize_2",
-          "type": "strategize",
+          "id": "advance_0_1_r2",
+          "type": "advance",
           "owner": 0
         },
         {
-          "id": "p1_dominate_2",
-          "type": "dominate",
+          "id": "strategize_0_1_r2",
+          "type": "strategize",
           "owner": 0
         }
       ],
-      "credits": 5,
+      "credits": 9,
       "tokens": {
         "support": 2,
         "discount": 0,
@@ -335,7 +330,18 @@
           "image": "faction_defs/marine_data/battle/Emperor's Might.jpg"
         }
       ],
-      "hand_order_upgrades": [],
+      "hand_order_upgrades": [
+        {
+          "id": "",
+          "name": "Crusade",
+          "order_type": "advance",
+          "tier": 1,
+          "cost": 2,
+          "primary": "If no friendly worlds in system, gain 1 (R). Once per round.",
+          "secondary": "Command Level 1.",
+          "image": "faction_defs/marine_data/order/Crusade.jpg"
+        }
+      ],
       "available_order_upgrades": [
         {
           "id": "",
@@ -346,16 +352,6 @@
           "primary": "Orbital Strike, once per round. Gain [?].",
           "secondary": "Convert 1 [M] into [G].",
           "image": "faction_defs/marine_data/order/Reign of Fire.jpg"
-        },
-        {
-          "id": "",
-          "name": "Crusade",
-          "order_type": "advance",
-          "tier": 1,
-          "cost": 2,
-          "primary": "If no friendly worlds in system, gain 1 (R). Once per round.",
-          "secondary": "Command Level 1.",
-          "image": "faction_defs/marine_data/order/Crusade.jpg"
         },
         {
           "id": "",
@@ -388,7 +384,15 @@
           "image": "faction_defs/marine_data/order/Drop Pods.jpg"
         }
       ],
-      "hand_event_cards": [],
+      "hand_event_cards": [
+        {
+          "name": "Unwavering Resolve",
+          "warp_storm_move": "Top Rgt/Bot Left",
+          "card_type": "Scheme",
+          "effect": "Instead of revealing an order, discard to rally all units in a system.",
+          "image": "faction_defs/marine_data/events/Unwavering Resolve.jpg"
+        }
+      ],
       "available_event_cards": [
         {
           "name": "Adeptus Mechanicus",
@@ -433,13 +437,6 @@
           "image": "faction_defs/marine_data/events/The Emperor Protects.jpg"
         },
         {
-          "name": "Unwavering Resolve",
-          "warp_storm_move": "Top Rgt/Bot Left",
-          "card_type": "Scheme",
-          "effect": "Instead of revealing an order, discard to rally all units in a system.",
-          "image": "faction_defs/marine_data/events/Unwavering Resolve.jpg"
-        },
-        {
           "name": "Work of the Righteous",
           "warp_storm_move": "Top Rgt/Bot Left",
           "card_type": "Tactic",
@@ -481,30 +478,30 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "p2_dominate_1",
+          "id": "dominate_1_0_r2",
           "type": "dominate",
           "owner": 1
         },
         {
-          "id": "p2_deploy_2",
+          "id": "deploy_1_0_r2",
           "type": "deploy",
           "owner": 1
         },
         {
-          "id": "p2_advance_2",
+          "id": "advance_1_1_r2",
           "type": "advance",
           "owner": 1
         },
         {
-          "id": "p2_strategize_2",
+          "id": "strategize_1_1_r2",
           "type": "strategize",
           "owner": 1
         }
       ],
-      "credits": 6,
+      "credits": 9,
       "tokens": {
-        "support": 0,
-        "discount": 0,
+        "support": 1,
+        "discount": 1,
         "forge": 0
       },
       "hand_battle_cards": [
@@ -773,7 +770,18 @@
           "image": "faction_defs/orks_data/battle/Snapper Gargant.jpg"
         }
       ],
-      "hand_order_upgrades": [],
+      "hand_order_upgrades": [
+        {
+          "id": "",
+          "name": "The Green Tide",
+          "order_type": "strategize",
+          "tier": 1,
+          "cost": 2,
+          "primary": "When revealed, can resolve it as one of the other orders instead. Once per round.",
+          "secondary": "Command Level 1.",
+          "image": "faction_defs/orks_data/order/The Green Tide.jpg"
+        }
+      ],
       "available_order_upgrades": [
         {
           "id": "",
@@ -797,16 +805,6 @@
         },
         {
           "id": "",
-          "name": "The Green Tide",
-          "order_type": "strategize",
-          "tier": 1,
-          "cost": 2,
-          "primary": "When revealed, can resolve it as one of the other orders instead. Once per round.",
-          "secondary": "Command Level 1.",
-          "image": "faction_defs/orks_data/order/The Green Tide.jpg"
-        },
-        {
-          "id": "",
           "name": "Ork Roks",
           "order_type": "advance",
           "tier": 0,
@@ -826,7 +824,15 @@
           "image": "faction_defs/orks_data/order/Stealin'!.jpg"
         }
       ],
-      "hand_event_cards": [],
+      "hand_event_cards": [
+        {
+          "name": "Teer it Down!",
+          "warp_storm_move": "Top Left/Bot Rgt",
+          "card_type": "Scheme",
+          "effect": "End of assess damage step in Ork combat, discard to destroy 1 structure on that world.",
+          "image": "faction_defs/orks_data/events/Teer it Down!.jpg"
+        }
+      ],
       "available_event_cards": [
         {
           "name": "Gitz Dem!",
@@ -871,13 +877,6 @@
           "image": "faction_defs/orks_data/events/Mob Up!.jpg"
         },
         {
-          "name": "Teer it Down!",
-          "warp_storm_move": "Top Left/Bot Rgt",
-          "card_type": "Scheme",
-          "effect": "End of assess damage step in Ork combat, discard to destroy 1 structure on that world.",
-          "image": "faction_defs/orks_data/events/Teer it Down!.jpg"
-        },
-        {
           "name": "Warboss",
           "warp_storm_move": "Across",
           "card_type": "Scheme",
@@ -892,9 +891,9 @@
   ],
   "phase": "execution",
   "curP": 1,
-  "round": 1,
+  "round": 2,
   "totalRounds": 8,
-  "firstPlayer": 0,
+  "firstPlayer": 1,
   "map": {
     "0,0": {
       "key": "0,0",
@@ -922,12 +921,17 @@
               "id": 3,
               "player": 0,
               "unitType": "ground",
-              "tier": 1,
+              "tier": 0,
               "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
-          "structures": []
+          "structures": [
+            {
+              "type": "city",
+              "player": 0
+            }
+          ]
         },
         {
           "area_place": 1,
@@ -1238,7 +1242,12 @@
               "unit_status": "active"
             }
           ],
-          "structures": []
+          "structures": [
+            {
+              "type": "city",
+              "player": 1
+            }
+          ]
         },
         {
           "area_place": 3,
@@ -1439,9 +1448,10 @@
       "status": "active"
     },
     {
-      "tileKey": "1,0",
-      "side": "top",
-      "status": "active"
+      "tileKey": "2,-1",
+      "side": "left",
+      "status": "active",
+      "moved_by": 0
     }
   ],
   "warpStormStep": 0,
@@ -1452,39 +1462,23 @@
   "targetMarkers": [],
   "orders": [
     {
-      "id": "p1_deploy_1",
+      "id": "deploy_1_1_r2",
       "type": "deploy",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "strategize_0_0_r2",
+      "type": "strategize",
       "owner": 0,
       "tile": "0,0",
       "position": 0,
       "revealed": false
     },
     {
-      "id": "p2_deploy_1",
-      "type": "deploy",
-      "owner": 1,
-      "tile": "2,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "p2_dominate_2",
-      "type": "dominate",
-      "owner": 1,
-      "tile": "2,0",
-      "position": 1,
-      "revealed": false
-    },
-    {
-      "id": "p1_strategize_1",
-      "type": "strategize",
-      "owner": 0,
-      "tile": "0,-1",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "p2_strategize_1",
+      "id": "strategize_1_0_r2",
       "type": "strategize",
       "owner": 1,
       "tile": "2,-1",
@@ -1492,18 +1486,42 @@
       "revealed": false
     },
     {
-      "id": "p1_advance_2",
-      "type": "advance",
+      "id": "dominate_0_0_r2",
+      "type": "dominate",
       "owner": 0,
+      "tile": "0,-1",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "advance_1_0_r2",
+      "type": "advance",
+      "owner": 1,
       "tile": "1,0",
       "position": 0,
       "revealed": false
     },
     {
-      "id": "p2_advance_1",
-      "type": "advance",
+      "id": "deploy_0_1_r2",
+      "type": "deploy",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_1_1_r2",
+      "type": "dominate",
       "owner": 1,
       "tile": "1,0",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "dominate_0_1_r2",
+      "type": "dominate",
+      "owner": 0,
+      "tile": "0,-1",
       "position": 1,
       "revealed": false
     }
@@ -1518,7 +1536,7 @@
   ],
   "dropped_orders": [],
   "execution_order_played": [
-    true,
+    false,
     false
   ],
   "log": [
@@ -1679,6 +1697,10 @@
       "player_id": -1
     },
     {
+      "message": "Игра загружена",
+      "player_id": -1
+    },
+    {
       "message": "Приказ 'Dominate' разыгран",
       "player_id": 0
     },
@@ -1687,8 +1709,64 @@
       "player_id": 0
     },
     {
-      "message": "Marine: юнит улучшен до tier 1 в 0,0/0",
+      "message": "Marine: особое свойство доминации пропущено",
       "player_id": 0
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Deploy' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Strategize' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Игра загружена",
+      "player_id": -1
+    },
+    {
+      "message": "Приказ 'Advance' сброшен",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Advance' сброшен",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Strategize' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Alpha: доход +8 (итого 9 кредитов)",
+      "player_id": 0
+    },
+    {
+      "message": "Omega: доход +8 (итого 9 кредитов)",
+      "player_id": 1
+    },
+    {
+      "message": "Alpha взял карту события: Unwavering Resolve",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha переместил варп-шторм → [2,-1] left",
+      "player_id": 0
+    },
+    {
+      "message": "Omega взял карту события: Teer it Down!",
+      "player_id": 1
     }
   ],
   "event_cards_offered": [
@@ -1698,5 +1776,22 @@
   "event_selection_done": [
     false,
     false
-  ]
+  ],
+  "ui": {
+    "instruction": "<strong>РОЗЫГРЫШ ПРИКАЗОВ</strong><br>Omega: кликните на приказ (панель или поле). Первый клик — выбор, второй — розыгрыш. Осталось: 2",
+    "buttons": [],
+    "playable_order_ids": [
+      "p2_advance_1",
+      "p2_strategize_1"
+    ],
+    "blocked_tiles": [],
+    "can_place_order": false,
+    "order_placed_this_turn": false,
+    "order_played_this_turn": false
+  },
+  "warp_storm_phase_done": [
+    false,
+    false
+  ],
+  "moved_storm_indices": []
 }

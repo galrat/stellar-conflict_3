@@ -11,6 +11,23 @@ Stage 2.2: Strategize order play (Стратегизирование)
    - Стоимость улучшения вычитается из кредитов
 """
 import copy
+import importlib
+
+_FACTION_MODULES = {
+    'chaos':          'faction_defs.chaos_data.strategize',
+    'eldar':          'faction_defs.eldar_data.strategize',
+    'imperial_guard': 'faction_defs.imperial_guard_data.strategize',
+    'marine':         'faction_defs.marine_data.strategize',
+    'necrons':        'faction_defs.necrons_data.strategize',
+    'orks':           'faction_defs.orks_data.strategize',
+    'tau':            'faction_defs.tau_data.strategize',
+    'tyranids':       'faction_defs.tyranids_data.strategize',
+}
+
+
+def get_faction_module(faction_id):
+    path = _FACTION_MODULES.get(faction_id)
+    return importlib.import_module(path) if path else None
 
 
 def _count_player_cities(active_game, player_id):
@@ -29,6 +46,10 @@ def _count_player_cities(active_game, player_id):
 
 def strategize_play(active_game, player_id, order_tile):
     """Инициализировать фазу разыгрыша приказа Strategize."""
+    faction_id = active_game['players'][player_id].get('faction', '')
+    mod = get_faction_module(faction_id)
+    if mod and hasattr(mod, 'strategize_play'):
+        return mod.strategize_play(active_game, player_id, order_tile)
     new_state = copy.deepcopy(active_game)
     player_level = _count_player_cities(active_game, player_id)
 
@@ -46,6 +67,10 @@ def strategize_play(active_game, player_id, order_tile):
 
 def strategize_buy_combat_card(active_game, player_id, card_to_buy_name, card_from_hand_name):
     """Обменять одну боевую карту на другую."""
+    faction_id = active_game['players'][player_id].get('faction', '')
+    mod = get_faction_module(faction_id)
+    if mod and hasattr(mod, 'strategize_buy_combat_card'):
+        return mod.strategize_buy_combat_card(active_game, player_id, card_to_buy_name, card_from_hand_name)
     new_state = copy.deepcopy(active_game)
     player = new_state['players'][player_id]
 
@@ -103,6 +128,10 @@ def strategize_buy_combat_card(active_game, player_id, card_to_buy_name, card_fr
 
 def strategize_buy_order_upgrade(active_game, player_id, upgrade_name):
     """Купить одно улучшение приказа."""
+    faction_id = active_game['players'][player_id].get('faction', '')
+    mod = get_faction_module(faction_id)
+    if mod and hasattr(mod, 'strategize_buy_order_upgrade'):
+        return mod.strategize_buy_order_upgrade(active_game, player_id, upgrade_name)
     new_state = copy.deepcopy(active_game)
     player = new_state['players'][player_id]
 

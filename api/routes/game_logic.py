@@ -194,6 +194,41 @@ class DominateMarineSkipRequest(BaseModel):
     player_id: int
 
 
+class OrksAskYesRequest(BaseModel):
+    """Игрок соглашается купить юнита (Orks Dominate)"""
+    player_id: int
+
+
+class OrksSkipRequest(BaseModel):
+    """Пропустить особое свойство Orks Dominate"""
+    player_id: int
+
+
+class OrksConfirmBasketRequest(BaseModel):
+    """Подтверждение корзины (Orks Dominate, max 1 юнит)"""
+    player_id: int
+    basket: List[dict]
+
+
+class OrksPlaceUnitRequest(BaseModel):
+    """Размещение юнита (Orks Dominate)"""
+    player_id: int
+    unit_key: str
+    area_idx: int
+
+
+class OrksUndoPlaceRequest(BaseModel):
+    """Отмена последнего размещения (Orks Dominate)"""
+    player_id: int
+
+
+class OrksResolveOverflowRequest(BaseModel):
+    """Разрешение overflow (Orks Dominate)"""
+    player_id: int
+    remove_area_idx: int
+    remove_unit_key: str
+
+
 class DeployConfirmBasketRequest(BaseModel):
     """Подтверждение корзины юнитов при Deploy"""
     player_id: int
@@ -371,6 +406,27 @@ def compute_ui_hints(state: dict) -> dict:
             )
             ui['buttons'] = ['btn-undo-order']
             ui['marine_dominate_pending'] = pm
+            return ui
+
+        # Если ожидается особое свойство Orks
+        po = state.get('pending_orks_dominate')
+        if po and po.get('player_id') == cur_p:
+            step = po.get('step', '')
+            step_labels = {
+                'ask':              'купить юнита?',
+                'buy_unit':         'покупка юнита',
+                'place_unit':       'размещение юнита',
+                'resolve_overflow': 'разрешение переполнения',
+            }
+            ui['instruction'] = (
+                f'<strong>ORKS: Особое свойство доминации</strong><br>'
+                f'{cp_name}: {step_labels.get(step, step)}'
+            )
+            if step == 'place_unit':
+                ui['buttons'] = ['btn-uu', 'btn-undo-order']
+            else:
+                ui['buttons'] = ['btn-undo-order']
+            ui['orks_dominate_pending'] = po
             return ui
 
         # Если идёт выполнение приказа Deploy
@@ -835,6 +891,10 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
             if active_game.get('pending_eldar_dominate'):
                 return GameStateResponse(success=False, error="Сначала завершите особое свойство Eldar (Dominate)")
 
+            # Нельзя играть если ожидается особое свойство Orks
+            if active_game.get('pending_orks_dominate'):
+                return GameStateResponse(success=False, error="Сначала завершите особое свойство Orks (Dominate)")
+
             # Нельзя играть если уже совершено действие в этом ходу (сброс или розыгрыш)
             played_flag = active_game.get('execution_order_played', [False, False])
             if played_flag[current_player]:
@@ -1240,6 +1300,129 @@ async def dominate_marine_skip_endpoint(request: DominateMarineSkipRequest) -> G
             return GameStateResponse(success=False, error=str(e))
 
 
+@app.post('/api/game/dominate-orks-skip')
+async def dominate_orks_skip_endpoint(request: OrksSkipRequest) -> GameStateResponse:
+    """Пропустить особое свойство Orks Dominate"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from faction_defs.orks_data.dominate import handle_skip
+            ok, msg = handle_skip(active_game, request.player_id)
+            if not ok:
+                return GameStateResponse(success=False, error=msg)
+            print(f"🪓 {msg}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            print(f"❌ Ошибка: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-orks-ask-yes')
+async def dominate_orks_ask_yes_endpoint(request: OrksAskYesRequest) -> GameStateResponse:
+    """Игрок хочет купить юнита (Orks Dominate)"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from faction_defs.orks_data.dominate import handle_ask_yes
+            ok, msg = handle_ask_yes(active_game, request.player_id)
+            if not ok:
+                return GameStateResponse(success=False, error=msg)
+            print(f"🪓 {msg}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            print(f"❌ Ошибка: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-orks-confirm-basket')
+async def dominate_orks_confirm_basket_endpoint(request: OrksConfirmBasketRequest) -> GameStateResponse:
+    """Подтвердить покупку юнита (Orks Dominate)"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from faction_defs.orks_data.dominate import handle_confirm_basket
+            ok, msg, _ = handle_confirm_basket(active_game, request.player_id, request.basket)
+            if not ok:
+                return GameStateResponse(success=False, error=msg)
+            print(f"🪓 {msg}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-orks-place-unit')
+async def dominate_orks_place_unit_endpoint(request: OrksPlaceUnitRequest) -> GameStateResponse:
+    """Разместить юнита (Orks Dominate)"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from faction_defs.orks_data.dominate import handle_place_unit
+            ok, msg, _ = handle_place_unit(active_game, request.player_id, request.unit_key, request.area_idx)
+            if not ok:
+                return GameStateResponse(success=False, error=msg)
+            print(f"🪓 {msg}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-orks-undo-place')
+async def dominate_orks_undo_place_endpoint(request: OrksUndoPlaceRequest) -> GameStateResponse:
+    """Отменить последнее размещение (Orks Dominate)"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from faction_defs.orks_data.dominate import handle_undo_place
+            ok, msg = handle_undo_place(active_game, request.player_id)
+            if not ok:
+                return GameStateResponse(success=False, error=msg)
+            print(f"🪓 {msg}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            print(f"❌ Ошибка: {e}")
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/dominate-orks-resolve-overflow')
+async def dominate_orks_resolve_overflow_endpoint(request: OrksResolveOverflowRequest) -> GameStateResponse:
+    """Убрать юнита из overflow области (Orks Dominate)"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            from faction_defs.orks_data.dominate import handle_resolve_overflow
+            ok, msg, _ = handle_resolve_overflow(
+                active_game, request.player_id,
+                request.remove_area_idx, request.remove_unit_key,
+            )
+            if not ok:
+                return GameStateResponse(success=False, error=msg)
+            print(f"🪓 {msg}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
 @app.post('/api/game/pass-turn-order-play')
 async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateResponse:
     """Передать ход на этапе розыгрыша приказов"""
@@ -1267,6 +1450,8 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                 return GameStateResponse(success=False, error="Сначала завершите особое свойство Eldar (Dominate)")
             if active_game.get('pending_marine_dominate'):
                 return GameStateResponse(success=False, error="Сначала завершите особое свойство Marine (Dominate)")
+            if active_game.get('pending_orks_dominate'):
+                return GameStateResponse(success=False, error="Сначала завершите особое свойство Orks (Dominate)")
 
             # Проверить: если у игрока есть разыгрываемые приказы — обязан сыграть
             playable = get_available_orders(active_game, current_player)
@@ -1304,8 +1489,8 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                 run_end_of_round(active_game, dropped_counts)
 
                 active_game['phase'] = 'end-round'
-                # Выбор карт событий начинает игрок, который не ходит первым в приказах
-                active_game['curP'] = 1 - active_game.get('firstPlayer', 0)
+                # Варп-шторм (и выбор карты) начинает текущий первый игрок
+                active_game['curP'] = active_game.get('firstPlayer', 0)
                 print(f"✅ {next_info['message']}")
 
             save_current_state()

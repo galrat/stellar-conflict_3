@@ -149,6 +149,10 @@ async function playOrderViaAPI(orderId) {
       } else if (res.state?.pending_eldar_dominate) {
         console.log('→ Eldar dominate ability');
         setPhase('execution');
+      } else if (res.state?.pending_orks_dominate) {
+        console.log('→ Orks dominate ability');
+        setPhase('execution');
+        showOrksDominateUI();
       } else if (res.state?.pending_deploy) {
         console.log('→ Deploy UI (pending_deploy есть)');
         setPhase('execution');
