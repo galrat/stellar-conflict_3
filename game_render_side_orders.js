@@ -152,4 +152,35 @@ function _renderExecutionPhase() {
   });
 
   poolEl.appendChild(wrap);
+
+  if (_selectedOrderForPlay) {
+    const matchingUpgrades = (G.players[G.curP].hand_order_upgrades || [])
+      .filter(u => u.order_type === _selectedOrderForPlay.type);
+    if (matchingUpgrades.length > 0) {
+      const upgradeSection = document.createElement('div');
+      upgradeSection.style.cssText = 'margin-top:10px;border-top:1px solid rgba(255,255,255,.1);padding-top:8px;';
+      upgradeSection.appendChild(_mkPtitle('УЛУЧШЕНИЯ'));
+      matchingUpgrades.forEach(u => {
+        const btn = document.createElement('button');
+        btn.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
+        btn.style.cssText = 'width:100%;margin-bottom:4px;font-size:.7rem;text-align:left;';
+        btn.textContent = `⭐ ${u.name}`;
+        btn.title = u.primary || '';
+        btn.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, [u.id]);
+        upgradeSection.appendChild(btn);
+      });
+      if (matchingUpgrades.length >= 2) {
+        const btnBoth = document.createElement('button');
+        btnBoth.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
+        btnBoth.style.cssText = 'width:100%;margin-bottom:4px;font-size:.7rem;';
+        btnBoth.textContent = '⭐⭐ Сыграть оба улучшения';
+        btnBoth.onclick = () => playOrderUpgradeViaAPI(
+          _selectedOrderForPlay.id,
+          matchingUpgrades.map(u => u.id)
+        );
+        upgradeSection.appendChild(btnBoth);
+      }
+      poolEl.appendChild(upgradeSection);
+    }
+  }
 }

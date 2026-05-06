@@ -1,0 +1,5 @@
+"""Teachings of Tau'va (Strategize) — Tau order upgrade."""
+
+def play(active_game, player_id, order_type, order_tile, upgrade):
+    # TODO: implement
+    return None

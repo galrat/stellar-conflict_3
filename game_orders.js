@@ -176,6 +176,33 @@ async function playOrderViaAPI(orderId) {
   }
 }
 
+async function playOrderUpgradeViaAPI(orderId, upgradeIds) {
+  try {
+    const res = await apiCall('/api/game/play-order-upgrade', {
+      player_id:   G.curP,
+      order_id:    orderId,
+      upgrade_ids: upgradeIds,
+    });
+    if (res.success) {
+      _selectedOrderForPlay = null;
+      applyState(res.state);
+      if (res.state?.pending_deploy) {
+        showDeployUI();
+      } else if (res.state?.pending_advance) {
+        showAdvanceUI();
+      } else if (res.state?.pending_strategize) {
+        renderStrategize();
+      } else {
+        setPhase('execution');
+      }
+    } else {
+      showMsg('Ошибка', res.error || '');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
 function _showJokerChoiceUI(pending) {
   const TOKEN_LABELS = { support: '🛡 Support', discount: '💰 Discount', forge: '🔨 Forge' };
   const count = pending.joker_count || 1;

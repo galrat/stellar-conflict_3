@@ -65,6 +65,7 @@ from python_engine.strategize import (
     strategize_buy_combat_card,
     strategize_buy_order_upgrade,
 )
+from python_engine.upgraded_order import play_upgraded_order
 from python_engine.warp_storm import (
     get_storm_valid_positions,
     get_moveable_storms,
@@ -328,6 +329,13 @@ class AdvanceRetreatRequest(BaseModel):
 class AdvanceGenericRequest(BaseModel):
     """Общий запрос для Advance (commit, fight, skip, next_step)"""
     player_id: int
+
+
+class PlayOrderUpgradeRequest(BaseModel):
+    """Розыгрыш приказа с улучшением"""
+    player_id: int
+    order_id: str
+    upgrade_ids: List[str]
 
 
 class SuccessResponse(BaseModel):
@@ -979,6 +987,54 @@ async def play_order_endpoint(request: PlayOrderRequest) -> GameStateResponse:
         except Exception as e:
             import traceback
             print(f"❌ Ошибка розыгрыша приказа: {e}")
+            traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/play-order-upgrade')
+async def play_order_upgrade_endpoint(request: PlayOrderUpgradeRequest) -> GameStateResponse:
+    """Разыграть приказ с улучшением (одним или двумя)"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+
+        try:
+            phase = active_game.get('phase', 'unknown')
+            if phase != 'execution':
+                return GameStateResponse(success=False, error="Не время розыгрыша приказов")
+
+            current_player = active_game.get('curP', 0)
+            if request.player_id != current_player:
+                return GameStateResponse(success=False, error="Сейчас не ваш ход")
+
+            played_flag = active_game.get('execution_order_played', [False, False])
+            if played_flag[current_player]:
+                return GameStateResponse(success=False, error="Вы уже совершили действие. Передайте ход.")
+
+            clear_temp_snapshots()
+            save_temp_snapshot()
+
+            success, message, new_state = play_upgraded_order(
+                active_game, request.player_id, request.order_id, request.upgrade_ids
+            )
+            if not success:
+                return GameStateResponse(success=False, error=message)
+
+            active_game.clear()
+            active_game.update(new_state)
+            active_game['execution_order_played'][request.player_id] = True
+
+            if 'log' not in active_game:
+                active_game['log'] = []
+            active_game['log'].append({'message': message, 'player_id': request.player_id})
+
+            print(f"⭐ {message}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+
+        except Exception as e:
+            import traceback
             traceback.print_exc()
             return GameStateResponse(success=False, error=str(e))
 
