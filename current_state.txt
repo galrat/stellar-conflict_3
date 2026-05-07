@@ -56,12 +56,22 @@
           "owner": 0
         },
         {
+          "id": "advance_0_0_r3",
+          "type": "advance",
+          "owner": 0
+        },
+        {
+          "id": "strategize_0_1_r3",
+          "type": "strategize",
+          "owner": 0
+        },
+        {
           "id": "strategize_0_0_r3",
           "type": "strategize",
           "owner": 0
         }
       ],
-      "credits": 4,
+      "credits": 3,
       "tokens": {
         "support": 2,
         "discount": 2,
@@ -370,9 +380,7 @@
           "primary": "Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.",
           "secondary": "Command Level 1.",
           "image": "faction_defs/marine_data/order/Recruitment Worlds.jpg"
-        }
-      ],
-      "available_order_upgrades": [
+        },
         {
           "id": "",
           "name": "Reign of Fire",
@@ -382,7 +390,9 @@
           "primary": "Orbital Strike, once per round. Gain [?].",
           "secondary": "Convert 1 [M] into [G].",
           "image": "faction_defs/marine_data/order/Reign of Fire.jpg"
-        },
+        }
+      ],
+      "available_order_upgrades": [
         {
           "id": "",
           "name": "Drop Pods",
@@ -511,11 +521,16 @@
           "id": "strategize_1_1_r3",
           "type": "strategize",
           "owner": 1
+        },
+        {
+          "id": "dominate_1_1_r3",
+          "type": "dominate",
+          "owner": 1
         }
       ],
-      "credits": 12,
+      "credits": 11,
       "tokens": {
-        "support": 1,
+        "support": 2,
         "discount": 1,
         "forge": 0
       },
@@ -805,6 +820,16 @@
           "primary": "May purchase structure before purchasing units. Once per round.",
           "secondary": "Command Level 1.",
           "image": "faction_defs/orks_data/order/Werk Fasta!.jpg"
+        },
+        {
+          "id": "",
+          "name": "Ork Roks",
+          "order_type": "advance",
+          "tier": 0,
+          "cost": 2,
+          "primary": "Can move up to 2 units through 1 uncontrolled void as if it were a friendly area. Once per round.",
+          "secondary": "Command Level 1.",
+          "image": "faction_defs/orks_data/order/Ork Roks.jpg"
         }
       ],
       "available_order_upgrades": [
@@ -817,16 +842,6 @@
           "primary": "Orbital Strike, once per round. Gain 1 [?].",
           "secondary": "Spend 1 die to gain 1 materiel and force enemy to lose 1 materiel.",
           "image": "faction_defs/orks_data/order/Lootin'.jpg"
-        },
-        {
-          "id": "",
-          "name": "Ork Roks",
-          "order_type": "advance",
-          "tier": 0,
-          "cost": 2,
-          "primary": "Can move up to 2 units through 1 uncontrolled void as if it were a friendly area. Once per round.",
-          "secondary": "Command Level 1.",
-          "image": "faction_defs/orks_data/order/Ork Roks.jpg"
         },
         {
           "id": "",
@@ -905,7 +920,7 @@
     }
   ],
   "phase": "execution",
-  "curP": 1,
+  "curP": 0,
   "round": 3,
   "totalRounds": 8,
   "firstPlayer": 0,
@@ -931,16 +946,7 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 3,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 0,
-              "ready_to_move": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": [
             {
               "type": "city",
@@ -964,7 +970,6 @@
               "player": 0,
               "unitType": "space",
               "tier": 0,
-              "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
@@ -1006,16 +1011,7 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "id": 4,
-              "player": 0,
-              "unitType": "ground",
-              "tier": 1,
-              "ready_to_move": 0,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": [
             {
               "type": "city",
@@ -1079,8 +1075,15 @@
           "joker": 0,
           "troops": [
             {
-              "id": 12,
-              "player": 1,
+              "id": 4,
+              "player": 0,
+              "unitType": "ground",
+              "tier": 1,
+              "unit_status": "active"
+            },
+            {
+              "id": 3,
+              "player": 0,
               "unitType": "ground",
               "tier": 0,
               "unit_status": "active"
@@ -1105,14 +1108,16 @@
               "unitType": "ground",
               "tier": 0,
               "unit_status": "active"
+            },
+            {
+              "id": 12,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 0,
+              "unit_status": "routed"
             }
           ],
-          "structures": [
-            {
-              "type": "factory",
-              "player": 1
-            }
-          ]
+          "structures": []
         }
       ],
       "needsObjective": true,
@@ -1247,6 +1252,12 @@
               "unitType": "ground",
               "tier": 0,
               "ready_to_move": 0,
+              "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 1,
+              "player": 1,
               "unit_status": "active"
             }
           ],
@@ -1504,38 +1515,6 @@
       "tile": "2,-1",
       "position": 0,
       "revealed": false
-    },
-    {
-      "id": "deploy_1_1_r3",
-      "type": "deploy",
-      "owner": 1,
-      "tile": "2,-1",
-      "position": 1,
-      "revealed": false
-    },
-    {
-      "id": "advance_0_0_r3",
-      "type": "advance",
-      "owner": 0,
-      "tile": "1,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "dominate_1_1_r3",
-      "type": "dominate",
-      "owner": 1,
-      "tile": "2,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
-      "id": "strategize_0_1_r3",
-      "type": "strategize",
-      "owner": 0,
-      "tile": "0,0",
-      "position": 0,
-      "revealed": false
     }
   ],
   "ordersPlaced": [
@@ -1548,6 +1527,21 @@
   ],
   "dropped_orders": [
     {
+      "id": "1,0",
+      "type": "strategize",
+      "owner": 1
+    },
+    {
+      "id": "0,0",
+      "type": "strategize",
+      "owner": 0
+    },
+    {
+      "id": "deploy_1_1_r3",
+      "type": "deploy",
+      "owner": 1
+    },
+    {
       "id": "0,-1",
       "type": "strategize",
       "owner": 0
@@ -1555,7 +1549,7 @@
   ],
   "execution_order_played": [
     true,
-    false
+    true
   ],
   "log": [
     {
@@ -1871,11 +1865,35 @@
       "player_id": 0
     },
     {
-      "message": "The Green Tide: выберите тип приказа",
+      "message": "Приказ 'Strategize' разыгран",
       "player_id": 1
     },
     {
-      "message": "The Green Tide: разыгрывается как deploy",
+      "message": "Приказ 'Advance' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "БОЙ в области 2 тайла 1,0: победил Alpha. Omega отступает.",
+      "player_id": 0
+    },
+    {
+      "message": "Omega (защитник) отступил в область 3 (1 юн.). Статус: разбит.",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Strategize' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Deploy' сброшен",
       "player_id": 1
     },
     {
@@ -1908,8 +1926,6 @@
   "moved_storm_indices": [],
   "upgrade_used_this_turn": [
     [],
-    [
-      "The Green Tide"
-    ]
+    []
   ]
 }

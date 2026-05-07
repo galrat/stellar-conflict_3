@@ -59,9 +59,10 @@ def _is_warp_storm_blocking(state: dict, tile_key_a: str, tile_key_b: str) -> bo
     for storm in storms:
         if storm.get('status') != 'active':
             continue
-        if storm.get('tile') == tile_key_a and storm.get('side') == dir_ab:
+        tk = storm.get('tileKey') or storm.get('tile')
+        if tk == tile_key_a and storm.get('side') == dir_ab:
             return True
-        if storm.get('tile') == tile_key_b and storm.get('side') == dir_ba:
+        if tk == tile_key_b and storm.get('side') == dir_ba:
             return True
     return False
 

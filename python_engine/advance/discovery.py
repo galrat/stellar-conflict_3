@@ -17,6 +17,8 @@ def get_adjacent_tiles_with_units(state, tile_key, player_id) -> list[str]:
     adjacent = get_adjacent_tile_keys(tile_key)
     result = []
     for tk in adjacent:
+        if _is_warp_storm_blocking(state, tile_key, tk):
+            continue
         tile = state.get('map', {}).get(tk)
         if not tile:
             continue
