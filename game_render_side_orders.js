@@ -85,6 +85,32 @@ function _renderStrategizePhase() {
   poolEl.innerHTML = html;
 }
 
+function _renderGreenTidePhase() {
+  const poolEl = _resetPanels();
+  const clsBtn = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
+  const tileKey = G.pending_green_tide?.order_tile || '';
+
+  let html = '<div class="ptitle">THE GREEN TIDE</div>';
+  html += `<div style="font-size:.75rem;color:#aaa;margin-bottom:12px;">Тайл [${tileKey}]. Выберите тип приказа:</div>`;
+  poolEl.innerHTML = html;
+
+  const choices = [
+    { type: 'dominate',   icon: ORDER_TYPES['dominate']?.icon   || '★', name: 'Dominate'   },
+    { type: 'deploy',     icon: ORDER_TYPES['deploy']?.icon     || '★', name: 'Deploy'     },
+    { type: 'advance',    icon: ORDER_TYPES['advance']?.icon    || '★', name: 'Advance'    },
+    { type: 'strategize', icon: ORDER_TYPES['strategize']?.icon || '★', name: 'Strategize' },
+  ];
+
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = clsBtn;
+    btn.style.cssText = 'width:100%;margin-bottom:6px;';
+    btn.textContent = `${c.icon} ${c.name}`;
+    btn.onclick = () => chooseGreenTideOrder(c.type);
+    poolEl.appendChild(btn);
+  });
+}
+
 function _renderExecutionPhase() {
   const poolEl = _resetPanels();
 
@@ -154,8 +180,9 @@ function _renderExecutionPhase() {
   poolEl.appendChild(wrap);
 
   if (_selectedOrderForPlay) {
+    const usedIds = new Set((G.upgrade_used_this_turn || [[], []])[G.curP] || []);
     const matchingUpgrades = (G.players[G.curP].hand_order_upgrades || [])
-      .filter(u => u.order_type === _selectedOrderForPlay.type);
+      .filter(u => u.order_type === _selectedOrderForPlay.type && !usedIds.has(u.id));
     if (matchingUpgrades.length > 0) {
       const upgradeSection = document.createElement('div');
       upgradeSection.style.cssText = 'margin-top:10px;border-top:1px solid rgba(255,255,255,.1);padding-top:8px;';

@@ -31,50 +31,30 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "deploy_0_0_r2",
-          "type": "deploy",
-          "owner": 0
-        },
-        {
-          "id": "advance_0_0_r2",
-          "type": "advance",
-          "owner": 0
-        },
-        {
-          "id": "advance_0_1_r2",
-          "type": "advance",
-          "owner": 0
-        },
-        {
-          "id": "strategize_0_1_r2",
-          "type": "strategize",
-          "owner": 0
-        },
-        {
-          "id": "dominate_0_1_r2",
+          "id": "dominate_0_0_r3",
           "type": "dominate",
           "owner": 0
         },
         {
-          "id": "dominate_0_0_r2",
+          "id": "dominate_0_1_r3",
           "type": "dominate",
           "owner": 0
         },
         {
-          "id": "deploy_0_1_r2",
+          "id": "deploy_0_1_r3",
           "type": "deploy",
           "owner": 0
         },
         {
-          "id": "strategize_0_0_r2",
-          "type": "strategize",
+          "id": "advance_0_1_r3",
+          "type": "advance",
           "owner": 0
         }
       ],
-      "credits": 4,
+      "credits": 8,
       "tokens": {
         "support": 2,
-        "discount": 1,
+        "discount": 2,
         "forge": 0
       },
       "hand_battle_cards": [
@@ -411,6 +391,13 @@
           "card_type": "Scheme",
           "effect": "Instead of revealing an order, discard to rally all units in a system.",
           "image": "faction_defs/marine_data/events/Unwavering Resolve.jpg"
+        },
+        {
+          "name": "Emperor's Champion",
+          "warp_storm_move": "Sideways",
+          "card_type": "Scheme",
+          "effect": "At start of assess damage, discard to rally 1 unit.",
+          "image": "faction_defs/marine_data/events/Emperor's Champion.jpg"
         }
       ],
       "available_event_cards": [
@@ -420,13 +407,6 @@
           "card_type": "Scheme",
           "effect": "At start of assess damage, discard to gain 2 (s), plus 1 (s) per (F) you have.",
           "image": "faction_defs/marine_data/events/Adeptus Mechanicus.jpg"
-        },
-        {
-          "name": "Emperor's Champion",
-          "warp_storm_move": "Sideways",
-          "card_type": "Scheme",
-          "effect": "At start of assess damage, discard to rally 1 unit.",
-          "image": "faction_defs/marine_data/events/Emperor's Champion.jpg"
         },
         {
           "name": "Exterminatus",
@@ -498,45 +478,30 @@
       "structurePool": [],
       "hand_orders": [
         {
-          "id": "dominate_1_0_r2",
+          "id": "dominate_1_0_r3",
           "type": "dominate",
           "owner": 1
         },
         {
-          "id": "deploy_1_0_r2",
+          "id": "deploy_1_0_r3",
           "type": "deploy",
           "owner": 1
         },
         {
-          "id": "advance_1_1_r2",
+          "id": "advance_1_0_r3",
           "type": "advance",
           "owner": 1
         },
         {
-          "id": "strategize_1_1_r2",
-          "type": "strategize",
-          "owner": 1
-        },
-        {
-          "id": "deploy_1_1_r2",
-          "type": "deploy",
-          "owner": 1
-        },
-        {
-          "id": "advance_1_0_r2",
+          "id": "advance_1_1_r3",
           "type": "advance",
-          "owner": 1
-        },
-        {
-          "id": "strategize_1_0_r2",
-          "type": "strategize",
           "owner": 1
         }
       ],
-      "credits": 0,
+      "credits": 14,
       "tokens": {
         "support": 1,
-        "discount": 0,
+        "discount": 1,
         "forge": 0
       },
       "hand_battle_cards": [
@@ -818,18 +783,6 @@
         },
         {
           "id": "",
-          "name": "Lootin'",
-          "order_type": "advance",
-          "tier": 0,
-          "cost": 1,
-          "primary": "Orbital Strike, once per round. Gain 1 [?].",
-          "secondary": "Spend 1 die to gain 1 materiel and force enemy to lose 1 materiel.",
-          "image": "faction_defs/orks_data/order/Lootin'.jpg"
-        }
-      ],
-      "available_order_upgrades": [
-        {
-          "id": "",
           "name": "Werk Fasta!",
           "order_type": "deploy",
           "tier": 1,
@@ -837,6 +790,18 @@
           "primary": "May purchase structure before purchasing units. Once per round.",
           "secondary": "Command Level 1.",
           "image": "faction_defs/orks_data/order/Werk Fasta!.jpg"
+        }
+      ],
+      "available_order_upgrades": [
+        {
+          "id": "",
+          "name": "Lootin'",
+          "order_type": "advance",
+          "tier": 0,
+          "cost": 1,
+          "primary": "Orbital Strike, once per round. Gain 1 [?].",
+          "secondary": "Spend 1 die to gain 1 materiel and force enemy to lose 1 materiel.",
+          "image": "faction_defs/orks_data/order/Lootin'.jpg"
         },
         {
           "id": "",
@@ -866,6 +831,13 @@
           "card_type": "Scheme",
           "effect": "End of assess damage step in Ork combat, discard to destroy 1 structure on that world.",
           "image": "faction_defs/orks_data/events/Teer it Down!.jpg"
+        },
+        {
+          "name": "Mob Up!",
+          "warp_storm_move": "Sideways",
+          "card_type": "Scheme",
+          "effect": "Instead of revealing Order, discard to resolve an Advance Order in a system with at least 2 of your own units.",
+          "image": "faction_defs/orks_data/events/Mob Up!.jpg"
         }
       ],
       "available_event_cards": [
@@ -905,13 +877,6 @@
           "image": "faction_defs/orks_data/events/Moar Boyz!.jpg"
         },
         {
-          "name": "Mob Up!",
-          "warp_storm_move": "Sideways",
-          "card_type": "Scheme",
-          "effect": "Instead of revealing Order, discard to resolve an Advance Order in a system with at least 2 of your own units.",
-          "image": "faction_defs/orks_data/events/Mob Up!.jpg"
-        },
-        {
           "name": "Warboss",
           "warp_storm_move": "Across",
           "card_type": "Scheme",
@@ -926,9 +891,9 @@
   ],
   "phase": "execution",
   "curP": 0,
-  "round": 2,
+  "round": 3,
   "totalRounds": 8,
-  "firstPlayer": 1,
+  "firstPlayer": 0,
   "map": {
     "0,0": {
       "key": "0,0",
@@ -1000,7 +965,14 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "unitType": "ground",
+              "tier": 0,
+              "player": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": [
             {
               "id": 6,
@@ -1118,13 +1090,6 @@
               "unitType": "ground",
               "tier": 0,
               "unit_status": "active"
-            },
-            {
-              "id": 14,
-              "player": 1,
-              "unitType": "ground",
-              "tier": 1,
-              "unit_status": "active"
             }
           ],
           "structures": []
@@ -1236,14 +1201,7 @@
           "discount": 0,
           "forge": 0,
           "joker": 0,
-          "troops": [
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 1,
-              "unit_status": "active"
-            }
-          ],
+          "troops": [],
           "structures": [
             {
               "id": 15,
@@ -1268,27 +1226,11 @@
               "player": 1,
               "unitType": "ground",
               "tier": 0,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "ground",
-              "tier": 0,
-              "player": 1,
-              "unit_status": "active"
-            },
-            {
-              "unitType": "ground",
-              "tier": 1,
-              "player": 1,
+              "ready_to_move": 0,
               "unit_status": "active"
             }
           ],
-          "structures": [
-            {
-              "type": "city",
-              "player": 1
-            }
-          ]
+          "structures": []
         },
         {
           "area_place": 2,
@@ -1300,7 +1242,16 @@
           "discount": 1,
           "forge": 0,
           "joker": 0,
-          "troops": [],
+          "troops": [
+            {
+              "id": 14,
+              "player": 1,
+              "unitType": "ground",
+              "tier": 1,
+              "ready_to_move": 0,
+              "unit_status": "active"
+            }
+          ],
           "structures": [
             {
               "type": "city",
@@ -1502,15 +1453,16 @@
   "selStructIdx": null,
   "warpStorms": [
     {
-      "tileKey": "1,-1",
-      "side": "top",
-      "status": "active"
-    },
-    {
       "tileKey": "2,-1",
-      "side": "left",
+      "side": "top",
       "status": "active",
       "moved_by": 0
+    },
+    {
+      "tileKey": "2,0",
+      "side": "left",
+      "status": "active",
+      "moved_by": 1
     }
   ],
   "warpStormStep": 0,
@@ -1519,7 +1471,72 @@
     true
   ],
   "targetMarkers": [],
-  "orders": [],
+  "orders": [
+    {
+      "id": "strategize_0_0_r3",
+      "type": "strategize",
+      "owner": 0,
+      "tile": "0,-1",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "strategize_1_0_r3",
+      "type": "strategize",
+      "owner": 1,
+      "tile": "2,-1",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "deploy_0_0_r3",
+      "type": "deploy",
+      "owner": 0,
+      "tile": "1,-1",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "deploy_1_1_r3",
+      "type": "deploy",
+      "owner": 1,
+      "tile": "2,-1",
+      "position": 1,
+      "revealed": false
+    },
+    {
+      "id": "advance_0_0_r3",
+      "type": "advance",
+      "owner": 0,
+      "tile": "1,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "dominate_1_1_r3",
+      "type": "dominate",
+      "owner": 1,
+      "tile": "2,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "strategize_0_1_r3",
+      "type": "strategize",
+      "owner": 0,
+      "tile": "0,0",
+      "position": 0,
+      "revealed": false
+    },
+    {
+      "id": "strategize_1_1_r3",
+      "type": "strategize",
+      "owner": 1,
+      "tile": "1,0",
+      "position": 1,
+      "revealed": false
+    }
+  ],
   "ordersPlaced": [
     4,
     4
@@ -1528,26 +1545,10 @@
     true,
     true
   ],
-  "dropped_orders": [
-    {
-      "id": "dominate_1_1_r2",
-      "type": "dominate",
-      "owner": 1
-    },
-    {
-      "id": "2,-1",
-      "type": "strategize",
-      "owner": 1
-    },
-    {
-      "id": "0,0",
-      "type": "strategize",
-      "owner": 0
-    }
-  ],
+  "dropped_orders": [],
   "execution_order_played": [
-    true,
-    true
+    false,
+    false
   ],
   "log": [
     {
@@ -1783,7 +1784,7 @@
       "player_id": -1
     },
     {
-      "message": "Приказ 'Deploy' разыгран",
+      "message": "Приказ 'Strategize' разыгран",
       "player_id": 1
     },
     {
@@ -1799,7 +1800,7 @@
       "player_id": 0
     },
     {
-      "message": "Приказ 'Dominate' сброшен",
+      "message": "Приказ 'Deploy' сброшен",
       "player_id": 1
     },
     {
@@ -1815,7 +1816,7 @@
       "player_id": 0
     },
     {
-      "message": "Приказ 'Advance' разыгран",
+      "message": "Приказ 'Dominate' сброшен",
       "player_id": 1
     },
     {
@@ -1823,11 +1824,35 @@
       "player_id": 0
     },
     {
-      "message": "Приказ 'Strategize' разыгран",
+      "message": "Приказ 'Advance' разыгран",
       "player_id": 1
     },
     {
       "message": "Приказ 'Strategize' разыгран",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha: доход +8 (итого 8 кредитов)",
+      "player_id": 0
+    },
+    {
+      "message": "Omega: доход +8 (итого 14 кредитов)",
+      "player_id": 1
+    },
+    {
+      "message": "Omega взял карту события: Mob Up!",
+      "player_id": 1
+    },
+    {
+      "message": "Omega переместил варп-шторм → [2,0] left",
+      "player_id": 1
+    },
+    {
+      "message": "Alpha взял карту события: Emperor's Champion",
+      "player_id": 0
+    },
+    {
+      "message": "Alpha переместил варп-шторм → [2,-1] top",
       "player_id": 0
     }
   ],
@@ -1853,5 +1878,9 @@
     false,
     false
   ],
-  "moved_storm_indices": []
+  "moved_storm_indices": [],
+  "upgrade_used_this_turn": [
+    [],
+    []
+  ]
 }

@@ -338,6 +338,12 @@ class PlayOrderUpgradeRequest(BaseModel):
     upgrade_ids: List[str]
 
 
+class ChooseGreenTideOrderRequest(BaseModel):
+    """Выбор типа приказа для The Green Tide"""
+    player_id: int
+    order_choice: str  # 'dominate' | 'deploy' | 'advance' | 'strategize'
+
+
 class SuccessResponse(BaseModel):
     """Простой ответ успеха/ошибки"""
     success: bool
@@ -462,6 +468,17 @@ def compute_ui_hints(state: dict) -> dict:
             ui['deploy_hand']        = pd.get('hand', [])
             ui['deploy_placed']      = pd.get('placed', [])
             ui['deploy_removed_map'] = pd.get('removed_from_map', [])
+            return ui
+
+        # Если ожидается выбор приказа (The Green Tide — Orks)
+        pgt = state.get('pending_green_tide')
+        if pgt and pgt.get('player_id') == cur_p:
+            ui['instruction'] = (
+                f'<strong>ORKS: The Green Tide</strong><br>'
+                f'{cp_name}: выберите тип приказа для разыгрыша'
+            )
+            ui['buttons'] = ['btn-undo-order']
+            ui['green_tide_pending'] = pgt
             return ui
 
         # Если идёт выполнение приказа Advance
@@ -1023,13 +1040,102 @@ async def play_order_upgrade_endpoint(request: PlayOrderUpgradeRequest) -> GameS
 
             active_game.clear()
             active_game.update(new_state)
-            active_game['execution_order_played'][request.player_id] = True
+
+            # Не помечать ход как сыгранный если есть pending-состояние (multi-step upgrade)
+            if not active_game.get('pending_green_tide'):
+                active_game['execution_order_played'][request.player_id] = True
+
+            # Отметить использованные улучшения
+            used = active_game.setdefault('upgrade_used_this_turn', [[], []])
+            used[request.player_id].extend(request.upgrade_ids)
 
             if 'log' not in active_game:
                 active_game['log'] = []
             active_game['log'].append({'message': message, 'player_id': request.player_id})
 
             print(f"⭐ {message}")
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/choose-green-tide-order')
+async def choose_green_tide_order_endpoint(request: ChooseGreenTideOrderRequest) -> GameStateResponse:
+    """Выбор типа приказа для The Green Tide (Orks)"""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+
+        try:
+            pending = active_game.get('pending_green_tide')
+            if not pending:
+                return GameStateResponse(success=False, error="Нет ожидающего выбора Green Tide")
+
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Сейчас не ваш ход")
+
+            available = pending.get('available_orders', [])
+            if request.order_choice not in available:
+                return GameStateResponse(success=False, error=f"Недопустимый выбор: {request.order_choice}")
+
+            order_tile = pending.get('order_tile')
+            player_id  = request.player_id
+
+            import copy
+            new_state = copy.deepcopy(active_game)
+            del new_state['pending_green_tide']
+
+            choice = request.order_choice
+
+            if choice == 'dominate':
+                from python_engine.dominate import dominate_order
+                ok, msg, dom_state = dominate_order(new_state, player_id, order_tile)
+                if ok and dom_state:
+                    new_state = dom_state
+
+            elif choice == 'deploy':
+                info = get_deploy_info(new_state, player_id, order_tile)
+                new_state['pending_deploy'] = {
+                    'player_id':        player_id,
+                    'tile_key':         order_tile,
+                    'step':             'buy_units' if info['has_factory'] else 'buy_building',
+                    'has_factory':      info['has_factory'],
+                    'deploy_info':      info,
+                    'basket':           [],
+                    'unit_costs':       {'credits': 0, 'forge': 0, 'cash': 0},
+                    'hand':             [],
+                    'placed':           [],
+                    'removed_from_map': [],
+                }
+
+            elif choice == 'advance':
+                new_state = advance_play(new_state, player_id, order_tile)
+
+            elif choice == 'strategize':
+                new_state = strategize_play(new_state, player_id, order_tile)
+
+            active_game.clear()
+            active_game.update(new_state)
+
+            # Помечаем ход как сыгранный только если не открылся новый multi-step
+            if not (active_game.get('pending_deploy') or
+                    active_game.get('pending_advance') or
+                    active_game.get('pending_strategize')):
+                active_game['execution_order_played'][player_id] = True
+
+            if 'log' not in active_game:
+                active_game['log'] = []
+            active_game['log'].append({
+                'message':   f"The Green Tide: разыгрывается как {choice}",
+                'player_id': player_id,
+            })
+
+            print(f"🌊 The Green Tide → {choice} на тайле {order_tile}")
             save_current_state()
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
 
@@ -1508,6 +1614,8 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
                 return GameStateResponse(success=False, error="Сначала завершите особое свойство Marine (Dominate)")
             if active_game.get('pending_orks_dominate'):
                 return GameStateResponse(success=False, error="Сначала завершите особое свойство Orks (Dominate)")
+            if active_game.get('pending_green_tide'):
+                return GameStateResponse(success=False, error="Сначала завершите выбор The Green Tide")
 
             # Проверить: если у игрока есть разыгрываемые приказы — обязан сыграть
             playable = get_available_orders(active_game, current_player)
@@ -1524,6 +1632,7 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
             if next_info.get('next_player') is not None:
                 active_game['curP'] = next_info['next_player']
                 active_game['execution_order_played'][next_info['next_player']] = False
+                active_game.setdefault('upgrade_used_this_turn', [[], []])[next_info['next_player']] = []
                 # Начало хода нового игрока: сбросить старые snapshots, сохранить новый checkpoint
                 clear_temp_snapshots()
                 save_temp_snapshot()
@@ -1645,6 +1754,7 @@ async def next_round_endpoint(request: PassTurnRequest) -> GameStateResponse:
             active_game['ordersPlaced'] = [0, 0]
             active_game['order_placed_this_turn'] = [False, False]
             active_game['execution_order_played'] = [False, False]
+            active_game['upgrade_used_this_turn'] = [[], []]
             active_game['dropped_orders'] = []
             active_game['event_cards_offered'] = [[], []]
             active_game['event_selection_done'] = [False, False]

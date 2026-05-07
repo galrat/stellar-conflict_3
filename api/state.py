@@ -15,6 +15,7 @@ STATE_DEFAULTS = {
     'orders': [],
     'order_placed_this_turn': [False, False],
     'execution_order_played': [False, False],
+    'upgrade_used_this_turn': [[], []],
     'round': 1,
     'event_cards_offered': [[], []],
     'event_selection_done': [False, False],

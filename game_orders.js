@@ -176,6 +176,42 @@ async function playOrderViaAPI(orderId) {
   }
 }
 
+async function chooseGreenTideOrder(orderType) {
+  try {
+    const res = await apiCall('/api/game/choose-green-tide-order', {
+      player_id:    G.curP,
+      order_choice: orderType,
+    });
+    if (res.success) {
+      applyState(res.state);
+      if (res.state?.pending_joker_choice) {
+        _showJokerChoiceUI(res.state.pending_joker_choice);
+      } else if (res.state?.pending_chaos_dominate) {
+        setPhase('execution');
+      } else if (res.state?.pending_eldar_dominate) {
+        setPhase('execution');
+      } else if (res.state?.pending_marine_dominate) {
+        setPhase('execution');
+      } else if (res.state?.pending_orks_dominate) {
+        setPhase('execution');
+        showOrksDominateUI();
+      } else if (res.state?.pending_deploy) {
+        showDeployUI();
+      } else if (res.state?.pending_advance) {
+        showAdvanceUI();
+      } else if (res.state?.pending_strategize) {
+        renderStrategize();
+      } else {
+        setPhase('execution');
+      }
+    } else {
+      showMsg('Ошибка', res.error || '');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
 async function playOrderUpgradeViaAPI(orderId, upgradeIds) {
   try {
     const res = await apiCall('/api/game/play-order-upgrade', {
@@ -186,7 +222,9 @@ async function playOrderUpgradeViaAPI(orderId, upgradeIds) {
     if (res.success) {
       _selectedOrderForPlay = null;
       applyState(res.state);
-      if (res.state?.pending_deploy) {
+      if (res.state?.pending_green_tide) {
+        renderSide();
+      } else if (res.state?.pending_deploy) {
         showDeployUI();
       } else if (res.state?.pending_advance) {
         showAdvanceUI();
