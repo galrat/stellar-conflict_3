@@ -193,7 +193,7 @@ function _renderExecutionPhase() {
           btn.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
           btn.textContent = `⭐ ${u.name}`;
           btn.title = u.primary || '';
-          btn.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, [u.id]);
+          btn.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, [u.id || u.name]);
           available.push(u);
         }
         upgradeSection.appendChild(btn);
@@ -203,7 +203,7 @@ function _renderExecutionPhase() {
         btnBoth.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
         btnBoth.style.cssText = 'width:100%;margin-bottom:3px;font-size:.65rem;';
         btnBoth.textContent = '⭐⭐ Оба улучшения';
-        btnBoth.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, available.map(u => u.id));
+        btnBoth.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, available.map(u => u.id || u.name));
         upgradeSection.appendChild(btnBoth);
       }
       poolEl.appendChild(upgradeSection);

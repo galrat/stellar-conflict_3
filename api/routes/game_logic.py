@@ -1048,7 +1048,7 @@ async def play_order_upgrade_endpoint(request: PlayOrderUpgradeRequest) -> GameS
             # Отметить использованные улучшения (по имени, т.к. id может быть пустым)
             used = active_game.setdefault('upgrade_used_this_turn', [[], []])
             player_upgrades = active_game['players'][request.player_id].get('hand_order_upgrades', [])
-            upg_map = {u.get('id'): u.get('name', u.get('id', '')) for u in player_upgrades}
+            upg_map = {(u.get('id') or u.get('name', '')): u.get('name', u.get('id', '')) for u in player_upgrades}
             used[request.player_id].extend(upg_map.get(uid, uid) for uid in request.upgrade_ids)
 
             if 'log' not in active_game:
@@ -1119,7 +1119,10 @@ async def choose_green_tide_order_endpoint(request: ChooseGreenTideOrderRequest)
                 new_state = advance_play(new_state, player_id, order_tile)
 
             elif choice == 'strategize':
-                new_state = strategize_play(new_state, player_id, order_tile)
+                hand_orders = new_state['players'][player_id].get('hand_orders', [])
+                strat_orders = [o for o in hand_orders if o.get('type') == 'strategize']
+                strat_id = strat_orders[-1].get('id') if strat_orders else order_tile
+                new_state = strategize_play(new_state, player_id, strat_id)
 
             active_game.clear()
             active_game.update(new_state)

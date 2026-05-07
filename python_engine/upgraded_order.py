@@ -67,7 +67,7 @@ def play_upgraded_order(active_game, player_id, order_id, upgrade_ids):
     order_type = order.get('type')
     order_tile = order.get('tile')
 
-    hand_upgrades = {u['id']: u for u in player.get('hand_order_upgrades', [])}
+    hand_upgrades = {(u.get('id') or u.get('name', '')): u for u in player.get('hand_order_upgrades', []) if u.get('id') or u.get('name')}
     applied = []
     for uid in upgrade_ids:
         if uid not in hand_upgrades:
