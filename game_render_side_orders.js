@@ -71,6 +71,34 @@ function _renderOrdersPlacedPhase() {
 
 function _renderStrategizePhase() {
   const poolEl  = _resetPanels();
+  const dtf = G.pending_direct_the_faithful;
+
+  // Direct the Faithful: два независимых действия
+  if (dtf && dtf.player_id === G.curP) {
+    const cardsDone = !G.pending_strategize;
+    const buildDone = dtf.replacement_done;
+    const credits = G.players[G.curP].credits || 0;
+
+    let html = '<div class="ptitle">⚜ DIRECT THE FAITHFUL</div>';
+    html += `<div style="font-size:.75rem;color:#aaa;margin-bottom:12px;">Кредиты: ${credits}. Выполните оба действия в любом порядке.</div>`;
+
+    if (buildDone) {
+      html += '<button class="abtn" style="width:100%;margin-bottom:6px;opacity:.5;cursor:default;background:#333;" disabled>✓ Здание заменено</button>';
+    } else {
+      html += '<button class="abtn bp" style="width:100%;margin-bottom:6px;" onclick="_showDirectFaithfulModal()">🏛 Заменить здание</button>';
+    }
+
+    if (cardsDone) {
+      html += '<button class="abtn" style="width:100%;opacity:.5;cursor:default;background:#333;" disabled>✓ Карты куплены</button>';
+    } else {
+      html += '<button class="abtn bp" style="width:100%;" onclick="renderStrategize()">🎯 Купить карты</button>';
+    }
+
+    poolEl.innerHTML = html;
+    return;
+  }
+
+  // Обычный Strategize (без Direct the Faithful)
   const step    = G.pending_strategize.step || 'buy_combat_card';
   const credits = G.players[G.curP].credits || 0;
 
@@ -82,6 +110,25 @@ function _renderStrategizePhase() {
     html += `<div style="font-size:.75rem;color:#aaa;margin-bottom:8px;">Купить улучшение приказа (${credits} кредитов)</div>`;
     html += '<button class="abtn bp" style="width:100%;margin-top:8px;" onclick="renderStrategize()">⚔ Выбрать улучшение</button>';
   }
+
+  poolEl.innerHTML = html;
+}
+
+function _renderDirectFaithfulPhase() {
+  const poolEl = _resetPanels();
+  const dtf = G.pending_direct_the_faithful;
+
+  let html = '<div class="ptitle">⚜ DIRECT THE FAITHFUL</div>';
+  html += `<div style="font-size:.75rem;color:#aaa;margin-bottom:12px;">Карты куплены. Система [${dtf.order_tile}].</div>`;
+
+  if (dtf.replacement_done) {
+    html += '<button class="abtn" style="width:100%;opacity:.5;cursor:default;background:#333;" disabled>✓ Здание заменено</button>';
+    html += '<button class="abtn bp" style="width:100%;margin-top:8px;" onclick="directFaithfulSkipBuilding()">✓ Завершить ход</button>';
+  } else {
+    html += '<button class="abtn bp" style="width:100%;margin-bottom:6px;" onclick="_showDirectFaithfulModal()">🏛 Заменить здание</button>';
+    html += '<button class="abtn" style="width:100%;background:#555;" onclick="directFaithfulSkipBuilding()">⊘ Пропустить замену</button>';
+  }
+
   poolEl.innerHTML = html;
 }
 
@@ -121,6 +168,39 @@ function _renderExecutionPhase() {
   if (ordersOnField.length === 0) {
     poolEl.innerHTML = '<span class="rs-dim-sm">Нет приказов на поле. Нажмите ПЕРЕДАТЬ ХОД.</span>';
     return;
+  }
+
+  // Блок улучшений — вверху, сразу после выбора приказа
+  if (_selectedOrderForPlay) {
+    const usedKeys = new Set((G.upgrade_used_this_turn || [[], []])[G.curP] || []);
+    const matchingUpgrades = (G.players[G.curP].hand_order_upgrades || [])
+      .filter(u => u.order_type === _selectedOrderForPlay.type && !usedKeys.has(u.name || u.id));
+    if (matchingUpgrades.length > 0) {
+      const upgradeSection = document.createElement('div');
+      upgradeSection.style.cssText = 'margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.1);';
+      upgradeSection.appendChild(_mkPtitle('УЛУЧШЕНИЯ'));
+      matchingUpgrades.forEach(u => {
+        const btn = document.createElement('button');
+        btn.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
+        btn.style.cssText = 'width:100%;margin-bottom:4px;font-size:.8rem;text-align:left;';
+        btn.textContent = `⭐ ${u.name}`;
+        btn.title = u.primary || '';
+        btn.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, [u.id]);
+        upgradeSection.appendChild(btn);
+      });
+      if (matchingUpgrades.length >= 2) {
+        const btnBoth = document.createElement('button');
+        btnBoth.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
+        btnBoth.style.cssText = 'width:100%;margin-bottom:4px;font-size:.7rem;';
+        btnBoth.textContent = '⭐⭐ Сыграть оба улучшения';
+        btnBoth.onclick = () => playOrderUpgradeViaAPI(
+          _selectedOrderForPlay.id,
+          matchingUpgrades.map(u => u.id)
+        );
+        upgradeSection.appendChild(btnBoth);
+      }
+      poolEl.appendChild(upgradeSection);
+    }
   }
 
   const wrap = document.createElement('div');
@@ -180,34 +260,5 @@ function _renderExecutionPhase() {
   poolEl.appendChild(wrap);
 
   if (_selectedOrderForPlay) {
-    const usedIds = new Set((G.upgrade_used_this_turn || [[], []])[G.curP] || []);
-    const matchingUpgrades = (G.players[G.curP].hand_order_upgrades || [])
-      .filter(u => u.order_type === _selectedOrderForPlay.type && !usedIds.has(u.id));
-    if (matchingUpgrades.length > 0) {
-      const upgradeSection = document.createElement('div');
-      upgradeSection.style.cssText = 'margin-top:10px;border-top:1px solid rgba(255,255,255,.1);padding-top:8px;';
-      upgradeSection.appendChild(_mkPtitle('УЛУЧШЕНИЯ'));
-      matchingUpgrades.forEach(u => {
-        const btn = document.createElement('button');
-        btn.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
-        btn.style.cssText = 'width:100%;margin-bottom:4px;font-size:.7rem;text-align:left;';
-        btn.textContent = `⭐ ${u.name}`;
-        btn.title = u.primary || '';
-        btn.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, [u.id]);
-        upgradeSection.appendChild(btn);
-      });
-      if (matchingUpgrades.length >= 2) {
-        const btnBoth = document.createElement('button');
-        btnBoth.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
-        btnBoth.style.cssText = 'width:100%;margin-bottom:4px;font-size:.7rem;';
-        btnBoth.textContent = '⭐⭐ Сыграть оба улучшения';
-        btnBoth.onclick = () => playOrderUpgradeViaAPI(
-          _selectedOrderForPlay.id,
-          matchingUpgrades.map(u => u.id)
-        );
-        upgradeSection.appendChild(btnBoth);
-      }
-      poolEl.appendChild(upgradeSection);
-    }
   }
 }

@@ -59,6 +59,7 @@ function renderSide() {
     if (G.pending_advance?.step === 'orbital')                    return _renderAdvanceOrbitalPhase();
     if (G.pending_advance?.step === 'orbital_defend')             return _renderAdvanceOrbitalDefendPhase();
     if (G.pending_strategize)                                     return _renderStrategizePhase();
+    if (G.pending_direct_the_faithful?.player_id === G.curP)     return _renderDirectFaithfulPhase();
     if (G.pending_green_tide?.player_id === G.curP)               return _renderGreenTidePhase();
     return _renderExecutionPhase();
   }

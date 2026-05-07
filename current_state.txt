@@ -51,7 +51,7 @@
           "owner": 0
         }
       ],
-      "credits": 8,
+      "credits": 0,
       "tokens": {
         "support": 2,
         "discount": 2,
@@ -137,23 +137,23 @@
           "image": "faction_defs/marine_data/battle/Fury of the Ultramar.jpg"
         },
         {
-          "name": "Reconnaissance",
-          "tier": -1,
-          "cost": 0,
+          "name": "Emperor's Glory",
+          "tier": 3,
+          "cost": 6,
           "icons": {
             "G": 0,
-            "S": 1,
-            "M": 0
+            "S": 2,
+            "M": 2
           },
-          "primary": "If attacking, look at enemy card first.",
+          "primary": "Gain 2 [?].",
           "secondary": {
             "requires": [
-              "Scout",
-              "Cruiser"
+              "Titan",
+              "Battle Barge"
             ],
-            "effect": "Spend 1 [M] to retreat 1 unit."
+            "effect": "Rally all units. Convert any dice to [M]."
           },
-          "image": "faction_defs/marine_data/battle/Reconnaissance.jpg"
+          "image": "faction_defs/marine_data/battle/Emperor's Glory.jpg"
         }
       ],
       "available_battle_cards": [
@@ -292,25 +292,6 @@
           "image": "faction_defs/marine_data/battle/Show No Fear.jpg"
         },
         {
-          "name": "Emperor's Glory",
-          "tier": 3,
-          "cost": 6,
-          "icons": {
-            "G": 0,
-            "S": 2,
-            "M": 2
-          },
-          "primary": "Gain 2 [?].",
-          "secondary": {
-            "requires": [
-              "Titan",
-              "Battle Barge"
-            ],
-            "effect": "Rally all units. Convert any dice to [M]."
-          },
-          "image": "faction_defs/marine_data/battle/Emperor's Glory.jpg"
-        },
-        {
           "name": "Emperor's Might",
           "tier": 3,
           "cost": 6,
@@ -328,6 +309,25 @@
             "effect": "Spend any [G]; gain 2 (g) per die."
           },
           "image": "faction_defs/marine_data/battle/Emperor's Might.jpg"
+        },
+        {
+          "name": "Reconnaissance",
+          "tier": -1,
+          "cost": 0,
+          "icons": {
+            "G": 0,
+            "S": 1,
+            "M": 0
+          },
+          "primary": "If attacking, look at enemy card first.",
+          "secondary": {
+            "requires": [
+              "Scout",
+              "Cruiser"
+            ],
+            "effect": "Spend 1 [M] to retreat 1 unit."
+          },
+          "image": "faction_defs/marine_data/battle/Reconnaissance.jpg"
         }
       ],
       "hand_order_upgrades": [
@@ -350,6 +350,16 @@
           "primary": "May change 1 structure to a different structure. Once per round.",
           "secondary": "Command Level 1.",
           "image": "faction_defs/marine_data/order/Direct the Faithful.jpg"
+        },
+        {
+          "id": "",
+          "name": "Recruitment Worlds",
+          "order_type": "deploy",
+          "tier": 1,
+          "cost": 2,
+          "primary": "Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.",
+          "secondary": "Command Level 1.",
+          "image": "faction_defs/marine_data/order/Recruitment Worlds.jpg"
         }
       ],
       "available_order_upgrades": [
@@ -362,16 +372,6 @@
           "primary": "Orbital Strike, once per round. Gain [?].",
           "secondary": "Convert 1 [M] into [G].",
           "image": "faction_defs/marine_data/order/Reign of Fire.jpg"
-        },
-        {
-          "id": "",
-          "name": "Recruitment Worlds",
-          "order_type": "deploy",
-          "tier": 1,
-          "cost": 2,
-          "primary": "Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.",
-          "secondary": "Command Level 1.",
-          "image": "faction_defs/marine_data/order/Recruitment Worlds.jpg"
         },
         {
           "id": "",
@@ -890,7 +890,7 @@
     }
   ],
   "phase": "execution",
-  "curP": 0,
+  "curP": 1,
   "round": 3,
   "totalRounds": 8,
   "firstPlayer": 0,
@@ -977,7 +977,7 @@
             {
               "id": 6,
               "player": 0,
-              "type": "factory"
+              "type": "city"
             }
           ]
         },
@@ -1521,14 +1521,6 @@
       "revealed": false
     },
     {
-      "id": "strategize_0_1_r3",
-      "type": "strategize",
-      "owner": 0,
-      "tile": "0,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
       "id": "strategize_1_1_r3",
       "type": "strategize",
       "owner": 1,
@@ -1545,9 +1537,15 @@
     true,
     true
   ],
-  "dropped_orders": [],
+  "dropped_orders": [
+    {
+      "id": "strategize_0_1_r3",
+      "type": "strategize",
+      "owner": 0
+    }
+  ],
   "execution_order_played": [
-    false,
+    true,
     false
   ],
   "log": [
@@ -1854,6 +1852,14 @@
     {
       "message": "Alpha переместил варп-шторм → [2,-1] top",
       "player_id": 0
+    },
+    {
+      "message": "Игра загружена",
+      "player_id": -1
+    },
+    {
+      "message": "Direct the Faithful: доступна замена здания и обычный Strategize",
+      "player_id": 0
     }
   ],
   "event_cards_offered": [
@@ -1865,7 +1871,7 @@
     false
   ],
   "ui": {
-    "instruction": "<strong>ОЖИДАНИЕ РОЗЫГРЫША</strong><br>Alpha: приказы выставлены. Нажмите ПЕРЕДАТЬ ХОД чтобы начать розыгрыш.",
+    "instruction": "<strong>ОЖИДАНИЕ РОЗЫГРЫША</strong><br>Omega: приказы выставлены. Нажмите ПЕРЕДАТЬ ХОД чтобы начать розыгрыш.",
     "buttons": [
       "btn-pass"
     ],
@@ -1880,7 +1886,9 @@
   ],
   "moved_storm_indices": [],
   "upgrade_used_this_turn": [
-    [],
+    [
+      "Direct the Faithful"
+    ],
     []
   ]
 }

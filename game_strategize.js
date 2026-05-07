@@ -296,3 +296,143 @@ async function _buyOrderUpgrade() {
     showMsg('Ошибка сервера', e.message);
   }
 }
+
+// ── Direct the Faithful — building replacement ──────────────────────────────
+
+function _showDirectFaithfulModal() {
+  const dtf = G.pending_direct_the_faithful;
+  if (!dtf) return;
+
+  const tileKey = dtf.order_tile;
+  const tile = G.map?.[tileKey];
+  const areas = tile?.areas || [];
+
+  if (!window._dtfSelection) window._dtfSelection = { areaIdx: null, newType: null };
+
+  const BUILDING_TYPES = [
+    { type: 'city',    label: 'Город',   color: 'rgba(255,215,0,.5)' },
+    { type: 'bastion', label: 'Бастион', color: 'rgba(255,100,100,.5)' },
+    { type: 'factory', label: 'Фабрика', color: 'rgba(100,200,255,.5)' },
+  ];
+
+  const playerAreas = [];
+  areas.forEach((area, idx) => {
+    const struct = (area.structures || []).find(s => s.player === G.curP);
+    if (struct) playerAreas.push({ idx, struct, areaName: area.name || `Область ${idx + 1}` });
+  });
+
+  let html = `<div style="font-size:.85rem;color:#aaa;margin-bottom:12px;">Система [${tileKey}]. Выберите здание и тип замены.</div>`;
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">`;
+
+  // Left: areas with player buildings
+  html += `<div>`;
+  html += `<div style="font-weight:bold;color:rgba(255,215,0,.9);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,215,0,.4);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;">Ваши здания</div>`;
+  if (playerAreas.length === 0) {
+    html += `<div style="color:var(--dim);font-style:italic;font-size:.8rem;">Нет зданий в системе</div>`;
+  } else {
+    playerAreas.forEach(({ idx, struct, areaName }) => {
+      const isSelected = window._dtfSelection.areaIdx === idx;
+      const bg = isSelected ? 'rgba(76,175,80,.25)' : 'rgba(0,0,0,.4)';
+      const border = isSelected ? '#4caf50' : 'rgba(255,215,0,.4)';
+      const extra = isSelected ? 'box-shadow:0 0 0 1px #4caf50;' : '';
+      html += `<div onclick="window._dtfSelectArea(${idx})"
+        style="margin-bottom:8px;padding:8px;background:${bg};border-left:3px solid ${border};
+        border-radius:4px;cursor:pointer;${extra}">
+        <div style="font-weight:bold;font-size:.85rem;">${areaName}</div>
+        <div style="font-size:.75rem;color:#aaa;margin-top:3px;">Текущее: ${struct.type}</div>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+
+  // Right: building type choice
+  const selArea = window._dtfSelection.areaIdx !== null ? playerAreas.find(a => a.idx === window._dtfSelection.areaIdx) : null;
+  const currentType = selArea?.struct?.type || null;
+  html += `<div>`;
+  html += `<div style="font-weight:bold;color:rgba(100,200,255,.9);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(100,200,255,.4);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;">Заменить на</div>`;
+  BUILDING_TYPES.forEach(({ type, label, color }) => {
+    const isDisabled = !selArea || type === currentType;
+    const isSelected = window._dtfSelection.newType === type;
+    const bg = isSelected ? 'rgba(76,175,80,.25)' : isDisabled ? 'rgba(0,0,0,.2)' : 'rgba(0,0,0,.4)';
+    const border = isSelected ? '#4caf50' : color;
+    const extra = isSelected ? 'box-shadow:0 0 0 1px #4caf50;' : '';
+    const escaped = type;
+    html += `<div ${!isDisabled ? `onclick="window._dtfSelectType('${escaped}')"` : ''}
+      style="margin-bottom:8px;padding:8px;background:${bg};border-left:3px solid ${border};
+      border-radius:4px;opacity:${isDisabled ? .4 : 1};cursor:${isDisabled ? 'not-allowed' : 'pointer'};${extra}">
+      <div style="font-weight:bold;font-size:.85rem;">${label}</div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  html += `</div>`;
+  html += `<div style="display:flex;gap:8px;margin-top:4px;">`;
+  html += `<button class="abtn bp" style="flex:1;" onclick="_dtfConfirmReplace()">✓ Заменить</button>`;
+  html += `<button class="abtn" style="flex:1;background:#555;" onclick="closeMsg()">✗ Отмена</button>`;
+  html += `</div>`;
+
+  showMsg('⚜ Direct the Faithful — Замена здания', html);
+  document.querySelector('#msg-modal .mbtns').innerHTML = '';
+}
+
+window._dtfSelectArea = function(idx) {
+  if (!window._dtfSelection) window._dtfSelection = { areaIdx: null, newType: null };
+  window._dtfSelection.areaIdx = idx;
+  window._dtfSelection.newType = null;
+  _showDirectFaithfulModal();
+};
+
+window._dtfSelectType = function(type) {
+  if (!window._dtfSelection) window._dtfSelection = { areaIdx: null, newType: null };
+  window._dtfSelection.newType = type;
+  _showDirectFaithfulModal();
+};
+
+async function _dtfConfirmReplace() {
+  const sel = window._dtfSelection;
+  if (sel?.areaIdx === null || sel?.areaIdx === undefined || !sel?.newType) {
+    showMsg('Ошибка', 'Выберите здание и тип замены');
+    return;
+  }
+  const tileKey = G.pending_direct_the_faithful?.order_tile;
+  closeMsg();
+  try {
+    const res = await apiCall('/api/game/direct-faithful-replace-building', {
+      player_id: G.curP,
+      tile_key: tileKey,
+      area_idx: sel.areaIdx,
+      new_building_type: sel.newType,
+    });
+    window._dtfSelection = null;
+    if (res.success) {
+      applyState(res.state);
+      addLog(`Direct the Faithful: здание заменено на ${sel.newType}`, G.curP);
+      if (!res.state?.pending_direct_the_faithful && !res.state?.pending_strategize) {
+        _selectedOrderForPlay = null;
+        setPhase('execution');
+      }
+    } else {
+      showMsg('Ошибка', res.error || 'Не удалось заменить здание');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}
+
+async function directFaithfulSkipBuilding() {
+  try {
+    const res = await apiCall('/api/game/direct-faithful-skip-building', { player_id: G.curP });
+    if (res.success) {
+      applyState(res.state);
+      addLog('Direct the Faithful: замена здания пропущена', G.curP);
+      if (!res.state?.pending_direct_the_faithful && !res.state?.pending_strategize) {
+        _selectedOrderForPlay = null;
+        setPhase('execution');
+      }
+    } else {
+      showMsg('Ошибка', res.error || 'Не удалось пропустить замену');
+    }
+  } catch(e) {
+    showMsg('Ошибка сервера', e.message);
+  }
+}

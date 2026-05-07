@@ -1042,12 +1042,14 @@ async def play_order_upgrade_endpoint(request: PlayOrderUpgradeRequest) -> GameS
             active_game.update(new_state)
 
             # Не помечать ход как сыгранный если есть pending-состояние (multi-step upgrade)
-            if not active_game.get('pending_green_tide'):
+            if not active_game.get('pending_green_tide') and not active_game.get('pending_direct_the_faithful'):
                 active_game['execution_order_played'][request.player_id] = True
 
-            # Отметить использованные улучшения
+            # Отметить использованные улучшения (по имени, т.к. id может быть пустым)
             used = active_game.setdefault('upgrade_used_this_turn', [[], []])
-            used[request.player_id].extend(request.upgrade_ids)
+            player_upgrades = active_game['players'][request.player_id].get('hand_order_upgrades', [])
+            upg_map = {u.get('id'): u.get('name', u.get('id', '')) for u in player_upgrades}
+            used[request.player_id].extend(upg_map.get(uid, uid) for uid in request.upgrade_ids)
 
             if 'log' not in active_game:
                 active_game['log'] = []
@@ -2386,7 +2388,8 @@ async def strategize_buy_order_upgrade_endpoint(request: StrategizeBuyOrderUpgra
 
             active_game.clear()
             active_game.update(new_state)
-            active_game['execution_order_played'][request.player_id] = True
+            if not active_game.get('pending_direct_the_faithful'):
+                active_game['execution_order_played'][request.player_id] = True
             save_current_state()
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
         except Exception as e:
@@ -2454,7 +2457,116 @@ async def strategize_skip_order_upgrade_endpoint(request: StrategyzeSkipRequest)
             del new_state['pending_strategize']
             active_game.clear()
             active_game.update(new_state)
-            active_game['execution_order_played'][request.player_id] = True
+            if not active_game.get('pending_direct_the_faithful'):
+                active_game['execution_order_played'][request.player_id] = True
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+class DirectFaithfulReplaceBuildingRequest(BaseModel):
+    player_id: int
+    tile_key: str
+    area_idx: int
+    new_building_type: str  # 'city' | 'bastion' | 'factory'
+
+
+class DirectFaithfulSkipRequest(BaseModel):
+    player_id: int
+
+
+@app.post('/api/game/direct-faithful-replace-building')
+async def direct_faithful_replace_building_endpoint(request: DirectFaithfulReplaceBuildingRequest) -> GameStateResponse:
+    """Direct the Faithful: заменить здание в активной системе."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pending = active_game.get('pending_direct_the_faithful')
+            if not pending:
+                return GameStateResponse(success=False, error="Нет активного Direct the Faithful")
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Сейчас не ваш ход")
+            if pending.get('replacement_done'):
+                return GameStateResponse(success=False, error="Замена здания уже выполнена")
+
+            order_tile = pending.get('order_tile')
+            if request.tile_key != order_tile:
+                return GameStateResponse(success=False, error=f"Замена возможна только в системе [{order_tile}]")
+
+            valid_types = ('city', 'bastion', 'factory')
+            if request.new_building_type not in valid_types:
+                return GameStateResponse(success=False, error=f"Недопустимый тип здания: {request.new_building_type}")
+
+            tile = active_game.get('map', {}).get(order_tile)
+            if not tile:
+                return GameStateResponse(success=False, error=f"Тайл [{order_tile}] не найден")
+            areas = tile.get('areas', [])
+            if request.area_idx < 0 or request.area_idx >= len(areas):
+                return GameStateResponse(success=False, error=f"Область {request.area_idx} не существует")
+
+            area = areas[request.area_idx]
+            target_struct = None
+            for struct in area.get('structures', []):
+                if struct.get('player') == request.player_id:
+                    target_struct = struct
+                    break
+            if target_struct is None:
+                return GameStateResponse(success=False, error="В выбранной области нет ваших зданий")
+            if target_struct.get('type') == request.new_building_type:
+                return GameStateResponse(success=False, error="Выбранный тип совпадает с текущим зданием")
+
+            new_state = copy.deepcopy(active_game)
+            new_area = new_state['map'][order_tile]['areas'][request.area_idx]
+            for struct in new_area.get('structures', []):
+                if struct.get('player') == request.player_id:
+                    old_type = struct['type']
+                    struct['type'] = request.new_building_type
+                    break
+
+            new_state['pending_direct_the_faithful']['replacement_done'] = True
+
+            if new_state.get('pending_strategize'):
+                from python_engine.strategize import _count_player_cities
+                new_state['pending_strategize']['player_level'] = _count_player_cities(new_state, request.player_id)
+
+            active_game.clear()
+            active_game.update(new_state)
+
+            if not active_game.get('pending_strategize'):
+                del active_game['pending_direct_the_faithful']
+                active_game['execution_order_played'][request.player_id] = True
+
+            save_current_state()
+            return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return GameStateResponse(success=False, error=str(e))
+
+
+@app.post('/api/game/direct-faithful-skip-building')
+async def direct_faithful_skip_building_endpoint(request: DirectFaithfulSkipRequest) -> GameStateResponse:
+    """Direct the Faithful: пропустить замену здания."""
+    async with get_game_lock():
+        active_game = get_active_game()
+        if active_game is None:
+            return GameStateResponse(success=False, error="Игра не инициализирована")
+        try:
+            pending = active_game.get('pending_direct_the_faithful')
+            if not pending:
+                return GameStateResponse(success=False, error="Нет активного Direct the Faithful")
+            if pending.get('player_id') != request.player_id:
+                return GameStateResponse(success=False, error="Сейчас не ваш ход")
+
+            new_state = copy.deepcopy(active_game)
+            del new_state['pending_direct_the_faithful']
+            active_game.clear()
+            active_game.update(new_state)
+            if not active_game.get('pending_strategize'):
+                active_game['execution_order_played'][request.player_id] = True
             save_current_state()
             return GameStateResponse(success=True, state=prepare_response_state(active_game, compute_ui_hints))
         except Exception as e:

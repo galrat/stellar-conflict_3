@@ -228,7 +228,7 @@ async function playOrderUpgradeViaAPI(orderId, upgradeIds) {
         showDeployUI();
       } else if (res.state?.pending_advance) {
         showAdvanceUI();
-      } else if (res.state?.pending_strategize) {
+      } else if (res.state?.pending_strategize && !res.state?.pending_direct_the_faithful) {
         renderStrategize();
       } else {
         setPhase('execution');

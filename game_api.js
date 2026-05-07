@@ -35,6 +35,7 @@ function applyState(newState) {
   if (!('pending_marine_dominate' in newState)) G.pending_marine_dominate = null;
   if (!('pending_orks_dominate' in newState)) G.pending_orks_dominate = null;
   if (!('pending_green_tide' in newState)) G.pending_green_tide = null;
+  if (!('pending_direct_the_faithful' in newState)) G.pending_direct_the_faithful = null;
   uiFields.forEach(k => { G[k] = saved[k]; });
   // Сбросить выбранный приказ при смене игрока
   if (G.curP !== prevPlayer) _selectedOrderForPlay = null;
