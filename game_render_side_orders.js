@@ -173,30 +173,37 @@ function _renderExecutionPhase() {
   // Блок улучшений — вверху, сразу после выбора приказа
   if (_selectedOrderForPlay) {
     const usedKeys = new Set((G.upgrade_used_this_turn || [[], []])[G.curP] || []);
-    const matchingUpgrades = (G.players[G.curP].hand_order_upgrades || [])
-      .filter(u => u.order_type === _selectedOrderForPlay.type && !usedKeys.has(u.name || u.id));
-    if (matchingUpgrades.length > 0) {
+    const allUpgrades = (G.players[G.curP].hand_order_upgrades || [])
+      .filter(u => u.order_type === _selectedOrderForPlay.type);
+    if (allUpgrades.length > 0) {
       const upgradeSection = document.createElement('div');
-      upgradeSection.style.cssText = 'margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.1);';
+      upgradeSection.style.cssText = 'margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.1);';
       upgradeSection.appendChild(_mkPtitle('УЛУЧШЕНИЯ'));
-      matchingUpgrades.forEach(u => {
+      const available = [];
+      allUpgrades.forEach(u => {
+        const used = usedKeys.has(u.name || u.id);
         const btn = document.createElement('button');
-        btn.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
-        btn.style.cssText = 'width:100%;margin-bottom:4px;font-size:.8rem;text-align:left;';
-        btn.textContent = `⭐ ${u.name}`;
-        btn.title = u.primary || '';
-        btn.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, [u.id]);
+        btn.style.cssText = `width:100%;margin-bottom:3px;font-size:.65rem;text-align:left;padding:3px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`;
+        if (used) {
+          btn.className = 'abtn';
+          btn.style.cssText += 'background:#2a1a1a;color:#888;cursor:default;border-color:#5a2a2a;';
+          btn.textContent = `✗ ${u.name}`;
+          btn.disabled = true;
+        } else {
+          btn.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
+          btn.textContent = `⭐ ${u.name}`;
+          btn.title = u.primary || '';
+          btn.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, [u.id]);
+          available.push(u);
+        }
         upgradeSection.appendChild(btn);
       });
-      if (matchingUpgrades.length >= 2) {
+      if (available.length >= 2) {
         const btnBoth = document.createElement('button');
         btnBoth.className = 'abtn ' + (G.curP === 0 ? 'bp' : 'br');
-        btnBoth.style.cssText = 'width:100%;margin-bottom:4px;font-size:.7rem;';
-        btnBoth.textContent = '⭐⭐ Сыграть оба улучшения';
-        btnBoth.onclick = () => playOrderUpgradeViaAPI(
-          _selectedOrderForPlay.id,
-          matchingUpgrades.map(u => u.id)
-        );
+        btnBoth.style.cssText = 'width:100%;margin-bottom:3px;font-size:.65rem;';
+        btnBoth.textContent = '⭐⭐ Оба улучшения';
+        btnBoth.onclick = () => playOrderUpgradeViaAPI(_selectedOrderForPlay.id, available.map(u => u.id));
         upgradeSection.appendChild(btnBoth);
       }
       poolEl.appendChild(upgradeSection);

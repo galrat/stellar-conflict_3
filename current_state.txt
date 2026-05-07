@@ -51,7 +51,7 @@
           "owner": 0
         }
       ],
-      "credits": 0,
+      "credits": 2,
       "tokens": {
         "support": 2,
         "discount": 2,
@@ -118,23 +118,23 @@
           "image": "faction_defs/marine_data/battle/Faith in the Emperor.jpg"
         },
         {
-          "name": "Fury of the Ultramar",
+          "name": "Reconnaissance",
           "tier": -1,
           "cost": 0,
           "icons": {
-            "G": 1,
-            "S": 0,
+            "G": 0,
+            "S": 1,
             "M": 0
           },
-          "primary": "Enemy rerolls 1 [S]. You may reroll 1 [S].",
+          "primary": "If attacking, look at enemy card first.",
           "secondary": {
             "requires": [
-              "Marine",
+              "Scout",
               "Cruiser"
             ],
-            "effect": "Force enemy to lose 1 [S] or 2 (s)."
+            "effect": "Spend 1 [M] to retreat 1 unit."
           },
-          "image": "faction_defs/marine_data/battle/Fury of the Ultramar.jpg"
+          "image": "faction_defs/marine_data/battle/Reconnaissance.jpg"
         },
         {
           "name": "Emperor's Glory",
@@ -311,23 +311,23 @@
           "image": "faction_defs/marine_data/battle/Emperor's Might.jpg"
         },
         {
-          "name": "Reconnaissance",
+          "name": "Fury of the Ultramar",
           "tier": -1,
           "cost": 0,
           "icons": {
-            "G": 0,
-            "S": 1,
+            "G": 1,
+            "S": 0,
             "M": 0
           },
-          "primary": "If attacking, look at enemy card first.",
+          "primary": "Enemy rerolls 1 [S]. You may reroll 1 [S].",
           "secondary": {
             "requires": [
-              "Scout",
+              "Marine",
               "Cruiser"
             ],
-            "effect": "Spend 1 [M] to retreat 1 unit."
+            "effect": "Force enemy to lose 1 [S] or 2 (s)."
           },
-          "image": "faction_defs/marine_data/battle/Reconnaissance.jpg"
+          "image": "faction_defs/marine_data/battle/Fury of the Ultramar.jpg"
         }
       ],
       "hand_order_upgrades": [
@@ -350,16 +350,6 @@
           "primary": "May change 1 structure to a different structure. Once per round.",
           "secondary": "Command Level 1.",
           "image": "faction_defs/marine_data/order/Direct the Faithful.jpg"
-        },
-        {
-          "id": "",
-          "name": "Recruitment Worlds",
-          "order_type": "deploy",
-          "tier": 1,
-          "cost": 2,
-          "primary": "Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.",
-          "secondary": "Command Level 1.",
-          "image": "faction_defs/marine_data/order/Recruitment Worlds.jpg"
         }
       ],
       "available_order_upgrades": [
@@ -372,6 +362,16 @@
           "primary": "Orbital Strike, once per round. Gain [?].",
           "secondary": "Convert 1 [M] into [G].",
           "image": "faction_defs/marine_data/order/Reign of Fire.jpg"
+        },
+        {
+          "id": "",
+          "name": "Recruitment Worlds",
+          "order_type": "deploy",
+          "tier": 1,
+          "cost": 2,
+          "primary": "Treat Bastions as Factories, lower deployment limit by 1 each. Once per round.",
+          "secondary": "Command Level 1.",
+          "image": "faction_defs/marine_data/order/Recruitment Worlds.jpg"
         },
         {
           "id": "",
@@ -496,12 +496,17 @@
           "id": "advance_1_1_r3",
           "type": "advance",
           "owner": 1
+        },
+        {
+          "id": "dominate_1_1_r3",
+          "type": "dominate",
+          "owner": 1
         }
       ],
-      "credits": 14,
+      "credits": 11,
       "tokens": {
-        "support": 1,
-        "discount": 1,
+        "support": 2,
+        "discount": 2,
         "forge": 0
       },
       "hand_battle_cards": [
@@ -890,7 +895,7 @@
     }
   ],
   "phase": "execution",
-  "curP": 1,
+  "curP": 0,
   "round": 3,
   "totalRounds": 8,
   "firstPlayer": 0,
@@ -1228,6 +1233,12 @@
               "tier": 0,
               "ready_to_move": 0,
               "unit_status": "active"
+            },
+            {
+              "unitType": "ground",
+              "tier": 1,
+              "player": 1,
+              "unit_status": "active"
             }
           ],
           "structures": []
@@ -1473,14 +1484,6 @@
   "targetMarkers": [],
   "orders": [
     {
-      "id": "strategize_0_0_r3",
-      "type": "strategize",
-      "owner": 0,
-      "tile": "0,-1",
-      "position": 0,
-      "revealed": false
-    },
-    {
       "id": "strategize_1_0_r3",
       "type": "strategize",
       "owner": 1,
@@ -1513,14 +1516,6 @@
       "revealed": false
     },
     {
-      "id": "dominate_1_1_r3",
-      "type": "dominate",
-      "owner": 1,
-      "tile": "2,0",
-      "position": 0,
-      "revealed": false
-    },
-    {
       "id": "strategize_1_1_r3",
       "type": "strategize",
       "owner": 1,
@@ -1542,11 +1537,16 @@
       "id": "strategize_0_1_r3",
       "type": "strategize",
       "owner": 0
+    },
+    {
+      "id": "strategize_0_0_r3",
+      "type": "strategize",
+      "owner": 0
     }
   ],
   "execution_order_played": [
     true,
-    false
+    true
   ],
   "log": [
     {
@@ -1859,6 +1859,18 @@
     },
     {
       "message": "Direct the Faithful: доступна замена здания и обычный Strategize",
+      "player_id": 0
+    },
+    {
+      "message": "Приказ 'Dominate' разыгран",
+      "player_id": 1
+    },
+    {
+      "message": "Игрок 1: Dominate — получено: 1 support, 1 discount",
+      "player_id": 1
+    },
+    {
+      "message": "Приказ 'Strategize' сброшен",
       "player_id": 0
     }
   ],

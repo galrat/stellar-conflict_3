@@ -1634,7 +1634,6 @@ async def pass_turn_order_play_endpoint(request: PassTurnRequest) -> GameStateRe
             if next_info.get('next_player') is not None:
                 active_game['curP'] = next_info['next_player']
                 active_game['execution_order_played'][next_info['next_player']] = False
-                active_game.setdefault('upgrade_used_this_turn', [[], []])[next_info['next_player']] = []
                 # Начало хода нового игрока: сбросить старые snapshots, сохранить новый checkpoint
                 clear_temp_snapshots()
                 save_temp_snapshot()
